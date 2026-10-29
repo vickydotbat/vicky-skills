@@ -25,7 +25,7 @@ Run `glab issue view <number> --comments`.
 
 ## Wayfinding operations
 
-Used by `/lay-in-a-course`. The **map** is a single issue with **child** issues as tickets.
+Used by `/lay-course`. The **map** is a single issue with **child** issues as tickets.
 
 - **Map**: a single issue labelled `wayfinder:map`, holding the Destination / Constraints / Decisions body. `glab issue create --label wayfinder:map`. (On GitLab tiers with native epics, an epic may hold the map instead; a labelled issue works everywhere.)
 - **Child ticket**: an issue carrying `Part of #<map>` at the top of its description and labels `wayfinder:<type>` (`research`/`prototype`/`grilling`/`task`). Once claimed, the ticket is assigned to the driving dev.

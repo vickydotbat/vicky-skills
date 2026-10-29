@@ -1,10 +1,10 @@
 ---
-name: lay-in-a-course
+name: lay-course
 description: Plan work too big for one session as a map on the tracker. Decision tickets are resolved one at a time, then build tickets carry approved examples as their spec. Use with a loose idea to chart, or with a map to work through.
 disable-model-invocation: true
 ---
 
-# Lay in a course
+# Lay course
 
 A **map** is one tracker issue for an effort too big for one session. It finds the way from a loose idea to a **destination**: decisions first, then the builds they make possible. Every ticket the effort needs is a direct child of the map: decision tickets, builds, and whatever the work turns up. The map closes when the effort ships.
 
