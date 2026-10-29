@@ -1,9 +1,11 @@
 ---
-name: ci-workflows
+name: machine-spirit
 description: Write, change or debug CI. Use before editing a workflow under .gitea/workflows or .github/workflows, a path filter, a runner or its limits, a CI cache, a release pipeline, or branch protection and required checks; and when a CI run is red, slow, stuck or never reports.
 ---
 
-# CI workflows
+# Machine spirit
+
+> _The machine spirit is appeased by proof, not prayer._
 
 A workflow change is a guess until the platform, the diff and the runner have each been checked. Every claim about how the CI platform behaves comes from the running server's version and a source you can quote. Memory is the usual source of CI mistakes, because Gitea changes behaviour between releases.
 
