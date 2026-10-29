@@ -1,0 +1,12 @@
+{
+  "name": "vicky-skills",
+  "description": "Skills for steering coding agents with approved examples",
+  "owner": { "name": "vickydotbat" },
+  "plugins": [
+    {
+      "name": "vicky-skills",
+      "source": "./plugins/vicky-skills",
+      "description": "Approved Given / When / Then examples as the spec a build must pass, and a guard on approved tests"
+    }
+  ]
+}
