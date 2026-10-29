@@ -1,6 +1,6 @@
 # vicky-skills
 
-Claude Code skills for steering coding agents in any repository: wayfinder maps for planning, test-first builds, and reviews on three axes. They're built on ideas from [Matt Pocock's skills](https://github.com/mattpocock/skills). The main addition is approved examples: you approve the examples a build must pass before the agent writes any code.
+Claude Code skills for steering coding agents in any repository: wayfinder maps for planning, test-first builds, and reviews on three axes. They're built on ideas from [Matt Pocock's skills](https://github.com/mattpocock/skills), and `pr`'s pictures come from Dex Horthy's [show-me](https://github.com/humanlayer/skills). The main addition is approved examples: you approve the examples a build must pass before the agent writes any code.
 
 Install this plugin instead of Matt's, not beside it. Both have a `handoff`, a `retro` and so on, and an agent can't tell two skills with the same name apart.
 
