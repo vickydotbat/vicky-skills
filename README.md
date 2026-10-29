@@ -19,6 +19,8 @@ No skill here shares a name with one of Matt's, so both plugins load without cla
 - **`marie-kondo`** deletes merged branches and worktrees and keeps what sparks joy.
 - **`red-pen`** opens drafts in your editor and writes back what you leave.
 - **`sup`** catches you up in one screen: done, changed, waiting on you, next.
+- **`placebo`** audits a test suite for tests that look like proof and catch nothing, and deletes, merges or rewrites them.
+- **`retcon`** undoes exactly what you name, and leaves every other change alone.
 - **`video-captions`** reads a video through its captions.
 - **A guard hook** asks you before an agent edits approved examples: a file named `...ApprovedExamples` or holding a test marked `approved-spec`. It needs `jq`.
 
