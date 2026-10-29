@@ -5,6 +5,7 @@
     "name": "vickydotbat"
   },
   "skills": [
+    "./skills/engineering/ci-workflows",
     "./skills/engineering/diagnose",
     "./skills/engineering/do",
     "./skills/engineering/domain-modeling",
@@ -15,10 +16,11 @@
     "./skills/engineering/retro",
     "./skills/engineering/review",
     "./skills/engineering/setup",
+    "./skills/engineering/stacked-branches",
+    "./skills/productivity/codex-image-gen",
     "./skills/productivity/grilling",
     "./skills/productivity/handoff",
     "./skills/productivity/human-voice",
-    "./skills/productivity/teach",
     "./skills/productivity/video-captions",
     "./skills/productivity/writing-for-agents"
   ]
