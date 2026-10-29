@@ -9,7 +9,7 @@ The user edits drafts in their editor, never in the chat. Collect every draft of
 
 ## Steps
 
-1. **Write the draft file**: one per effort, at `.drafts/<branch>.md` when the repo ignores `.drafts/`, otherwise in the system temp folder (`$TMPDIR`, else `/tmp`). Each draft is a section:
+1. **Write the draft file**: one per effort, at `.drafts/<branch>.md` when the repo ignores `.drafts/`, otherwise in the system temp folder (`$TMPDIR`, else `/tmp`). The file opens with `# Drafts: <effort>` and one line saying that closing the file sends the text back. Each draft is a section:
 
    ````markdown
    ## <what it is>
