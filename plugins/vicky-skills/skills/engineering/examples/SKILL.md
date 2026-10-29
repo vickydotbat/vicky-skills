@@ -31,7 +31,7 @@ Then the charm ends
 3. **Hand the drafts to the human.** Use the repo's `draft-review` skill where it has one. Otherwise write the drafts to one scratch file, open it with `$VISUAL` (or `$EDITOR`), wait for the editor to close, and read the file back. Done when you hold the human's text. Their wording wins, word for word.
 4. **Record** the approved examples on the ticket, under an `Examples` heading, exactly as the human left them. Done when the ticket shows that text once.
 5. **Make each example red.** Write one test per approved example, at the seam the repo's testing rules pick (the highest seam where they say nothing). Name the test after the example, and mark it `approved-spec` in the form the test framework offers: a category, tag or trait. Put approved tests in files of their own, named after the feature with the suffix `ApprovedExamples` (`CharmApprovedExamples.cs`, `charm_approved_examples.py`), so the hook, a code-owner rule and CI all find them by name. Run them. Done when every one fails because the behaviour is missing, not because the test is broken.
-6. **Hand over** to the `implement` skill, which builds until every approved test passes.
+6. **Hand over** to the `do` skill, which builds until every approved test passes.
 
 ## Changing an approved example
 

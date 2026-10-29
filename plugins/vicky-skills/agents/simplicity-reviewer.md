@@ -8,7 +8,7 @@ You find code to delete. You report. You never delete it yourself.
 
 The caller gives you a **scope**: a **diff** (`git diff <fixed-point>...HEAD`, judge only what it adds) or the **repo** (rank by lines saved, top 15). Correctness, security and speed belong to other reviewers.
 
-Read the repo's standards files first (`AGENTS.md` names them) and `${CLAUDE_PLUGIN_ROOT}/skills/engineering/code-review/PRINCIPLES.md`. A finding that fights a pattern the repo asks for is a bad finding.
+Read the repo's standards files first (`AGENTS.md` names them) and `${CLAUDE_PLUGIN_ROOT}/skills/engineering/review/PRINCIPLES.md`. A finding that fights a pattern the repo asks for is a bad finding.
 
 ## The hunt
 

@@ -1,9 +1,9 @@
 ---
-name: implement
+name: do
 description: Build a ticket, or every build ticket on a map, test-first. Approved examples go red first, tests follow at agreed seams, and mutation proves the tests catch bugs. Use when the user hands over a ticket or a map to build.
 ---
 
-# Implement
+# Do
 
 A **build** turns a ticket's approved examples green. The examples are the contract, the tests below them are the agent's own, and mutation proves those tests can fail. The user brings a build ticket, or a map whose build tickets are ready.
 
@@ -15,7 +15,7 @@ A **build** turns a ticket's approved examples green. The examples are the contr
 4. **Go red to green, one slice at a time.** Write one failing test at an agreed seam, then only enough code to pass it, then the next. Each test takes its expected value from an independent source: an approved example, a worked example or a known literal, never a recomputation of what the code does. Done when every approved test passes.
 5. **Mutate.** Run the mutation tool the repo's docs name on the decision logic you changed (rules, limits, parsers). Answer each surviving mutant with a test that kills it, the deletion of the code it lived in, or a comment saying why no input tells it apart. Where the repo has no mutation tool, say so in the pull request. Done when no survivor is unanswered.
 6. **Run the checks the change reaches**: the typechecker, and the tests in the files and folders you touched. The repo's docs say whether the full suite runs locally or in CI. Done when they pass.
-7. **Review** with the `code-review` skill. Fix each finding, or record the ones you defer on a ticket. Done when every finding has an answer.
+7. **Review** with the `review` skill. Fix each finding, or record the ones you defer on a ticket. Done when every finding has an answer.
 
 ## Tests worth keeping
 

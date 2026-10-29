@@ -1,5 +1,5 @@
 ---
-name: code-review
+name: review
 description: "Review the changes since a fixed point (commit, branch, tag or merge-base) on three axes: Standards (the repo's rules and the house principles), Spec (the ticket, its approved examples and decisions) and Simplicity (what to delete). Runs the three reviewer agents in parallel and reports them side by side. Use when the user wants to review a branch, a PR or work in progress, or asks to \"review since X\"."
 ---
 
