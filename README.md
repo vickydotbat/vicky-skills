@@ -7,6 +7,7 @@ Install this plugin instead of Matt's, not beside it. Both have a `handoff`, a `
 - **`lay-course`** plans an effort too big for one session as a map of tickets. Build tickets are one goal, approved examples and pointers.
 - **`examples`** turns a ticket, rule or decision into Given / When / Then examples, opens them in your editor, and writes the ones you approve as failing tests.
 - **`do`** builds a ticket or a whole map: approved examples go red first, then tests at agreed seams, then mutation.
+- **`do`** also takes a plain request typed in chat: it drafts examples from it, you approve them, and the build runs red first. No map or ticket needed for small work.
 - **`review`** reviews a branch on three axes at once: standards, spec and simplicity. Each axis is its own agent, and they share one list of review principles: one point of entry, data read from its source, one copy of logic, and tests proved by mutation.
 - **`human-voice`** writes anything a person reads in plain language, from a ticket to a public article.
 - **`video-captions`** reads a video through its captions.
