@@ -19,6 +19,7 @@ No skill here shares a name with one of Matt's, so both plugins load without cla
 - **`marie-kondo`** deletes merged branches and worktrees and keeps what sparks joy.
 - **`red-pen`** opens drafts in your editor and writes back what you leave.
 - **`sup`** catches you up in one screen: done, changed, waiting on you, next.
+- **`history-monks`** rebases a branch onto a main that moved: what landed owns the form, the branch keeps its behaviour, and the old patterns a merge hides get converted too.
 - **`placebo`** audits a test suite for tests that look like proof and catch nothing, and deletes, merges or rewrites them.
 - **`retcon`** undoes exactly what you name, and leaves every other change alone.
 - **`video-captions`** reads a video through its captions.
