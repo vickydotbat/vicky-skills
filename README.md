@@ -38,7 +38,7 @@ An example says what the game or app does, in its own words, with no code in it:
 
 The agent drafts examples, but only the ones you approve become tests, and each test must fail before the code exists. The full rules for a good example are in the `examples` skill.
 
-The hook only sees edits made through Claude Code's own edit tools. Back it with a CI check in each repository that fails a pull request changing an `approved-spec` file without your approval.
+The hook only sees edits made through Claude Code's own edit tools. Back it in each repository with a merge gate: a code-owner rule that names you for files ending `ApprovedExamples`, or a CI check that refuses a change to one without your approval.
 
 The idea is acceptance test-driven development. Dave Farley's [The Industry Is Catching Up](https://www.youtube.com/watch?v=EkH_uoybj8k) is the best short case for it.
 
