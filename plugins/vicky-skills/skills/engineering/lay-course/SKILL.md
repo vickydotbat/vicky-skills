@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 A **map** is one tracker issue for an effort too big for one session. It finds the way from a loose idea to a **destination**: decisions first, then the builds they make possible. Every ticket the effort needs is a direct child of the map: decision tickets, builds, and whatever the work turns up. The map closes when the effort ships.
 
-The tracker is named in `docs/agents/issue-tracker.md`. Its "Wayfinding operations" section says how this repo expresses children, blocking and the frontier. If the file is missing, tell the user to run `/setup`.
+The tracker is named in `docs/agents/issue-tracker.md`. Its "Wayfinding operations" section says how this repo expresses children, blocking and the frontier. If the file is missing, tell the user to run `/first-contact`.
 
 ## Write for a tired reader
 
@@ -48,8 +48,8 @@ Blocking is the tracker's own relation. The **frontier** is the map's open, unbl
 
 A **decision ticket** asks one question and carries a `wayfinder:<kind>` label:
 
-- `grilling`: a conversation with the human, and the default. Call the `grilling` and `domain-modeling` skills.
-- `research`: a fact a decision waits on. A subagent calls the `research` skill, and the findings land as a comment on this ticket.
+- `grilling`: a conversation with the human, and the default. Call the `spanish-inquisition` and `true-names` skills.
+- `research`: a fact a decision waits on. A subagent calls the `away-team` skill, and the findings land as a comment on this ticket.
 - `prototype`: a cheap, rough artifact (an outline, a stub, a sketch) for the human to react to.
 - `task`: work that has to happen before a decision can, such as getting access to a service.
 
@@ -91,7 +91,7 @@ Ticket a question as soon as you can state it sharply, even when it's blocked. A
 
 The user brings a loose idea.
 
-1. **Name the destination** with the `grilling` and `domain-modeling` skills. Done when the user agrees to a destination of at most three sentences.
+1. **Name the destination** with the `spanish-inquisition` and `true-names` skills. Done when the user agrees to a destination of at most three sentences.
 2. **Find the frontier.** Grill breadth-first across the whole idea. When no fog shows and the work fits one session, stop: the work needs no map, so offer `examples`, then `do`. Done when every open question is a ticket or a line of fog.
 3. **Create the map** with Destination, Constraints and Not yet specified filled in.
 4. **Create the decision tickets** you can state now as children of the map. Wire blocking in a second pass, once every ticket has a key.

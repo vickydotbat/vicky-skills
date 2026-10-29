@@ -1,14 +1,14 @@
 ---
-name: retro
+name: captains-log
 description: "Run a retrospective on a coding session: find what in the agent's environment would make the next run go better."
 disable-model-invocation: true
 ---
 
-# Retro
+# Captain's log
 
 A **retro** improves the agent's environment, never the agent's excuses. Implementation has the most context pressure and review the least, so a rule belongs to review, and a rule a machine can check belongs to a machine.
 
-1. **Load `writing-for-agents`** for how agent-facing text is written.
+1. **Load `robot-voice`** for how agent-facing text is written.
 2. **Read the session** the user names, from its logs on this machine. With none named, use this session. Done when you can list where it lost time and where it went wrong.
 3. **Find candidates** in these places, and read the repo's own check commands and CI first, so a check that exists but is unwired is the finding:
    - **Navigation**: the agent searched long for something a pointer in `AGENTS.md` or a doc would have named.

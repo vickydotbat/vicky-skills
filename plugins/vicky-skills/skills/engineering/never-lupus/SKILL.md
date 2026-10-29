@@ -1,9 +1,9 @@
 ---
-name: diagnose
+name: never-lupus
 description: Find the cause of a hard bug or a slowdown with a loop that goes red on it. Use when something is broken, throwing, failing or slow, or the user says "diagnose" or "debug this".
 ---
 
-# Diagnose
+# Never lupus
 
 A bug is found by a **loop**: one command that goes red on this bug and green once it is fixed. With a loop, finding the cause is mechanical. Without one, reading code is guessing. Trace the bug in the code: "the build is stale" is a diagnosis too, and it needs proof such as an artifact hash or a logged version.
 

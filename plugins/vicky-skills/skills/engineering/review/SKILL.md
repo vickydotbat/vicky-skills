@@ -9,7 +9,7 @@ Three-axis review of the diff between `HEAD` and a fixed point:
 - **Spec**: does it do what the ticket and its approved examples ask, within the decisions on record?
 - **Simplicity**: what can be deleted?
 
-The tracker is named in `docs/agents/issue-tracker.md`. If that file is missing, tell the user to run `/setup`.
+The tracker is named in `docs/agents/issue-tracker.md`. If that file is missing, tell the user to run `/first-contact`.
 
 ## Steps
 

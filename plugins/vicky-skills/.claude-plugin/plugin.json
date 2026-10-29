@@ -5,24 +5,26 @@
     "name": "vickydotbat"
   },
   "skills": [
+    "./skills/engineering/away-team",
+    "./skills/engineering/captains-log",
     "./skills/engineering/ci-workflows",
-    "./skills/engineering/diagnose",
     "./skills/engineering/do",
-    "./skills/engineering/domain-modeling",
     "./skills/engineering/examples",
+    "./skills/engineering/first-contact",
     "./skills/engineering/lay-course",
-    "./skills/engineering/pr",
-    "./skills/engineering/research",
-    "./skills/engineering/retro",
+    "./skills/engineering/never-lupus",
     "./skills/engineering/review",
-    "./skills/engineering/setup",
+    "./skills/engineering/ship-it",
     "./skills/engineering/stacked-branches",
+    "./skills/engineering/true-names",
     "./skills/engineering/ui-design-101",
     "./skills/productivity/codex-image-gen",
-    "./skills/productivity/grilling",
-    "./skills/productivity/handoff",
     "./skills/productivity/human-voice",
+    "./skills/productivity/loose-lips",
+    "./skills/productivity/over-to-you",
+    "./skills/productivity/robot-voice",
+    "./skills/productivity/spanish-inquisition",
     "./skills/productivity/video-captions",
-    "./skills/productivity/writing-for-agents"
+    "./skills/productivity/you-have-the-conn"
   ]
 }

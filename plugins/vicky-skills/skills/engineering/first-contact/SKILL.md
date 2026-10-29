@@ -1,10 +1,10 @@
 ---
-name: setup
+name: first-contact
 description: "Configure a repo for these skills: where its tickets live and where its glossary and decision records live. Run once before the other engineering skills in a new repo."
 disable-model-invocation: true
 ---
 
-# Setup
+# First contact
 
 The engineering skills read two files from a repo: `docs/agents/issue-tracker.md` says where tickets live and how to work them, and `docs/agents/domain.md` says where the glossary and decision records live. This skill writes both, plus a short pointer block in the repo's agent file.
 

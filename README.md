@@ -1,8 +1,8 @@
 # vicky-skills
 
-Claude Code skills for steering coding agents in any repository: wayfinder maps for planning, test-first builds, and reviews on three axes. They're built on ideas from [Matt Pocock's skills](https://github.com/mattpocock/skills), and `pr`'s pictures come from Dex Horthy's [show-me](https://github.com/humanlayer/skills). The main addition is approved examples: you approve the examples a build must pass before the agent writes any code.
+Claude Code skills for steering coding agents in any repository: wayfinder maps for planning, test-first builds, and reviews on three axes. They're built on ideas from [Matt Pocock's skills](https://github.com/mattpocock/skills), and `ship-it`'s pictures come from Dex Horthy's [show-me](https://github.com/humanlayer/skills). The main addition is approved examples: you approve the examples a build must pass before the agent writes any code.
 
-Install this plugin instead of Matt's, not beside it. Both have a `handoff`, a `retro` and so on, and an agent can't tell two skills with the same name apart.
+No skill here shares a name with one of Matt's, so both plugins load without clashing. They describe two different workflows, though, so use one at a time.
 
 - **`lay-course`** plans an effort too big for one session as a map of tickets. Build tickets are one goal, approved examples and pointers.
 - **`examples`** turns a ticket, rule or decision into Given / When / Then examples, opens them in your editor, and writes the ones you approve as failing tests.
@@ -10,6 +10,9 @@ Install this plugin instead of Matt's, not beside it. Both have a `handoff`, a `
 - **`review`** reviews a branch on three axes at once: standards, spec and simplicity. Each axis is its own agent, and they share one list of review principles: one point of entry, data read from its source, one copy of logic, and tests proved by mutation.
 - **`human-voice`** writes anything a person reads in plain language, from a ticket to a public article.
 - **`ui-design-101`** designs the actions in an interface for their hundredth use.
+- **`over-to-you`** hands the checks only a person can do to you, as a short checklist in your editor with room for notes.
+- **`loose-lips`** checks anything leaving the machine for an attack map and rewrites it by role.
+- **`robot-voice`** writes skills, agent files and prompts for maximum agentic ergonomics.
 - **`video-captions`** reads a video through its captions.
 - **A guard hook** asks you before an agent edits approved examples: a file named `...ApprovedExamples` or holding a test marked `approved-spec`. It needs `jq`.
 

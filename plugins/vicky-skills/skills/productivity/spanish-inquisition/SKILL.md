@@ -1,9 +1,9 @@
 ---
-name: grilling
+name: spanish-inquisition
 description: Question the user, round by round, until a plan, decision or idea has no open branch left. Use when the user wants an idea stress-tested, says "grill me", or a decision ticket needs the human's answers.
 ---
 
-# Grilling
+# Spanish inquisition
 
 A **grilling** walks a **design tree**: each decision branches into the ones that hang off it. The **frontier** is every decision whose prerequisites are already answered.
 

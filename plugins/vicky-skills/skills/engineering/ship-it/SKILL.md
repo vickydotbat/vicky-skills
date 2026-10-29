@@ -1,9 +1,9 @@
 ---
-name: pr
+name: ship-it
 description: "Write or update a pull request body. Use when opening a pull request, after a push changes what it does, or when asked for a PR description."
 ---
 
-# PR
+# Ship it
 
 A pull request body tells a reviewer what changed, the proof that it works, and what merging risks. Write it with the `human-voice` skill, in the clinical register, using the repo glossary's words.
 

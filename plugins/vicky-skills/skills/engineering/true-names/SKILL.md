@@ -1,9 +1,9 @@
 ---
-name: domain-modeling
+name: true-names
 description: Sharpen a project's domain language and record its decisions while designing. Use when a term is fuzzy or disputed, when writing or editing GLOSSARY.md, or when recording or editing a decision record.
 ---
 
-# Domain modeling
+# True names
 
 The **glossary** holds the project's words, one meaning each. A **decision record** holds a choice and its reason. Both are written the moment something is settled, never batched. Reading the glossary for vocabulary is a habit every skill has; this skill is for changing it.
 
