@@ -19,7 +19,7 @@ A pull request body tells a reviewer what changed, the proof that it works, and 
 ## Proof
 
 - Tests: <the tests that ran, failing before and passing after>
-- Mutation: <killed and survived counts, and the answer to each survivor>
+- Mutation: <the `sentinels` report line per file, and the answer to each survivor>
 - <a screenshot, when the change is visible>
 
 ## Risk
@@ -31,5 +31,5 @@ Closes <ticket>
 ```
 
 - **The smallest picture.** Pick one: a `diff` of a call tree, file tree or state flow for a change to something that exists, a plain tree for something new, pseudocode for logic, or a Mermaid diagram for data passing between parts. Keep only the calls, files and states the reviewer needs.
-- **Leave out empty sections.** No approved examples, no Examples section. Where the repo has no mutation tool, the Mutation line says so.
+- **Leave out empty sections.** No approved examples, no Examples section.
 - **Settle the tickets and keep the body true** with the `loose-ends` skill, after every push.
