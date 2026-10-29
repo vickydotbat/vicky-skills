@@ -1,6 +1,8 @@
 # vicky-skills
 
-Claude Code skills for steering coding agents in any repository. They sit beside [Matt Pocock's skills](https://github.com/mattpocock/skills) and add the step his leave open: you approve the examples a build must pass before the agent writes any code.
+Claude Code skills for steering coding agents in any repository: wayfinder maps for planning, test-first builds, and reviews. Most of them started as [Matt Pocock's skills](https://github.com/mattpocock/skills) and evolve here. The main addition is approved examples: you approve the examples a build must pass before the agent writes any code.
+
+Install this plugin instead of Matt's, not beside it. Both have a `tdd`, a `wayfinder` and so on, and an agent can't tell two skills with the same name apart.
 
 - **`examples`** turns a ticket, rule or decision into Given / When / Then examples, opens them in your editor, and writes the ones you approve as failing tests.
 - **`video-captions`** reads a video through its captions.
