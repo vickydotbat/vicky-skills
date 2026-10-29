@@ -12,10 +12,23 @@ A **build** turns approved examples green. The examples are the contract, the te
 1. **Read** the ticket whole, body and comments, the decision records it points at, and the repo's glossary if it has one. A request typed in chat has no ticket: play it back in one sentence and get the user's yes. Done when you can say what the build makes true in one sentence.
 2. **Make the examples red.** Without approved examples, run the `examples` skill first. Write and run their tests as its step 5 says. Done when each approved test fails because the behaviour is missing.
 3. **Agree the seams.** A **seam** is the public boundary where a test watches behaviour without reaching inside. Name the seams you will test at and confirm them with the user. Prefer an existing seam to a new one, and the highest one the repo's testing rules allow. Done when the user has agreed the list.
-4. **Go red to green, one slice at a time.** Before each test, write its **intent** in one line: "holds <behaviour>; turns red when <production change>". No such change, no test: a test that can only go red on a refactor, a content edit or a library upgrade proves nothing (`placebo` lists the shapes). Then write the failing test at an agreed seam, only enough code to pass it, and the next. Each test takes its expected value from an independent source: an approved example, a worked example or a known literal, never a recomputation of what the code does. Done when every approved test passes.
+4. **Go red to green, one slice at a time.** Before each test, write its **intent** in one line: "holds <behaviour>; turns red when <production change>". No such change, no test: a test that can only go red on a refactor, a content edit or a library upgrade proves nothing (`placebo` lists the shapes). Then write the failing test at an agreed seam, only enough code to pass it ("The smallest complete change" below), and the next. Each test takes its expected value from an independent source: an approved example, a worked example or a known literal, never a recomputation of what the code does. Done when every approved test passes.
 5. **Mutate.** Run the mutation tool the repo's docs name on the decision logic you changed (rules, limits, parsers). Answer each surviving mutant with a test that kills it, the deletion of the code it lived in, or a comment saying why no input tells it apart. Where the repo has no mutation tool, say so in the pull request. Done when no survivor is unanswered.
 6. **Run the checks the change reaches**: the typechecker, and the tests in the files and folders you touched. The repo's docs say whether the full suite runs locally or in CI. Done when they pass.
 7. **Review** with the `review` skill. Fix each finding, or record the ones you defer on a ticket. Done when every finding has an answer.
+
+## The smallest complete change
+
+Lazy about the solution, never about the change: every caller, test, fixture and doc the change breaks is part of it.
+
+1. **List the reach first**: callers, tests, fixtures, config, exports, and what a user loses if it goes wrong. That list is the scope, and anything outside it is a feature nobody asked for.
+2. **Take the first option that fully works**, in this order: not needed at all; a helper, pattern or service the repo already has; the language's standard library; an installed dependency; one line a reader gets at a glance; the least new code.
+3. **Add nothing for later**: no abstraction, option, wrapper or layer without a current caller. Keep the repo's structure and the platform's own types.
+4. **Fix a bug at its root**: find every caller of what you touch, then fix the shared code once.
+5. **Mark a known limit** with a one-line comment, `shortcut: <the limit>, <when to upgrade>`.
+6. **End the report** with what you skipped or didn't check, and any risk the user must know.
+
+Validation at a trust boundary, error handling that prevents data loss, security and accessibility are never cut.
 
 ## Tests worth keeping
 

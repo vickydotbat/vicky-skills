@@ -1,6 +1,6 @@
 # vicky-skills
 
-Claude Code skills for steering coding agents in any repository: wayfinder maps for planning, test-first builds, and reviews on three axes. They're built on ideas from [Matt Pocock's skills](https://github.com/mattpocock/skills), and `ship-it`'s pictures come from Dex Horthy's [show-me](https://github.com/humanlayer/skills). The main addition is approved examples: you approve the examples a build must pass before the agent writes any code.
+Claude Code skills for steering coding agents in any repository: wayfinder maps for planning, test-first builds, and reviews on three axes. They're built on ideas from [Matt Pocock's skills](https://github.com/mattpocock/skills), `ship-it`'s pictures come from Dex Horthy's [show-me](https://github.com/humanlayer/skills), and `do`'s smallest-change rules from [ponytail](https://github.com/DietrichGebert/ponytail). The main addition is approved examples: you approve the examples a build must pass before the agent writes any code.
 
 No skill here shares a name with one of Matt's, so both plugins load without clashing. They describe two different workflows, though, so use one at a time.
 
