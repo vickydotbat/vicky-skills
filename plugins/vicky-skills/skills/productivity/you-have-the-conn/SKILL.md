@@ -1,11 +1,11 @@
 ---
-name: handoff
+name: you-have-the-conn
 description: Write a handoff so a fresh session can pick up this work. Use when the context is near its limit or the user ends a session mid-effort.
 argument-hint: "What will the next session do?"
 disable-model-invocation: true
 ---
 
-# Handoff
+# You have the conn
 
 A **handoff** is a short file a fresh agent reads first. It is a lead, never a fact: the next session checks each claim before it builds on it.
 

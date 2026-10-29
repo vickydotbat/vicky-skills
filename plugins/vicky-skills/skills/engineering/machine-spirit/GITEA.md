@@ -13,6 +13,10 @@ Each row names the release it holds from and the source that proves it. Compare 
 | Gitea ignores some GitHub workflow features, among them `environment` and problem matchers, and resolves `uses:` actions from GitHub by default. Read the comparison page before using a GitHub-only feature. | all current | https://docs.gitea.com/usage/actions/comparison |
 | A job log is `tea api repos/<owner>/<repo>/actions/jobs/<id>/logs </dev/null`. Anonymous access returns 401. | 28.1.0, observed | API call |
 | A failed run reruns with `tea api -X POST repos/<owner>/<repo>/actions/runs/<run id>/rerun </dev/null`. It answers with the run, `run_attempt` raised by one and `status` queued, and the same run id reports the new attempt. `tea actions runs` has no rerun command. | 28.1.0, observed | API call |
+| A `CODEOWNERS` file is read from `./CODEOWNERS`, then `./docs/CODEOWNERS`, then `./.gitea/CODEOWNERS`, first found wins. Each rule is a regular expression anchored for you, and a backslash is an escape in the tokenizer, so a literal dot is `\\.`. Text after `#` is a comment. | 28.1.0 | https://docs.gitea.com/usage/code-owners, `TokenizeCodeOwnersLine` in `models/issues/pull.go` at v28.1.0 |
+| A code owner is never asked to review their own pull request, and the code-owner merge check waives a rule whose only owner is the author. | 28.1.0 | `PullRequestCodeOwnersReview` and `HasAllRequiredCodeownerReviews` in `services/issue/pull.go` at v28.1.0 |
+| Code-owner review requests run when a pull request opens, on every push, and when a `WIP:` title prefix is removed, never while the title starts with `WIP:`. | 28.1.0 | `services/pull/pull.go` (open and push), `ChangeTitle` in `services/issue/issue.go` at v28.1.0 |
+| A review request is official when the reviewer could approve officially (the approvals allow-list, or write access without a rule). With `block_on_official_review_requests` on, any open official request blocks the merge. | 28.1.0 | `AddReviewRequest` and `IsOfficialReviewer` in `models/issues/review.go`, `MergeBlockedByOfficialReviewRequests` in `models/issues/pull.go` at v28.1.0 |
 
 ## Unverified
 
