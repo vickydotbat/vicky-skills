@@ -1,10 +1,17 @@
 # vicky-skills
 
-Claude Code skills for steering coding agents in any repository. They sit beside [Matt Pocock's skills](https://github.com/mattpocock/skills) and add the step his leave open: you approve the examples a build must pass before the agent writes any code.
+Claude Code skills for steering coding agents in any repository: wayfinder maps for planning, test-first builds, and reviews on three axes. They're built on ideas from [Matt Pocock's skills](https://github.com/mattpocock/skills), and `pr`'s pictures come from Dex Horthy's [show-me](https://github.com/humanlayer/skills). The main addition is approved examples: you approve the examples a build must pass before the agent writes any code.
 
+Install this plugin instead of Matt's, not beside it. Both have a `handoff`, a `retro` and so on, and an agent can't tell two skills with the same name apart.
+
+- **`lay-course`** plans an effort too big for one session as a map of tickets. Build tickets are one goal, approved examples and pointers.
 - **`examples`** turns a ticket, rule or decision into Given / When / Then examples, opens them in your editor, and writes the ones you approve as failing tests.
+- **`do`** builds test-first from a request typed in chat, a ticket or a whole map: approved examples go red first, then tests at agreed seams, then mutation. Small work needs no map or ticket.
+- **`review`** reviews a branch on three axes at once: standards, spec and simplicity. Each axis is its own agent, and they share one list of review principles: one point of entry, data read from its source, one copy of logic, and tests proved by mutation.
+- **`human-voice`** writes anything a person reads in plain language, from a ticket to a public article.
+- **`ui-design-101`** designs the actions in an interface for their hundredth use.
 - **`video-captions`** reads a video through its captions.
-- **A guard hook** asks you before an agent edits a file marked `approved-spec`. It needs `jq`.
+- **A guard hook** asks you before an agent edits approved examples: a file named `...ApprovedExamples` or holding a test marked `approved-spec`. It needs `jq`.
 
 ## Install
 
