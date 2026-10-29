@@ -1,16 +1,19 @@
 ---
 name: handoff
-description: Compact the current conversation into a handoff document for another agent to pick up.
-argument-hint: "What will the next session be used for?"
+description: Write a handoff so a fresh session can pick up this work. Use when the context is near its limit or the user ends a session mid-effort.
+argument-hint: "What will the next session do?"
 disable-model-invocation: true
 ---
 
-Write a handoff document summarising the current conversation so a fresh agent can continue the work. Save to the temporary directory of the user's OS (`$TMPDIR`, else `/tmp`; `%TEMP%` on Windows) - not the current workspace.
+# Handoff
 
-Include a "suggested skills" section in the document, naming which skills the next agent should call the Skill tool for.
+A **handoff** is a short file a fresh agent reads first. It is a lead, never a fact: the next session checks each claim before it builds on it.
 
-Do not duplicate content already captured in other artifacts (specs, plans, ADRs, issues, commits, diffs). Reference them by path or URL instead.
+1. **Name the goal** in one sentence, shaped by the user's argument when they gave one.
+2. **Point, don't copy.** Link each ticket, pull request, decision record, commit and file the work rests on. Restate nothing those already hold.
+3. **Prove each state claim.** Beside every claim about a branch, file, setting or ticket, write the command that proved it this session, or `unchecked`.
+4. **List what is open**: decisions the user still owes, and work started but not finished.
+5. **Name the skills** the next session should call.
+6. **Save it** in the system's temp folder (`$TMPDIR`, else `/tmp`), never in the repo, and give the user its path. Leave out every secret and every personal detail.
 
-Redact any sensitive information, such as API keys, passwords, or personally identifiable information.
-
-If the user passed arguments, treat them as a description of what the next session will focus on and tailor the doc accordingly.
+Done when a stranger could start from the file and the links alone.
