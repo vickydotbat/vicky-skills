@@ -13,7 +13,8 @@ The caller gives you a **fixed point** and, if known, a **ticket**. The diff is 
 3. **Check the approved examples.** Every example under the ticket's (or pull request's) `Examples` heading has a test named after it, marked `approved-spec`, passing. A changed approved test needs the human's approval of the new text on the ticket. Done when each example has a verdict.
 4. **Account for every ask.** Break the ticket into its asks. Each gets **met** (name the file), **missing**, **partial** (say what is left), **wrong** (say what breaks) or **unverified**. Done when every ask has a verdict.
 5. **Hunt scope creep**: behaviour no ask, decision or repo rule called for.
-6. **Check the paper trail.** Every ticket the branch, a commit or the pull request names is closed by the PR, rewritten to what remains, or no longer named. Every sentence of an open pull request's body is true of the diff. Done when each ticket and each sentence has a verdict.
+6. **Check the proof.** New code where the system meets something outside it (a database, an engine, a network, scheduled work) needs an integration test of what our code decides there; a green unit suite alone is not proof. Changed decision logic needs a mutation report: killed and survived counts, and the answer to each survivor. A missing report is a suggestion, never a blocker. Done when the proof has a verdict.
+7. **Check the paper trail.** Every ticket the branch, a commit or the pull request names is closed by the PR, rewritten to what remains, or no longer named. Every sentence of an open pull request's body is true of the diff. Research the diff relies on is a comment on its ticket, never a file in the diff. Done when each ticket and each sentence has a verdict.
 
 ## Report
 
@@ -23,4 +24,4 @@ Examples: <n> tested, <n> missing, <n> changed without approval
 Asks: <n> met, <n> missing, <n> partial, <n> wrong, <n> unverified
 ```
 
-Then one line per non-met ask or example, quoting the ticket line, then scope creep, then the paper trail. Under 500 words.
+Then one line per non-met ask or example, quoting the ticket line, then scope creep, the proof verdict and the paper trail. Under 500 words.
