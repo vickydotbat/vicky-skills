@@ -2,7 +2,7 @@
 
 Claude Code skills for steering coding agents in any repository: wayfinder maps for planning, test-first builds, and reviews on three axes. They're built on ideas from [Matt Pocock's skills](https://github.com/mattpocock/skills). The main addition is approved examples: you approve the examples a build must pass before the agent writes any code.
 
-Install this plugin instead of Matt's, not beside it. Both have a `tdd`, a `wayfinder` and so on, and an agent can't tell two skills with the same name apart.
+Install this plugin instead of Matt's, not beside it. Both have a `wayfinder`, an `implement` and so on, and an agent can't tell two skills with the same name apart.
 
 - **`wayfinder`** plans an effort too big for one session as a map of tickets. Build tickets are one goal, approved examples and pointers.
 - **`examples`** turns a ticket, rule or decision into Given / When / Then examples, opens them in your editor, and writes the ones you approve as failing tests.
@@ -10,7 +10,7 @@ Install this plugin instead of Matt's, not beside it. Both have a `tdd`, a `wayf
 - **`code-review`** reviews a branch on three axes at once: standards, spec and simplicity. Each axis is its own agent, and they share one list of review principles: one point of entry, data read from its source, one copy of logic, and tests proved by mutation.
 - **`human-voice`** writes anything a person reads in plain language, from a ticket to a public article.
 - **`video-captions`** reads a video through its captions.
-- **A guard hook** asks you before an agent edits a file marked `approved-spec`. It needs `jq`.
+- **A guard hook** asks you before an agent edits approved examples: a file named `...ApprovedExamples` or holding a test marked `approved-spec`. It needs `jq`.
 
 ## Install
 
