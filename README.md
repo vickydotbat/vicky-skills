@@ -55,6 +55,7 @@ The idea is acceptance test-driven development. Dave Farley's [The Industry Is C
 ```bash
 claude plugin validate .
 tests/approved-spec-guard.test.sh
+tests/plugin-layout.test.sh
 ```
 
-Run both before every push.
+Run all three before every push. CI runs the two tests on every pull request.
