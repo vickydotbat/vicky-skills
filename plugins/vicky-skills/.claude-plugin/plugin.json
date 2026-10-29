@@ -12,6 +12,8 @@
     "./skills/engineering/examples",
     "./skills/engineering/first-contact",
     "./skills/engineering/lay-course",
+    "./skills/engineering/loose-ends",
+    "./skills/engineering/marie-kondo",
     "./skills/engineering/never-lupus",
     "./skills/engineering/review",
     "./skills/engineering/ship-it",
@@ -22,8 +24,11 @@
     "./skills/productivity/human-voice",
     "./skills/productivity/loose-lips",
     "./skills/productivity/over-to-you",
+    "./skills/productivity/plot-twist",
+    "./skills/productivity/red-pen",
     "./skills/productivity/robot-voice",
     "./skills/productivity/spanish-inquisition",
+    "./skills/productivity/sup",
     "./skills/productivity/video-captions",
     "./skills/productivity/you-have-the-conn"
   ]

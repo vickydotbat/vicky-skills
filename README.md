@@ -13,6 +13,11 @@ No skill here shares a name with one of Matt's, so both plugins load without cla
 - **`over-to-you`** hands the checks only a person can do to you, as a short checklist in your editor with room for notes.
 - **`loose-lips`** checks anything leaving the machine for an attack map and rewrites it by role.
 - **`robot-voice`** writes skills, agent files and prompts for maximum agentic ergonomics.
+- **`plot-twist`** carries a change of direction into every ticket, pull request and doc that still says the old thing.
+- **`loose-ends`** settles every ticket an effort touched and keeps the pull request body true.
+- **`marie-kondo`** deletes merged branches and worktrees and keeps what sparks joy.
+- **`red-pen`** opens drafts in your editor and writes back what you leave.
+- **`sup`** catches you up in one screen: done, changed, waiting on you, next.
 - **`video-captions`** reads a video through its captions.
 - **A guard hook** asks you before an agent edits approved examples: a file named `...ApprovedExamples` or holding a test marked `approved-spec`. It needs `jq`.
 

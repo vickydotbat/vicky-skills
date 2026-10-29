@@ -28,7 +28,7 @@ Then the charm ends
 
 1. **Read the source.** Read the ticket whole, body and comments, and the decision and rule it rests on; `docs/agents/issue-tracker.md` names the tracker. A request typed in chat is the whole source. Done when every behaviour the ticket promises is on your list.
 2. **Draft** one example per behaviour, each with its source and its boundary partner. Done when every behaviour on the list has both.
-3. **Hand the drafts to the human.** Use the repo's `draft-review` skill where it has one. Otherwise write the drafts to one scratch file, open it with `$VISUAL` (or `$EDITOR`), wait for the editor to close, and read the file back. Done when you hold the human's text. Their wording wins, word for word.
+3. **Hand the drafts to the human** with the `red-pen` skill. Done when you hold the human's text. Their wording wins, word for word.
 4. **Record** the approved examples under an `Examples` heading, exactly as the human left them: on the ticket, or in the pull request body when there is no ticket. Done when that place shows the text once.
 5. **Make each example red.** Write one test per approved example, at the seam the repo's testing rules pick (the highest seam where they say nothing). Name the test after the example, and mark it `approved-spec` in the form the test framework offers: a category, tag or trait. Put approved tests in files of their own, named after the feature with the suffix `ApprovedExamples` (`CharmApprovedExamples.cs`, `charm_approved_examples.py`), so the hook, a code-owner rule and CI all find them by name. Run them. Done when every one fails because the behaviour is missing, not because the test is broken.
 6. **Hand over** to the `do` skill, which builds until every approved test passes.
