@@ -15,6 +15,7 @@ No skill here shares a name with one of Matt's, so both plugins load without cla
 - **`loose-lips`** checks anything leaving the machine for an attack map and rewrites it by role.
 - **`robot-voice`** writes skills, agent files and prompts for maximum agentic ergonomics.
 - **`plot-twist`** carries a change of direction into every ticket, pull request and doc that still says the old thing.
+- **`make-it-so`** finishes a draft pull request: current with main, one light QA pass, a true body, marked ready, then CI watched until it's green.
 - **`loose-ends`** settles every ticket an effort touched and keeps the pull request body true.
 - **`marie-kondo`** deletes merged branches and worktrees and keeps what sparks joy.
 - **`red-pen`** opens drafts in your editor and writes back what you leave.
