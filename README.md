@@ -23,6 +23,8 @@ No skill here shares a name with one of Matt's, so both plugins load without cla
 - **`placebo`** audits a test suite for tests that look like proof and catch nothing, and deletes, merges or rewrites them.
 - **`retcon`** undoes exactly what you name, and leaves every other change alone.
 - **`video-captions`** reads a video through its captions.
+- **`is-this-a-meme`** (typed only): `/is-this-a-meme <thing>` explains it, then lands it with a meme. The `dungeon-master` style memes on its own, and nothing else does.
+- **The `dungeon-master` output style**: relaxed, focused and exact. The answer first, the next action last, a register per topic, and memes when an idea needs to land. Pick it with `/output-style vicky-skills:dungeon-master`.
 - **A guard hook** asks you before an agent edits approved examples: a file named `...ApprovedExamples` or holding a test marked `approved-spec`. It needs `jq`.
 
 ## Install
