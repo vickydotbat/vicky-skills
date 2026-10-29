@@ -10,12 +10,23 @@ A **build** turns approved examples green. The examples are the contract, the te
 ## Build one change
 
 1. **Read** the ticket whole, body and comments, the decision records it points at, and the repo's glossary if it has one. A request typed in chat has no ticket: play it back in one sentence and get the user's yes. Done when you can say what the build makes true in one sentence.
-2. **Make the examples red.** Without approved examples, run the `examples` skill first. Write and run their tests as its step 5 says. Done when each approved test fails because the behaviour is missing.
+2. **Make the examples red.** Without approved examples, run the `examples` skill first. Write and run their tests as its step 5 says. Done when each approved test fails because the behaviour is missing. Commit them, push the branch and open a **draft** pull request: GitHub's `gh pr create --draft`, or a `WIP:` title prefix on Gitea, unless the repo's guide names another way. A draft asks no one to review it.
 3. **Agree the seams.** A **seam** is the public boundary where a test watches behaviour without reaching inside. Name the seams you will test at and confirm them with the user. Prefer an existing seam to a new one, and the highest one the repo's testing rules allow. Done when the user has agreed the list.
 4. **Go red to green, one slice at a time.** Before each test, write its **intent** in one line: "holds <behaviour>; turns red when <production change>". No such change, no test: a test that can only go red on a refactor, a content edit or a library upgrade proves nothing (`placebo` lists the shapes). Then write the failing test at an agreed seam, only enough code to pass it ("The smallest complete change" below), and the next. Each test takes its expected value from an independent source: an approved example, a worked example or a known literal, never a recomputation of what the code does. Done when every approved test passes.
-5. **Mutate.** Run the mutation tool the repo's docs name on the decision logic you changed (rules, limits, parsers). Answer each surviving mutant with a test that kills it, the deletion of the code it lived in, or a comment saying why no input tells it apart. Where the repo has no mutation tool, say so in the pull request. Done when no survivor is unanswered.
+5. **Mutate** the decision logic you changed (rules, limits, parsers) with `sentinels`. Done when its report line names every file and no survivor is unanswered.
 6. **Run the checks the change reaches**: the typechecker, and the tests in the files and folders you touched. The repo's docs say whether the full suite runs locally or in CI. Done when they pass.
 7. **Review** with the `review` skill. Fix each finding, or record the ones you defer on a ticket. Done when every finding has an answer.
+8. **Make it so.** Finish the draft with the `make-it-so` skill. Done when it reports every required check green.
+
+## No stops from step 4 to step 8
+
+The user may be away once the seams are agreed, and a question or an open editor would stall the build until they return. From step 4 on, keep going and hold everything for the end:
+
+- **Drafts**: add each to the effort's `red-pen` draft file and write the draft text at its destination. Commit it there unless the repo's guide keeps unread text out of commits: then leave those hunks unstaged until `make-it-so`. Leave the draft file closed.
+- **Questions**: take the answer cheapest to undo, build on it, and add a line to a **Check these** list in the pull request body: the question, your answer, and the commit that holds it.
+- **A guess too costly to undo, or an approved example the build shows is wrong**: park that slice. Add it to Check these with what it waits on, and build the rest.
+
+`make-it-so` hands the drafts and the list to the user before the pull request goes ready. Done when step 8 starts with no question asked since step 3.
 
 ## The smallest complete change
 
@@ -42,8 +53,8 @@ Validation at a trust boundary, error handling that prevents data loss, security
 
 The frontier is every open, unblocked build ticket on the map.
 
-1. Create one **integration branch** for the map. Open its pull request after the first merge, closing every build ticket.
-2. Give each frontier ticket to its own implementer subagent, in its own worktree, on a branch from the integration branch. Each one runs steps 1 to 6 above, then brings the integration branch into its own before it reports.
+1. Create one **integration branch** for the map. Open its draft pull request after the first merge, closing every build ticket.
+2. Give each frontier ticket to its own implementer subagent, in its own worktree, on a branch from the integration branch. Each one runs steps 1 to 6 above with no stops, reports its drafts and Check these lines, then brings the integration branch into its own before it reports.
 3. Merge each finished branch into the integration branch. When that opens new frontier tickets, start their subagents.
 4. Once every ticket is done, run step 7 on the integration branch and fix its findings in one more subagent.
-5. Mark the pull request ready, and remove every worktree the build made.
+5. Remove every worktree the build made, then finish with `make-it-so`.

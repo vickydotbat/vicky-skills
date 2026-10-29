@@ -15,11 +15,13 @@ No skill here shares a name with one of Matt's, so both plugins load without cla
 - **`loose-lips`** checks anything leaving the machine for an attack map and rewrites it by role.
 - **`robot-voice`** writes skills, agent files and prompts for maximum agentic ergonomics.
 - **`plot-twist`** carries a change of direction into every ticket, pull request and doc that still says the old thing.
+- **`make-it-so`** finishes a draft pull request: current with main, one light QA pass, a true body, marked ready, then CI watched until it's green.
 - **`loose-ends`** settles every ticket an effort touched and keeps the pull request body true.
 - **`marie-kondo`** deletes merged branches and worktrees and keeps what sparks joy.
 - **`red-pen`** opens drafts in your editor and writes back what you leave.
 - **`sup`** catches you up in one screen: done, changed, waiting on you, next.
 - **`history-monks`** rebases a branch onto a main that moved: what landed owns the form, the branch keeps its behaviour, and the old patterns a merge hides get converted too.
+- **`sentinels`** mutation-tests changed code with the repo's tool, a tool pulled down for the run, or by hand, and keeps a run alive under a memory cap.
 - **`placebo`** audits a test suite for tests that look like proof and catch nothing, and deletes, merges or rewrites them.
 - **`retcon`** undoes exactly what you name, and leaves every other change alone.
 - **`video-captions`** reads a video through its captions.
