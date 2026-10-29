@@ -22,6 +22,11 @@ A pull request body tells a reviewer what changed, the proof that it works, and 
 - Mutation: <the `sentinels` report line per file, and the answer to each survivor>
 - <a screenshot, when the change is visible>
 
+## Check these
+
+- <a question the build answered on its own: the answer taken, and its commit>
+- <a parked slice, and what it waits on>
+
 ## Risk
 
 - Undo: <a revert undoes it | what a revert can't undo>
@@ -31,5 +36,5 @@ Closes <ticket>
 ```
 
 - **The smallest picture.** Pick one: a `diff` of a call tree, file tree or state flow for a change to something that exists, a plain tree for something new, pseudocode for logic, or a Mermaid diagram for data passing between parts. Keep only the calls, files and states the reviewer needs.
-- **Leave out empty sections.** No approved examples, no Examples section.
+- **Leave out empty sections.** No approved examples, no Examples section. Check these comes from `do` and is gone by the time the pull request is ready.
 - **Settle the tickets and keep the body true** with the `loose-ends` skill, after every push.

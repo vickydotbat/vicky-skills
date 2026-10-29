@@ -18,6 +18,16 @@ A **build** turns approved examples green. The examples are the contract, the te
 7. **Review** with the `review` skill. Fix each finding, or record the ones you defer on a ticket. Done when every finding has an answer.
 8. **Make it so.** Finish the draft with the `make-it-so` skill. Done when it reports every required check green.
 
+## No stops from step 4 to step 8
+
+The user may be away once the seams are agreed, and a question or an open editor would stall the build until they return. From step 4 on, keep going and hold everything for the end:
+
+- **Drafts**: add each to the effort's `red-pen` draft file and write the draft text at its destination. Commit it there unless the repo's guide keeps unread text out of commits: then leave those hunks unstaged until `make-it-so`. Leave the draft file closed.
+- **Questions**: take the answer cheapest to undo, build on it, and add a line to a **Check these** list in the pull request body: the question, your answer, and the commit that holds it.
+- **A guess too costly to undo, or an approved example the build shows is wrong**: park that slice. Add it to Check these with what it waits on, and build the rest.
+
+`make-it-so` hands the drafts and the list to the user before the pull request goes ready. Done when step 8 starts with no question asked since step 3.
+
 ## The smallest complete change
 
 Lazy about the solution, never about the change: every caller, test, fixture and doc the change breaks is part of it.
@@ -44,7 +54,7 @@ Validation at a trust boundary, error handling that prevents data loss, security
 The frontier is every open, unblocked build ticket on the map.
 
 1. Create one **integration branch** for the map. Open its draft pull request after the first merge, closing every build ticket.
-2. Give each frontier ticket to its own implementer subagent, in its own worktree, on a branch from the integration branch. Each one runs steps 1 to 6 above, then brings the integration branch into its own before it reports.
+2. Give each frontier ticket to its own implementer subagent, in its own worktree, on a branch from the integration branch. Each one runs steps 1 to 6 above with no stops, reports its drafts and Check these lines, then brings the integration branch into its own before it reports.
 3. Merge each finished branch into the integration branch. When that opens new frontier tickets, start their subagents.
 4. Once every ticket is done, run step 7 on the integration branch and fix its findings in one more subagent.
 5. Remove every worktree the build made, then finish with `make-it-so`.
