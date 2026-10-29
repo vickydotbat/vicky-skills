@@ -9,6 +9,15 @@ An **example** is one behaviour of the system in the language of the problem: Gi
 
 ## A good example
 
+Three lines, one each, in the reader's words:
+
+```
+Given a creature charmed by another
+When its charmer hits it
+Then the charm ends
+```
+
+
 - Uses the domain's words. Class, method, hook, table and file names are design, and stay out.
 - Uses concrete values: a level, an item, a number.
 - Holds one behaviour. A second outcome is a second example.
@@ -21,8 +30,8 @@ An **example** is one behaviour of the system in the language of the problem: Gi
 2. **Draft** one example per behaviour, each with its source and its boundary partner. Done when every behaviour on the list has both.
 3. **Hand the drafts to the human.** Use the repo's `draft-review` skill where it has one. Otherwise write the drafts to one scratch file, open it with `$VISUAL` (or `$EDITOR`), wait for the editor to close, and read the file back. Done when you hold the human's text. Their wording wins, word for word.
 4. **Record** the approved examples on the ticket, under an `Examples` heading, exactly as the human left them. Done when the ticket shows that text once.
-5. **Make each example red.** Write one test per approved example, at the seam the repo's testing rules pick (the highest seam where they say nothing). Name the test after the example. Mark it `approved-spec` in the form the test framework offers: a category, tag or trait. Keep approved tests in files of their own. Run them. Done when every one fails because the behaviour is missing, not because the test is broken.
-6. **Build to green** with the `tdd` skill, or test-first by the repo's own rules where that skill is absent. Done when every approved test passes.
+5. **Make each example red.** Write one test per approved example, at the seam the repo's testing rules pick (the highest seam where they say nothing). Name the test after the example, and mark it `approved-spec` in the form the test framework offers: a category, tag or trait. Put approved tests in files of their own, named after the feature with the suffix `ApprovedExamples` (`CharmApprovedExamples.cs`, `charm_approved_examples.py`), so the hook, a code-owner rule and CI all find them by name. Run them. Done when every one fails because the behaviour is missing, not because the test is broken.
+6. **Hand over** to the `implement` skill, which builds until every approved test passes.
 
 ## Changing an approved example
 
