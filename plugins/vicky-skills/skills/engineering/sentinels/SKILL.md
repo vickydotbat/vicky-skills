@@ -31,7 +31,8 @@ A pass always ends in counts or in "unrun, because <the log line>". It never end
    journalctl -k --since "-15min" --no-pager | grep -E "Killed process|constraint="
    ```
    `exit=137`, `Failed with result 'oom-kill'` or `Killed process` means memory. A message from the tool means the tool. Name the cause only from a line you can quote.
-   - **Memory**: list what held it with `ps -eo rss,args --sort=-rss | head -20`. Kill leftover build servers (`dotnet build-server shutdown`), set one worker, and run again. Ask the user before raising the cap.
+   - **Killed for memory**: list what held it with `ps -eo rss,args --sort=-rss | head -20`. Kill leftover build servers (`dotnet build-server shutdown`), set one worker, and run again. Ask the user before raising the cap.
+   - **The tool's own "out of memory"**, with no kill: the tool's coverage data outgrew its heap. Run only the tests that cover the file (the tool's test filter). A narrower set can only add survivors, so check each survivor against the whole suite before you answer it.
    - **Timeout**: narrow the span, or mutate a smaller file first.
    - **The tool**: fix the cause its message names.
 
