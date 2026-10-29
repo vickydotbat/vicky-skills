@@ -1,35 +1,19 @@
-# Issue tracker: GitLab
+# Tickets: GitLab
 
-Issues and specs for this repo live as GitLab issues. Use the [`glab`](https://gitlab.com/gitlab-org/cli) CLI for all operations.
+Tickets are GitLab issues in this repo. Work them with [`glab`](https://gitlab.com/gitlab-org/cli), which reads the repo from `git remote -v`. GitLab calls comments notes and pull requests merge requests (`glab mr ...`).
 
-## Conventions
-
-- **Create an issue**: `glab issue create --title "..." --description "..."`. Use a heredoc for multi-line descriptions. Pass `--description -` to open an editor.
-- **Read an issue**: `glab issue view <number> --comments`. Use `-F json` for machine-readable output.
-- **List issues**: `glab issue list -F json` with appropriate `--label` filters.
-- **Comment on an issue**: `glab issue note <number> --message "..."`. GitLab calls comments "notes".
-- **Apply / remove labels**: `glab issue update <number> --label "..."` / `--unlabel "..."`. Multiple labels can be comma-separated or by repeating the flag.
-- **Close**: `glab issue close <number>`. `glab issue close` does not accept a closing comment, so post the explanation first with `glab issue note <number> --message "..."`, then close.
-- **Merge requests**: GitLab calls PRs "merge requests". Use `glab mr create`, `glab mr view`, `glab mr note`, etc., the same shape as `gh pr ...` with `mr` in place of `pr` and `note`/`--message` in place of `comment`/`--body`.
-
-Infer the repo from `git remote -v`; `glab` does this automatically when run inside a clone.
-
-
-## When a skill says "publish to the issue tracker"
-
-Create a GitLab issue.
-
-## When a skill says "fetch the relevant ticket"
-
-Run `glab issue view <number> --comments`.
+| Action | Command |
+| --- | --- |
+| Read, whole | `glab issue view <n> --comments` |
+| File | `glab issue create --title "<title>" --description "<body>"` |
+| Comment | `glab issue note <n> --message "<body>"` |
+| Label | `glab issue update <n> --label <label>` (`--unlabel` to drop) |
+| Close | post the reason as a note, then `glab issue close <n>` |
 
 ## Wayfinding operations
 
-Used by `/lay-course`. The **map** is a single issue with **child** issues as tickets.
-
-- **Map**: a single issue labelled `wayfinder:map`, holding the Destination / Constraints / Decisions body. `glab issue create --label wayfinder:map`. (On GitLab tiers with native epics, an epic may hold the map instead; a labelled issue works everywhere.)
-- **Child ticket**: an issue carrying `Part of #<map>` at the top of its description and labels `wayfinder:<type>` (`research`/`prototype`/`grilling`/`task`). Once claimed, the ticket is assigned to the driving dev.
-- **Blocking**: GitLab's **native blocking link**, the canonical, UI-visible representation. Add it with the `/blocked_by #<n>` quick action, posted as a note (`glab issue note <child> --message "/blocked_by #<blocker>"`). Native blocking links are a Premium/Ultimate feature; on the free tier (or where unavailable) fall back to a `Blocked by: #<n>, #<n>` line at the top of the description. A ticket is unblocked when every blocker is closed.
-- **Frontier query**: `glab issue list -F json` scoped to the map's children, drop any with an open blocker: a native `blocked_by` link to an open issue (`glab api projects/:id/issues/:iid/links`), or an open issue in the `Blocked by` line, or an assignee; first in map order wins.
-- **Claim**: `glab issue update <n> --assignee @me`, the session's first write.
-- **Resolve**: `glab issue note <n> --message "<answer>"`, then `glab issue close <n>`, then append a context pointer (gist + link) to the map's Decisions.
+- **Map**: an issue labelled `wayfinder:map`.
+- **Ticket**: an issue whose description starts with `Part of #<map>`, labelled `wayfinder:<kind>` for a decision ticket.
+- **Blocking**: a native blocking link, added with the note `/blocked_by #<blocker>`. Where the plan lacks blocking links, a `Blocked by: #<n>` line tops the description.
+- **Frontier**: the map's open children with no assignee and no open blocker (`glab api projects/:id/issues/:iid/links`).
+- **Claim**: `glab issue update <n> --assignee @me`, before any other write.
