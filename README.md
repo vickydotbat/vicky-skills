@@ -1,6 +1,6 @@
 # vicky-skills
 
-Claude Code skills for steering coding agents in any repository: star charts for planning, test-first builds, and reviews on three axes. They're built on ideas from [Matt Pocock's skills](https://github.com/mattpocock/skills), `ship-it`'s pictures come from Dex Horthy's [show-me](https://github.com/humanlayer/skills), `do`'s smallest-change rules from [ponytail](https://github.com/DietrichGebert/ponytail), and `spark-joy`'s deep modules from Matt's improve-codebase-architecture. The main addition is approved examples: you approve the examples a build must pass before the agent writes any code.
+Claude Code skills for steering coding agents in any repository: star charts for planning, test-first builds, and reviews on three axes. They're built on ideas from [Matt Pocock's skills](https://github.com/mattpocock/skills), `ship-it`'s pictures come from Dex Horthy's [show-me](https://github.com/humanlayer/skills), `do`'s smallest-change rules from [ponytail](https://github.com/DietrichGebert/ponytail), and `spark-joy`'s deep modules from Matt's improve-codebase-architecture. A star chart's black holes are the rabbit holes from Basecamp's [Shape Up](https://basecamp.com/shapeup). The main addition is approved examples: you approve the examples a build must pass before the agent writes any code.
 
 No skill here shares a name with one of Matt's, so both plugins load without clashing. They describe two different workflows, though, so use one at a time.
 
