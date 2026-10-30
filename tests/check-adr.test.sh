@@ -103,6 +103,10 @@ refuse "a backticked code name" "${what/physics raycasts/\`Physics.Raycast\`}
 $cat
 $when
 $why"
+printf '%s\n' "$what" "$cat" "$when" "$why" "## Context" "The rays are cached per emitter." "More text." > "$dir/r.md"
+out=$(bash "$script" "$dir/r.md")
+grep -q 'found: what category when why other(x3)' <<<"$out" || { echo "FAIL the report does not sum up the lines: $out"; fail=1; }
+grep -q 'cached per emitter' <<<"$out" && { echo "FAIL the report repeats the record's text"; fail=1; }
 bash "$script" "$dir/missing.md" >/dev/null && { echo "FAIL passed: a missing record"; fail=1; }
 bash "$script" >/dev/null 2>&1; [ $? -eq 2 ] || { echo "FAIL no usage error without a record"; fail=1; }
 [ $fail -eq 0 ] && echo "ok   check-adr passes what, category, when, why and Superseded in 55 words, and fails anything else"
