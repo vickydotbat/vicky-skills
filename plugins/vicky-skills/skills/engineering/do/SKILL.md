@@ -1,13 +1,13 @@
 ---
 name: do
-description: Build something test-first, from a sentence in chat, a ticket or a whole map. Approved examples go red first, tests follow at agreed seams, and mutation proves the tests catch bugs. Use when the user asks for a change, hands over a ticket, or hands over a map to build.
+description: Build something test-first, from a sentence in chat, a ticket or a whole star chart. Approved examples go red first, tests follow at agreed seams, and mutation proves the tests catch bugs. Use when the user asks for a change, hands over a ticket, or hands over a star chart to build.
 ---
 
 # Do
 
 > _Do, or do not. There is no try: red first, then green, then the mutants._
 
-A **build** turns approved examples green. The examples are the contract, the tests below them are the agent's own, and mutation proves those tests can fail. The user brings a request typed in chat, a build ticket, or a map whose build tickets are ready. A request too big for one session goes to `lay-course` instead.
+A **build** turns approved examples green. The examples are the contract, the tests below them are the agent's own, and mutation proves those tests can fail. The user brings a request typed in chat, a star, or a star chart whose stars are ready. A request too big for one session goes to `lay-course` instead, and a star with open blockers to `warp`.
 
 ## Build one change
 
@@ -51,11 +51,11 @@ Validation at a trust boundary, error handling that prevents data loss, security
 - Write one test, then its code. A batch of tests written up front tests imagined behaviour.
 - Refactor during review, never inside the red-to-green loop.
 
-## Build a whole map
+## Build a whole star chart
 
-The frontier is every open, unblocked build ticket on the map.
+The frontier is every open, unblocked star on the chart.
 
-1. Create one **integration branch** for the map. Open its draft pull request after the first merge, closing every build ticket.
+1. Create one **integration branch** for the chart. Open its draft pull request after the first merge, closing every star.
 2. Give each frontier ticket to its own implementer subagent, in its own worktree, on a branch from the integration branch. Each one runs steps 1 to 6 above with no stops, reports its drafts and Check these lines, then brings the integration branch into its own before it reports.
 3. Merge each finished branch into the integration branch. When that opens new frontier tickets, start their subagents.
 4. Once every ticket is done, run step 7 on the integration branch and fix its findings in one more subagent.
