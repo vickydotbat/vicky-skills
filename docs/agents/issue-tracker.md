@@ -36,3 +36,9 @@ A waiting ticket is assigned to the user and can't go on until the thing its `Wa
 - **List tickets waiting on you**: `grep -l '^status: waiting' "<vault>/vicky-skills/"*.md`.
 - **Park a ticket**: set `status: waiting` and add a `Waits on: <who or what>` line under the frontmatter.
 - **Claim a waiting ticket**: set `status: claimed`, before any other work.
+
+## Ticket drift
+
+Ticket drift: on
+
+Change `on` to `off` to stop the `ticket-drift` check in this repo.

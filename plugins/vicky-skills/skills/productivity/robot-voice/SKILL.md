@@ -37,7 +37,7 @@ An agent document is a program the model runs. Good ergonomics means the agent t
 - [ ] Where the output matters, a template shows its form.
 - [ ] Every step says what to do when it can't finish (stop and ask, file a ticket, say "unchecked").
 - [ ] A leading word is repeated, never re-explained.
-- [ ] No sentence states what the model does by default. Delete each one that fails the test of changing behaviour.
+- [ ] No sentence states what the model does by default. Delete each one that fails the test of changing behaviour. A line marked `<!-- kept` stays: `captains-log` saw it cause a high point.
 - [ ] Nothing restates what the environment already says: `package.json`, `--help`, the directory listing.
 
 ## Reference

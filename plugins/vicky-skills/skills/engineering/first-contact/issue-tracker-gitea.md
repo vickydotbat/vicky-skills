@@ -27,3 +27,9 @@ A waiting ticket is assigned to the user and can't go on until the thing its `Wa
 - **List tickets waiting on you**: `tea issues list --state open --assignee <you> --keyword "Waits on:" --fields index,title,body </dev/null`.
 - **Park a ticket**: `tea issues edit <n> --add-assignees <you> </dev/null`, then add a `Waits on: <who or what>` line to the body. Gitea has no not-started state: an open, assigned ticket with that line is waiting.
 - **Claim a waiting ticket**: delete its `Waits on:` line, before any other write.
+
+## Ticket drift
+
+Ticket drift: on
+
+Change `on` to `off` to stop the `ticket-drift` check in this repo.

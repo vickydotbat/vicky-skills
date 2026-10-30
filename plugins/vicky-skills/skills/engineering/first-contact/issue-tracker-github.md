@@ -29,3 +29,9 @@ A waiting ticket is assigned to the user and can't go on until the thing its `Wa
 - **List tickets waiting on you**: `gh issue list --assignee @me --state open --search '"Waits on:" in:body'`.
 - **Park a ticket**: `gh issue edit <n> --add-assignee @me`, then add a `Waits on: <who or what>` line to the body. GitHub has no not-started state: an open, assigned ticket with that line is waiting.
 - **Claim a waiting ticket**: delete its `Waits on:` line, before any other write.
+
+## Ticket drift
+
+Ticket drift: on
+
+Change `on` to `off` to stop the `ticket-drift` check in this repo.
