@@ -10,7 +10,9 @@ Usage: draw-chart.py <tickets.json> [--course KEY,KEY] [--png <chart.png>]
 
 `kind` is the starchart label's kind, or "star". `blocked_by` names the
 open blockers only, on this chart or another. `related` names tickets the
-chart doesn't own.
+chart doesn't own. A black hole from the chart's Black holes section is an
+object of its own, {"black_hole": "...", "threatens": ["KEY-1"]}, drawn
+beside the open tickets it threatens and left out when none is open.
 
 Prints the Mermaid. With --png, also renders it with mermaid-cli at the
 drawing's own width, since mmdc shrinks every chart to 800 pixels by default.
@@ -29,8 +31,9 @@ def label(text):
 
 
 def mermaid(tickets, course=()):
+    holes = [t for t in tickets if "black_hole" in t]
     # The drawing shows the course ahead: closed tickets are the log, kept in the tracker.
-    tickets = [t for t in tickets if t.get("open", True)]
+    tickets = [t for t in tickets if "black_hole" not in t and t.get("open", True)]
     keys = {t["key"] for t in tickets}
     node = {t["key"]: f"T{n}" for n, t in enumerate(tickets, 1)}
     lines = {t["key"]: f'{node[t["key"]]}["{t["key"]} {t.get("kind", "star").replace("-", " ")}: {label(t.get("title"))}"]'
@@ -61,7 +64,18 @@ def mermaid(tickets, course=()):
             out += [f"    {node[a]} ~~~ {node[b]}" for a, b in zip(column, column[1:])]
             out.append("  end")
     out += [f"  {edge}" for edge in edges]
+    # A black hole is no ticket: it is drawn only beside the open tickets it threatens.
+    drawn = []
+    for hole in holes:
+        near = [k for k in hole.get("threatens") or [] if k in keys]
+        if near:
+            name = f"H{len(drawn) + 1}"
+            drawn.append(name)
+            out.append(f'  {name}(("black hole: {label(hole["black_hole"])}"))')
+            out += [f"  {name} -. threatens .- {node[k]}" for k in near]
     out += ["  classDef frontier stroke-width:3px", "  classDef course fill:#fde68a"]
+    if drawn:
+        out += ["  classDef blackhole fill:#111827,color:#f9fafb", f"  class {','.join(drawn)} blackhole"]
     open_keys = {t["key"] for t in tickets if t.get("open", True)}
     blocking = open_keys | (set(node) - keys)
     ready = [t["key"] for t in tickets if t["key"] in open_keys and not t.get("assigned")
