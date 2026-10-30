@@ -50,3 +50,5 @@ jobs:
         run: tests/local-path-guard.test.sh
       - name: Push-behind guard
         run: tests/push-behind-guard.test.sh
+      - name: Gamma-shift hook
+        run: tests/gamma-shift.test.sh

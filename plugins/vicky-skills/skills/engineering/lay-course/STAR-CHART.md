@@ -19,6 +19,7 @@ The reference `lay-course` and `warp` both read: the words, the chart body, the 
 | **neutral zone** | Tickets closed because they're past the mission. |
 | **frontier** | The chart's open, unblocked, unassigned children. |
 | **course** | The chain of open blockers from the frontier to one target star, in the order they must close. A star on the frontier has an empty course. |
+| **orbit** | The tickets loosely linked to a chart or a ticket, which it touches but doesn't own and doesn't wait on: "in its orbit". The tracker holds them as related links. |
 
 ## Write for a tired reader
 
@@ -62,7 +63,7 @@ Title: `Star Chart: <the effort>`. Label: `starchart:chart`.
 - [<closed ticket title>](<link>): <why it is past the mission>
 ```
 
-A ticket the chart touches but doesn't own is a related link on the tracker, never a section.
+A ticket in the chart's orbit is a related link on the tracker, never a section.
 
 ## Tickets
 

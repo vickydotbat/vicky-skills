@@ -19,3 +19,11 @@ Tickets are Gitea issues in this repo. Work them with `tea`, which reads the rep
 - **Frontier**: the chart's open tickets with no assignee and no open blocker.
 - **Chart**: a Mermaid block under `## Chart`. Gitea draws it, unless the server swaps in its own Markdown renderer.
 - **Claim**: `tea issues edit <n> --add-assignees <you> </dev/null`, before any other write.
+
+## Waiting work
+
+A waiting ticket is assigned to the user and can't go on until the thing its `Waits on:` line names is done. `loose-ends` parks one, and `gamma-shift` works through them.
+
+- **List tickets waiting on you**: `tea issues list --state open --assignee <you> --keyword "Waits on:" --fields index,title,body </dev/null`.
+- **Park a ticket**: `tea issues edit <n> --add-assignees <you> </dev/null`, then add a `Waits on: <who or what>` line to the body. Gitea has no not-started state: an open, assigned ticket with that line is waiting.
+- **Claim a waiting ticket**: delete its `Waits on:` line, before any other write.

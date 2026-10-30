@@ -10,6 +10,7 @@
     "./skills/engineering/do",
     "./skills/engineering/examples",
     "./skills/engineering/first-contact",
+    "./skills/engineering/gamma-shift",
     "./skills/engineering/history-monks",
     "./skills/engineering/lay-course",
     "./skills/engineering/loose-ends",
@@ -85,6 +86,17 @@
       "title": "No push from behind main",
       "description": "Refuse a push from a branch that lacks the tip of origin's default branch.",
       "default": false
+    },
+    "gamma_shift": {
+      "type": "string",
+      "title": "Gamma shift at session start",
+      "description": "off does nothing. remind says how many tickets wait on you. engage builds every ticket whose wait is over, in the background, to a draft pull request.",
+      "options": [
+        "off",
+        "remind",
+        "engage"
+      ],
+      "default": "off"
     },
     "nwn_blender": {
       "type": "string",

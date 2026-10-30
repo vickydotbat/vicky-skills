@@ -24,6 +24,7 @@ No skill here shares a name with one of Matt's, so both plugins load without cla
 | **`robot-voice`** | When creating or editing a skill, agent file or prompt, or when an agent misreads one | Writes skills, agent files and prompts for maximum agentic ergonomics. |
 | **`plot-twist`** | When you say "actually" or "instead", or reverse an earlier decision | Carries a change of direction into every ticket, pull request and doc that still says the old thing. |
 | **`make-it-so`** | When you say "make it so" or "ship it", and when `do` ends | Finishes a draft pull request: current with main, a QA checklist where a command or one read decides each item, a true body, marked ready, then CI watched until it's green. |
+| **`gamma-shift`** | When you say "gamma shift" or ask what's waiting on you, or at session start when its setting asks | Works through the tickets waiting on you. Each one whose wait is over gets built to a draft pull request for you to read, the rest are listed with what they still wait on, and your open decisions come back as one round of questions. Its `gamma_shift` setting picks what happens at session start: `off`, `remind` for a one-line count, or `engage` for a run in the background. |
 | **`loose-ends`** | Before calling an effort done, after every push to an open pull request, and after a merge | Settles every ticket an effort touched and keeps the pull request body true. |
 | **`marie-kondo`** | When an effort lands, on a first visit to a repo, or when you ask for a cleanup | Deletes merged branches and worktrees and keeps what sparks joy. |
 | **`red-pen`** | When text needs your read before it is committed or published | Opens drafts in your editor and writes back what you leave. |
@@ -53,10 +54,11 @@ No skill here shares a name with one of Matt's, so both plugins load without cla
   - **`tea` stdin** (`guard_tea_stdin`) refuses a `tea` call without `</dev/null`, which can hang until it times out. It needs `gawk`.
   - **No local paths** (`guard_local_paths`) refuses a commit that adds a home folder, a Nix store path or your username. It reads the staged changes, and also the unstaged and untracked ones when the same command runs `git add` or `commit -a`. `local_path_exempt_repos` lists repositories it skips.
   - **No pushing behind main** (`guard_push_behind`) refuses a push from a branch that main has moved past.
+- **A session-start hook** runs `gamma-shift` when its `gamma_shift` setting is `remind` or `engage`, and stays quiet when it's `off`, the default.
 
 ## Install
 
-In a Claude Code session:
+The plugin needs Claude Code 2.1.271 or later. In a Claude Code session:
 
 ```
 /plugin marketplace add vickydotbat/vicky-skills

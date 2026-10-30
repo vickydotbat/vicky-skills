@@ -18,3 +18,11 @@ Tickets are GitLab issues in this repo. Work them with [`glab`](https://gitlab.c
 - **Frontier**: the chart's open children with no assignee and no open blocker (`glab api projects/:id/issues/:iid/links`).
 - **Chart**: a Mermaid block under `## Chart`. GitLab draws it.
 - **Claim**: `glab issue update <n> --assignee @me`, before any other write.
+
+## Waiting work
+
+A waiting ticket is assigned to the user and can't go on until the thing its `Waits on:` line names is done. `loose-ends` parks one, and `gamma-shift` works through them.
+
+- **List tickets waiting on you**: `glab issue list --assignee=@me --search "Waits on:" --in description`.
+- **Park a ticket**: `glab issue update <n> --assignee @me`, then add a `Waits on: <who or what>` line to the description. GitLab has no not-started state: an open, assigned ticket with that line is waiting.
+- **Claim a waiting ticket**: delete its `Waits on:` line, before any other write.
