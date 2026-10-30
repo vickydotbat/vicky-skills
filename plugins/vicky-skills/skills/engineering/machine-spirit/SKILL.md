@@ -17,7 +17,11 @@ Run them in order for every workflow change. Diagnosing a run starts at step 7.
 
 2. **Prefer declarative syntax.** Express job selection with `on.<event>.paths`, `if:`, `needs:` and `concurrency` before any shell. Write shell only for what the syntax cannot say. Then the data is a list with one item per line, the logic is a few lines, and one comment says why the declarative form fails. Done when every shell block in the diff has that reason.
 
-3. **Map what the diff runs.** In a repository the user owns, pull-request CI has the clean gate's shape: one gate that always starts, a draft gate, and a path map with a `map-check` ([CLEAN-GATE.md](CLEAN-GATE.md)). Build that shape, or audit existing CI against it. For the map, find the build inputs by tracing the build entry point and every script it calls, reading each for the files it opens. Test the map both ways against a table of sample paths: one under each input that must build, plus docs, media, Markdown and a new top-level folder. A path the map does not recognise runs everything, unless the repository's own guide says otherwise. Done when the table passes and the PR body says which jobs this pull request runs.
+3. **Map what the diff runs.** In a repository the user owns, pull-request CI has the clean gate's shape: one gate that always starts, a draft gate, and a path map with a `map-check` ([CLEAN-GATE.md](CLEAN-GATE.md)). Build that shape, or audit existing CI against it. For the map, find the build inputs by tracing the build entry point and every script it calls, reading each for the files it opens. Then, in this order:
+   a. List every file kind in the repository: each top-level folder and each extension. Give each kind its own arm that names the cheapest target able to check it. A docs or decision-record folder, a tooling script and a markdown file are kinds. A kind with no arm falls through to "unknown" and builds everything.
+   b. Put a sample-path table in the map's contract test: one path per arm, plus docs, media, Markdown, a new top-level folder and an unmapped path. Each row states the exact target set it selects, in both directions: what it runs and what it must not run. A docs-only row asserts the build targets are false.
+   c. Run the map on this pull request's own changed paths (`git diff --name-only <base> HEAD | <map script>`) and read the result. A change that adds or renames a file kind adds its arm and its table row in the same pull request.
+   Prose in a comment or a rule is not the map. Done when the table passes, the map run on the pull request's own paths selects only what the change can reach, and the PR body says which jobs this pull request runs.
 
 4. **Lint.** The workflow-lint hook runs actionlint, with shellcheck on every `run:` script, each time you write a workflow file with Edit or Write. It never sees a file written through Bash. For those, run `nix shell nixpkgs#actionlint nixpkgs#shellcheck --command actionlint <files>`, naming Gitea files explicitly. List self-hosted runner labels in the repository's `.github/actionlint.yaml`. Done when actionlint is clean.
 
@@ -43,7 +47,7 @@ Run them in order for every workflow change. Diagnosing a run starts at step 7.
 
 - A draft runs nothing past its first step ([CLEAN-GATE.md](CLEAN-GATE.md)).
 - A pull request's CI finishes in a few minutes and uses as little of the runner as the change needs. A timeout is a crash guard, never the bar.
-- A gate runs only what the change can reach. A path the gate does not recognise runs everything, loudly, so the map gets fixed.
+- A gate runs only what the change can reach. A docs-only or decision-record-only change runs the cheap checks and no build; a test row proves it. A path the gate does not recognise runs everything, loudly, so the map gets fixed.
 - A test proves one result in one place. Shared setup starts once per suite, and an expensive evaluation runs once and is shared.
 - Evidence about CI comes from the runner's own log. A local run shows which step is slow, never why the runner is.
 - Two gates on one runner slow each other, so the fix is often to stop one of them running.
