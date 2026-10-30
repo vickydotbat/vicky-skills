@@ -26,9 +26,10 @@ Every file stays free of local paths, hostnames and any project's infrastructure
 
 ## Add or change a hook
 
+- A rule a hook can decide is a hook, not an instruction. A skill line stays only for the judgement a script can't make, and names the hook that backs it.
 - Script in `plugins/vicky-skills/scripts/`, registered in `plugins/vicky-skills/hooks/hooks.json`.
 - An optional guard is off until the user turns it on: declare a `userConfig` option in `plugin.json` (default `false`) and have the script exit early unless `CLAUDE_PLUGIN_OPTION_<NAME>` is `true` or `1`.
-- Add `tests/<hook>.test.sh`, a CI step for it, and a README bullet under the hooks list.
+- Add `tests/<hook>.test.sh`, a CI step for it, and a README bullet under the hooks list. The test covers every decision the hook makes: each refusal or ask, each pass, the setting off, and a missing tool or bad input. Done when a mutation pass over the script (`sentinels`) leaves no survivor.
 
 ## Add a check a skill runs on the user's repo
 
