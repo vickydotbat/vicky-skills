@@ -5,7 +5,7 @@ Claude Code skills for steering coding agents in any repository: wayfinder maps 
 No skill here shares a name with one of Matt's, so both plugins load without clashing. They describe two different workflows, though, so use one at a time.
 
 - **`power-word-fix`**: type `/power-word-fix <what's broken>` and it sorts the problem, runs the skills that fit and ends on proof.
-- **`lay-course`** plans an effort too big for one session as a map of tickets. Build tickets are one goal, approved examples and pointers.
+- **`lay-course`** starts any effort, big or small. You pick a council or an interrogation to work out what you want, and it ends as a map of tickets, one build ticket, or a build right away. Every build's spec is its approved examples.
 - **`examples`** turns a ticket, rule or decision into Given / When / Then examples, opens them in your editor, and writes the ones you approve as failing tests.
 - **`do`** builds test-first from a request typed in chat, a ticket or a whole map: approved examples go red first, then tests at agreed seams, then mutation. Small work needs no map or ticket.
 - **`review`** reviews a branch on three axes at once: standards, spec and simplicity. Each axis is its own agent, and a diff under 40 lines gets one quick pass instead. They share one list of review principles: one point of entry, data read from its source, one copy of logic, and tests proved by mutation.
