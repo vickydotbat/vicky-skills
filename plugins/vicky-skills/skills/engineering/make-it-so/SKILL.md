@@ -22,7 +22,7 @@ A pull request opens early as a **draft**: a pull request that asks no one to re
    - **Stuck or never reports**: run `machine-spirit`.
 
    Stop after three red rounds, or when the cause sits outside the branch, and report what you found. Done when Q11 passes.
-7. **Report** in one or two lines: the pull request link, the run, its result, the checklist (`Q1-Q11 pass`, or each item that failed and why), and anything left for the user, such as the merge. Done when the reply holds all of it.
+7. **Report** in one or two lines: the pull request link, the run, its result, the checklist (`Q1-Q11 pass`, or each item that failed and why), and anything left for the user, such as the merge. Then run `cerebro` as a forecast. Done when the reply holds all of it.
 
 ## QA checklist
 

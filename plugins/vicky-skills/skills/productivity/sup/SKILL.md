@@ -23,3 +23,4 @@ A **catch-up** answers four questions for someone who just walked in. They read 
 
    Leave out an empty part. Done when the whole thing fits on one screen.
 3. **Add parked work.** When the user moved away from something unfinished, end with at most three lines: "Still want X?" Count only work they left, not work you found. Done when each parked item is asked once or dropped.
+4. **Look ahead.** Run `cerebro` as a forecast. Done when its proposals end the catch-up, or it found nothing to forecast.
