@@ -7,6 +7,7 @@ The baseline every review holds a diff to, in any repo. The repo's own standards
 A broken rule is a **hard** finding.
 
 - **One point of entry.** Every need two places share (a rule, a formula, a lookup, a guard, how a thing is shown) has one entry, and every caller goes through it. A second entry is a defect unless a one-line comment beside it says why one entry cannot serve both callers. Search for the code's form (the same expression, the same fields read), never only its name: a copy hides under any name. A second entry in a file the diff touches is merged in the same change.
+- **Deep modules.** A module hides more than its interface shows: a caller needs less to use it than the module needs to work. A new module passes the **deletion test**: deleting it would spread its complexity into its callers. A module that fails it (an interface nearly as big as its body, a layer that only passes calls through, a function pulled out for a test while the bug lives in its callers) is merged into its caller or the module it wraps.
 - **Data from its source.** A value with a home (a table, a config file, a schema, a constant the platform ships) is read from that home. A hand-typed copy in code, text or a test is a defect.
 - **One copy of logic.** Duplicated logic carries a written reason beside it, or it is merged.
 - **Smallest complete change.** An abstraction, option, parameter or layer needs a current caller. Deletion beats addition. The language's standard library and the repo's installed dependencies come before new code.

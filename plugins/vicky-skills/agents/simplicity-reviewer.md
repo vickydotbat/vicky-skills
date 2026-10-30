@@ -13,6 +13,7 @@ Read the repo's standards files first (`AGENTS.md` names them) and `${CLAUDE_PLU
 ## The hunt
 
 - `yagni:` an interface with one implementation, a setting nobody sets, a layer with one caller, a parameter every caller passes the same value for.
+- `shallow:` a module that fails the deletion test in `PRINCIPLES.md`. Name the module it merges into.
 - `delete:` dead code, an unreachable branch, a retry around an idempotent local call, a lock on data that never changes after startup, a fallback for a case that can't happen.
 - `stdlib:` hand-rolled code the language's standard library ships. Name the replacement.
 - `existing:` a helper, constant or pattern the repo or an installed dependency already has. Name where. Search for each literal and guard the diff adds before you call it new.

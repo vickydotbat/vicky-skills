@@ -36,10 +36,11 @@ Lazy about the solution, never about the change: every caller, test, fixture and
 
 1. **List the reach first**: callers, tests, fixtures, config, exports, and what a user loses if it goes wrong. That list is the scope, and anything outside it is a feature nobody asked for.
 2. **Take the first option that fully works**, in this order: not needed at all; a helper, pattern or service the repo already has; the language's standard library; an installed dependency; one line a reader gets at a glance; the least new code.
-3. **Add nothing for later**: no abstraction, option, wrapper or layer without a current caller. Keep the repo's structure and the platform's own types.
-4. **Fix a bug at its root**: find every caller of what you touch, then fix the shared code once.
-5. **Mark a known limit** with a one-line comment, `shortcut: <the limit>, <when to upgrade>`.
-6. **End the report** with what you skipped or didn't check, and any risk the user must know.
+3. **Deepen, don't spread**: put new behaviour inside the module that owns its concept, behind the interface it already has. A new module passes the deletion test in the review principles.
+4. **Add nothing for later**: no abstraction, option, wrapper or layer without a current caller. Keep the repo's structure and the platform's own types.
+5. **Fix a bug at its root**: find every caller of what you touch, then fix the shared code once.
+6. **Mark a known limit** with a one-line comment, `shortcut: <the limit>, <when to upgrade>`.
+7. **End the report** with what you skipped or didn't check, and any risk the user must know.
 
 Validation at a trust boundary, error handling that prevents data loss, security and accessibility are never cut.
 

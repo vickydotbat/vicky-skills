@@ -56,3 +56,5 @@ jobs:
         run: tests/gamma-shift.test.sh
       - name: Auto-tidy hook
         run: tests/auto-tidy.test.sh
+      - name: Spark-joy hook
+        run: tests/spark-joy.test.sh

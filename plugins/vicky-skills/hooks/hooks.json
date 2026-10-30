@@ -71,6 +71,11 @@
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/auto-tidy.sh\"",
             "timeout": 20
+          },
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/spark-joy.sh\"",
+            "timeout": 5
           }
         ]
       }
