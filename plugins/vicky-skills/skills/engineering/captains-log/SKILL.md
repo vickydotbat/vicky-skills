@@ -22,5 +22,5 @@ A **retro** improves the agent's environment, never the agent's excuses. It look
    - **Information**: something the agent needed and couldn't reach, such as a server log or read access to a service.
 
    Done when each place has a finding or a stated "nothing found".
-4. **Present them most severe first**, each with its fix and the file it goes in. Done when every finding names both.
+4. **Present them most severe first**, under the headline `📓 Captain's log, supplemental.`, each with its fix and the file it goes in. Done when every finding names both.
 5. **Hand the trends forwards.** Run `cerebro` as a forecast, with the follow-up trends from step 3. Done when its proposals end the reply, or it found nothing to forecast.

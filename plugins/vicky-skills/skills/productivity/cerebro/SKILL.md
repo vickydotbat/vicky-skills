@@ -23,7 +23,7 @@ It runs one of two ways:
 5. **Propose and stop.** After the answer or the report, give each gap one line, then your pick:
 
    ```markdown
-   **Cerebro**
+   🧠 **Cerebro**
    - C1: <the change> in `<file>`, because <the next ask it answers>.
    - C2: ...
    I'd take C1. Want it?

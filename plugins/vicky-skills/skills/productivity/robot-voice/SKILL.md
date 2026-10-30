@@ -55,6 +55,8 @@ A word the model already knows (_red_, _frontier_, _seam_, _tracer bullet_, _fog
 
 Every skill opens with an **epigraph**: one italic quote line under its title that bends a famous line from film, TV, games or books to state the skill's rule (`> _It's never lupus. It's whatever turns the loop red._`). The reference is the leading word, and the rule after it pins down what the reference means. Pick a line the model surely knows, whose shape matches the rule. A quote that states no rule is decoration: cut it.
 
+A skill whose report marks a key moment opens it with one **headline** carrying one emote: `🧠 Cerebro`, `🖖 Dropped out of warp at the star.` One per report, at its top, and never in a commit, pull request, ticket or code.
+
 ### Splitting
 
 Split a document when it sprawls past one screen of steps, when its branches share little, or when the steps after one tempt the agent to rush it. Steps hidden behind a hand-off or a subagent stay out of sight. An inline call keeps them in view.
