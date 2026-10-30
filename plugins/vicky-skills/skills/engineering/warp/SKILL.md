@@ -27,4 +27,6 @@ A warp is one effort: every star it builds goes on one branch and one pull reque
 5. **Build the target.** When its Examples aren't approved yet, run `examples` and stop once for the user's approval. Then run `do`, `review` and `make-it-so`. Done when the pull request's required checks are green.
 6. **Land.** When the target is on a chart, redraw it without the course. Run `loose-ends`. Done when every ticket the warp touched is settled.
 
+**Sit at the gate.** A gate is a step that waits on someone else: an approval, a merge, a review, a draft open in the user's editor. Ask for it once, then poll it once a minute, at most 60 times, and keep working on whatever doesn't wait on it. Never end the turn at a gate: a reply with no tool call ends the warp. After the 60th poll, report what the gate waits on and on whom.
+
 When the user stops the warp partway, leave each cleared ticket closed and the rest open, and post where it stopped as a comment on the target.
