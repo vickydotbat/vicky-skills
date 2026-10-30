@@ -9,7 +9,7 @@ description: Deepen one shallow module in a repo's busiest code and open a draft
 
 A **shallow module** fails the deletion test in [PRINCIPLES.md](../review/PRINCIPLES.md): its interface is nearly as big as its body, or it only passes calls through. A run folds one shallow module into its caller or the module it wraps, and changes no behaviour. The busiest code goes first, because that's where the next change lands.
 
-The hook's run comes from the plugin setting `${user_config.deepen_every_days}`. It runs this skill in one background subagent with `isolation: "worktree"`, so the user's first request is served alongside it.
+A spark-joy run is the repo's health check: `do` aims for code that never needs one, and this catches what slipped. The hook's run comes from the plugin setting `${user_config.deepen_every_days}`. With `gamma_shift` at `engage`, the run joins `gamma-shift`'s queue as its last build. Otherwise it runs alone in one background subagent with `isolation: "worktree"`, so the user's first request is served alongside it.
 
 ## Steps
 
