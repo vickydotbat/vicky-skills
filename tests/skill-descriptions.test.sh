@@ -13,7 +13,7 @@ for f in "$root"/*/*/SKILL.md; do
   name=$(basename "$(dirname "$f")")
   fm=$(awk '/^---$/{n++; next} n==1' "$f")
   if grep -q '^disable-model-invocation: true' <<<"$fm"; then
-    grep -E "^- \*\*\`$name\`\*\*.*\(typed only\)" "$readme" >/dev/null \
+    grep -E "^(- |\| )\*\*\`$name\`\*\*.*\(typed only\)" "$readme" >/dev/null \
       || { echo "FAIL $name is typed-only but the README does not mark it (typed only)"; fail=1; }
   else
     grep '^description:' <<<"$fm" | grep -Eq 'Use (only )?(when|whenever|before)' \

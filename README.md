@@ -6,9 +6,9 @@ No skill here shares a name with one of Matt's, so both plugins load without cla
 
 | Skill | What it does |
 | --- | --- |
-| **`first-contact`** | Typed only: `/first-contact` sets a repository up for these skills, once: where its tickets, glossary and decision records are. |
-| **`power-word-fix`** | Typed only: `/power-word-fix <what's broken>` sorts the problem, runs the skills that fit and ends on proof. |
-| **`lay-course`** | Typed only. the lazy way in when you don't know where a session leads. You pick a council or an interrogation to work out what you want. It files a star chart of tickets, or a single ticket (a star) when the work fits in a session, and then stops or warps to it. Every star's spec is its approved examples. |
+| **`first-contact`** | (typed only) `/first-contact` sets a repository up for these skills, once: where its tickets, glossary and decision records are. |
+| **`power-word-fix`** | (typed only) `/power-word-fix <what's broken>` sorts the problem, runs the skills that fit and ends on proof. |
+| **`lay-course`** | (typed only) The lazy way in when you don't know where a session leads. You pick a council or an interrogation to work out what you want. It files a star chart of tickets, or a single ticket (a star) when the work fits in a session, and then stops or warps to it. Every star's spec is its approved examples. |
 | **`warp`** | Gets one star done in a single run. It clears every open question blocking the star, stopping only for the ones you have to answer, then builds it through to green CI. |
 | **`examples`** | Turns a ticket, rule or decision into Given / When / Then examples, opens them in your editor, and writes the ones you approve as failing tests. |
 | **`do`** | Builds test-first from a request typed in chat, a ticket or a whole star chart: approved examples go red first, then tests at agreed seams, then mutation. Small work needs no chart or ticket. |
@@ -33,15 +33,15 @@ No skill here shares a name with one of Matt's, so both plugins load without cla
 | **`true-names`** | Sharpens a project's terms in its glossary and records decisions as you make them. |
 | **`away-team`** | Answers a question from primary sources in a background agent and posts the findings on the ticket the question belongs to. |
 | **`sup`** | Catches you up in one screen: done, changed, waiting on you, next. |
-| **`you-have-the-conn`** | Typed only: `/you-have-the-conn` writes a handoff so a fresh session can pick up where this one stopped. Every claim in it names the command that proved it. |
-| **`captains-log`** | Typed only: `/captains-log` runs a retrospective on a session and finds what would make the next one go better. |
+| **`you-have-the-conn`** | (typed only) `/you-have-the-conn` writes a handoff so a fresh session can pick up where this one stopped. Every claim in it names the command that proved it. |
+| **`captains-log`** | (typed only) `/captains-log` runs a retrospective on a session and finds what would make the next one go better. |
 | **`history-monks`** | Rebases a branch onto a main that moved: what landed owns the form, the branch keeps its behaviour, and the old patterns a merge hides get converted too. |
 | **`sentinels`** | Mutation-tests changed code with the repo's tool, a tool pulled down for the run, or by hand, and keeps a run alive under a memory cap. |
 | **`placebo`** | Lists the kinds of test that look like proof and catch nothing, and the agent checks every test it writes or reviews against them. Ask it for an audit and it deletes, merges or rewrites them across a suite. |
 | **`retcon`** | Undoes exactly what you name, and leaves every other change alone. |
 | **`video-captions`** | Reads a video through its captions. |
 | **`codex-image-gen`** | Makes or edits an image through the Codex CLI's image tool. |
-| **`is-this-a-meme`** | Typed only: `/is-this-a-meme <thing>` explains it, then lands it with a meme. The `dungeon-master` style memes on its own, and nothing else does. |
+| **`is-this-a-meme`** | (typed only) `/is-this-a-meme <thing>` explains it, then lands it with a meme. The `dungeon-master` style memes on its own, and nothing else does. |
 
 - **The `dungeon-master` output style**: relaxed, focused and exact. The answer first, the next action last, a register per topic, and memes when an idea needs to land. Pick it with `/output-style vicky-skills:dungeon-master`.
 - **A guard hook** asks you before an agent edits approved examples: a file named `...ApprovedExamples` or holding a test marked `approved-spec`. It needs `jq`.
