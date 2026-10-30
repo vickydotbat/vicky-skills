@@ -39,6 +39,8 @@ for dflt in main master; do
   expect 0 "$dflt: rebased passes" "$w" 'git push origin topic'
   gi "$seed" commit -q --allow-empty -m three
   gi "$seed" push -q origin "$dflt"
+  # The local copy of origin shows the branch behind, so only the failed fetch lets it through.
+  gi "$w" fetch -q origin
   gi "$w" remote set-url origin "$scratch/nowhere"
   expect 0 "$dflt: failed fetch lets it through" "$w" 'git push origin topic'
   gi "$w" remote set-url origin "$rem"
