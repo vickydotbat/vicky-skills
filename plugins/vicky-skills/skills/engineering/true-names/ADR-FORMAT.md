@@ -25,6 +25,6 @@ Because <the reason, as one sentence>.
   - **Process**: how the team works: reviews, releases, conventions.
   - **Other**: anything none of the above fits.
 
-A record changes only when the decision does, never to follow the code. A changed decision gets a new record, and the old one gains one last line, `Superseded by ADR-NNNN.`, with the rest left as it was.
+A record changes only when the decision does, never to follow the code. A changed decision gets a new record, and the old one gains one last line, `Superseded by ADR-NNNN.`, with the rest left as it was. A record in another repository is named with that repository first: `Superseded by sow-platform ADR-0064.`
 
 Check a record with `scripts/check-adr.sh <record>`. It fails on any other line, a category off the list, a backticked code name, or more than 55 words.

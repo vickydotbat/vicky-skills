@@ -2,7 +2,7 @@
 # Checks decision records against ADR-FORMAT.md: a "# ADR-NNNN: " title, a
 # "Category: <name>." line from the fixed list, a "Decided YYYY-MM-DD." line and
 # a "Because " line, once each and in that order, then an optional
-# "Superseded by ADR-NNNN." line. No other line, no backticks, and at most 55
+# "Superseded by [<repo> ]ADR-NNNN." line. No other line, no backticks, and at most 55
 # words. Prints one line per problem and exits 1 when any record fails.
 set -u
 [ $# -gt 0 ] || { echo "usage: check-adr.sh <record>..." >&2; exit 2; }
@@ -15,7 +15,7 @@ for f in "$@"; do
     -e "s/^Category: ($categories)\.\$/category/" \
     -e 's/^Decided [0-9]{4}-[0-9]{2}-[0-9]{2}\.$/when/' \
     -e 's/^Because .+/why/' \
-    -e 's/^Superseded by ADR-[0-9]{4}\.$/superseded/' \
+    -e 's/^Superseded by ([a-z0-9][a-z0-9-]* )?ADR-[0-9]{4}\.$/superseded/' \
     -e '/^(what|category|when|why|superseded)$/!s/.*/other/' \
     | uniq -c | awk '{ printf "%s%s ", $2, ($1 > 1 ? "(x" $1 ")" : "") }')
   case "$shape" in
