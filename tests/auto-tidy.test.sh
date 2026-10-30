@@ -5,8 +5,11 @@
 set -u
 hook="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/scripts/auto-tidy.sh"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
+# No global config, so the default branch is main everywhere and only the
+# hook's own --prune drops a deleted branch.
+export GIT_CONFIG_GLOBAL=/dev/null
 g() { git -c user.name=t -c user.email=t@example.invalid "$@"; }
-g init -q --bare "$dir/origin.git"
+g init -q --bare -b main "$dir/origin.git"
 g clone -q "$dir/origin.git" "$dir/repo" 2>/dev/null
 g -C "$dir/repo" commit -q --allow-empty -m base
 g -C "$dir/repo" push -q origin HEAD:main 2>/dev/null
@@ -16,8 +19,7 @@ for b in merged kept; do
 done
 g -C "$dir/repo" switch -q -c local-only
 fail=0
-# No global config, so only the hook's own --prune drops a deleted branch.
-run() { GIT_CONFIG_GLOBAL=/dev/null CLAUDE_PLUGIN_OPTION_AUTO_TIDY="$1" CLAUDE_PROJECT_DIR="$2" bash "$hook" </dev/null; }
+run() { CLAUDE_PLUGIN_OPTION_AUTO_TIDY="$1" CLAUDE_PROJECT_DIR="$2" bash "$hook" </dev/null; }
 silent() { out=$(run "$1" "$2"); [ -z "$out" ] || { echo "FAIL $3 printed: $out"; fail=1; }; }
 silent true "$dir/repo" "no upstream gone"
 g -C "$dir/origin.git" branch -q -D merged
