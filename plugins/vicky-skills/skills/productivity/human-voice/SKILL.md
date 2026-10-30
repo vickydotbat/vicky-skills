@@ -50,7 +50,7 @@ Use the reader's words, never code names. A second outcome is a second example.
 2. **Gather the substance**: names, numbers, commands, the actual reason. The
    record is the source: the ADR, the ticket thread, the commit, the code.
    Done when every claim in your notes is one you could source.
-3. **Draft** in the register's voice.
+3. **Draft** in the register's voice. Done when every fact in your notes is in the draft or cut on purpose.
 4. **Cut.** Walk the draft one sentence at a time against the four cut rules
    below. Done when every sentence adds a fact or an action no other sentence
    gives, and no sentence joins two independent facts.

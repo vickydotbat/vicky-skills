@@ -10,7 +10,7 @@ disable-model-invocation: true
 
 A **retro** improves the agent's environment, never the agent's excuses. Implementation has the most context pressure and review the least, so a rule belongs to review, and a rule a machine can check belongs to a machine.
 
-1. **Load `robot-voice`** for how agent-facing text is written.
+1. **Load `robot-voice`** for how agent-facing text is written. Done when it is loaded.
 2. **Read the session** the user names, from its logs on this machine. With none named, use this session. Done when you can list where it lost time and where it went wrong.
 3. **Find candidates** in these places, and read the repo's own check commands and CI first, so a check that exists but is unwired is the finding:
    - **Navigation**: the agent searched long for something a pointer in `AGENTS.md` or a doc would have named.
@@ -20,4 +20,6 @@ A **retro** improves the agent's environment, never the agent's excuses. Impleme
    - **Tools**: a costly call a cheaper one would have answered.
    - **Follow-ups**: a message where the user added to work the agent had just reported done ("also...", "btw...", "what about..."). Write the need behind it in one line, and name the skill or agent file that would have proposed it unasked. A need about the agent's own setup goes to `cerebro`.
    - **Information**: something the agent needed and couldn't reach, such as a server log or read access to a service.
-4. **Present them most severe first**, each with its fix and the file it goes in.
+
+   Done when each place has a finding or a stated "nothing found".
+4. **Present them most severe first**, each with its fix and the file it goes in. Done when every finding names both.

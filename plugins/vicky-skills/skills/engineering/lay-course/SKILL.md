@@ -32,10 +32,10 @@ The user brings a loose idea. When they bring the result of a council or an inte
 
 The user brings a star chart, and maybe a ticket. Resolve one anomaly per session. Away teams are the exception, and so is a council, which may settle several of the chart's tickets at once. When the user names a star to reach, run `warp` instead.
 
-1. **Load the chart body.** Read other tickets only when the work needs them.
-2. **Pick the ticket**: the user's, or the first on the frontier. Assign it to the user before any other work.
+1. **Load the chart body.** Read other tickets only when the work needs them. Done when you can state the mission.
+2. **Pick the ticket**: the user's, or the first on the frontier. Assign it to the user before any other work. Done when the tracker shows the assignment.
 3. **Resolve it** with the skills its kind names. For an anomaly, ask the method first (Start an effort, step 1). A council resolves every ticket its settled points answer. Done when the question has an answer the human gave or the evidence supports.
-4. **Record it.** Post the answer as a comment and close the ticket. Write a decision record when the answer will outlast the chart. Add its line under Decisions, with the method that answered it.
+4. **Record it.** Post the answer as a comment and close the ticket. Write a decision record when the answer will outlast the chart. Add its line under Decisions, with the method that answered it. Done when the ticket is closed and the chart holds its line.
 5. **Move the chart forward.** Turn a nebula that is now sharp into tickets. When a decision makes a star specifiable, file it and run `examples` for it. Close a ticket the answer puts past the mission, with its line under Neutral zone. Update or close any ticket the answer makes wrong. Redraw the chart. Done when every line of the chart body is true.
 
 Other sessions may work the same chart, so read the tracker again before each write.
