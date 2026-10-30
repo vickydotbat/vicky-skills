@@ -20,11 +20,12 @@
 #      No allowance covers this.
 #
 # The way past 1 and 2 is an allowance the user grants from their own terminal:
-# create the file ~/.claude/pr-guard-allow. The next refused command consumes it.
+# create the file pr-guard-allow in the Claude Code config folder
+# (CLAUDE_CONFIG_DIR, else ~/.claude). The next refused command consumes it.
 # An agent cannot mint one: a Bash command naming the file, and a Write or Edit
 # aimed at it, are refused. When the forge cannot list pull requests, the hook
 # refuses rather than read "could not check" as "none". Opened pull requests are
-# recorded per session in ~/.claude/pr-guard-sessions/.
+# recorded per session in pr-guard-sessions/ in the same folder.
 set -u
 
 case "${CLAUDE_PLUGIN_OPTION_GUARD_PR:-}" in true | 1) ;; *) exit 0 ;; esac
@@ -35,7 +36,8 @@ fi
 
 payload=$(cat)
 tool=$(jq -r '.tool_name // "Bash"' <<<"$payload")
-allow_file="$HOME/.claude/pr-guard-allow"
+config_dir=${CLAUDE_CONFIG_DIR:-$HOME/.claude}
+allow_file="$config_dir/pr-guard-allow"
 ignore_heads="${CLAUDE_PLUGIN_OPTION_GUARD_PR_IGNORE_HEADS:-}"
 
 refuse() {
@@ -45,7 +47,7 @@ refuse() {
   exit 2
 }
 
-allowance_hint="Each effort holds one open pull request, and a stack is opened only when the user asks for one in this conversation. Push to the open pull request instead. If the user asked for this one, ask them to run 'touch ~/.claude/pr-guard-allow' in their own terminal, then run the command again."
+allowance_hint="Each effort holds one open pull request, and a stack is opened only when the user asks for one in this conversation. Push to the open pull request instead. If the user asked for this one, ask them to run 'touch $allow_file' in their own terminal, then run the command again."
 
 case "$tool" in
   Write | Edit | MultiEdit | NotebookEdit)
@@ -154,7 +156,7 @@ my_open_pulls() {
   fi
 }
 
-# Ticket references (PLAT-372), upper-cased, one per line, sorted and unique.
+# Ticket references (ABC-12), upper-cased, one per line, sorted and unique.
 tickets_in() {
   grep -oiE '\b[a-z][a-z0-9]+-[0-9]+\b' <<<"$1" | tr '[:lower:]' '[:upper:]' | sort -u || true
 }
@@ -172,7 +174,7 @@ title_of() {
 # The pull requests this session opened, one "repo head" per line. The session
 # ID stands for the effort. Entries for merged or closed pull requests stay and
 # count for nothing, because only open pull requests are compared.
-sessions_dir="$HOME/.claude/pr-guard-sessions"
+sessions_dir="$config_dir/pr-guard-sessions"
 session_file=""
 [[ -n $session_id ]] && session_file="$sessions_dir/$session_id"
 

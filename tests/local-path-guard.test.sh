@@ -49,5 +49,10 @@ expect 2 "path in a file the same command adds" 'git add -A && git commit -m add
 expect 0 "nothing staged passes" 'git status && git commit -m "nothing staged"'
 CLAUDE_PLUGIN_OPTION_LOCAL_PATH_EXEMPT_REPOS="other/thing acme/widgets" \
   expect 0 "exempt repo passes" 'git add -A && git commit -m add'
+CLAUDE_PLUGIN_OPTION_LOCAL_PATH_EXEMPT_REPOS="acme/widg" \
+  expect 2 "part of a repo name exempts nothing" 'git add -A && git commit -m add'
 rm "$repo/fresh"
+printf 'bin\0/home/someone/x\n' >"$repo/blob"
+expect 0 "a binary untracked file is not scanned" 'git add -A && git commit -m add'
+rm "$repo/blob"
 exit $fail

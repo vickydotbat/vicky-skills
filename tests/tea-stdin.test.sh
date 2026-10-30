@@ -4,7 +4,7 @@ set -u
 hook="$(dirname "$0")/../plugins/vicky-skills/scripts/tea-stdin.sh"
 fail=0
 check() { # want command [option]
-  jq -n --arg c "$2" '{tool_input:{command:$c}}' | CLAUDE_PLUGIN_OPTION_TEA_STDIN="${3-true}" "$hook" >/dev/null 2>&1; got=$?
+  jq -n --arg c "$2" '{tool_input:{command:$c}}' | CLAUDE_PLUGIN_OPTION_GUARD_TEA_STDIN="${3-true}" "$hook" >/dev/null 2>&1; got=$?
   if [ "$got" = "$1" ]; then echo "ok   $2 -> $1"; else echo "FAIL $2: got $got, want $1"; fail=1; fi
 }
 refuse() { check 2 "$1"; }

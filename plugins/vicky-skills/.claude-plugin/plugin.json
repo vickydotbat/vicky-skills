@@ -61,7 +61,7 @@
       "description": "Refuse an issue or pull request view that leaves out its comments.",
       "default": false
     },
-    "tea_stdin": {
+    "guard_tea_stdin": {
       "type": "boolean",
       "title": "Close tea's stdin",
       "description": "Refuse a tea command that leaves stdin open, since tea blocks on it and a retry can post twice.",

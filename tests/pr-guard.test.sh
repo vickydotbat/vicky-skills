@@ -212,6 +212,12 @@ expect 2 hub 'gs branch create feat/two'
 expect 0 hub 'gh stack submit --auto'
 expect 2 hub 'gh stack submit --auto'
 
+# A moved config folder moves the allowance with it.
+mkdir -p "$scratch/config"
+touch "$scratch/config/pr-guard-allow"
+CLAUDE_CONFIG_DIR="$scratch/config" expect 0 feature 'gs stack submit'
+[[ ! -e $scratch/config/pr-guard-allow ]] || { echo "FAIL the moved allowance was not spent"; failed=1; }
+
 # A missing jq turns the guard off with one line on stderr.
 mkdir "$scratch/nojq"
 for t in cat grep git env bash; do ln -s "$(command -v "$t")" "$scratch/nojq/$t"; done
