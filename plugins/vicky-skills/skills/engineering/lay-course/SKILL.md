@@ -50,7 +50,7 @@ Blocking is the tracker's own relation. The **frontier** is the map's open, unbl
 
 A **decision ticket** asks one question and carries a `wayfinder:<kind>` label:
 
-- `grilling`: an interrogation of the human, and the default. Call the `interrogation` and `true-names` skills.
+- `grilling`: a session with the human, and the default. Call `council-of-elrond` when the question wants ideas argued, `interrogation` when it wants the human's answers pulled out, and `true-names` for either.
 - `research`: a fact a decision waits on. A subagent calls the `away-team` skill, and the findings land as a comment on this ticket.
 - `prototype`: a cheap, rough artifact (an outline, a stub, a sketch) for the human to react to.
 - `task`: work that has to happen before a decision can, such as getting access to a service.
@@ -102,11 +102,11 @@ The user brings a loose idea.
 
 ## Work the map
 
-The user brings a map, and maybe a ticket. Resolve one decision ticket per session; research tickets are the exception.
+The user brings a map, and maybe a ticket. Resolve one decision ticket per session; research tickets are the exception, and so is a council, which may settle several of the map's tickets at once.
 
 1. **Load the map body.** Read other tickets only when the work needs them.
 2. **Pick the ticket**: the user's, or the first on the frontier. Assign it to the user before any other work.
-3. **Resolve it** with the skills its kind names. Done when the question has an answer the human gave or the evidence supports.
+3. **Resolve it** with the skills its kind names. A council resolves every ticket its settled points answer. Done when the question has an answer the human gave or the evidence supports.
 4. **Record it.** Post the answer as a comment and close the ticket. Write a decision record when the answer will outlast the map. Add its line under Decisions.
 5. **Move the map forward.** Turn fog that is now sharp into tickets. When a decision makes a build specifiable, file the build ticket and run `examples` for it. Close a ticket the answer puts past the destination, with its line under Out of scope. Update or close any ticket the answer makes wrong. Done when every line of the map body is true.
 
