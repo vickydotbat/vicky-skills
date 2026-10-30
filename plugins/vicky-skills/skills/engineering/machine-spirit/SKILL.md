@@ -1,6 +1,6 @@
 ---
 name: machine-spirit
-description: Write, change or debug CI. Use when editing a workflow under .gitea/workflows or .github/workflows, a path filter, a runner or its limits, a CI cache, a release pipeline, or branch protection and required checks; and when a CI run is red, slow, stuck or never reports.
+description: Write, change or debug CI. Use before editing a workflow under .gitea/workflows or .github/workflows, a path filter, a runner or its limits, a CI cache, a release pipeline, or branch protection and required checks; and when a CI run is red, slow, stuck or never reports.
 ---
 
 # Machine spirit

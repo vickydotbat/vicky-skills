@@ -1,6 +1,6 @@
 ---
 name: loose-lips
-description: Check text that leaves the machine for an attack map — hosts, versions, secrets, account powers, sign-in internals, open gaps — and rewrite it by role. Use when about to make a commit, push, pull request, ticket, wiki page or public post, and when writing docs, workflow comments or config a stranger could read.
+description: Check text that leaves the machine for an attack map — hosts, versions, secrets, account powers, sign-in internals, open gaps — and rewrite it by role. Use before any commit, push, pull request, ticket, wiki page or public post, and when writing docs, workflow comments or config a stranger could read.
 ---
 
 # Loose lips
