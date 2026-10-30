@@ -26,11 +26,11 @@ The user brings a loose idea. When they bring the result of a council or an inte
    Done when the user has taken one or named another.
 5. **Create the chart** with Mission, Prime directive, Sensor log, Black holes and Nebulae filled in. Create the anomalies, away teams, probes, tasks and stars you can state now as its children. Wire blocking in a second pass, once every ticket has a key. Draw the chart. Done when the chart shows every child and every blocker.
 6. **Dispatch one `away-team` subagent per away team ticket.** Done when each one is running.
-7. **Engage or stop.** Ask: "Warp to <star> now, or stop here?" For a chart, propose the star the user's idea was about. On "warp", run `warp` on that star. Done when `warp` is running or the user has said stop.
+7. **Engage or stop.** Ask: "Warp through the chart now, or stop here?" For one star, ask "Warp to <star> now, or stop here?" On "warp", run `warp` on the chart or the star. Done when `warp` is running or the user has said stop.
 
 ## Work the chart
 
-The user brings a star chart, and maybe a ticket. Resolve one anomaly per session. Away teams are the exception, and so is a council, which may settle several of the chart's tickets at once. When the user names a star to reach, run `warp` instead.
+The user brings a star chart, and maybe a ticket. Resolve one anomaly per session. Away teams are the exception, and so is a council, which may settle several of the chart's tickets at once. When the user names a star to reach, or asks to clear the chart, run `warp` instead.
 
 1. **Load the chart body.** Read other tickets only when the work needs them. Done when you can state the mission.
 2. **Pick the ticket**: the user's, or the first on the frontier. Assign it to the user before any other work. Done when the tracker shows the assignment.
