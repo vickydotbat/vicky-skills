@@ -16,5 +16,6 @@ A **retro** improves the agent's environment, never the agent's excuses. Impleme
    - **Standards**: a judgement call review missed goes in `CODING_STANDARDS.md` or the review principles.
    - **Agent files**: an always-loaded line that belongs in a standard, a check or a skill, and lines that change nothing.
    - **Tools**: a costly call a cheaper one would have answered.
+   - **Follow-ups**: a message where the user added to work the agent had just reported done ("also...", "btw...", "what about..."). Write the need behind it in one line, and name the skill or agent file that would have proposed it unasked. A need about the agent's own setup goes to `cerebro`.
    - **Information**: something the agent needed and couldn't reach, such as a server log or read access to a service.
 4. **Present them most severe first**, each with its fix and the file it goes in.
