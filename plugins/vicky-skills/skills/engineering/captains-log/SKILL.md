@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 > _Captain's log, supplemental. The ship gets the fix, never the crew's excuses._
 
-A **retro** improves the agent's environment, never the agent's excuses. Implementation has the most context pressure and review the least, so a rule belongs to review, and a rule a machine can check belongs to a machine.
+A **retro** improves the agent's environment, never the agent's excuses. It looks backwards, and `cerebro` looks forwards from what it finds. Implementation has the most context pressure and review the least, so a rule belongs to review, and a rule a machine can check belongs to a machine.
 
 1. **Load `robot-voice`** for how agent-facing text is written. Done when it is loaded.
 2. **Read the session** the user names, from its logs on this machine. With none named, use this session. Done when you can list where it lost time and where it went wrong.
@@ -18,8 +18,9 @@ A **retro** improves the agent's environment, never the agent's excuses. Impleme
    - **Standards**: a judgement call review missed goes in `CODING_STANDARDS.md` or the review principles.
    - **Agent files**: an always-loaded line that belongs in a standard, a check or a skill, and lines that change nothing.
    - **Tools**: a costly call a cheaper one would have answered.
-   - **Follow-ups**: a message where the user added to work the agent had just reported done ("also...", "btw...", "what about..."). Write the need behind it in one line, and name the skill or agent file that would have proposed it unasked. A need about the agent's own setup goes to `cerebro`.
+   - **Follow-ups**: read them as `cerebro`'s [FOLLOW-UPS.md](../../productivity/cerebro/FOLLOW-UPS.md) says. For each need, name the skill or agent file that would have proposed it unasked.
    - **Information**: something the agent needed and couldn't reach, such as a server log or read access to a service.
 
    Done when each place has a finding or a stated "nothing found".
 4. **Present them most severe first**, each with its fix and the file it goes in. Done when every finding names both.
+5. **Hand the trends forwards.** Run `cerebro` as a forecast, with the follow-up trends from step 3. Done when its proposals end the reply, or it found nothing to forecast.
