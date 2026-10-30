@@ -8,7 +8,7 @@ No skill here shares a name with one of Matt's, so both plugins load without cla
 - **`lay-course`** plans an effort too big for one session as a map of tickets. Build tickets are one goal, approved examples and pointers.
 - **`examples`** turns a ticket, rule or decision into Given / When / Then examples, opens them in your editor, and writes the ones you approve as failing tests.
 - **`do`** builds test-first from a request typed in chat, a ticket or a whole map: approved examples go red first, then tests at agreed seams, then mutation. Small work needs no map or ticket.
-- **`review`** reviews a branch on three axes at once: standards, spec and simplicity. Each axis is its own agent, and they share one list of review principles: one point of entry, data read from its source, one copy of logic, and tests proved by mutation.
+- **`review`** reviews a branch on three axes at once: standards, spec and simplicity. Each axis is its own agent, and a diff under 40 lines gets one quick pass instead. They share one list of review principles: one point of entry, data read from its source, one copy of logic, and tests proved by mutation.
 - **`human-voice`** writes anything a person reads in plain language, from a ticket to a public article.
 - **`ui-design-101`** designs the actions in an interface for their hundredth use.
 - **`over-to-you`** hands the checks only a person can do to you, as a short checklist in your editor with room for notes.
