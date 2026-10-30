@@ -14,7 +14,7 @@ A pull request opens early as a **draft**: a pull request that asks no one to re
 1. **Finish the branch.** Commit everything. Run `git fetch origin`. When the branch is behind `main`, rebase it, with `history-monks` when what landed changes the form of what the branch touches. Run the checks the change reaches. Done when the tree is clean, the branch is current, and the checks pass.
 2. **Run the QA checklist**, Q1 to Q6, below. Fix each failure in place and run the item again. This is not a review: `review` already ran, so a design concern goes to the user as a question. Done when Q1 to Q6 each pass, or Q5 has its reason in the body.
 3. **Hand over what the build held.** When the effort has a draft file, open it with `red-pen` and commit what the user leaves. Then take the pull request's Check these list to the user, one line at a time. Fix each answer that differs from the guess, build each parked slice they unblock, and delete the list. Done when the draft file is gone and Check these is empty or holds only what waits on someone else.
-4. **Make it true.** Run `ship-it` for the body and `loose-ends` for the tickets, then Q7 to Q10. Done when Q7 to Q10 each pass.
+4. **Make it true.** Run `ship-it` for the body and `loose-ends` for the tickets, then Q7 to Q10. Fix each failure in place and run the item again. Done when Q7 to Q10 each pass.
 5. **Push once, then mark it ready.** Push a rebased branch with `git push --force-with-lease=<branch>:<old sha>`. Then mark it ready: `gh pr ready <n>` on GitHub, or on Gitea drop the `WIP:` prefix with `tea pr edit <n> -t "<title>" </dev/null`. Push first because a repo's bot may approve or merge the commit it sees when the pull request turns ready. When marking it ready starts no run (a Gitea workflow often ignores title edits), close and reopen the pull request. Done when the pull request shows as ready and its head is your last commit.
 6. **Babysit CI.** Watch the run for the pushed commit: `gh pr checks <n> --watch --required` on GitHub, or poll `tea actions runs list` and `tea actions runs view <id>` on Gitea every minute, at most 60 times. Then:
    - **Green**: done.
@@ -26,7 +26,7 @@ A pull request opens early as a **draft**: a pull request that asks no one to re
 
 ## QA checklist
 
-Each item passes or fails on a command's output or one read of named text. `<base>` is the pull request's base branch, after `git fetch origin`.
+Each item passes or fails on a command's output or one read of named text. `<base>` is the pull request's base branch, after `git fetch origin`. A failing item is fixed, never only reported. An item you can't fix, such as a change too big to split this turn or a ticket that waits on someone else, goes in the body with its reason, and the report names it.
 
 Measured by a command:
 
