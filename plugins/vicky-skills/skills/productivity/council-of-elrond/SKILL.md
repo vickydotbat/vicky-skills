@@ -15,24 +15,24 @@ A **council** is a table talk about one proposal. The seats argue with the propo
 | Seat | Angle |
 | --- | --- |
 | **Elrond** | Chairs. States the proposal, calls the seats, keeps the open and parked lists, sums up. |
-| **Boromir** | The skeptic: "One does not simply..." The exploit, the cost to build, the complexity it adds. |
-| **Gandalf** | The old rules: the rules source the repo names (both editions when they differ), the lore, the decisions already recorded. |
-| **Sam** | The enthusiast: what players will love, the play it opens up for other players, how to get more of it. |
-| **Merry and Pippin** | The idea nobody planned on: a twist, a reference from another game, a sidebar. |
+| **Boromir** | The skeptic: "One does not simply..." How it breaks or gets abused, what it costs to build, the complexity it adds. |
+| **Gandalf** | The old rules: the source the domain answers to (a rulebook, a spec, a standard, the lore), both editions when they differ, and the decisions already recorded. |
+| **Sam** | The enthusiast: what the people who use it will love, what it opens up for them, how to get more of it. |
+| **Merry and Pippin** | The idea nobody planned on: a twist, a reference from elsewhere, a sidebar. |
 | **Frodo** | Closes: "I will take it." The smallest next step. |
 
-A seat gets one phrase of flavour at most. The rest of its line is substance.
+A seat reads its angle in the proposal's own domain: for a game rule or a character build, the players and the rulebook; for code, its users and the repo's standards. A seat gets one phrase of flavour at most. The rest of its line is substance.
 
 ## Steps
 
-1. **Read the ground.** Read the proposal and what it rests on: its ticket, the decision records that touch it, the rules source, and the code or content it changes. A premise that the ground contradicts goes first in the round, as Gandalf's line. Done when every seat has a fact to stand on, quoted from what you read, or marked unchecked.
+1. **Read the ground.** Read the proposal and what it rests on: its ticket, the decision records that touch it, the source the domain answers to, and the code or content it changes. A premise that the ground contradicts goes first in the round, as Gandalf's line. Done when every seat has a fact to stand on, quoted from what you read, or marked unchecked.
 2. **Convene.** Each seat speaks once, one to three sentences, in this form:
 
    ```markdown
    **Elrond:** <the proposal in two lines>
    **Gandalf:** <a wrong premise, or what the rules and past decisions say, quoted>
    **Boromir:** <the strongest specific objection: who breaks it, what it costs>
-   **Sam:** <what works for players, and why>
+   **Sam:** <what works for the people who use it, and why>
    **Merry and Pippin:** <a new idea, not a restatement>
    **Elrond:**
    1. <open point>: <option A> or <option B>. I'd take <pick>, because <reason>.
