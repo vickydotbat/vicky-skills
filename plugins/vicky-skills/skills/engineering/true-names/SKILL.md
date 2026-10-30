@@ -7,7 +7,7 @@ description: Sharpen a project's domain language and record its decisions while 
 
 > _Speak its true name: one word, one meaning._
 
-The **glossary** holds the project's words, one meaning each. A **decision record** holds a choice and its reason. Both are written the moment something is settled, never batched. Reading the glossary for vocabulary is a habit every skill has; this skill is for changing it.
+The **glossary** holds the project's words, one meaning each. A **decision record** holds a choice and its reason. Both are written the moment something is settled, never batched.
 
 `docs/agents/domain.md` says where the glossary and decision records live. Without it, assume one `GLOSSARY.md` and one `docs/adr/` at the root, and create each only when it gets its first entry.
 
@@ -19,3 +19,5 @@ The **glossary** holds the project's words, one meaning each. A **decision recor
 - **Check the code.** When the user says how something works, read whether the code agrees, and raise any difference.
 - **Write the term** into the glossary as soon as it is settled, in the form of [GLOSSARY-FORMAT.md](GLOSSARY-FORMAT.md). The glossary holds words and meanings only.
 - **Record a decision** in the form of [ADR-FORMAT.md](ADR-FORMAT.md) when it is hard to reverse, would surprise a reader without context, and came from a real trade-off. When any of the three is missing, skip the record.
+
+Done when every settled term is in the glossary and every decision that meets all three tests has a record.

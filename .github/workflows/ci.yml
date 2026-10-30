@@ -22,3 +22,7 @@ jobs:
         run: tests/plugin-layout.test.sh
       - name: Approved-spec guard
         run: tests/approved-spec-guard.test.sh
+      - name: Skill steps
+        run: tests/skill-steps.test.sh
+      - name: Draw chart
+        run: tests/draw-chart.test.sh

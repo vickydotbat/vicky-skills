@@ -39,4 +39,4 @@ Closes <ticket>
 
 - **The smallest picture.** Pick one: a `diff` of a call tree, file tree or state flow for a change to something that exists, a plain tree for something new, pseudocode for logic, or a Mermaid diagram for data passing between parts. Keep only the calls, files and states the reviewer needs.
 - **Leave out empty sections.** No approved examples, no Examples section. Check these comes from `do` and is gone by the time the pull request is ready.
-- **Settle the tickets and keep the body true** with the `loose-ends` skill, after every push.
+- **Settle the tickets and keep the body true** with the `loose-ends` skill, after every push. Done when every sentence of the body is true of the final diff; a section you cannot fill from evidence says "unchecked".

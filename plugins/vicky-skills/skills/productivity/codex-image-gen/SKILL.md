@@ -17,9 +17,9 @@ liveness from Codex's own files before you wait, retry or report.
    Codex: generate one image with the built-in image tool, save it to an
    exact path relative to the working directory, write no other files, one
    render, no edits afterwards. Codex edits its own render when it dislikes
-   it, and the edit wrecks it.
+   it, and the edit wrecks it. Done when the file holds those instructions.
 2. Attach references with `-i <path>` from where they live. Never copy them
-   into the workspace.
+   into the workspace. Done when every reference is passed from its own location.
 3. Run it in the background, capped, with stdin from the prompt file:
 
    ```sh
@@ -29,7 +29,7 @@ liveness from Codex's own files before you wait, retry or report.
    ```
 
    Stdin must be the prompt file. A `codex exec` with an open stdin and no
-   prompt waits forever for input.
+   prompt waits forever for input. Done when the command is running and `exit=` is logged at the end; if it fails to start, report the error from `<scratch>/out`.
 
 ## Prove it is alive
 
@@ -55,9 +55,8 @@ an approval prompt or an error before you stop it.
   `~/.codex/generated_images/<session id>/`. Copy it from there.
 - `timeout` exit 124 with an image in `generated_images`: the render worked
   and the save step died. Copy it. Without an image, rerun once.
-- Never run two renders at once against one quota.
+- Run one render at a time against one quota.
 
 ## Done
 
-Open the saved PNG and look at it before you report it. Name the path and
-the defects you see.
+Open the saved PNG and look at it before you report it. Done when the report names the path and the defects you see, or says "none seen".

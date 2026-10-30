@@ -11,10 +11,11 @@ Tickets are Gitea issues in this repo. Work them with `tea`, which reads the rep
 | Close | comment the reason, then `tea issues close <n> </dev/null` |
 | Raw API | `tea api -X <method> repos/<owner>/<repo>/<path> -d '<json>' </dev/null` |
 
-## Wayfinding operations
+## Star chart operations
 
-- **Map**: an issue labelled `wayfinder:map`.
-- **Ticket**: an issue whose body starts with `Part of #<map>`, labelled `wayfinder:<kind>` for a decision ticket. Gitea has no sub-issues, so the map's body lists its tickets.
+- **Star chart**: an issue labelled `starchart:chart`.
+- **Ticket**: an issue whose body starts with `Part of #<chart>`, labelled `starchart:<kind>` unless it is a star. Gitea has no sub-issues, so the chart's body lists its tickets.
 - **Blocking**: Gitea's issue dependencies. Add one with `tea api -X POST repos/<owner>/<repo>/issues/<child>/dependencies -d '{"owner":"<owner>","repo":"<repo>","index":<blocker>}' </dev/null`. List a ticket's blockers with a GET on the same path.
-- **Frontier**: the map's open tickets with no assignee and no open blocker.
+- **Frontier**: the chart's open tickets with no assignee and no open blocker.
+- **Chart**: a Mermaid block under `## Chart`. Gitea draws it, unless the server swaps in its own Markdown renderer.
 - **Claim**: `tea issues edit <n> --add-assignees <you> </dev/null`, before any other write.

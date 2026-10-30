@@ -10,10 +10,11 @@ Tickets are GitLab issues in this repo. Work them with [`glab`](https://gitlab.c
 | Label | `glab issue update <n> --label <label>` (`--unlabel` to drop) |
 | Close | post the reason as a note, then `glab issue close <n>` |
 
-## Wayfinding operations
+## Star chart operations
 
-- **Map**: an issue labelled `wayfinder:map`.
-- **Ticket**: an issue whose description starts with `Part of #<map>`, labelled `wayfinder:<kind>` for a decision ticket.
+- **Star chart**: an issue labelled `starchart:chart`.
+- **Ticket**: an issue whose description starts with `Part of #<chart>`, labelled `starchart:<kind>` unless it is a star.
 - **Blocking**: a native blocking link, added with the note `/blocked_by #<blocker>`. Where the plan lacks blocking links, a `Blocked by: #<n>` line tops the description.
-- **Frontier**: the map's open children with no assignee and no open blocker (`glab api projects/:id/issues/:iid/links`).
+- **Frontier**: the chart's open children with no assignee and no open blocker (`glab api projects/:id/issues/:iid/links`).
+- **Chart**: a Mermaid block under `## Chart`. GitLab draws it.
 - **Claim**: `glab issue update <n> --assignee @me`, before any other write.
