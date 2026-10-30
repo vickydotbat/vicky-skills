@@ -1,6 +1,6 @@
 ---
 name: human-voice
-description: Writing that reads as a person wrote it, for every piece of human-facing prose — wiki articles, docs, READMEs, runbooks, dev journal posts, announcements, in-game text, PR and ticket bodies, commit messages, code comments, emails. Use when writing such prose, and when text "sounds like AI". Agent-facing text (CLAUDE.md, AGENTS.md, skills, prompts) is out of scope. A personal voice skill the writer keeps for themselves wins over this one.
+description: Prose a person will read — wiki articles, docs, READMEs, runbooks, dev journal posts, announcements, release notes, in-game text, PR and ticket bodies, comments, decision records, commit messages, code comments, emails. Use when writing or editing such prose, and when text "sounds like AI". It picks the register from the audience, showcase for public showcases and plain for the rest. Text only an agent reads (CLAUDE.md, AGENTS.md, skills, prompts, handoffs) is out of scope.
 ---
 
 # Human voice
@@ -17,18 +17,17 @@ their writing disagree, follow their writing.
 
 ## Registers
 
-The register decides how much explaining and how much personality the piece
-gets. Ask the user for one when the request does not make it plain, and offer
-these three as a start:
+The audience picks the register. It decides how much explaining and how much
+personality the piece gets.
 
-| Register | Voice |
-| --- | --- |
-| Clinical | The present state and what the reader does about it. Imperatives, "must" for a hard rule, no history, no asides, no jokes. Fits reference docs, runbooks, PR and ticket bodies, commit messages and code comments. |
-| Conversational | "We" for the team and "you" for the reader. The old way, the new way, then why, in plain words. At most one aside per piece, and none is the default. Fits player guides, FAQs and explainers. |
-| Eccentric | The writer's personality up front: "I", opinions, jokes, questions to the reader. Fits blog posts, dev journals and announcements. |
+| Audience | Register | Voice |
+| --- | --- | --- |
+| The public, in a showcase: dev journal, announcement, release notes, feature page, a README's pitch | Showcase | Eccentric, enthusiastic and conversational. "I" for the writer, "we" for the team, "you" for the reader. Opinions, jokes and questions to the reader. The premise and the why are the content. One pop-culture or tabletop reference per piece at most, and only where it maps exactly. |
+| Everyone else: reference docs, player guides, runbooks, PR and ticket bodies, commit messages, code comments, emails | Plain | The `dungeon-master` style's sentences. Lead with the state or the action, and end on what the reader does next. One idea per sentence, twenty words at most, active voice, simple tenses. Steps start with the verb, and "must" marks a hard rule. Paths, commands and identifiers stay exact. No history, no asides, no jokes. An explainer gives the old rule, the new one, then why. |
+| Whoever asked for a "lazy reply" or "lazy comment", and only then | Lazy | Chat typing: no capitals, and the full stop at a line's end often left off. Grammar, apostrophes and spelling stay correct, code names stay exact in backticks, and the content is as exact as Plain. |
 
-The user may name a register of their own. A document that declares its own
-voice keeps it.
+A register the user names wins over the table. A document that declares its
+own voice keeps it.
 
 ## Behaviour is three lines
 
@@ -44,9 +43,10 @@ Use the reader's words, never code names. A second outcome is a second example.
 
 ## Steps
 
-1. **Pick the register.** Ask the user for it, and for a piece of their own
-   writing in that register if they have one. Read that writing whole. Done
-   when you know the register and can say what their writing sounds like.
+1. **Pick the register** from the audience table. Ask the user only when the
+   audience is unclear. If the user or the repo has writing of theirs in that
+   register, read it whole. Done when you can name the register and the
+   audience row that picked it.
 2. **Gather the substance**: names, numbers, commands, the actual reason. The
    record is the source: the ADR, the ticket thread, the commit, the code.
    Done when every claim in your notes is one you could source.
@@ -98,8 +98,8 @@ Overexplaining fails that test, and it comes in five kinds:
 - examples after a rule that was already clear.
 
 Keep one reason when it motivates the reader's action, in its own short
-sentence: "Re-reviews cost time." In the conversational and eccentric
-registers the premise and the why are the content itself, so they stay.
+sentence: "Re-reviews cost time." In the showcase register the premise and
+the why are the content itself, so they stay.
 
 **A player page describes what the player sees.** Write the window, the
 button, the result, and what to expect when they act. The machinery behind it

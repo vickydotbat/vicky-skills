@@ -2,6 +2,7 @@ name: ci
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
   push:
     branches: [main]
 
@@ -17,6 +18,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      # A draft fails here and runs nothing else. Skipping would report as
+      # passed and let a draft merge.
+      - name: Refuse a draft
+        if: github.event.pull_request.draft
+        run: |
+          echo "draft: CI runs once the pull request is marked ready" >&2
+          exit 1
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Plugin layout
         run: tests/plugin-layout.test.sh
@@ -42,3 +50,5 @@ jobs:
         run: tests/local-path-guard.test.sh
       - name: Push-behind guard
         run: tests/push-behind-guard.test.sh
+      - name: Gamma-shift hook
+        run: tests/gamma-shift.test.sh

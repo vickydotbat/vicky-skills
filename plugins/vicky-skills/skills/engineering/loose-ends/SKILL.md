@@ -12,13 +12,14 @@ New developers pick work from the tracker and trust what a ticket says. So an ef
 ## Steps
 
 1. **List the touched tickets** from the branch name, `git log <base>..HEAD`, the pull request body, and any ticket the work proved wrong. Read the tracker again now: other sessions edit it too. Done when you have the list.
-2. **Give each ticket a verdict**, one of three:
+2. **Give each ticket a verdict**, one of four:
    - **Closes**: the diff does all of it. Add a `Closes <ticket>` line to the pull request body, one ticket per line.
-   - **Narrowed**: the diff does part of it. Rewrite the ticket's body to state only what remains.
+   - **Narrowed**: the diff does part of it. Rewrite the ticket's body with `human-voice` to state only what remains.
    - **Excluded**: nothing ships for it. Remove its reference from the pull request body and commits to come.
+   - **Waits**: the rest can't be done now, because it waits on the user's decision, another person, a deploy or release, or a repo out of reach. Park it as "Waiting work" in `docs/agents/issue-tracker.md` says: assign it to the user, move it to the not-started state where the tracker has one, and add a `Waits on: <who or what>` line to its body, naming a ticket, pull request, tag or person `gamma-shift` can check. Narrow the body first when part of it ships.
 
    A comment settles nothing. Done when every ticket on the list has a verdict in the tracker or the body.
-3. **Make the body true.** Read the pull request body against `git diff <base>...HEAD` sentence by sentence. Rewrite a superseded sentence in place, never under an "update" heading. Done when every sentence matches the diff.
+3. **Make the body true.** Read the pull request body against `git diff <base>...HEAD` sentence by sentence. Rewrite a superseded sentence in place with `human-voice`, never under an "update" heading. Done when every sentence matches the diff.
 4. **After the merge**, close by hand any ticket still open that the pull request named, with a comment naming the pull request. Done when the tracker shows each one closed.
 
 Repeat step 3 after every push.

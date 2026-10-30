@@ -5,7 +5,7 @@ Tickets are notes in the user's Obsidian vault, in `<vault>/<Project>/`, one not
 ```yaml
 ---
 kind: anomaly        # chart, anomaly, away-team, probe, task or star
-status: open         # open, claimed or done
+status: open         # open, claimed, waiting or done
 parent: "[[Star Chart: <effort>]]"
 blocked_by: ["[[<blocker note title>]]"]
 ---
@@ -28,3 +28,11 @@ blocked_by: ["[[<blocker note title>]]"]
 - **Frontier**: the chart's tickets with `status: open` and no blocker still open.
 - **Chart**: a Mermaid block under `## Chart` in the chart note. Obsidian draws it.
 - **Claim**: set `status: claimed` and save, before any other work.
+
+## Waiting work
+
+A waiting ticket is assigned to the user and can't go on until the thing its `Waits on:` line names is done. `loose-ends` parks one, and `gamma-shift` works through them.
+
+- **List tickets waiting on you**: `grep -l '^status: waiting' "<vault>/<Project>/"*.md`.
+- **Park a ticket**: set `status: waiting` and add a `Waits on: <who or what>` line under the frontmatter.
+- **Claim a waiting ticket**: set `status: claimed`, before any other work.
