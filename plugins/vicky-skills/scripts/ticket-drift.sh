@@ -4,7 +4,8 @@
 # the first session start in a repo after N days. The last check's time is
 # kept in the repo's git folder, so a clone starts its own count. A repo whose
 # docs/agents/issue-tracker.md has the line "Ticket drift: off" never gets
-# one. Off at 0, the default.
+# one. The stamp is written before the agent starts, so a session that ends
+# first skips the check until the next one is due. Off at 0, the default.
 set -u
 days="${CLAUDE_PLUGIN_OPTION_DRIFT_EVERY_DAYS:-0}"
 case "$days" in ''|*[!0-9]*) exit 0 ;; esac

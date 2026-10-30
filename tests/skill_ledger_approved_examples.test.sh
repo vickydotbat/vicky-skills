@@ -31,9 +31,12 @@ out=$(env -u CLAUDE_PLUGIN_OPTION_SKILL_LEDGER CLAUDE_PLUGIN_DATA="$data" bash "
 check "with the setting off, as it is by default, no ledger file exists" \
   '[ ! -e "$ledger" ] && [ -z "$out" ] && grep -A4 "\"skill_ledger\"" "$root/plugins/vicky-skills/.claude-plugin/plugin.json" | grep -q "\"default\": false"'
 
-run true "$started"
+# Network tools on PATH are shims that leave a mark when anything runs them.
+shims="$data/../shims-$$"; mkdir -p "$shims"; trap 'rm -rf "$data" "$shims"' EXIT
+for tool in curl wget nc ssh; do printf '#!/bin/sh\ntouch "%s/called"\n' "$shims" > "$shims/$tool"; chmod +x "$shims/$tool"; done
+PATH="$shims:$PATH" run true "$started"
 check "nothing is sent off the machine, and the ledger sits in the plugin's own data folder" \
-  '[ -s "$ledger" ] && ! grep -qE "curl|wget|\bnc\b|https?://" "$hook" && grep -q "CLAUDE_PLUGIN_DATA/skill-ledger.tsv" "$hook"'
+  '[ -s "$ledger" ] && [ ! -e "$shims/called" ] && [ "$(ls -A "$data")" = skill-ledger.tsv ]'
 
 bullet=$(grep -F '(`skill_ledger`' "$root/README.md")
 check "the README's skill ledger bullet says what one line records, where the file is, and how to delete it" \

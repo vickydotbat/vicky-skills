@@ -15,7 +15,7 @@ fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 run() { CLAUDE_PLUGIN_OPTION_DRIFT_EVERY_DAYS="$1" CLAUDE_PROJECT_DIR="$dir/repo" bash "$hook" </dev/null; }
 ago() { echo $(( $(date +%s) - $1 * day )) > "$stamp"; }
-compare=$(awk '/^4\. /{on=1} /^5\. /{on=0} on' "$agent")
+compare=$(awk '/^[0-9]+\. /{on = index($0, "**Compare the body") > 0} on' "$agent")
 
 ago 8; out=$(run 7)
 check "at drift_every_days 7, eight days after the last check, the agent runs the drift check in the background while it serves my first request" \
@@ -36,7 +36,8 @@ check "a ticket whose body and comments agree, and that no merged PR names, gets
   'grep -q "Done when each ticket has its drifts, or none" <<<"$compare" && grep -q "Comment on each drifted ticket" "$agent"'
 
 mkdir -p "$dir/repo/docs/agents"; printf 'Ticket drift: off\n' > "$dir/repo/docs/agents/issue-tracker.md"; rm -f "$stamp"; out=$(run 7)
-templates=$(grep -lx 'Ticket drift: on' "$root"/plugins/vicky-skills/skills/engineering/first-contact/issue-tracker-*.md | wc -l)
+tracker_templates=("$root"/plugins/vicky-skills/skills/engineering/first-contact/issue-tracker-*.md)
+templates=$(grep -lx 'Ticket drift: on' "${tracker_templates[@]}" | wc -l)
 check "in a repo whose docs/agents/issue-tracker.md says \"Ticket drift: off\", nothing runs when a check is due" \
-  '[ -z "$out" ] && [ ! -e "$stamp" ] && [ "$templates" = 6 ] && grep -q "Ticket drift: off" "$agent"'
+  '[ -z "$out" ] && [ ! -e "$stamp" ] && [ "$templates" = "${#tracker_templates[@]}" ] && grep -q "Ticket drift: off" "$agent"'
 exit $fail
