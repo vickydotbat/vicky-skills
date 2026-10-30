@@ -27,8 +27,10 @@ import webbrowser
 
 LIMIT = 64 * 1024
 STYLE = """body{font-family:sans-serif;margin:1.5rem}
-.chart{overflow-x:auto;margin-bottom:2rem}
-.chart svg{max-width:none!important;height:auto}
+.chart{margin-bottom:2rem}
+.chart svg{max-width:100%;height:auto;cursor:zoom-in}
+.chart.full{overflow-x:auto}
+.chart.full svg{max-width:none;cursor:zoom-out}
 table{border-collapse:collapse;margin-bottom:2rem}
 td,th{border:1px solid #ccc;padding:.3rem .6rem;text-align:left}
 fieldset{margin-bottom:1rem}
@@ -56,7 +58,7 @@ def page(spec):
     out = [f"<!doctype html><meta charset=utf-8><title>{e(spec['title'])}</title>",
            f"<style>{STYLE}</style><h1>{e(spec['title'])}</h1>", '<form method=post action="/answer">']
     for chart in spec.get("charts") or []:
-        out.append(f"<h2>{e(chart['name'])}</h2><div class=chart>{svg_of(chart)}</div>")
+        out.append(f"<h2>{e(chart['name'])}</h2><div class=chart onclick=\"this.classList.toggle('full')\">{svg_of(chart)}</div>")
     if spec.get("course"):
         out.append("<h2>Course</h2><table><tr><th>Keep</th><th>Ticket</th><th>Kind</th><th>Needs from you</th></tr>")
         for row in spec["course"]:
