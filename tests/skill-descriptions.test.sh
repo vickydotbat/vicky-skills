@@ -2,7 +2,7 @@
 # The agent picks a skill by its description, so every skill it can start names
 # its trigger with "Use when", "Use whenever" or "Use before". A skill only a
 # person starts (disable-model-invocation: true) is marked "(typed only)" in the
-# README, so a reader knows to type it.
+# README ("When you type it"), so a reader knows to type it.
 # Usage: skill-descriptions.test.sh [skills dir] [README]
 set -u
 here="$(dirname "$0")/.."
@@ -13,7 +13,7 @@ for f in "$root"/*/*/SKILL.md; do
   name=$(basename "$(dirname "$f")")
   fm=$(awk '/^---$/{n++; next} n==1' "$f")
   if grep -q '^disable-model-invocation: true' <<<"$fm"; then
-    grep -E "^(- |\| )\*\*\`$name\`\*\*.*\(typed only\)" "$readme" >/dev/null \
+    grep -E "^(- |\| )\*\*\`$name\`\*\*.*(\(typed only\)|When you type it)" "$readme" >/dev/null \
       || { echo "FAIL $name is typed-only but the README does not mark it (typed only)"; fail=1; }
   else
     grep '^description:' <<<"$fm" | grep -Eq 'Use (only )?(when|whenever|before)' \
