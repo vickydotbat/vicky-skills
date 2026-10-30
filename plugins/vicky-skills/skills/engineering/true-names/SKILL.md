@@ -18,6 +18,6 @@ The **glossary** holds the project's words, one meaning each. A **decision recor
 - **Test with a scenario.** Invent an edge case that forces the boundary between two concepts into the open, written as Given / When / Then.
 - **Check the code.** When the user says how something works, read whether the code agrees, and raise any difference.
 - **Write the term** into the glossary as soon as it is settled, in the form of [GLOSSARY-FORMAT.md](GLOSSARY-FORMAT.md). The glossary holds words and meanings only.
-- **Record a decision** in the form of [ADR-FORMAT.md](ADR-FORMAT.md) when it is hard to reverse, would surprise a reader without context, and came from a real trade-off. When any of the three is missing, skip the record. A record changes only when its decision does.
+- **Record a decision** when it is hard to reverse, would surprise a reader without context, and came from a real trade-off. When any of the three is missing, skip the record. Write it in the form the `ADR format:` line of `docs/agents/domain.md` names: [ADR-FORMAT.md](ADR-FORMAT.md) when the line says `true-names` or is missing, else the repo's own template. A record changes only when its decision does.
 
-Done when every settled term is in the glossary, every decision that meets all three tests has a record, and `scripts/check-adr.sh` beside this file passes on each record you wrote.
+Done when every settled term is in the glossary, every decision that meets all three tests has a record, and `scripts/check-adr.sh` beside this file passes on each record you wrote in the ADR-FORMAT.md form.
