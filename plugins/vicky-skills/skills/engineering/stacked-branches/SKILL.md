@@ -5,6 +5,8 @@ description: Build, submit, sync and merge a stack of dependent pull requests on
 
 # Stacked branches
 
+> _It's turtles all the way down: each branch stands on the one below, and the stack moves together._
+
 A guard hook that holds one pull request per effort refuses a stack submit, a
 new stacked branch and a second pull request. When one refuses a step, ask the
 user to allow that step their own way, then retry it once.

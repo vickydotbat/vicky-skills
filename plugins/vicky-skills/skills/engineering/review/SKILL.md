@@ -3,6 +3,8 @@ name: review
 description: "Review the changes since a fixed point (commit, branch, tag or merge-base) on three axes: Standards (the repo's rules and the house principles), Spec (the ticket, its approved examples and decisions) and Simplicity (what to delete). Runs the three reviewer agents in parallel, or one quick inline pass for a small diff, and reports them side by side. Use when the user wants to review a branch, a PR or work in progress, or asks to \"review since X\"."
 ---
 
+> _You shall not pass, until standards, spec and simplicity all agree._
+
 Three-axis review of the diff between `HEAD` and a fixed point:
 
 - **Standards**: does the code follow the repo's written rules and the house principles in [PRINCIPLES.md](PRINCIPLES.md)?

@@ -20,7 +20,7 @@ No skill here shares a name with one of Matt's, so both plugins load without cla
 - **`marie-kondo`** deletes merged branches and worktrees and keeps what sparks joy.
 - **`red-pen`** opens drafts in your editor and writes back what you leave.
 - **`cerebro`** reads why you asked a question about your agent setup, answers it, and proposes the matching changes to its skills and agent files before you have to ask for them.
-- **`council-of-elrond`** (typed only): `/council-of-elrond <proposal>` puts your idea in front of a table of designers. A skeptic, a dwarf with an axe, an elf who looks far ahead, a ranger who walks it through, a rules keeper, an enthusiast and two troublemakers with new ideas argue it with you, five at a time, whether it's a game rule, a character build or a piece of code. Each round ends on open points, each with a pick.
+- **`council-of-elrond`** (typed only): `/council-of-elrond <proposal>` puts your idea in front of a table of designers. A skeptic, a dwarf with an axe, an elf who looks far ahead, a ranger who walks it through, a rules keeper, an enthusiast and two troublemakers with new ideas argue it with you, five at a time, whether it's a game rule, a character build or a piece of code. Each round ends on open points, each with a pick, and the council ends by picking the road: a map, one ticket, or a build right now.
 - **`sup`** catches you up in one screen: done, changed, waiting on you, next.
 - **`history-monks`** rebases a branch onto a main that moved: what landed owns the form, the branch keeps its behaviour, and the old patterns a merge hides get converted too.
 - **`sentinels`** mutation-tests changed code with the repo's tool, a tool pulled down for the run, or by hand, and keeps a run alive under a memory cap.

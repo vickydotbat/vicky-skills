@@ -5,6 +5,8 @@ description: Write text an agent runs — a skill, an AGENTS.md or CLAUDE.md lin
 
 # Robot voice
 
+> _Resistance is futile. Every run takes the same path, and every step knows when it is done._
+
 An agent document is a program the model runs. Good ergonomics means the agent takes the **same path every run**, reaches the material **only when it needs it**, and knows **when each step is done**, for the fewest tokens of always-loaded text. Text a person reads uses `human-voice` instead.
 
 ## Steps
@@ -51,7 +53,7 @@ A skill an agent should reach on its own keeps its description and pays context 
 
 A word the model already knows (_red_, _frontier_, _seam_, _tracer bullet_, _fog of war_) anchors a whole behaviour in one token. Hunt for a passage that spells out an idea at length and collapse it into one such word. Coin a new word only when none fits, and define it once.
 
-A skill named after a reference may open with an **epigraph**: one italic quote line under its title, in the reference's voice, that states the skill's rule (`> _It's never lupus. It's whatever turns the loop red._`). A quote that states no rule is decoration: cut it. A plain-named skill gets none.
+Every skill opens with an **epigraph**: one italic quote line under its title that bends a famous line from film, TV, games or books to state the skill's rule (`> _It's never lupus. It's whatever turns the loop red._`). The reference is the leading word, and the rule after it pins down what the reference means. Pick a line the model surely knows, whose shape matches the rule. A quote that states no rule is decoration: cut it.
 
 ### Splitting
 

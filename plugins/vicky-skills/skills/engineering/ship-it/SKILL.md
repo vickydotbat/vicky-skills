@@ -5,6 +5,8 @@ description: "Write or update a pull request body. Use when opening a pull reque
 
 # Ship it
 
+> _Just the facts: every sentence of the body is true of the diff._
+
 A pull request body tells a reviewer what changed, the proof that it works, and what merging risks. Write it with the `human-voice` skill, in the clinical register, using the repo glossary's words.
 
 ```markdown
