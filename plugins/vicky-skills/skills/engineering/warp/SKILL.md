@@ -20,7 +20,7 @@ A warp is one effort: every star it builds goes on one branch and one pull reque
    - **Away team**: dispatch `away-team` without asking, and close the ticket once its findings are posted. Go on with tickets that don't wait on it.
    - **Probe**: make it and show it. The user's reaction is its answer.
    - **Task**: do it. A task that needs another person, an account or a deploy stops the warp: report what waits and on whom.
-   - **Anomaly**: stop for the user, with the findings it waited on. Ask "Council or interrogation?", run the one they pick, and record it as `lay-course`, "Work the chart", steps 4 and 5 say.
+   - **Anomaly**: stop for the user, with the findings it waited on. Ask "Council or interrogation?", run the one they pick, and record it as [lay-course](../lay-course/SKILL.md), "Work the chart", steps 4 and 5 say.
    - **Star**: build it as step 5 does, minus `make-it-so`, on the warp's branch.
 
    Done when every ticket on the course is closed.
