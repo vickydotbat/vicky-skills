@@ -15,7 +15,9 @@ for f in "$@"; do
     -e "s/^Category: ($categories)\.\$/category/" \
     -e 's/^Decided [0-9]{4}-[0-9]{2}-[0-9]{2}\.$/when/' \
     -e 's/^Because .+/why/' \
-    -e 's/^Superseded by ADR-[0-9]{4}\.$/superseded/' | tr '\n' ' ')
+    -e 's/^Superseded by ADR-[0-9]{4}\.$/superseded/' \
+    -e '/^(what|category|when|why|superseded)$/!s/.*/other/' \
+    | uniq -c | awk '{ printf "%s%s ", $2, ($1 > 1 ? "(x" $1 ")" : "") }')
   case "$shape" in
     "what category when why "|"what category when why superseded ") ;;
     *) echo "$f: needs what, category, when, why and nothing else; found: $shape"; fail=1 ;;
