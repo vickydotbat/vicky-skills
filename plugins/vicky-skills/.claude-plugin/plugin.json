@@ -17,6 +17,7 @@
     "./skills/engineering/make-it-so",
     "./skills/engineering/marie-kondo",
     "./skills/engineering/never-lupus",
+    "./skills/engineering/nwn-model-tooling",
     "./skills/engineering/placebo",
     "./skills/engineering/power-word-fix",
     "./skills/engineering/review",
@@ -84,6 +85,24 @@
       "title": "No push from behind main",
       "description": "Refuse a push from a branch that lacks the tip of origin's default branch.",
       "default": false
+    },
+    "nwn_blender": {
+      "type": "string",
+      "title": "Blender for NWN:EE models",
+      "description": "The command that starts a Blender with the Neverblender add-on, for nwn-model-tooling.",
+      "default": "blender"
+    },
+    "nwn2_blender": {
+      "type": "string",
+      "title": "Blender for NWN2 models",
+      "description": "The command that starts a Blender with the nwn2mdk add-on. Leave blank when NWN2 work is not set up.",
+      "default": ""
+    },
+    "nwn_refs": {
+      "type": "string",
+      "title": "Unpacked NWN:EE resources",
+      "description": "The folder that holds the stock game resources, unpacked one folder per BIF. Leave blank when there is none.",
+      "default": ""
     }
   }
 }

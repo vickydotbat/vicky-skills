@@ -39,6 +39,7 @@ No skill here shares a name with one of Matt's, so both plugins load without cla
 | **`sentinels`** | When `do`, `placebo` or a review asks for a mutation pass, or a mutation run dies | Mutation-tests changed code with the repo's tool, a tool pulled down for the run, or by hand, and keeps a run alive under a memory cap. |
 | **`placebo`** | Whenever a test is written or reviewed; the audit runs only when you ask for it | Lists the kinds of test that look like proof and catch nothing, and the agent checks every test it writes or reviews against them. Ask it for an audit and it deletes, merges or rewrites them across a suite. |
 | **`retcon`** | When you say "undo", "revert" or "put it back" | Undoes exactly what you name, and leaves every other change alone. |
+| **`nwn-model-tooling`** | When working on Neverwinter Nights models, HAK files or headless Blender scripts | Points to the Blender with Neverblender, `cleanmodels` and the neverwinter.nim tools, and how to call each. Its plugin settings name your Blender commands and the folder of unpacked stock resources. |
 | **`video-captions`** | When a task links a video or asks what one says | Reads a video through its captions. |
 | **`codex-image-gen`** | When a task says "use codex" for an image, or a `codex exec` call looks stuck | Makes or edits an image through the Codex CLI's image tool. |
 | **`is-this-a-meme`** | When you type it | `/is-this-a-meme <thing>` explains it, then lands it with a meme. The `dungeon-master` style memes on its own, and nothing else does. |
