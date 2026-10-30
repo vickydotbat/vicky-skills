@@ -40,6 +40,8 @@ jobs:
         run: tests/black_hole_drawing_approved_examples.test.sh
       - name: Tells lint
         run: tests/lint_tells_approved_examples.test.sh
+      - name: Answer page
+        run: tests/answer_page_approved_examples.test.sh
       - name: Check ADR
         run: tests/check-adr.test.sh
       - name: After-push hook

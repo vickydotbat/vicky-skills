@@ -127,3 +127,11 @@ Every chart shows how its tickets connect, drawn from the tracker, never by hand
 4. **Put it under `## Chart`.** When the tracker file says the tracker draws Mermaid, paste the printed block. When it says it can't, add `--png <scratch>/chart.png`, attach the image the way the tracker file says, and show it in the body the way it says. Done when the chart's page shows the drawing.
 
 The drawing shows the course ahead, so closed tickets stay out of it. It marks the frontier with a thick border and the course in yellow, and draws each black hole as a dark circle beside the open tickets it threatens. A ticket with no line to another stacks in a column of its kind.
+
+## Answer pages
+
+A warp's course, a council's open points and a probe's questions open as a page in the user's browser, so they answer without switching windows.
+
+1. **Write `<scratch>/page.json`**: a title, then any of `charts` (each a `name` and the `mermaid` that "Drawing the chart" printed), `course` (one row per ticket in order: `key`, `kind`, `title`, and `needs`, what it needs from the user or "nothing") and `questions` (each a `key`, the `ask`, its `options` and the index of your `pick`). Done when every chart, row and question is in the file.
+2. **Open it** with `python3 <this skill's folder>/scripts/answer-page.py <scratch>/page.json`, run in the background. It opens the browser, listens on this machine only, and prints the user's answers as JSON when they press Send or Engage. Tell the user the page is open, with the `🚪 Waiting on you:` line. Done when the script has printed the answers or exited without them.
+3. **Echo each answer in chat** before going on: the question's key, the option they took or "other", and their note. A trimmed course row is dropped from the course. When the script exits with "no answer within", ask the same questions in chat. Done when the chat holds every answer.
