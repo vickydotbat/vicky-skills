@@ -5,11 +5,11 @@ description: Warp to one star in a single run, whatever it takes. It clears ever
 
 # Warp
 
-> _Engage. Every anomaly on the course is cleared, and the run ends at the star with CI green._
+> _Engage, and never drop out of warp: every obstacle is cleared, gone around or waited out, and the run ends at the star with CI green._
 
 A **warp** reaches one target star in one run. It clears the star's **course**, which is the chain of open blockers from the frontier to the target, then builds the star. The words and ticket forms are in [STAR-CHART.md](../lay-course/STAR-CHART.md), and the tracker's commands in `docs/agents/issue-tracker.md`, "Star chart operations".
 
-A warp is one effort: every star it builds goes on one branch and one pull request. It stops for the user only at an anomaly that needs a council or an interrogation, and at the target's examples.
+A warp is one effort: every star it builds goes on one branch and one pull request. **A warp never drops out.** Apart from an anomaly and the target's examples, which wait for the user, every approval and refusal on the way is an **obstacle**, and "Punch through" below says what to do with each.
 
 ## Steps
 
@@ -19,7 +19,7 @@ A warp is one effort: every star it builds goes on one branch and one pull reque
 4. **Clear the course**, one ticket at a time and in order. Claim each one before any other write.
    - **Away team**: dispatch `away-team` without asking, and close the ticket once its findings are posted. Go on with tickets that don't wait on it.
    - **Probe**: make it and show it. The user's reaction is its answer.
-   - **Task**: do it. A task that needs another person, an account or a deploy stops the warp: report what waits and on whom.
+   - **Task**: do it. A task that needs another person, an account or a deploy is an obstacle.
    - **Anomaly**: stop for the user, with the findings it waited on. Ask "Council or interrogation?", run the one they pick, and record it as [lay-course](../lay-course/SKILL.md), "Work the chart", steps 4 and 5 say.
    - **Star**: build it as step 5 does, minus `make-it-so`, on the warp's branch.
 
@@ -27,6 +27,14 @@ A warp is one effort: every star it builds goes on one branch and one pull reque
 5. **Build the target.** When its Examples aren't approved yet, run `examples` and stop once for the user's approval. Then run `do`, `review` and `make-it-so`. Done when the pull request's required checks are green.
 6. **Land.** When the target is on a chart, redraw it without the course. Run `loose-ends`. Done when every ticket the warp touched is settled.
 
-**Sit at the gate.** A gate is a step that waits on someone else: an approval, a merge, a review, a draft open in the user's editor. Ask for it once, then poll it once a minute, at most 60 times, and keep working on whatever doesn't wait on it. Never end the turn at a gate, in a warp or in any other work: a reply with no tool call ends the run. After the 60th poll, report what the gate waits on and on whom.
+## Punch through
+
+An obstacle is anything on the course that waits on someone else, or refuses: an answer, an approval, a merge, a review, a draft in the user's editor, a hook or a permission that says no. Take the first that works:
+
+1. **Clear it with what you hold.** Use every authorization the user and the repo give you: a merge you may make, a bypass the user granted, a route the refusal itself names. Never work around what a refusal exists to stop.
+2. **Go around it.** Keep working on everything that doesn't wait on it: other tickets on the course, the next slice, the other repositories. When the next step builds on the blocked one, build on top of it as a stack with `stacked-branches`: a warp is the user's standing ask for one.
+3. **Sit at the gate**, only when nothing else is left and the gate should open soon. Ask for it once, then poll it once a minute, at most 60 times. Never end the turn at a gate, in a warp or in any other work: a reply with no tool call ends the run. After the 60th poll, report what the gate waits on and on whom.
+
+A brief for an agent working a public repository holds it to `loose-lips`' attack-map test, never to a ban on every name: repository names, ticket keys and decision record numbers are navigation.
 
 When the user stops the warp partway, leave each cleared ticket closed and the rest open, and post where it stopped as a comment on the target.
