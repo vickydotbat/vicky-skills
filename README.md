@@ -43,6 +43,12 @@ No skill here shares a name with one of Matt's, so both plugins load without cla
 - **The `dungeon-master` output style**: relaxed, focused and exact. The answer first, the next action last, a register per topic, and memes when an idea needs to land. Pick it with `/output-style vicky-skills:dungeon-master`.
 - **A guard hook** asks you before an agent edits approved examples: a file named `...ApprovedExamples` or holding a test marked `approved-spec`. It needs `jq`.
 - **An after-push hook** reminds the agent, after a `git push`, to reread the pull request body and settle its work items. It only adds a note and never blocks. It needs `jq`.
+- **Optional guard hooks**, each off until you turn it on under `/plugin`. They need `jq`.
+  - **One pull request per effort** (`guard_pr`) refuses a session's second open pull request, unless it names a ticket filed before the session began. It also refuses stacks you didn't ask for and AI credit in pull request text. `guard_pr_ignore_heads` lists branch prefixes it skips.
+  - **Whole threads** (`guard_issue_threads`) refuses a read of an issue or pull request that leaves out its comments.
+  - **`tea` stdin** (`tea_stdin`) refuses a `tea` call without `</dev/null`, which can hang until it times out. It needs `gawk`.
+  - **No local paths** (`guard_local_paths`) refuses a commit whose staged diff has a home folder, a Nix store path or your username in it. `local_path_exempt_repos` lists repositories it skips.
+  - **No pushing behind main** (`guard_push_behind`) refuses a push from a branch that main has moved past.
 
 ## Install
 

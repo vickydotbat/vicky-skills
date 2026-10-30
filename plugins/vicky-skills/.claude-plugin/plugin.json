@@ -41,5 +41,49 @@
     "./skills/productivity/sup",
     "./skills/productivity/video-captions",
     "./skills/productivity/you-have-the-conn"
-  ]
+  ],
+  "userConfig": {
+    "guard_pr": {
+      "type": "boolean",
+      "title": "One open pull request per effort",
+      "description": "Refuse a second pull request from one session, a stack nobody asked for, and AI credit in pull request text. A ticket filed before the session started counts as a separate effort.",
+      "default": false
+    },
+    "guard_pr_ignore_heads": {
+      "type": "string",
+      "title": "Branches the pull request guard ignores",
+      "description": "Space-separated branch prefixes whose pull requests never count, such as bot branches.",
+      "default": ""
+    },
+    "guard_issue_threads": {
+      "type": "boolean",
+      "title": "Read whole threads",
+      "description": "Refuse an issue or pull request view that leaves out its comments.",
+      "default": false
+    },
+    "tea_stdin": {
+      "type": "boolean",
+      "title": "Close tea's stdin",
+      "description": "Refuse a tea command that leaves stdin open, since tea blocks on it and a retry can post twice.",
+      "default": false
+    },
+    "guard_local_paths": {
+      "type": "boolean",
+      "title": "No local paths in commits",
+      "description": "Refuse a commit that adds your home folder, username or another machine-specific path.",
+      "default": false
+    },
+    "local_path_exempt_repos": {
+      "type": "string",
+      "title": "Repos allowed to hold local paths",
+      "description": "Space-separated owner/repo names the local-path guard skips, such as a dotfiles repo.",
+      "default": ""
+    },
+    "guard_push_behind": {
+      "type": "boolean",
+      "title": "No push from behind main",
+      "description": "Refuse a push from a branch that lacks the tip of origin's default branch.",
+      "default": false
+    }
+  }
 }
