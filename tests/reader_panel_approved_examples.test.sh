@@ -7,7 +7,7 @@ root="$(dirname "$0")/.."
 voice="$root/plugins/vicky-skills/skills/productivity/human-voice/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
-panel=$(awk '/^[0-9]+\. /{on = index($0, "**Seat a reader panel") > 0} on' "$voice")
+panel=$(awk '/^7\. \*\*Seat a reader panel/{on=1} /^8\. /{on=0} on' "$voice")
 setting=$(python3 -c 'import json,sys; print(json.dumps(json.load(open(sys.argv[1]))["userConfig"]["reader_panel"]))' "$root/plugins/vicky-skills/.claude-plugin/plugin.json")
 
 check "a 600-word runbook meets a panel from its audience, with a seat that dry-runs the steps, and each seat lists the questions it's left with" \
