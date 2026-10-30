@@ -1,6 +1,6 @@
 ---
 name: human-voice
-description: Writing that reads as a person wrote it, for every piece of human-facing prose — wiki articles, docs, READMEs, runbooks, dev journal posts, announcements, in-game text, PR and ticket bodies, commit messages, code comments, emails. Also when text "sounds like AI". Agent-facing text (CLAUDE.md, AGENTS.md, skills, prompts) is out of scope. A personal voice skill the writer keeps for themselves wins over this one.
+description: Writing that reads as a person wrote it, for every piece of human-facing prose — wiki articles, docs, READMEs, runbooks, dev journal posts, announcements, in-game text, PR and ticket bodies, commit messages, code comments, emails. Use when writing such prose, and when text "sounds like AI". Agent-facing text (CLAUDE.md, AGENTS.md, skills, prompts) is out of scope. A personal voice skill the writer keeps for themselves wins over this one.
 ---
 
 # Human voice
