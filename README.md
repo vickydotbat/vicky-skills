@@ -21,7 +21,7 @@ No skill here shares a name with one of Matt's, so both plugins load without cla
 - **`loose-lips`** checks anything leaving the machine for an attack map and rewrites it by role.
 - **`robot-voice`** writes skills, agent files and prompts for maximum agentic ergonomics.
 - **`plot-twist`** carries a change of direction into every ticket, pull request and doc that still says the old thing.
-- **`make-it-so`** finishes a draft pull request: current with main, one light QA pass, a true body, marked ready, then CI watched until it's green.
+- **`make-it-so`** finishes a draft pull request: current with main, a QA checklist where a command or one read decides each item, a true body, marked ready, then CI watched until it's green.
 - **`loose-ends`** settles every ticket an effort touched and keeps the pull request body true.
 - **`marie-kondo`** deletes merged branches and worktrees and keeps what sparks joy.
 - **`red-pen`** opens drafts in your editor and writes back what you leave.
@@ -43,6 +43,12 @@ No skill here shares a name with one of Matt's, so both plugins load without cla
 - **The `dungeon-master` output style**: relaxed, focused and exact. The answer first, the next action last, a register per topic, and memes when an idea needs to land. Pick it with `/output-style vicky-skills:dungeon-master`.
 - **A guard hook** asks you before an agent edits approved examples: a file named `...ApprovedExamples` or holding a test marked `approved-spec`. It needs `jq`.
 - **An after-push hook** reminds the agent, after a `git push`, to reread the pull request body and settle its work items. It only adds a note and never blocks. It needs `jq`.
+- **Optional guard hooks**, each off until you turn it on under `/plugin`. They need `jq`, and every guard but the two thread and `tea` checks needs `git`.
+  - **One pull request per effort** (`guard_pr`) refuses a session's second open pull request, unless it names a ticket filed before the session began. That exception reads ticket dates from a `plane` command, the repo's `bin/plane` or one on your `PATH`, and without one a second pull request is always refused. It also refuses stacks you didn't ask for and AI credit in pull request text. `guard_pr_ignore_heads` lists branch prefixes it skips. To let one refused command through, create the file `pr-guard-allow` in your Claude Code config folder from your own terminal. The command spends it.
+  - **Whole threads** (`guard_issue_threads`) refuses a read of an issue or pull request that leaves out its comments.
+  - **`tea` stdin** (`guard_tea_stdin`) refuses a `tea` call without `</dev/null`, which can hang until it times out. It needs `gawk`.
+  - **No local paths** (`guard_local_paths`) refuses a commit that adds a home folder, a Nix store path or your username. It reads the staged changes, and also the unstaged and untracked ones when the same command runs `git add` or `commit -a`. `local_path_exempt_repos` lists repositories it skips.
+  - **No pushing behind main** (`guard_push_behind`) refuses a push from a branch that main has moved past.
 
 ## Install
 

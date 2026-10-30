@@ -32,3 +32,13 @@ jobs:
         run: tests/skill-links.test.sh
       - name: Skill descriptions
         run: tests/skill-descriptions.test.sh
+      - name: PR guard
+        run: tests/pr-guard.test.sh
+      - name: Issue guard
+        run: tests/issue-guard.test.sh
+      - name: Tea stdin guard
+        run: tests/tea-stdin.test.sh
+      - name: Local-path guard
+        run: tests/local-path-guard.test.sh
+      - name: Push-behind guard
+        run: tests/push-behind-guard.test.sh
