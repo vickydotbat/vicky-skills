@@ -1,6 +1,6 @@
 ---
 name: examples
-description: Turn a request, ticket, rule or decision into Given / When / Then examples the human approves, then into red tests named after them. Use before a ticket is built, when a decision becomes a build, when acceptance criteria are prose, or when an approved example must change.
+description: Turn a request, ticket, rule or decision into Given / When / Then examples the human approves, then into red tests named after them. Use when a ticket is about to be built, a decision becomes a build, acceptance criteria are prose, or an approved example must change.
 ---
 
 # Examples

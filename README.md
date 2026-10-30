@@ -5,7 +5,7 @@ Claude Code skills for steering coding agents in any repository: star charts for
 No skill here shares a name with one of Matt's, so both plugins load without clashing. They describe two different workflows, though, so use one at a time.
 
 - **`first-contact`** (typed only): `/first-contact` sets a repository up for these skills, once: where its tickets, glossary and decision records are.
-- **`power-word-fix`**: type `/power-word-fix <what's broken>` and it sorts the problem, runs the skills that fit and ends on proof.
+- **`power-word-fix`** (typed only): `/power-word-fix <what's broken>` sorts the problem, runs the skills that fit and ends on proof.
 - **`lay-course`** (typed only) is the lazy way in when you don't know where a session leads. You pick a council or an interrogation to work out what you want. It files a star chart of tickets, or a single ticket (a star) when the work fits in a session, and then stops or warps to it. Every star's spec is its approved examples.
 - **`warp`** gets one star done in a single run. It clears every open question blocking the star, stopping only for the ones you have to answer, then builds it through to green CI.
 - **`examples`** turns a ticket, rule or decision into Given / When / Then examples, opens them in your editor, and writes the ones you approve as failing tests.
@@ -42,6 +42,7 @@ No skill here shares a name with one of Matt's, so both plugins load without cla
 - **`is-this-a-meme`** (typed only): `/is-this-a-meme <thing>` explains it, then lands it with a meme. The `dungeon-master` style memes on its own, and nothing else does.
 - **The `dungeon-master` output style**: relaxed, focused and exact. The answer first, the next action last, a register per topic, and memes when an idea needs to land. Pick it with `/output-style vicky-skills:dungeon-master`.
 - **A guard hook** asks you before an agent edits approved examples: a file named `...ApprovedExamples` or holding a test marked `approved-spec`. It needs `jq`.
+- **An after-push hook** reminds the agent, after a `git push`, to reread the pull request body and settle its work items. It only adds a note and never blocks. It needs `jq`.
 
 ## Install
 

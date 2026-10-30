@@ -1,6 +1,6 @@
 ---
 name: stacked-branches
-description: Build, submit, sync and merge a stack of dependent pull requests on GitHub (`gh stack`) or Gitea (`git-spice`/`gs`). Use only once the user has asked for a stack in the conversation, or when a stacked branch is checked out.
+description: Build, submit, sync and merge a stack of dependent pull requests on GitHub (`gh stack`) or Gitea (`git-spice`/`gs`). Use only when the user has asked for a stack in the conversation, or when a stacked branch is checked out.
 ---
 
 # Stacked branches

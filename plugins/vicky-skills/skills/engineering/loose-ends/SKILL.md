@@ -1,6 +1,6 @@
 ---
 name: loose-ends
-description: Settle every ticket an effort touched and make the pull request body true of the final diff. Use before calling an effort done, after every push to an open pull request, and after a merge.
+description: Settle every ticket an effort touched and make the pull request body true of the final diff. Use when an effort is about to be called done, after every push to an open pull request, and after a merge.
 ---
 
 # Loose ends

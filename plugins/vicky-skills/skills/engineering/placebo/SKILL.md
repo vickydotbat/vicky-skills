@@ -1,6 +1,6 @@
 ---
 name: placebo
-description: Placebo tests — tests that look like proof and prove nothing. Use its shapes whenever you write or review a test. Run its audit, which deletes, merges or rewrites placebos across a folder, fixture or suite, only when the user asks to audit or trim tests, or a review keeps finding tests that can't fail.
+description: Placebo tests — tests that look like proof and prove nothing. Use when you write or review a test, for its shapes. Run its audit, which deletes, merges or rewrites placebos across a folder, fixture or suite, only when the user asks to audit or trim tests, or a review keeps finding tests that can't fail.
 ---
 
 # Placebo
