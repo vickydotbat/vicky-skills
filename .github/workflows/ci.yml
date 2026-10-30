@@ -34,6 +34,8 @@ jobs:
         run: tests/skill-steps.test.sh
       - name: Draw chart
         run: tests/draw-chart.test.sh
+      - name: Check ADR
+        run: tests/check-adr.test.sh
       - name: After-push hook
         run: tests/after-push.test.sh
       - name: Skill links

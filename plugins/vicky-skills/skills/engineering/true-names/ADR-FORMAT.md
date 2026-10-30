@@ -1,20 +1,30 @@
 # Decision record format
 
-Decision records live in `docs/adr/` as `NNNN-slug.md`, numbered one past the highest number there.
+Decision records live in `docs/adr/` as `NNNN-slug.md`, numbered one past the highest number there. A record is four lines, what, category, when and why, in at most 55 words.
 
 ```markdown
-# ADR-NNNN: <the decision, as a sentence>
+# ADR-NNNN: <what was decided, as one sentence>
 
-- **Status:** Accepted
-- **Date:** <YYYY-MM-DD>
+Category: <one category from the list below>.
 
-<What forced the choice, what was decided, and why, in a few sentences.>
+Decided <YYYY-MM-DD>.
+
+Because <the reason, as one sentence>.
 ```
 
-Add a section only when it earns its place:
+- **What** is the choice, never how it is built. File, function and constant names stay in the code, and a value's own reason goes in a comment beside it.
+- **Why** is the reason the code can't show: an outside limit, or the option turned down and what it would cost.
+- **Category** is exactly one of these, and the first that fits wins:
+  - **Architecture**: the system's parts and how they talk to each other.
+  - **Data**: what is stored, who owns it, and its form.
+  - **Interface**: what users or other systems see and call.
+  - **Infrastructure**: where and how the system runs, builds and ships.
+  - **Security**: who can do what, and what is protected.
+  - **Dependencies**: a library, service or platform the project relies on.
+  - **Tooling**: how the team builds, tests and checks its work.
+  - **Process**: how the team works: reviews, releases, conventions.
+  - **Other**: anything none of the above fits.
 
-- **Considered options**: when a rejected option will be suggested again.
-- **Consequences**: when a downstream effect isn't obvious.
-- **Superseded by ADR-NNNN**: on the old record, when a newer one replaces it. Edit the old record's status, and leave its text as history.
+A record changes only when the decision does, never to follow the code. A changed decision gets a new record, and the old one gains one last line, `Superseded by ADR-NNNN.`, with the rest left as it was.
 
-Worth a record: the system's overall form, how parts talk to each other, a technology that would take months to swap, who owns what data, a deliberate departure from the obvious path, a constraint the code can't show.
+Check a record with `scripts/check-adr.sh <record>`. It fails on any other line, a category off the list, a backticked code name, or more than 55 words.
