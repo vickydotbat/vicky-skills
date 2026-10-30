@@ -84,7 +84,7 @@ Gitea: the same jobs, with a bare `on: pull_request` and this first step:
 - Read paths on stdin, one per line, exactly as git prints them. Every pattern carries its folder prefix from the repository root.
 - Put the prose arm first (`*.md`), so a docs-only change selects only the docs target, or nothing.
 - Print one line per target on stderr saying which path selected it, or that nothing did. A reader of a green run tells "nothing to do" from "ran and passed" by it.
-- Give the map a contract test: a table of sample paths and the targets each selects, including an unmapped one. CI runs it whenever the map or its test changes.
+- Give the map a contract test: a table of sample paths and the targets each selects, including a docs-only path whose row says every build target is false, and an unmapped one. Every new file kind adds an arm and a row. CI runs it whenever the map or its test changes.
 
 ## Auditing a repository
 
@@ -92,6 +92,8 @@ A repository fails the audit when any of these holds:
 
 - A `pull_request` workflow runs real work on a draft: no draft gate, or a gate that skips instead of failing.
 - A pull-request workflow carries `paths` or `paths-ignore` and one of its jobs is a required check.
+- A docs-only or decision-record-only path selects a build target, or has no arm.
+- A path map exists with no contract test, or its test has no docs-only row.
 - A path map exists with no `map-check`, or resolves an unknown path to "run nothing".
 - On GitHub, a draft gate without `ready_for_review` in `types`.
 
