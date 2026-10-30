@@ -38,3 +38,8 @@ Every file stays free of local paths, hostnames and any project's infrastructure
 
 - Skills, agent files and prompts are agent-facing: write them with `robot-voice`, fresh in this repo's words. An idea taken from another project gets a thanks line in the README.
 - The README follows `human-voice`.
+
+## Agent skills
+
+- Tickets: notes in the user's Obsidian vault, `vicky-skills/` folder. See `docs/agents/issue-tracker.md`.
+- Domain: single context. See `docs/agents/domain.md`.
