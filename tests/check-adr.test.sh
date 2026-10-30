@@ -71,6 +71,16 @@ $cat
 $when
 Superseded by ADR-0009.
 $why"
+pass "a record superseded from another repository" "$what
+$cat
+$when
+$why
+Superseded by other-repo ADR-0009."
+refuse "a repository name with spaces in it" "$what
+$cat
+$when
+$why
+Superseded by the other repo ADR-0009."
 refuse "Superseded without a record number" "$what
 $cat
 $when
