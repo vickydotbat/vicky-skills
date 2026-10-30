@@ -81,7 +81,7 @@ listed in `SKILL.md`.
 - **Honesty tags** — *honestly*, *to be honest*, *I want to be careful here*.
   Cut them.
 - **Added colour** — a quip, a vivid image or a dramatised reason hung on a
-  plain rule, outside the eccentric register. "A limit that froze you would let anyone pin
+  plain rule, outside the showcase register. "A limit that froze you would let anyone pin
   you down by handing you rocks" → "A refusal never roots you in place,
   because anyone can give you an item without asking." "This one catches
   hoarders out" and "not only the ones swinging a greatsword" are the same
@@ -131,8 +131,8 @@ listed in `SKILL.md`.
 - **Reasons left out** — an explainer for players or users that is a string
   of true facts with no reason behind them. "Alignment is gone. You declare tenets
   instead." → name the vanilla rule, what changed, and why. This tell is for
-  explainers and the conversational register: on a clinical reference page,
-  short facts and instructions are the target.
+  explainers and the showcase register: on a plain reference page, short
+  facts and instructions are the target.
 - **Placeholders** — leftover *[citation needed]*, *[TODO]*, citation debris
   like *turn0search0*. Fill them or drop the sentence.
 

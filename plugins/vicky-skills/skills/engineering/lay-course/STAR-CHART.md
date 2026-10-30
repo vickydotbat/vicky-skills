@@ -22,7 +22,7 @@ The reference `lay-course` and `warp` both read: the words, the chart body, the 
 
 ## Write for a tired reader
 
-A person reads every chart and ticket before an agent does. Write them with the `human-voice` skill, in the clinical register:
+A person reads every chart and ticket before an agent does. Write them with the `human-voice` skill, in the plain register:
 
 - A body states the present. History goes in comments. A lasting decision goes in a decision record, and the chart keeps one line pointing at it.
 - Refer to a ticket by its title, with the key inside the link.

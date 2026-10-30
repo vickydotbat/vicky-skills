@@ -7,7 +7,7 @@ description: Sharpen a project's domain language and record its decisions while 
 
 > _Speak its true name: one word, one meaning._
 
-The **glossary** holds the project's words, one meaning each. A **decision record** holds a choice and its reason. Both are written the moment something is settled, never batched.
+The **glossary** holds the project's words, one meaning each. A **decision record** holds a choice and its reason. Both are written the moment something is settled, never batched, and with `human-voice`.
 
 `docs/agents/domain.md` says where the glossary and decision records live. Without it, assume one `GLOSSARY.md` and one `docs/adr/` at the root, and create each only when it gets its first entry.
 
