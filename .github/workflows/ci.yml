@@ -54,3 +54,5 @@ jobs:
         run: tests/push-behind-guard.test.sh
       - name: Gamma-shift hook
         run: tests/gamma-shift.test.sh
+      - name: Auto-tidy hook
+        run: tests/auto-tidy.test.sh
