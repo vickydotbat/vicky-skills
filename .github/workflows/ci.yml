@@ -34,6 +34,8 @@ jobs:
         run: tests/skill-steps.test.sh
       - name: Draw chart
         run: tests/draw-chart.test.sh
+      - name: Star chart words
+        run: tests/star_chart_words_approved_examples.test.sh
       - name: Check ADR
         run: tests/check-adr.test.sh
       - name: After-push hook

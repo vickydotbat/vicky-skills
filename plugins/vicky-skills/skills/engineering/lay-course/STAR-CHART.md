@@ -16,6 +16,8 @@ The reference `lay-course` and `warp` both read: the words, the chart body, the 
 | **probe** | A cheap, rough artifact (an outline, a stub, a sketch) for the human to react to. |
 | **task** | Work that has to happen before a decision can, such as getting access to a service. |
 | **nebula** | A question too loose to ticket yet. It may hold several tickets or none. |
+| **black hole** | A part of the work that eats effort without end, which the course steers around. Unlike a nebula, it is plain to see. It is never a ticket: the chart names it under Black holes, with its way around, such as a timebox or a path that skips it. |
+| **asteroid belt** | A question found during a build that the target can't ship without. `warp` builds around it and asks once, at the end of the course. |
 | **neutral zone** | Tickets closed because they're past the mission. |
 | **frontier** | The chart's open, unblocked, unassigned children. |
 | **course** | The chain of open blockers from the frontier to one target star, in the order they must close. A star on the frontier has an empty course. |
@@ -54,6 +56,10 @@ Title: `Star Chart: <the effort>`. Label: `starchart:chart`.
 
 - [<ticket title>](<link>): <the answer in one line>, by <council or interrogation> (<decision record>)
 
+## Black holes
+
+- <the black hole>, and its way around: <a timebox, or a path that skips it>
+
 ## Nebulae
 
 - <a question you can't phrase sharply yet>
@@ -62,6 +68,8 @@ Title: `Star Chart: <the effort>`. Label: `starchart:chart`.
 
 - [<closed ticket title>](<link>): <why it is past the mission>
 ```
+
+A chart with no black hole seen yet keeps the section, with the one line "None seen yet."
 
 A ticket in the chart's orbit is a related link on the tracker, never a section.
 

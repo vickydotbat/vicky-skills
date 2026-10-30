@@ -16,7 +16,15 @@ chmod +x "$scratch/bin/notify-send"
 export NOTIFY_LOG="$scratch/log" GATE_NOTIFY_SEND="$scratch/bin/notify-send" CLAUDE_PLUGIN_OPTION_GATE_NOTIFY=true
 failed=0
 
-run() { : >"$NOTIFY_LOG"; jq -nc "$1" | bash "$hook"; echo "exit=$?" >>"$scratch/exits"; }
+# A here-string, not a pipe: the hook may exit before it reads stdin, and
+# under pipefail jq's broken pipe would then fail the test at random.
+run() {
+  local payload rc=0
+  payload=$(jq -nc "$1")
+  : >"$NOTIFY_LOG"
+  bash "$hook" <<<"$payload" || rc=$?
+  echo "exit=$rc" >>"$scratch/exits"
+}
 says() { # <name> <expected log line, or empty for none>
   if [[ -z "$2" ]]; then
     [[ ! -s "$NOTIFY_LOG" ]] || { echo "FAIL $1: notified: $(cat "$NOTIFY_LOG")"; failed=1; }

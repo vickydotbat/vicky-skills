@@ -33,7 +33,7 @@ A warp is one effort: every star it builds goes on one branch and one pull reque
 A question only the user can answer that turns up after pre-flight never stops the build. Ask it once, then take one of two courses:
 
 - **Carve a seam** when the target ships without the part the question holds. File that part as its own ticket on the chart, parked on the user with a `Waits on:` line, and narrow the target's body to what remains, the way `loose-ends` narrows a ticket. Build the rest.
-- **Stop at an asteroid belt** when the target can't ship without it. Build around it, gather every such question, and at the end of the course drop out once, among the rocks, to take readings: one round of questions, each with your pick. Their answers re-engage the warp.
+- **Stop at an asteroid belt** when the question is one ([STAR-CHART.md](../lay-course/STAR-CHART.md), "Words"). Build around it, gather every such question, and at the end of the course drop out once, among the rocks, to take readings: one round of questions, each with your pick. Their answers re-engage the warp.
 
 ## Punch through
 
