@@ -7,6 +7,10 @@ This repo is a public Claude Code plugin. Every commit on `main` reaches users a
 - Work on a branch and open a pull request on GitHub. `main` gets finished work only and merges by squash once `checks` passes.
 - CI refuses a draft pull request and runs once it is marked ready.
 
+## Tests
+
+- A test stops only the processes it started, by the id it saved. `pkill -f <pattern>` also matches the shell that ran the test, whose command line holds the same text.
+
 ## Before every push
 
 Run `claude plugin validate .` and `tests/run-all.sh`, which runs every script in `tests/` (CI runs each as a step in `.github/workflows/ci.yml`). A new test script also gets a step in that workflow.

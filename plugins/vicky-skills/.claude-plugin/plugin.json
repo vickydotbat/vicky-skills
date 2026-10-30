@@ -88,6 +88,24 @@
       "description": "Refuse a push from a branch that lacks the tip of origin's default branch.",
       "default": false
     },
+    "guard_checkout": {
+      "type": "boolean",
+      "title": "One session per checkout",
+      "description": "Refuse a branch switch in a checkout another session used in the last 12 hours, and tell a session when its checkout moved to another branch under it. Each session's last git command per checkout is kept in the plugin's data folder until the session ends.",
+      "default": false
+    },
+    "guard_red_first": {
+      "type": "boolean",
+      "title": "Approved tests land first",
+      "description": "Refuse a commit that adds a new approved-examples test together with any other change, so the tests land red in a commit of their own.",
+      "default": false
+    },
+    "guard_draft_lock": {
+      "type": "boolean",
+      "title": "No code while a draft is open",
+      "description": "While red-pen has a draft open in your editor, refuse edits to the repo's files. Writes outside the repo, such as scratch files, still run.",
+      "default": false
+    },
     "gamma_shift": {
       "type": "string",
       "title": "Gamma shift at session start",

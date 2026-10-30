@@ -39,9 +39,10 @@ check "on a branch whose new approved test passed at the commit that added it, t
   '[ $green_code != 0 ] && grep -q "glow_approved_examples.test.sh" <<<"$green" && grep -q "$glow" <<<"$green"'
 check "on a branch whose new approved tests each failed at the commit that added them, the red-first check passes" '[ $red_code = 0 ]'
 
-# The draft lock: the editor is a sleep that stands in for the user's.
+# The draft lock: a stub editor that waits stands in for the user's.
 mkdir -p "$dir/scratch" "$dir/vault"
-(cd "$repo" && VISUAL="sleep 30" bash "$opener" "$dir/scratch/draft.md") & opener_pid=$!
+printf '#!/bin/sh\nsleep 30\n' > "$dir/editor"; chmod +x "$dir/editor"
+(cd "$repo" && VISUAL="$dir/editor" bash "$opener" "$dir/scratch/draft.md") & opener_pid=$!
 lockfile="$(git -C "$repo" rev-parse --absolute-git-dir)/red-pen-open"
 for _ in $(seq 50); do [ -s "$lockfile" ] && break; sleep 0.1; done
 lock() { CLAUDE_PLUGIN_OPTION_GUARD_DRAFT_LOCK=true bash "$scripts/draft-lock.sh" 2>/dev/null >/dev/null; }
