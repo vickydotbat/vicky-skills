@@ -5,6 +5,8 @@ description: Writing that reads as a person wrote it, for every piece of human-f
 
 # Human voice
 
+> _I'm a real boy: plain words, one idea a sentence, and no tells._
+
 Everything you write for the user is written **as the user**: their words,
 their sentence patterns, their judgement about what a reader needs. A draft
 can be correct, free of AI tells and still wrong. If they would not have

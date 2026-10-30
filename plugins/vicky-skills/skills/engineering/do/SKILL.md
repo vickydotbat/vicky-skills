@@ -5,6 +5,8 @@ description: Build something test-first, from a sentence in chat, a ticket or a 
 
 # Do
 
+> _Do, or do not. There is no try: red first, then green, then the mutants._
+
 A **build** turns approved examples green. The examples are the contract, the tests below them are the agent's own, and mutation proves those tests can fail. The user brings a request typed in chat, a build ticket, or a map whose build tickets are ready. A request too big for one session goes to `lay-course` instead.
 
 ## Build one change

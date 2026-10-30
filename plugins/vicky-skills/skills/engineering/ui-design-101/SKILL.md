@@ -5,6 +5,8 @@ description: Design the actions in an interface — buttons, confirmations, dest
 
 # UI design 101: actions
 
+> _It's Groundhog Day. Design every action for the hundredth click._
+
 This skill covers what happens when someone clicks, and above all what happens on the **hundredth click**. Visual design is a different skill. Every rule below is a property you can check, and an interface that fails one is not done.
 
 ## Steps

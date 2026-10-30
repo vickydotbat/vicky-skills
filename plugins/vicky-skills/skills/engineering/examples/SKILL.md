@@ -5,6 +5,8 @@ description: Turn a request, ticket, rule or decision into Given / When / Then e
 
 # Examples
 
+> _Show me the behaviour! Only what the human approves becomes a test._
+
 An **example** is one behaviour of the system in the language of the problem: Given a situation, When something happens, Then a result someone can see. The examples for a build are its spec. You draft them. An example is **approved** once the human has read and edited it, and only an approved example becomes a test.
 
 ## A good example
