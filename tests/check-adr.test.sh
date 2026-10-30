@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# true-names checks a decision record for what, when and why, and nothing else.
-# A record with the three lines in order passes. A missing, repeated or extra
-# line, the wrong order or a code name fails it.
+# true-names checks a decision record for what, when and why, an optional
+# Superseded line, and nothing else, in at most 50 words.
+# A record with the lines in order passes. A missing, repeated or extra
+# line, the wrong order, a code name or a 51st word fails it.
 set -u
 script="$(dirname "$0")/../plugins/vicky-skills/skills/engineering/true-names/scripts/check-adr.sh"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
@@ -27,10 +28,34 @@ Decided last week.
 $why"
 refuse "no why" "$what
 $when"
-refuse "an extra line" "$what
+pass "a superseded record" "$what
 $when
 $why
 Superseded by ADR-0009."
+refuse "a line after Superseded" "$what
+$when
+$why
+Superseded by ADR-0009.
+$why"
+refuse "Superseded before why" "$what
+$when
+Superseded by ADR-0009.
+$why"
+refuse "Superseded without a record number" "$what
+$when
+$why
+Superseded by the new design."
+refuse "an extra line" "$what
+$when
+$why
+The rays are cached per emitter."
+pad() { local s="" i; for ((i = 0; i < $1; i++)); do s+=" word"; done; printf '%s' "$s"; }
+pass "50 words" "$what
+$when
+${why%.}$(pad 23)."
+refuse "51 words" "$what
+$when
+${why%.}$(pad 24)."
 refuse "a second why" "$what
 $when
 $why
@@ -43,5 +68,5 @@ $when
 $why"
 bash "$script" "$dir/missing.md" >/dev/null && { echo "FAIL passed: a missing record"; fail=1; }
 bash "$script" >/dev/null 2>&1; [ $? -eq 2 ] || { echo "FAIL no usage error without a record"; fail=1; }
-[ $fail -eq 0 ] && echo "ok   check-adr passes what, when, why and fails anything else"
+[ $fail -eq 0 ] && echo "ok   check-adr passes what, when, why and Superseded in 50 words, and fails anything else"
 exit $fail
