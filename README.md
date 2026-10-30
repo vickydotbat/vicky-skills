@@ -55,6 +55,7 @@ No skill here shares a name with one of Matt's, so both plugins load without cla
   - **No local paths** (`guard_local_paths`) refuses a commit that adds a home folder, a Nix store path or your username. It reads the staged changes, and also the unstaged and untracked ones when the same command runs `git add` or `commit -a`. `local_path_exempt_repos` lists repositories it skips.
   - **No pushing behind main** (`guard_push_behind`) refuses a push from a branch that main has moved past.
 - **A session-start hook** runs `gamma-shift` when its `gamma_shift` setting is `remind` or `engage`, and stays quiet when it's `off`, the default.
+- **An auto-tidy hook** (`auto_tidy`, off by default) prunes origin's branches at session start, and asks the agent to run `marie-kondo` when a local branch's upstream is gone, as it is after a merge in the browser.
 
 ## Install
 
@@ -89,7 +90,7 @@ The idea is acceptance test-driven development. Dave Farley's [The Industry Is C
 
 ```bash
 claude plugin validate .
-for t in tests/*.test.sh; do "$t" || echo "FAIL $t"; done
+tests/run-all.sh
 ```
 
 Run both before every push. CI runs every test once a pull request is marked ready, and refuses a draft.
