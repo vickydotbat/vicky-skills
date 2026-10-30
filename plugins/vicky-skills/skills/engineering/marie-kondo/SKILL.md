@@ -5,6 +5,8 @@ description: Tidy a repo's branches and worktrees — delete what merged, keep w
 
 # Marie Kondo
 
+> _A merged branch holds nothing. Thank it and let it go._
+
 A branch **sparks joy** while it holds work that exists nowhere else. A branch whose pull request merged holds nothing: thank it and let it go. Squash merges leave commits that look unmerged, so `git branch --merged` proves nothing. The pull request's state decides.
 
 ## Steps

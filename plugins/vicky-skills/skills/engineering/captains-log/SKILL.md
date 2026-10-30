@@ -6,6 +6,8 @@ disable-model-invocation: true
 
 # Captain's log
 
+> _Captain's log, supplemental. The ship gets the fix, never the crew's excuses._
+
 A **retro** improves the agent's environment, never the agent's excuses. Implementation has the most context pressure and review the least, so a rule belongs to review, and a rule a machine can check belongs to a machine.
 
 1. **Load `robot-voice`** for how agent-facing text is written.

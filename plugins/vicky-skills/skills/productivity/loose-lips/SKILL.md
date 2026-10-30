@@ -5,6 +5,8 @@ description: Check text that leaves the machine for an attack map — hosts, ver
 
 # Loose lips
 
+> _Loose lips sink ships. Name the role, never the host._
+
 Write as if a hostile reader holds a copy. An **attack map** is text that tells that reader where to aim: what runs where, what unlocks what, and where the gap is. Text gets one of three tiers. The repo's agent docs may name its tier; without one, treat it as public.
 
 - **Public**: anything a stranger can reach, such as a public repo, wiki, release notes or a post.

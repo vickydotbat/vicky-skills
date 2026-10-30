@@ -5,6 +5,8 @@ description: Catch the user up in one screen — what got done, what changed, wh
 
 # Sup
 
+> _Sup? Read the record, not your memory._
+
 A **catch-up** answers four questions for someone who just walked in. They read it once and know what to do. It covers the time since the user's last message, or since the point they name.
 
 ## Steps

@@ -5,6 +5,8 @@ description: Answer a question from primary sources in a background agent, and p
 
 # Away team
 
+> _Beam down, scan, report to the bridge. The ship keeps flying._
+
 Start a **background agent** for the reading, so the session keeps working. Its brief:
 
 1. **Read primary sources**: official docs, source code, specs, first-party APIs. Follow each claim back to the source that owns it, and quote it with its version or date.

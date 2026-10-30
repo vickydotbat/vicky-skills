@@ -5,7 +5,7 @@ description: Read the need behind a question about the agent's own setup (its sk
 
 # Cerebro
 
-> _Searching... one signal found._
+> _Searching... one need found. Every gap it leaves is a proposal._
 
 A question about the agent's setup rarely stands alone. The user asks "does `sup` check current state?" because an agent quoted something stale at them. The **need** is fresh state everywhere, and `sup` is one place it shows. Answer the question, then find what else in the setup falls short of the same need, so the follow-up arrives as a proposal instead of a correction.
 

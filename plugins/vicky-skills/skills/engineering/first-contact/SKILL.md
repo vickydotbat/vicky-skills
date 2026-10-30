@@ -6,6 +6,8 @@ disable-model-invocation: true
 
 # First contact
 
+> _Learn where they keep their records before you speak._
+
 The engineering skills read two files from a repo: `docs/agents/issue-tracker.md` says where tickets live and how to work them, and `docs/agents/domain.md` says where the glossary and decision records live. This skill writes both, plus a short pointer block in the repo's agent file.
 
 1. **Look first.** Read `git remote -v`, `AGENTS.md` and `CLAUDE.md`, `docs/agents/`, `GLOSSARY.md` or `GLOSSARY-MAP.md`, and every `docs/adr/` folder. Done when you know which of the three files already exist and what they say.

@@ -5,6 +5,8 @@ description: Hand the live checks only a person can do to the human, as a short 
 
 # Over to you
 
+> _Over to you in the field. Everything the agent can run, it already ran._
+
 The anchor hands over to the field: everything the agent can run, it runs, and only the rest goes **over to you**. The checklist is short enough to finish in one sitting, and every line is one action and its expected result.
 
 ## Steps
