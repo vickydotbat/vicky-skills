@@ -1,7 +1,6 @@
 ---
 name: council-of-elrond
-description: Hold a design council (a "pow-wow") on the user's proposal, a table talk where designer seats argue it from different angles until it leaves sharper.
-disable-model-invocation: true
+description: Council or pow-wow on a proposal — designer seats argue it with the user, round by round, until it leaves sharper. Use when the user asks for a council or a pow-wow, picks the council in `lay-course` or on a decision ticket, or brings a design question with open options and no answer of their own yet. When the user should answer questions instead, use `interrogation`.
 ---
 
 # Council of Elrond
