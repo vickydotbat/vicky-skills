@@ -14,7 +14,7 @@ An **interrogation** walks a **design tree**: each decision branches into the on
 
 Every answer comes from the user. You ask questions and give **leads**: facts you read this session, each with its source. You give no options, no recommendation and no guess, so nothing you made up gets into the answers. A user who wants ideas proposed wants `council-of-elrond`.
 
-1. **Ask the frontier in one round**, at most five questions. A question that depends on another still open waits for a later round. Number each one:
+1. **Ask the frontier in one round**, at most five questions, the sharpest first: a question that exposes a contradiction between two answers, an assumption the user hasn't stated, or a case their plan doesn't cover. A question that depends on another still open waits for a later round. Number each one:
 
    ```
    Q1. <question title>
