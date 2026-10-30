@@ -68,7 +68,7 @@ A ticket the chart touches but doesn't own is a related link on the tracker, nev
 
 Blocking is the tracker's own relation. Ticket a question as soon as you can state it sharply, even when it's blocked. A question you can't state sharply yet goes under Nebulae, as loosely as you see it. Leave a nebula unsliced.
 
-An anomaly, away team, probe or task asks one question and carries the label `starchart:<kind>`: `starchart:anomaly`, `starchart:away-team`, `starchart:probe` or `starchart:task`.
+Every ticket also carries the labels the repo's tracker docs require of any ticket. An anomaly, away team, probe or task asks one question and carries the label `starchart:<kind>`: `starchart:anomaly`, `starchart:away-team`, `starchart:probe` or `starchart:task`.
 
 ```markdown
 ## Question
@@ -118,6 +118,6 @@ flowchart TD
 - One node per child ticket, labelled with its key, its kind and its title.
 - An arrow runs from the blocker to the ticket it blocks.
 - A dashed line joins a related ticket the chart doesn't own.
-- Frontier tickets get `frontier`, closed ones `closed`, and a warp's course gets `course`.
+- Frontier tickets get `frontier` and closed ones `closed`. During a warp, the course and its target get `course` in place of `frontier`.
 
 Put the block under `## Chart` when the tracker draws Mermaid. When the tracker file says it can't, render it with mermaid-cli (`mmdc -i <chart>.mmd -o <chart>.png`), attach the image the way the tracker file says, and write `Attached: <chart>.png` under `## Chart`. Redraw from the tracker after every change to the chart's children or blockers.

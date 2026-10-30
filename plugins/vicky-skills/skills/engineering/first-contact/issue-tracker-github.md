@@ -17,7 +17,7 @@ A bare `#42` can be an issue or a pull request. Try `gh pr view 42 --comments` f
 
 - **Star chart**: an issue labelled `starchart:chart`.
 - **Ticket**: a sub-issue of the chart, labelled `starchart:<kind>` unless it is a star.
-- **Blocking**: GitHub's issue dependencies. Add one with `gh api --method POST repos/<owner>/<repo>/issues/<child>/dependencies/blocked_by -F issue_id=<blocker database id>`, where the database id is `gh api repos/<owner>/<repo>/issues/<n> --jq .id`. Without dependencies, a `Blocked by: #<n>` line tops the child's body.
+- **Blocking**: GitHub's issue dependencies. Add one with `gh api --method POST repos/<owner>/<repo>/issues/<child>/dependencies/blocked_by -F issue_id=<blocker database id>`, where the database id is `gh api repos/<owner>/<repo>/issues/<n> --jq .id`. List a ticket's blockers with `gh api repos/<owner>/<repo>/issues/<n>/dependencies/blocked_by`. Without dependencies, a `Blocked by: #<n>` line tops the child's body.
 - **Frontier**: the chart's open sub-issues with no assignee and no open blocker (`issue_dependencies_summary.blocked_by` is 0).
 - **Chart**: a Mermaid block under `## Chart`. GitHub draws it.
 - **Claim**: `gh issue edit <n> --add-assignee @me`, before any other write.

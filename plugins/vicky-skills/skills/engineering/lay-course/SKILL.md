@@ -21,7 +21,7 @@ The user brings a loose idea. When they bring the result of a council or an inte
 3. **Find the frontier** with that method, breadth-first across the whole idea. Done when every open question can be stated as a ticket or is a nebula.
 4. **Place the stars.** Propose one, and wait for the user's yes:
    - **A nebula, or more than one session of work**: a star chart. Go on to step 5.
-   - **One session of work**: one star, written by `examples` up to its Record step. Go on to step 7.
+   - **One session of work**: one star, written and filed by `examples` through its Record step. Its one sentence states the mission. Go on to step 7.
 
    Done when the user has taken one or named another.
 5. **Create the chart** with Mission, Prime directive, Sensor log and Nebulae filled in. Create the anomalies, away teams, probes, tasks and stars you can state now as its children. Wire blocking in a second pass, once every ticket has a key. Draw the chart. Done when the chart shows every child and every blocker.
