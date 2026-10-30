@@ -27,15 +27,16 @@ import webbrowser
 
 LIMIT = 64 * 1024
 STYLE = """body{font-family:sans-serif;margin:1.5rem}
-.chart{margin-bottom:2rem}
+.chart{margin-bottom:2rem;overflow-x:auto}
 .chart svg{max-width:100%;height:auto;cursor:zoom-in}
-.chart.full{overflow-x:auto}
-.chart.full svg{max-width:none;cursor:zoom-out}
 table{border-collapse:collapse;margin-bottom:2rem}
 td,th{border:1px solid #ccc;padding:.3rem .6rem;text-align:left}
 fieldset{margin-bottom:1rem}
 textarea{width:100%;min-height:3rem}
 button{font-size:1.1rem;padding:.4rem 1.2rem}"""
+# Each click zooms a chart to 2x, then 3x the window width, then back to fit.
+ZOOM = """function zoom(c){const s=c.querySelector("svg"),n=(+c.dataset.z||1)%3+1;c.dataset.z=n;
+s.style.maxWidth=n>1?"none":"";s.style.width=n>1?c.clientWidth*n+"px":""}"""
 
 
 def svg_of(chart):
@@ -56,9 +57,9 @@ def svg_of(chart):
 def page(spec):
     e = html.escape
     out = [f"<!doctype html><meta charset=utf-8><title>{e(spec['title'])}</title>",
-           f"<style>{STYLE}</style><h1>{e(spec['title'])}</h1>", '<form method=post action="/answer">']
+           f"<style>{STYLE}</style><script>{ZOOM}</script><h1>{e(spec['title'])}</h1>", '<form method=post action="/answer">']
     for chart in spec.get("charts") or []:
-        out.append(f"<h2>{e(chart['name'])}</h2><div class=chart onclick=\"this.classList.toggle('full')\">{svg_of(chart)}</div>")
+        out.append(f"<h2>{e(chart['name'])}</h2><div class=chart onclick=\"zoom(this)\">{svg_of(chart)}</div>")
     if spec.get("course"):
         out.append("<h2>Course</h2><table><tr><th>Keep</th><th>Ticket</th><th>Kind</th><th>Needs from you</th></tr>")
         for row in spec["course"]:

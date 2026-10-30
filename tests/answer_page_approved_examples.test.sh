@@ -28,8 +28,8 @@ course='[{"key": "K-1", "kind": "away team", "title": "Read docs", "needs": "not
 
 start "{\"title\": \"Two charts\", \"charts\": [{\"name\": \"Wide\", \"svg\": \"${wide//\"/\\\"}\"}, {\"name\": \"Small\", \"svg\": \"<svg width=\\\"200\\\"></svg>\"}]}"
 two=$(curl -s "$url"); kill $pid 2>/dev/null
-check "each chart is drawn full width at its natural size, the wide one shrinks to fit the window and shows at full size when clicked, and the page renders correctly" \
-  '[ "$(grep -c "<div class=chart onclick=\"this.classList.toggle(.full.)\"><svg" <<<"$two")" = 2 ] && grep -qF ".chart svg{max-width:100%;height:auto" <<<"$two" && grep -qF ".chart.full{overflow-x:auto}" <<<"$two" && grep -qF ".chart.full svg{max-width:none" <<<"$two" && grep -qF "width=\"3000\"" <<<"$two" && ! grep -q "body{[^}]*overflow" <<<"$two"'
+check "each chart is drawn full width at its natural size, the wide one shrinks to fit the window, a click zooms in, and the page renders correctly" \
+  '[ "$(grep -c "<div class=chart onclick=\"zoom(this)\"><svg" <<<"$two")" = 2 ] && grep -qF ".chart svg{max-width:100%;height:auto" <<<"$two" && grep -qF "function zoom(c)" <<<"$two" && grep -qF "c.clientWidth*n" <<<"$two" && grep -qF "width=\"3000\"" <<<"$two" && ! grep -q "body{[^}]*overflow" <<<"$two"'
 
 start "{\"title\": \"Course\", \"charts\": [{\"name\": \"A\", \"svg\": \"<svg></svg>\"}], \"course\": $course}"
 page=$(curl -s "$url")
