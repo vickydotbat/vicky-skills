@@ -4,11 +4,16 @@ Claude Code skills for steering coding agents in any repository: wayfinder maps 
 
 No skill here shares a name with one of Matt's, so both plugins load without clashing. They describe two different workflows, though, so use one at a time.
 
+- **`first-contact`** (typed only): `/first-contact` sets a repository up for these skills, once: where its tickets, glossary and decision records are.
 - **`power-word-fix`**: type `/power-word-fix <what's broken>` and it sorts the problem, runs the skills that fit and ends on proof.
-- **`lay-course`** plans an effort too big for one session as a map of tickets. Build tickets are one goal, approved examples and pointers.
+- **`lay-course`** starts any effort, big or small. You pick a council or an interrogation to work out what you want, and it ends as a map of tickets, one build ticket, or a build right away. Every build's spec is its approved examples.
 - **`examples`** turns a ticket, rule or decision into Given / When / Then examples, opens them in your editor, and writes the ones you approve as failing tests.
 - **`do`** builds test-first from a request typed in chat, a ticket or a whole map: approved examples go red first, then tests at agreed seams, then mutation. Small work needs no map or ticket.
 - **`review`** reviews a branch on three axes at once: standards, spec and simplicity. Each axis is its own agent, and a diff under 40 lines gets one quick pass instead. They share one list of review principles: one point of entry, data read from its source, one copy of logic, and tests proved by mutation.
+- **`never-lupus`** finds the cause of a hard bug or a slowdown with a loop that goes red on it.
+- **`ship-it`** writes a pull request body, and rewrites it when a push changes what the pull request does.
+- **`machine-spirit`** writes and debugs CI: workflows, path filters, runners, caches, required checks, and runs that are red, slow or stuck.
+- **`stacked-branches`** builds and merges a stack of dependent pull requests with `gh stack` or `git-spice`, once you ask for a stack.
 - **`human-voice`** writes anything a person reads in plain language, from a ticket to a public article.
 - **`ui-design-101`** designs the actions in an interface for their hundredth use.
 - **`over-to-you`** hands the checks only a person can do to you, as a short checklist in your editor with room for notes.
@@ -20,13 +25,19 @@ No skill here shares a name with one of Matt's, so both plugins load without cla
 - **`marie-kondo`** deletes merged branches and worktrees and keeps what sparks joy.
 - **`red-pen`** opens drafts in your editor and writes back what you leave.
 - **`cerebro`** reads why you asked a question about your agent setup, answers it, and proposes the matching changes to its skills and agent files before you have to ask for them.
-- **`council-of-elrond`** (typed only): `/council-of-elrond <proposal>` puts your idea in front of a table of designers. A skeptic, a dwarf with an axe, an elf who looks far ahead, a ranger who walks it through, a rules keeper, an enthusiast and two troublemakers with new ideas argue it with you, five at a time, whether it's a game rule, a character build or a piece of code. Each round ends on open points, each with a pick, and the council ends by picking the road: a map, one ticket, or a build right now.
+- **`council-of-elrond`** puts your idea in front of a table of designers. A skeptic, a dwarf with an axe, an elf who looks far ahead, a ranger who walks it through, a rules keeper, an enthusiast and two troublemakers with new ideas argue it with you, whether it's a game rule, a character build or a piece of code. The chair and the rules keeper speak every round, and the rest take turns, so you hear every voice at least every other round. Each round ends on open points, each with a pick, and the council ends by picking the road: a map, one ticket, or a build right now. The agent starts one when you ask for it, pick it in `lay-course`, or bring a design question you haven't answered yet.
+- **`interrogation`** is the council's hard mode: it asks you questions only, the sharpest first, until nothing is left open, and writes your answers as examples.
+- **`true-names`** sharpens a project's terms in its glossary and records decisions as you make them.
+- **`away-team`** answers a question from primary sources in a background agent and posts the findings on the ticket the question belongs to.
 - **`sup`** catches you up in one screen: done, changed, waiting on you, next.
+- **`you-have-the-conn`** (typed only): `/you-have-the-conn` writes a handoff so a fresh session can pick up where this one stopped. Every claim in it names the command that proved it.
+- **`captains-log`** (typed only): `/captains-log` runs a retrospective on a session and finds what would make the next one go better.
 - **`history-monks`** rebases a branch onto a main that moved: what landed owns the form, the branch keeps its behaviour, and the old patterns a merge hides get converted too.
 - **`sentinels`** mutation-tests changed code with the repo's tool, a tool pulled down for the run, or by hand, and keeps a run alive under a memory cap.
-- **`placebo`** audits a test suite for tests that look like proof and catch nothing, and deletes, merges or rewrites them.
+- **`placebo`** lists the kinds of test that look like proof and catch nothing, and the agent checks every test it writes or reviews against them. Ask it for an audit and it deletes, merges or rewrites them across a suite.
 - **`retcon`** undoes exactly what you name, and leaves every other change alone.
 - **`video-captions`** reads a video through its captions.
+- **`codex-image-gen`** makes or edits an image through the Codex CLI's image tool.
 - **`is-this-a-meme`** (typed only): `/is-this-a-meme <thing>` explains it, then lands it with a meme. The `dungeon-master` style memes on its own, and nothing else does.
 - **The `dungeon-master` output style**: relaxed, focused and exact. The answer first, the next action last, a register per topic, and memes when an idea needs to land. Pick it with `/output-style vicky-skills:dungeon-master`.
 - **A guard hook** asks you before an agent edits approved examples: a file named `...ApprovedExamples` or holding a test marked `approved-spec`. It needs `jq`.

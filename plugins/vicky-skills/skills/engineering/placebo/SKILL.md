@@ -1,7 +1,6 @@
 ---
 name: placebo
-description: Audit a test folder, fixture or whole suite for placebos — tests that look like proof and prove nothing — and delete, merge or rewrite them. Use when the user asks to audit or trim tests, when the suite is slow, or when a review keeps finding tests that can't fail.
-disable-model-invocation: true
+description: Placebo tests — tests that look like proof and prove nothing. Use its shapes whenever you write or review a test. Run its audit, which deletes, merges or rewrites placebos across a folder, fixture or suite, only when the user asks to audit or trim tests, or a review keeps finding tests that can't fail.
 ---
 
 # Placebo
@@ -23,6 +22,8 @@ The repo's own testing rules win over this skill. Read its standards files (`AGE
 - **Source scan**: a test that greps source text. It belongs in the build: a banned-symbol list, a linter or an analyzer.
 
 Mutation testing catches read-backs and other tests that can never fail. It misses content pins, structure pins, re-proofs and slow tests, because no mutant touches what they assert. Use both.
+
+Checking one test you're writing or reviewing? Match it against the shapes above, then stop. The steps below are the audit.
 
 ## Steps
 
