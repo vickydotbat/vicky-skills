@@ -9,7 +9,7 @@ description: Warp to one star in a single run, whatever it takes. It clears ever
 
 A **warp** reaches one target star in one run. It clears the star's **course**, which is the chain of open blockers from the frontier to the target, then builds the star. The words and ticket forms are in [STAR-CHART.md](../lay-course/STAR-CHART.md), and the tracker's commands in `docs/agents/issue-tracker.md`, "Star chart operations".
 
-A warp is one effort: every star it builds goes on one branch and one pull request. **A warp never drops out.** It runs with the user away: every question, approval and refusal on the way is an **obstacle**, and "Punch through" below says what to do with each.
+A warp is one effort: every star it builds goes on one branch and one pull request. **A warp never drops out.** Apart from an anomaly and the target's examples, which wait for the user, every approval and refusal on the way is an **obstacle**, and "Punch through" below says what to do with each.
 
 ## Steps
 
@@ -20,11 +20,11 @@ A warp is one effort: every star it builds goes on one branch and one pull reque
    - **Away team**: dispatch `away-team` without asking, and close the ticket once its findings are posted. Go on with tickets that don't wait on it.
    - **Probe**: make it and show it. The user's reaction is its answer.
    - **Task**: do it. A task that needs another person, an account or a deploy is an obstacle.
-   - **Anomaly**: ask the user "Council or interrogation?" once, with the findings it waited on, and keep working on what doesn't wait. When they answer, run the one they pick. When nothing else is left and no answer came, take the pick cheapest to undo from the findings, mark it `answered by warp, unreviewed`, and put it on the pull request's Check these list. Record it either way as [lay-course](../lay-course/SKILL.md), "Work the chart", steps 4 and 5 say.
+   - **Anomaly**: stop for the user, with the findings it waited on. Ask "Council or interrogation?", run the one they pick, and record it as [lay-course](../lay-course/SKILL.md), "Work the chart", steps 4 and 5 say.
    - **Star**: build it as step 5 does, minus `make-it-so`, on the warp's branch.
 
    Done when every ticket on the course is closed.
-5. **Build the target.** When its Examples aren't approved yet, run `examples` and open the drafts with `red-pen`, then build against the drafts while the editor is open: an unchanged close approves them. Drafts still open at the end go on Check these, and their tests are marked `approved-spec` only once approved. Then run `do`, `review` and `make-it-so`. Done when the pull request's required checks are green.
+5. **Build the target.** When its Examples aren't approved yet, run `examples` and stop once for the user's approval. Then run `do`, `review` and `make-it-so`. Done when the pull request's required checks are green.
 6. **Land.** When the target is on a chart, redraw it without the course. Run `loose-ends`. Done when every ticket the warp touched is settled.
 
 ## Punch through
