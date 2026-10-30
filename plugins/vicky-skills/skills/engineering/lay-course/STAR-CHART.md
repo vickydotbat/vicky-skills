@@ -20,7 +20,7 @@ The reference `lay-course` and `warp` both read: the words, the chart body, the 
 | **asteroid belt** | A question found during a build that the target can't ship without. `warp` builds around it and asks once, at the end of the course. |
 | **neutral zone** | Tickets closed because they're past the mission. |
 | **frontier** | The chart's open, unblocked, unassigned children. |
-| **course** | The chain of open blockers from the frontier to one target star, in the order they must close. A star on the frontier has an empty course. |
+| **course** | The open blockers from the frontier to each target star, and the targets, in the order they must close. A target on the frontier is its own whole course. |
 | **orbit** | The tickets loosely linked to a chart or a ticket, which it touches but doesn't own and doesn't wait on: "in its orbit". The tracker holds them as related links. |
 
 ## Write for a tired reader
@@ -123,7 +123,7 @@ Every chart shows how its tickets connect, drawn from the tracker, never by hand
    ```
 
    `kind` is the `starchart:` kind, or `star`. `blocked_by` holds only open blockers, on this chart or another. `related` holds tickets the chart doesn't own. Each line under Black holes gets a `black_hole` object, with the tickets its line threatens. Done when every child of the chart and every black hole has one object.
-3. **Draw it** with `python3 <this skill's folder>/scripts/draw-chart.py <scratch>/tickets.json`. During a warp, add `--course <KEY>,<KEY>` for the course and its target. Done when it prints a Mermaid flowchart.
+3. **Draw it** with `python3 <this skill's folder>/scripts/draw-chart.py <scratch>/tickets.json`. During a warp, add `--course <KEY>,<KEY>` for the course and its targets. Done when it prints a Mermaid flowchart.
 4. **Put it under `## Chart`.** When the tracker file says the tracker draws Mermaid, paste the printed block. When it says it can't, add `--png <scratch>/chart.png`, attach the image the way the tracker file says, and show it in the body the way it says. Done when the chart's page shows the drawing.
 
 The drawing shows the course ahead, so closed tickets stay out of it. It marks the frontier with a thick border and the course in yellow, and draws each black hole as a dark circle beside the open tickets it threatens. A ticket with no line to another stacks in a column of its kind.
