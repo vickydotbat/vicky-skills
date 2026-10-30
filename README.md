@@ -19,6 +19,7 @@ No skill here shares a name with one of Matt's, so both plugins load without cla
 - **`loose-ends`** settles every ticket an effort touched and keeps the pull request body true.
 - **`marie-kondo`** deletes merged branches and worktrees and keeps what sparks joy.
 - **`red-pen`** opens drafts in your editor and writes back what you leave.
+- **`cerebro`** reads why you asked a question about your agent setup, answers it, and proposes the matching changes to its skills and agent files before you have to ask for them.
 - **`sup`** catches you up in one screen: done, changed, waiting on you, next.
 - **`history-monks`** rebases a branch onto a main that moved: what landed owns the form, the branch keeps its behaviour, and the old patterns a merge hides get converted too.
 - **`sentinels`** mutation-tests changed code with the repo's tool, a tool pulled down for the run, or by hand, and keeps a run alive under a memory cap.

@@ -5,6 +5,8 @@ description: Hand drafts to the user to edit in their own editor, then write the
 
 # Red pen
 
+> _The red pen is theirs. Copy back exactly what it leaves._
+
 The user edits drafts in their editor, never in the chat. Collect every draft of the effort in one **draft file**, open it, and copy back exactly what they leave there.
 
 ## Steps

@@ -5,6 +5,8 @@ description: Settle every ticket an effort touched and make the pull request bod
 
 # Loose ends
 
+> _Every ticket you touched tells the truth before you leave._
+
 New developers pick work from the tracker and trust what a ticket says. So an effort isn't done until every ticket it touched says the truth. A **touched** ticket is one the branch name, a commit or the pull request body names, or one the work proved wrong.
 
 ## Steps

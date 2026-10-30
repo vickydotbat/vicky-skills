@@ -7,6 +7,8 @@ disable-model-invocation: true
 
 # You have the conn
 
+> _You have the conn. Trust the log only where it shows its proof._
+
 A **handoff** is a short file a fresh agent reads first. It is a lead, never a fact: the next session checks each claim before it builds on it.
 
 1. **Name the goal** in one sentence, shaped by the user's argument when they gave one.

@@ -6,6 +6,8 @@ disable-model-invocation: true
 
 # Lay course
 
+> _Decisions first, then the builds. Every stop on the way is a ticket on the map._
+
 A **map** is one tracker issue for an effort too big for one session. It finds the way from a loose idea to a **destination**: decisions first, then the builds they make possible. Every ticket the effort needs is a direct child of the map: decision tickets, builds, and whatever the work turns up. The map closes when the effort ships.
 
 The tracker is named in `docs/agents/issue-tracker.md`. Its "Wayfinding operations" section says how this repo expresses children, blocking and the frontier. If the file is missing, tell the user to run `/first-contact`.

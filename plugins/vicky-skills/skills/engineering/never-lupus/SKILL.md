@@ -5,6 +5,8 @@ description: Find the cause of a hard bug or a slowdown with a loop that goes re
 
 # Never lupus
 
+> _It's never lupus. It's whatever turns the loop red._
+
 A bug is found by a **loop**: one command that goes red on this bug and green once it is fixed. With a loop, finding the cause is mechanical. Without one, reading code is guessing. Trace the bug in the code: "the build is stale" is a diagnosis too, and it needs proof such as an artifact hash or a logged version.
 
 Show commands and output with every secret replaced by `<REDACTED>`. Keep credentials in environment variables, out of the loop's text.

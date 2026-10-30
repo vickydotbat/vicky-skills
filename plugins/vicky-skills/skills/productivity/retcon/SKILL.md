@@ -6,6 +6,8 @@ argument-hint: "What should never have happened?"
 
 # Retcon
 
+> _That never happened. Everything else still did._
+
 A **retcon** rewrites continuity: the named change never happened, and every other change still did. The scope is exactly what the user names, nothing nearby.
 
 ## Steps

@@ -5,7 +5,7 @@ description: Mutation-test changed code, with the repo's tool, a tool pulled dow
 
 # Sentinels
 
-> _Mutant detected._
+> _Mutant detected. A sentinel that stays silent has failed._
 
 Your tests are the **sentinels**, and a **mutant** is a small deliberate bug: a flipped comparison, a deleted call, a changed constant. A test suite that stays green against a mutant would stay green against the same bug written by a person. A mutation pass makes the mutants, runs the tests against each, and lists the **survivors**.
 

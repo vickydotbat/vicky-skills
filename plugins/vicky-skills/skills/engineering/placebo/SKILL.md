@@ -6,6 +6,8 @@ disable-model-invocation: true
 
 # Placebo
 
+> _A test that can't go red cures nothing._
+
 A test earns its run time only through its **red**: the change to production behaviour that turns it red. A **placebo** is a test whose only red is a refactor, a content edit or a library upgrade. It looks like proof, it costs every run, and it catches nothing.
 
 The repo's own testing rules win over this skill. Read its standards files (`AGENTS.md` names them) before the first verdict.

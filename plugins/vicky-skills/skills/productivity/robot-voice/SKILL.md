@@ -51,6 +51,8 @@ A skill an agent should reach on its own keeps its description and pays context 
 
 A word the model already knows (_red_, _frontier_, _seam_, _tracer bullet_, _fog of war_) anchors a whole behaviour in one token. Hunt for a passage that spells out an idea at length and collapse it into one such word. Coin a new word only when none fits, and define it once.
 
+A skill named after a reference may open with an **epigraph**: one italic quote line under its title, in the reference's voice, that states the skill's rule (`> _It's never lupus. It's whatever turns the loop red._`). A quote that states no rule is decoration: cut it. A plain-named skill gets none.
+
 ### Splitting
 
 Split a document when it sprawls past one screen of steps, when its branches share little, or when the steps after one tempt the agent to rush it. Steps hidden behind a hand-off or a subagent stay out of sight. An inline call keeps them in view.
