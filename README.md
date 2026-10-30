@@ -34,7 +34,7 @@ No skill here shares a name with one of Matt's, so both plugins load without cla
 - **`captains-log`** (typed only): `/captains-log` runs a retrospective on a session and finds what would make the next one go better.
 - **`history-monks`** rebases a branch onto a main that moved: what landed owns the form, the branch keeps its behaviour, and the old patterns a merge hides get converted too.
 - **`sentinels`** mutation-tests changed code with the repo's tool, a tool pulled down for the run, or by hand, and keeps a run alive under a memory cap.
-- **`placebo`** audits a test suite for tests that look like proof and catch nothing, and deletes, merges or rewrites them.
+- **`placebo`** lists the kinds of test that look like proof and catch nothing, and the agent checks every test it writes or reviews against them. Ask it for an audit and it deletes, merges or rewrites them across a suite.
 - **`retcon`** undoes exactly what you name, and leaves every other change alone.
 - **`video-captions`** reads a video through its captions.
 - **`codex-image-gen`** makes or edits an image through the Codex CLI's image tool.
