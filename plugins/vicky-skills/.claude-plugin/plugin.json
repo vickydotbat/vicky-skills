@@ -111,6 +111,12 @@
       "description": "0 does nothing. A number of days N runs spark-joy in the background at the first session start in a repo after N days, to a draft pull request.",
       "default": "0"
     },
+    "gate_notify": {
+      "type": "boolean",
+      "title": "Notify when an agent waits on you",
+      "description": "Raise a desktop notification when an agent's message opens with the gate line, and on Claude Code's own needs-your-input alerts. Uses notify-send, or osascript on macOS.",
+      "default": false
+    },
     "nwn_blender": {
       "type": "string",
       "title": "Blender for NWN:EE models",
