@@ -7,7 +7,7 @@ description: Turn a request, ticket, rule or decision into Given / When / Then e
 
 > _Show me the behaviour! Only what the human approves becomes a test._
 
-An **example** is one behaviour of the system in the language of the problem, told from outside: Given a situation, When something happens, Then a result its **observer** can see. The observer is someone who uses the system without reading its code: a player, a modder, a server admin, a caller of a public API. The examples for a build are its spec. You draft them. An example is **approved** once the human has read and edited it, and only an approved example becomes a test.
+An **example** is one behaviour of the system in the language of the problem, told from outside: Given a situation, When something happens, Then a result its **observer** can see. The observer is someone who uses the system without reading its code: a player, a modder, a server admin, a caller of a public API. **The examples are the spec.** A ticket's prose is for the human, and it only feeds your drafts. Once examples are approved, the build is example, red test, green, then mutation proving the test can go red again, and no prose line proves or decides anything. A prose ask that no approved example covers is a **missing example**: draft it and take it back through step 3. You draft them. An example is **approved** once the human has read and edited it, and only an approved example becomes a test.
 
 ## A good example
 
