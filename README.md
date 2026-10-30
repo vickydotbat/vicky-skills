@@ -89,7 +89,7 @@ The idea is acceptance test-driven development. Dave Farley's [The Industry Is C
 
 ```bash
 claude plugin validate .
-for t in tests/*.test.sh; do "$t" || echo "FAIL $t"; done
+tests/run-all.sh
 ```
 
 Run both before every push. CI runs every test once a pull request is marked ready, and refuses a draft.

@@ -9,7 +9,7 @@ This repo is a public Claude Code plugin. Every commit on `main` reaches users a
 
 ## Before every push
 
-Run `claude plugin validate .` and every script in `tests/` (CI runs the tests listed in `.github/workflows/ci.yml`). A new test script also gets a step in that workflow.
+Run `claude plugin validate .` and `tests/run-all.sh`, which runs every script in `tests/` (CI runs each as a step in `.github/workflows/ci.yml`). A new test script also gets a step in that workflow.
 
 ## Public repo
 
@@ -29,6 +29,10 @@ Every file stays free of local paths, hostnames and any project's infrastructure
 - Script in `plugins/vicky-skills/scripts/`, registered in `plugins/vicky-skills/hooks/hooks.json`.
 - An optional guard is off until the user turns it on: declare a `userConfig` option in `plugin.json` (default `false`) and have the script exit early unless `CLAUDE_PLUGIN_OPTION_<NAME>` is `true` or `1`.
 - Add `tests/<hook>.test.sh`, a CI step for it, and a README bullet under the hooks list.
+
+## Add a check a skill runs on the user's repo
+
+- The same pull request gives the user's repo a way to opt out: a line in a `docs/agents/` file that `first-contact` writes, like `ADR format:` in `domain.md`. Done when a repo with its own way of working on purpose can switch the check off.
 
 ## Voice
 
