@@ -26,7 +26,7 @@ A warp is one effort: every star it builds goes on one branch and one pull reque
 
    Done when every ticket on the course is closed.
 6. **Build the target** from the examples approved in pre-flight. Run `do`, `review` and `make-it-so`. Done when the pull request's required checks are green.
-7. **Land.** When the target is on a chart, redraw it without the course. Run `loose-ends`. Done when every ticket the warp touched is settled.
+7. **Land.** When the target is on a chart, redraw it without the course. Run `loose-ends`. Open the landing report with one sign-off line that drops out of warp at the star, in the voice the session's output style sets ("🖖 Dropped out of warp at the star. <ticket> is Done."), then the merged pull requests and what is left. Done when every ticket the warp touched is settled and the landing report is sent.
 
 ## Mid-flight questions
 
@@ -41,7 +41,7 @@ An obstacle is anything on the course that waits on someone else, or refuses: an
 
 1. **Clear it with what you hold.** Use every authorization the user and the repo give you: a merge you may make, a bypass the user granted, a route the refusal itself names. Never work around what a refusal exists to stop.
 2. **Go around it.** Keep working on everything that doesn't wait on it: other tickets on the course, the next slice, the other repositories. When the next step builds on the blocked one, build on top of it as a stack with `stacked-branches`: a warp is the user's standing ask for one.
-3. **Sit at the gate**, only when nothing else is left and the gate should open soon. Ask for it once, then poll it once a minute, at most 60 times. Never end the turn at a gate, in a warp or in any other work: a reply with no tool call ends the run. After the 60th poll, report what the gate waits on and on whom.
+3. **Sit at the gate**, only when nothing else is left and the gate should open soon. Ask for it once, in a message whose first line is `🚪 Waiting on you: <the one thing>`, then poll it once a minute, at most 60 times, and send that line again every 15 minutes of waiting. The plugin's `gate_notify` hook turns the line into a desktop notification. Never end the turn at a gate, in a warp or in any other work: a reply with no tool call ends the run. After the 60th poll, report what the gate waits on and on whom.
 
 A brief for an agent working a public repository holds it to `loose-lips`' attack-map test, never to a ban on every name: repository names, ticket keys and decision record numbers are navigation.
 

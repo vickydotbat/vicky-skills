@@ -56,6 +56,16 @@
             "timeout": 5
           }
         ]
+      },
+      {
+        "matcher": "SendUserMessage",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/gate-notify.sh\"",
+            "timeout": 5
+          }
+        ]
       }
     ],
     "SessionStart": [
@@ -75,6 +85,17 @@
           {
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/spark-joy.sh\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/gate-notify.sh\"",
             "timeout": 5
           }
         ]

@@ -20,6 +20,6 @@ A branch **sparks joy** while it holds work that exists nowhere else. A branch w
    Done when every branch is in one pile.
 3. **Remove the worktrees of the "goes" pile first**, with the repo's own removal script when its docs name one (it may clean data that `git worktree remove` can't). Done when `git worktree list` shows none of them.
 4. **Delete the "goes" branches** with `git branch -d`. Use `-D` only when the merged pull request proves the work landed. Done when `git branch` shows none of them.
-5. **Report** each deletion by name, each branch kept with its reason, and the "ask" pile as one question. Done when all three are in your reply.
+5. **Report** under the headline `✨ Tidied: <n> branches`, each deletion by name, each branch kept with its reason, and the "ask" pile as one question. Done when all three are in your reply.
 
 Delete only local branches and worktrees. A remote branch is deleted only when the user asks.
