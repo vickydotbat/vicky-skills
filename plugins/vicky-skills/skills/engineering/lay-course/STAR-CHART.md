@@ -119,5 +119,6 @@ flowchart TD
 - An arrow runs from the blocker to the ticket it blocks.
 - A dashed line joins a related ticket the chart doesn't own.
 - Frontier tickets get `frontier` and closed ones `closed`. During a warp, the course and its target get `course` in place of `frontier`.
+- A ticket with no line to another goes in a column of its kind: one `subgraph <kind>` with `direction TB` per ten such tickets, chained with `~~~` so they stack. Without the columns, Mermaid lays them out in one row.
 
-Put the block under `## Chart` when the tracker draws Mermaid. When the tracker file says it can't, render it with mermaid-cli (`mmdc -i <chart>.mmd -o <chart>.png`), attach the image the way the tracker file says, and write `Attached: <chart>.png` under `## Chart`. Redraw from the tracker after every change to the chart's children or blockers.
+Put the block under `## Chart` when the tracker draws Mermaid. When the tracker file says it can't, render it at full size with mermaid-cli: write `{"flowchart":{"useMaxWidth":false}}` to `<config>.json`, then run `mmdc -c <config>.json -i <chart>.mmd -o <chart>.png`. The config keeps a big chart readable, where the default shrinks every chart to 800 pixels wide. Attach the image the way the tracker file says, and write `Attached: <chart>.png` under `## Chart`. Redraw from the tracker after every change to the chart's children or blockers.
