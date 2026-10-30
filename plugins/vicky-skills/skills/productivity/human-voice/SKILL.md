@@ -54,12 +54,19 @@ Use the reader's words, never code names. A second outcome is a second example.
 4. **Cut.** Walk the draft one sentence at a time against the four cut rules
    below. Done when every sentence adds a fact or an action no other sentence
    gives, and no sentence joins two independent facts.
-5. **Sweep.** Read [`TELLS.md`](TELLS.md) with the Read tool, the whole file,
+5. **Lint.** Write the draft to a scratch file and run
+   `python3 <this skill's folder>/scripts/lint-tells.py <file>`. It prints
+   `<line>: <tell>: <match>` for each tell a script can catch.
+   Rewrite every hit with that tell's fix from `TELLS.md`. A hit the text is
+   about, such as an emoji a doc explains, goes in a code span.
+   Run the lint again until it prints nothing. Done when it exits 0 on the
+   draft.
+6. **Sweep.** Read [`TELLS.md`](TELLS.md) with the Read tool, the whole file,
    every time. Done when you have checked the draft against every heading in
    it and rewritten each hit.
-6. **Read it aloud as the user.** Done when every paragraph passes "would
+7. **Read it aloud as the user.** Done when every paragraph passes "would
    they have written this sentence?" against their writing.
-7. **Show the draft.** A person reads every draft a player or the public will
+8. **Show the draft.** A person reads every draft a player or the public will
    see before it is committed or published. Done when the user has read it.
 
 ## Cut rules

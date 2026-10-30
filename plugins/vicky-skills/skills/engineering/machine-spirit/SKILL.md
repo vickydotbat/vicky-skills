@@ -29,7 +29,7 @@ Run them in order for every workflow change. Diagnosing a run starts at step 7.
 
 6. **Budget.** Name what each job costs: time, peak memory and disk. A docs-only change builds nothing. Release work (cross-builds, images, packaging) stays on the release trigger. Push once, and push again to a green pull request only when the result can change. Done when the PR body states the expected cost, and the cost of a new step comes from the runner log after its first run.
 
-7. **Watch every terminal state.** Poll the commit status until every required context is final, matching failure, cancelled and timeout as well as success. Read the failing job's log before you change anything: `tea api repos/<owner>/<repo>/actions/jobs/<id>/logs </dev/null`. A local run says which step is slow; only the runner log says why. Done when you quote each required context's final state.
+7. **Watch every terminal state.** Poll the commit status until every required context is final, matching failure, cancelled and timeout as well as success. Read the failing job's log before you change anything: `tea api repos/<owner>/<repo>/actions/jobs/<id>/logs </dev/null`. On GitHub, the job's step list and `gh run view --log` can come back partial. To prove a step ran, read the run's log archive: `gh api repos/<owner>/<repo>/actions/runs/<id>/logs > <scratch>/logs.zip`, then `0_<job>.txt` inside it. A local run says which step is slow; only the runner log says why. Done when you quote each required context's final state.
 
 ## Rules
 
