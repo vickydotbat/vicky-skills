@@ -24,6 +24,7 @@
     "./skills/engineering/review",
     "./skills/engineering/sentinels",
     "./skills/engineering/ship-it",
+    "./skills/engineering/spark-joy",
     "./skills/engineering/stacked-branches",
     "./skills/engineering/true-names",
     "./skills/engineering/ui-design-101",
@@ -103,6 +104,12 @@
       "title": "Tidy merged branches at session start",
       "description": "When a local branch's upstream is gone, ask the agent to run marie-kondo before its first reply.",
       "default": false
+    },
+    "deepen_every_days": {
+      "type": "string",
+      "title": "Deepen the code every few days",
+      "description": "0 does nothing. A number of days N runs spark-joy in the background at the first session start in a repo after N days, to a draft pull request.",
+      "default": "0"
     },
     "nwn_blender": {
       "type": "string",
