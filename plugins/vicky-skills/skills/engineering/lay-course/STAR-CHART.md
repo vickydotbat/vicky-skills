@@ -39,7 +39,7 @@ Title: `Star Chart: <the effort>`. Label: `starchart:chart`.
 
 ## Chart
 
-<the drawing, or where it is attached: see "Drawing the chart">
+<the drawing: see "Drawing the chart">
 
 ## Prime directive
 
@@ -102,23 +102,18 @@ The Examples are the star's spec, and the only one: the sentence and the Pointer
 
 ## Drawing the chart
 
-Every chart shows how its tickets connect. Write it as a Mermaid flowchart:
+Every chart shows how its tickets connect, drawn from the tracker, never by hand. Redraw after every change to the chart's children or blockers.
 
-```mermaid
-flowchart TD
-  T1["KEY-1 anomaly: <title>"] --> T3["KEY-3 star: <title>"]
-  T2["KEY-2 away team: <title>"] --> T1
-  T3 -.- T9["KEY-9 related: <title>"]
-  classDef frontier stroke-width:3px
-  classDef course fill:#fde68a
-  classDef closed opacity:0.4
-  class T2 frontier
-```
+1. **Use the tracker's draw command** when the tracker file's "Star chart operations" names one (`plane draw <chart>`). Done when the command reports the drawing.
+2. **Otherwise, list the tickets** in `<scratch>/tickets.json`, one object per child, read from the tracker this turn:
 
-- One node per child ticket, labelled with its key, its kind and its title.
-- An arrow runs from the blocker to the ticket it blocks.
-- A dashed line joins a related ticket the chart doesn't own.
-- Frontier tickets get `frontier` and closed ones `closed`. During a warp, the course and its target get `course` in place of `frontier`.
-- A ticket with no line to another goes in a column of its kind: one `subgraph <kind>` with `direction TB` per ten such tickets, chained with `~~~` so they stack. Without the columns, Mermaid lays them out in one row.
+   ```json
+   [{"key": "KEY-1", "kind": "anomaly", "title": "<title>", "open": true,
+     "assigned": false, "blocked_by": ["KEY-2"], "related": ["KEY-9"]}]
+   ```
 
-Put the block under `## Chart` when the tracker draws Mermaid. When the tracker file says it can't, render it at full size with mermaid-cli: write `{"flowchart":{"useMaxWidth":false}}` to `<config>.json`, then run `mmdc -c <config>.json -i <chart>.mmd -o <chart>.png`. The config keeps a big chart readable, where the default shrinks every chart to 800 pixels wide. Attach the image the way the tracker file says, and write `Attached: <chart>.png` under `## Chart`. Redraw from the tracker after every change to the chart's children or blockers.
+   `kind` is the `starchart:` kind, or `star`. `blocked_by` holds only open blockers, on this chart or another. `related` holds tickets the chart doesn't own. Done when every child of the chart has one object.
+3. **Draw it** with `python3 <this skill's folder>/scripts/draw-chart.py <scratch>/tickets.json`. During a warp, add `--course <KEY>,<KEY>` for the course and its target. Done when it prints a Mermaid flowchart.
+4. **Put it under `## Chart`.** When the tracker file says the tracker draws Mermaid, paste the printed block. When it says it can't, add `--png <scratch>/chart.png`, attach the image the way the tracker file says, and show it in the body the way it says. Done when the chart's page shows the drawing.
+
+The drawing marks the frontier with a thick border, the course in yellow and closed tickets faded. A ticket with no line to another stacks in a column of its kind.

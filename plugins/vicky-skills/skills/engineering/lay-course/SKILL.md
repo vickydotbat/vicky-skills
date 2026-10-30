@@ -10,7 +10,7 @@ disable-model-invocation: true
 
 `lay-course` starts a session whose end you don't know yet. It places the **stars**, as a **star chart** or one star, then stops or engages `warp`. Work the user already understands goes to `do` instead.
 
-The words, the chart body, the ticket forms and the drawing are in [STAR-CHART.md](STAR-CHART.md): read it before the first write. The tracker is named in `docs/agents/issue-tracker.md`, and its "Star chart operations" section says how this repo expresses children, blocking, the frontier and an attached chart. If the file is missing, tell the user to run `/first-contact`.
+The words, the chart body, the ticket forms and the drawing are in [STAR-CHART.md](STAR-CHART.md): read it before the first write. The tracker is named in `docs/agents/issue-tracker.md`, and its "Star chart operations" section says how this repo expresses children, blocking, the frontier and the drawing. If the file is missing, tell the user to run `/first-contact`.
 
 ## Start an effort
 
