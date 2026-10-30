@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # lay-course draws a chart from its tickets, so no agent writes the Mermaid by
 # hand. A blocker draws an edge, an open blocker elsewhere is a node of its
-# own, a ticket with no edge stacks in its kind's column, and the frontier,
-# the course and the closed tickets get their classes.
+# own, a ticket with no edge stacks in its kind's column, a closed ticket is
+# left out, and the frontier and the course get their classes.
 set -u
 script="$(dirname "$0")/../plugins/vicky-skills/skills/engineering/lay-course/scripts/draw-chart.py"
 tickets=$(mktemp); trap 'rm -f "$tickets"' EXIT
@@ -18,15 +18,13 @@ fail=0
 expect() { grep -qF -- "$1" <<<"$out" || { echo "FAIL missing: $1"; fail=1; }; }
 expect "  T1[\"K-1 anomaly: Ask 'why' (now)\"]"
 expect "  T1 --> T2"
-expect '  T6["O-9 on another chart"]'
-expect "  T6 --> T2"
-expect "  T4 -.- T7"
-expect '  T7["O-5 related"]'
-expect '["away team"]'
-expect '    T3["K-3 away team: Look"]'
-expect "  class T5 course"
+expect '  T5["O-9 on another chart"]'
+expect "  T5 --> T2"
+expect "  T3 -.- T6"
+expect '  T6["O-5 related"]'
+expect "  class T4 course"
 expect "  class T1 frontier"
-expect "  class T3 closed"
+grep -qF "K-3" <<<"$out" && { echo "FAIL a closed ticket is drawn"; fail=1; }
 grep -q "class .*T2.* frontier" <<<"$out" && { echo "FAIL a blocked ticket is on the frontier"; fail=1; }
 [ $fail -eq 0 ] && echo "ok   draw-chart builds edges, columns and classes from the tickets"
 exit $fail

@@ -29,6 +29,8 @@ def label(text):
 
 
 def mermaid(tickets, course=()):
+    # The drawing shows the course ahead: closed tickets are the log, kept in the tracker.
+    tickets = [t for t in tickets if t.get("open", True)]
     keys = {t["key"] for t in tickets}
     node = {t["key"]: f"T{n}" for n, t in enumerate(tickets, 1)}
     lines = {t["key"]: f'{node[t["key"]]}["{t["key"]} {t.get("kind", "star").replace("-", " ")}: {label(t.get("title"))}"]'
@@ -59,14 +61,12 @@ def mermaid(tickets, course=()):
             out += [f"    {node[a]} ~~~ {node[b]}" for a, b in zip(column, column[1:])]
             out.append("  end")
     out += [f"  {edge}" for edge in edges]
-    out += ["  classDef frontier stroke-width:3px", "  classDef course fill:#fde68a",
-            "  classDef closed opacity:0.4"]
+    out += ["  classDef frontier stroke-width:3px", "  classDef course fill:#fde68a"]
     open_keys = {t["key"] for t in tickets if t.get("open", True)}
     blocking = open_keys | (set(node) - keys)
     ready = [t["key"] for t in tickets if t["key"] in open_keys and not t.get("assigned")
              and not set(t.get("blocked_by") or []) & blocking]
-    marked = {"course": [k for k in course if k in node], "frontier": [k for k in ready if k not in course],
-              "closed": [t["key"] for t in tickets if t["key"] not in open_keys]}
+    marked = {"course": [k for k in course if k in node], "frontier": [k for k in ready if k not in course]}
     for name, members in marked.items():
         if members:
             out.append(f"  class {','.join(node[k] for k in members)} {name}")
