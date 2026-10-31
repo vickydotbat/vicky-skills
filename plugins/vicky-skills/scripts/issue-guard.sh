@@ -7,11 +7,11 @@
 # so and stays off.
 set -u
 case "${CLAUDE_PLUGIN_OPTION_GUARD_ISSUE_THREADS:-}" in true | 1) ;; *) exit 0 ;; esac
-command -v jq >/dev/null || { echo "issue-guard: jq is missing, guard is off" >&2; exit 0; }
+command -v jq >/dev/null || { echo "issue-guard: jq is missing, guard is off" >&2; exit 0; } # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
 command="$(jq -r '.tool_input.command // ""' 2>/dev/null)"
 
 # Only the two forge CLIs are in scope.
-grep -Eq '(^|[^[:alnum:]_-])(gh|tea)([[:space:]]|$)' <<<"$command" || exit 0
+grep -Eq '(^|[^[:alnum:]_-])(gh|tea)([[:space:]]|$)' <<<"$command" || exit 0 # mutant-ok delete: a fast path: the checks below find nothing to refuse in such a command
 
 refuse() {
   echo "issue-guard: refused, $1 An issue is a thread: the body plus every comment. Re-run with --comments." >&2
@@ -40,4 +40,4 @@ while IFS= read -r segment; do
     refuse "reading an issue without its comments."
   fi
 done < <(tr ';&|\n' '\n' <<<"$command")
-exit 0
+exit 0 # mutant-ok delete: the line above leaves status 0, so the script ends the same way

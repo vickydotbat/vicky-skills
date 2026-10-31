@@ -8,8 +8,8 @@
 # interpreter's own code) aimed at a path inside the checkout.
 # Off unless the plugin option guard_draft_lock is true.
 case "${CLAUDE_PLUGIN_OPTION_GUARD_DRAFT_LOCK:-}" in true|1) ;; *) exit 0 ;; esac
-command -v jq >/dev/null || exit 0
-command -v git >/dev/null || exit 0
+command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
+command -v git >/dev/null || exit 0 # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
 payload=$(cat)
 cwd=$(jq -r '.cwd // empty' <<<"$payload")
 [ -n "$cwd" ] && { cd "$cwd" 2>/dev/null || exit 0; }
@@ -33,12 +33,12 @@ else
   [ -n "$file" ] || exit 0
   dir=$(dirname -- "$file")
   while [ ! -d "$dir" ]; do dir=$(dirname -- "$dir"); done
-  cd "$dir" || exit 0
+  cd "$dir"
   place=$file
 fi
 gitdir=$(git rev-parse --absolute-git-dir 2>/dev/null) || exit 0
 lock="$gitdir/red-pen-open"
-[ -f "$lock" ] || exit 0
+[ -f "$lock" ] || exit 0 # mutant-ok delete: without the lock, head reads nothing and the case below exits 0
 pid=$(head -1 "$lock")
 case "$pid" in ''|*[!0-9]*) exit 0 ;; esac
 kill -0 "$pid" 2>/dev/null || exit 0

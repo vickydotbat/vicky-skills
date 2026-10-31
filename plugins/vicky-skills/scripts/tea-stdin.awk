@@ -46,14 +46,14 @@ BEGIN { RS = "^$"; ORS = "" }
 {
   n = length($0)
   cmdpos = 1; piped = 0; inTea = 0; out = ""; word = ""; sp = 0; changed = 0
-  if ($0 ~ /<</) exit 0
+  if ($0 ~ /<</) exit 0 # mutant-ok: the hook reads only what this prints, never its exit status
   for (i = 1; i <= n; i++) {
     c = substr($0, i, 1)
     if (c == "\\") {
       out = out c substr($0, i + 1, 1); word = word "x"; i++
     } else if (c == "\047") {
       j = index(substr($0, i + 1), "\047")
-      if (j == 0) exit 0
+      if (j == 0) exit 0 # mutant-ok: the hook reads only what this prints, never its exit status
       out = out substr($0, i, j + 1); word = word "x"; i += j
     } else if (c == "\"") {
       for (j = i + 1; j <= n; j++) {
@@ -61,11 +61,13 @@ BEGIN { RS = "^$"; ORS = "" }
         if (d == "\\") { j++; continue }
         if (d == "\"") break
       }
-      if (j > n) exit 0
+      if (j > n) exit 0 # mutant-ok: the hook reads only what this prints, never its exit status
       out = out substr($0, i, j - i + 1); word = word "x"; i = j
     } else if (c == "`") {
-      exit 0
+      exit 0 # mutant-ok: the hook reads only what this prints, never its exit status
     } else if (c == "#" && word == "") {
+      # The fix goes before a comment, where the shell still reads it.
+      end_segment()
       j = index(substr($0, i), "\n")
       if (j == 0) { out = out substr($0, i); i = n }
       else { out = out substr($0, i, j - 1); i += j - 2 }

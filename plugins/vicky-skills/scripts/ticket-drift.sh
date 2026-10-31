@@ -20,4 +20,4 @@ case "$last" in ''|*[!0-9]*) last=0 ;; esac
 [ $((now - last)) -ge $((days * 86400)) ] || exit 0
 echo "$now" > "$stamp"
 echo "drift_every_days is $days: a ticket-drift check is due. Start the ticket-drift agent now as one background subagent, so the user's first request is served alongside it."
-exit 0
+exit 0 # mutant-ok delete: the line above leaves status 0, so the script ends the same way

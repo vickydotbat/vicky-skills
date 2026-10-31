@@ -7,10 +7,10 @@
 set -u
 case "${CLAUDE_PLUGIN_OPTION_AUTO_TIDY:-}" in true|1) ;; *) exit 0 ;; esac
 cd "${CLAUDE_PROJECT_DIR:-.}" 2>/dev/null || exit 0
-git rev-parse --is-inside-work-tree >/dev/null 2>&1 || exit 0
+git rev-parse --is-inside-work-tree >/dev/null 2>&1 || exit 0 # mutant-ok delete: outside a repository every git call below fails and nothing is gone
 GIT_TERMINAL_PROMPT=0 timeout 15 git fetch --prune --quiet origin >/dev/null 2>&1
 gone=$(git for-each-ref --format='%(refname:short) %(upstream:track)' refs/heads \
   | awk '$2 == "[gone]" { printf "%s ", $1 }')
 [ -n "$gone" ] || exit 0
 echo "auto_tidy: these local branches lost their upstream: ${gone% }. Before your first reply, run the marie-kondo skill, and give its report in one line."
-exit 0
+exit 0 # mutant-ok delete: the line above leaves status 0, so the script ends the same way

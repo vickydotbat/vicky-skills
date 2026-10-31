@@ -2,10 +2,15 @@
 # Asks the human before an agent edits a file that holds approved examples,
 # through Edit, Write or a Bash command. A command that only runs or reads
 # such a file passes.
-command -v jq >/dev/null || exit 0
+command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
 payload=$(cat)
 # A file named for approved examples, or one holding a marked test, is the contract.
-approved() { basename -- "$1" | grep -qiE 'approved_?examples' || { [ -f "$1" ] && grep -q 'approved-spec' "$1"; }; }
+# The mark is a test framework's tag, never a mention in prose: a comment
+# "# approved-spec:", a quoted "approved-spec", or @approved-spec.
+approved() {
+  basename -- "$1" | grep -qiE 'approved_?examples' ||
+    { [ -f "$1" ] && grep -qE '(#|//|--|;)[[:space:]]*approved-spec:|["'"'"']approved-spec["'"'"']|@approved-spec([^a-z-]|$)' "$1"; }
+}
 ask() {
   jq -n --arg f "$1" '{hookSpecificOutput: {
     hookEventName: "PreToolUse",
@@ -18,7 +23,7 @@ ask() {
 if [ "$(jq -r '.tool_name // empty' <<<"$payload")" != Bash ]; then
   file=$(jq -r '.tool_input.file_path // empty' <<<"$payload")
   [ -n "$file" ] && approved "$file" && ask "$file"
-  exit 0
+  exit 0 # mutant-ok delete: an empty command below finds no target and exits 0
 fi
 
 command=$(jq -r '.tool_input.command // empty' <<<"$payload")
@@ -49,4 +54,4 @@ grep -qE "$writes" <<<"$command" && ask "$target"
 # names the file may write it. Running the file itself only reads it.
 first=$(grep -oE '(^|[[:space:];&|(])(python3?|node|ruby|perl|php|awk)[[:space:]]+[^[:space:]|;&]+' <<<"$command" | head -1 | awk '{print $NF}')
 [ -n "$first" ] && [ "$(basename -- "$first")" != "$name" ] && ask "$target"
-exit 0
+exit 0 # mutant-ok delete: the line above leaves status 0, so the script ends the same way

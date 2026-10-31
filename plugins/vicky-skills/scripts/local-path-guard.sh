@@ -23,7 +23,6 @@ done
 if grep -Eq 'git[[:space:]].*add([[:space:]]|$)|commit[^;&|]*[[:space:]]-[a-zA-Z]*a' <<<"$code"; then
   added=$({ git diff HEAD 2>/dev/null || git diff --cached 2>/dev/null || true; } | grep -E '^\+' | grep -Ev '^\+\+\+ ' || true)
   while IFS= read -r untracked; do
-    [ -n "$untracked" ] && [ -f "$untracked" ] || continue
     grep -Iq . "$untracked" || continue
     added="$added
 $(head -c 1000000 "$untracked")"

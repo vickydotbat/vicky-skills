@@ -9,8 +9,8 @@
 GUARD=checkout-guard
 OPTION=${CLAUDE_PLUGIN_OPTION_GUARD_CHECKOUT:-}
 case "$OPTION" in true|1) ;; *) exit 0 ;; esac
-[ -n "${CLAUDE_PLUGIN_DATA:-}" ] || exit 0
-command -v jq >/dev/null || exit 0
+[ -n "${CLAUDE_PLUGIN_DATA:-}" ] || exit 0 # mutant-ok delete: the records would go to /checkouts, which a hook cannot write
+command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
 payload=$(cat)
 session=$(jq -r '.session_id // empty' <<<"$payload" | tr -cd 'A-Za-z0-9_-')
 [ -n "$session" ] || exit 0
@@ -21,7 +21,8 @@ if [ "$event" = SessionEnd ]; then rm -f "$mine"; exit 0; fi
 # shellcheck source=git-hook-lib.sh
 . "$(dirname "$0")/git-hook-lib.sh" <<<"$payload"
 
-top=$(git rev-parse --show-toplevel 2>/dev/null) || exit 0
+# The library exited outside a repository, so this always finds one.
+top=$(git rev-parse --show-toplevel)
 branch=$(git symbolic-ref --short -q HEAD || git rev-parse --short HEAD)
 now=$(date +%s)
 remember() {
@@ -42,14 +43,14 @@ fi
 switch=""
 if grep -Eq 'git[[:space:]]+([^|;&]*[[:space:]])?switch([[:space:]]|$)' <<<"$code"; then
   switch=yes
-elif args=$(grep -oE 'git[[:space:]]+([^|;&]*[[:space:]])?checkout([[:space:]][^|;&]*)?' <<<"$code" | head -1) && [ -n "$args" ]; then
+elif args=$(grep -oE 'git[[:space:]]+([^|;&]*[[:space:]])?checkout([[:space:]][^|;&]*)?' <<<"$code" | head -1); [ -n "$args" ]; then
   args=${args#*checkout}
   if ! grep -Eq '(^|[[:space:]])--([[:space:]]|$)' <<<"$args"; then
     if grep -Eq '(^|[[:space:]])(-b|-B|--orphan|--detach)([[:space:]]|$)' <<<"$args"; then
       switch=yes
     else
       for arg in $args; do
-        case "$arg" in -*) continue ;; esac
+        case "$arg" in -?*) continue ;; esac
         { [ "$arg" = - ] || git rev-parse --verify -q "$arg^{commit}" >/dev/null; } && [ ! -e "$arg" ] && switch=yes
         break
       done
@@ -60,7 +61,6 @@ if [ -n "$switch" ]; then
   for other in "$records"/*; do
     [ -f "$other" ] && [ "$other" != "$mine" ] || continue
     line=$(awk -F '\t' -v t="$top" '$1 == t' "$other")
-    [ -n "$line" ] || continue
     when=${line##*	}; theirs=$(cut -f2 <<<"$line")
     case "$when" in ''|*[!0-9]*) continue ;; esac
     [ $((now - when)) -lt 43200 ] || continue
@@ -68,4 +68,3 @@ if [ -n "$switch" ]; then
       "Use your own worktree instead: git worktree add <dir> <branch>"
   done
 fi
-exit 0

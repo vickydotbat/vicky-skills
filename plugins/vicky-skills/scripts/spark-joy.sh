@@ -22,4 +22,4 @@ if [ "${CLAUDE_PLUGIN_OPTION_GAMMA_SHIFT:-off}" = engage ]; then
 else
   echo "deepen_every_days is $days: run the spark-joy skill now in one background subagent with isolation \"worktree\", so the user's first request is served alongside it."
 fi
-exit 0
+exit 0 # mutant-ok delete: the line above leaves status 0, so the script ends the same way

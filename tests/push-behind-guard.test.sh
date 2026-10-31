@@ -32,6 +32,21 @@ for dflt in main master; do
   expect 2 "$dflt: behind via refspec" "$w" 'git push origin topic:topic'
   expect 2 "$dflt: behind via git -C" "$scratch" "git -C $w push origin topic"
   expect 2 "$dflt: behind via cd" "$scratch" "cd $w && git push origin topic"
+  expect 2 "$dflt: behind via a bare push" "$w" 'git push'
+  expect 2 "$dflt: behind via a forced refspec" "$w" 'git push origin +topic'
+  expect 2 "$dflt: behind via a quoted branch" "$w" 'git push origin "topic"'
+  expect 0 "$dflt: a git command before an out-of-scope push passes" "$w" 'git log -1; git push fork topic'
+  expect 2 "$dflt: behind via a quoted git -C path" "$scratch" "git -C \"$w\" push origin topic"
+  HOME="$scratch" expect 2 "$dflt: behind via cd ~" "$scratch" "cd ~/work-$dflt && git push origin topic"
+  expect 0 "$dflt: a push in a commit message heredoc passes" "$w" "git commit -q --allow-empty -F - <<'MSG'
+first line
+git push origin topic
+MSG"
+  expect 2 "$dflt: a push after a commit message heredoc is checked" "$w" "git commit -q --allow-empty -F - <<'MSG'
+first line
+MSG
+git push origin topic"
+  expect 0 "$dflt: the word push outside git passes" "$w" 'git status; echo push'
   expect 0 "$dflt: delete passes" "$w" 'git push origin --delete topic'
   expect 0 "$dflt: other remote passes" "$w" 'git push fork topic'
   opt=off; expect 0 "$dflt: option off passes" "$w" 'git push origin topic'; opt=true
@@ -46,6 +61,8 @@ for dflt in main master; do
   gi "$w" remote set-url origin "$rem"
   gi "$w" checkout -q "$dflt"
   expect 0 "$dflt: pushing the default itself is out of scope" "$w" "git push origin $dflt"
+  expect 2 "$dflt: naming a branch that is behind, from the default, is refused" "$w" 'git push origin topic'
+  expect 0 "$dflt: HEAD on the default is out of scope" "$w" 'git push origin HEAD'
 done
 expect 0 "not a push passes" "$w" 'git status'
 exit $fail

@@ -224,5 +224,59 @@ for t in cat grep git env bash; do ln -s "$(command -v "$t")" "$scratch/nojq/$t"
 msg=$(printf '{}' | PATH="$scratch/nojq" "$(command -v bash)" "$hook" 2>&1 >/dev/null)
 [[ $msg == *"jq or git is missing"* ]] || { echo "FAIL missing jq printed: '$msg'"; failed=1; }
 
+# Every refusal that takes an allowance spends exactly one.
+allowed() { # cwd command
+  touch "$HOME/.claude/pr-guard-allow"
+  expect 0 "$1" "$2"
+  [[ ! -e $HOME/.claude/pr-guard-allow ]] || { echo "FAIL the allowance was not spent: $2"; failed=1; rm -f "$HOME/.claude/pr-guard-allow"; }
+}
+echo '[{"index":"7","head":"feat/one","author":"me"}]' >"$scratch/pulls.json"
+allowed feature 'tea pr create --base main --head feat/two'
+allowed hub 'gh stack init feat/one feat/two'
+allowed feature 'gs branch create feat/two'
+rm -f "$scratch/pulls.json"
+allowed feature 'tea pr create --head feat/two'
+echo '[{"index":"10","head":"feat/a","author":"me","title":"Fix the cache (PLAT-1)"}]' >"$scratch/pulls.json"
+SESSION=C allowed feature 'tea pr create --base main --head plat-1-again'
+SESSION=A allowed feature 'tea pr create --base main --head feat/a3'
+
+# A pull request this session never opened doesn't make the next one a second.
+echo '[{"index":"14","head":"feat/z","author":"me","title":"Other work"}]' >"$scratch/pulls.json"
+SESSION=A expect 0 feature 'tea pr create --base main --head feat/a4'
+
+# A quoted branch is the branch, so updating mine passes.
+echo '[{"index":"7","head":"feat/one","author":"me"}]' >"$scratch/pulls.json"
+expect 0 feature 'tea pr create --base main --head "feat/one"'
+expect 0 feature "tea pr create --base main --head 'feat/one'"
+expect 2 feature 'tea pr create --base main --head "feat/two"'
+
+# The repository a cd names, quoted or under ~, is the one judged.
+expect 2 trunk 'cd "../feature" && tea pr create --head feat/two'
+expect 2 trunk "cd '../feature' && tea pr create --head feat/two"
+expect 2 trunk 'cd ~/../feature && tea pr create --head feat/two'
+expect 0 trunk "cd $scratch/nowhere && tea pr create --head feat/two"
+got=$(run "$scratch/gone" Bash "$(cmd 'tea pr create --head feat/two')")
+[[ $got == 0 ]] || { echo "FAIL a cwd that is gone: exit $got"; failed=1; }
+
+# A body file named through $HOME, ~ or the session ID is still read.
+cp "$scratch/footer.md" "$HOME/f.md"; mkdir -p "$scratch/feature/sid"; cp "$scratch/footer.md" "$scratch/feature/sid/f.md"
+expect 2 feature 'gh pr edit 7 --body-file $HOME/f.md'
+expect 2 feature 'gh pr edit 7 --body-file ${HOME}/f.md'
+expect 2 feature 'gh pr edit 7 --body-file ~/f.md'
+SESSION=sid expect 2 feature 'gh pr edit 7 --body-file $CLAUDE_CODE_SESSION_ID/f.md'
+SESSION=sid expect 2 feature 'gh pr edit 7 --body-file ${CLAUDE_CODE_SESSION_ID}/f.md'
+
+# A repository's own bin/plane is the tracker it asks first.
+mkdir -p "$scratch/feature/bin"
+printf '%s\n' '#!/usr/bin/env bash' 'echo "{\"created_at\":\"2026-10-01T00:00:00Z\"}"' >"$scratch/feature/bin/plane"
+chmod +x "$scratch/feature/bin/plane"
+echo '[{"index":"10","head":"feat/a","author":"me","title":"Fix the cache (PLAT-1)"}]' >"$scratch/pulls.json"
+TRANSCRIPT="$scratch/transcript.jsonl" SESSION=A expect 0 feature 'tea pr create --base main --head feat/a11 --title "Only bin/plane knows it (PLAT-77)"'
+rm -rf "$scratch/feature/bin"
+
+# Out of scope: a commit message file, and a raw read of the pulls API.
+expect 0 feature "git commit -F $scratch/trailer.md"
+expect 0 feature 'tea api repos/o/r/pulls'
+
 if [[ $failed -eq 0 ]]; then echo "pr-guard test: all cases pass"; fi
 exit "$failed"

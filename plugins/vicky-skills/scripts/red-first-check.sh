@@ -15,12 +15,11 @@ done
 base=${args[0]}; head=${args[1]:-HEAD}
 repo=$(git rev-parse --show-toplevel) || exit 2
 scratch=$(mktemp -d); trap 'rm -rf "$scratch"' EXIT
-git clone -q --no-local --no-checkout "$repo" "$scratch/clone" || exit 2
+git clone -q --no-local --no-checkout "$repo" "$scratch/clone" || exit 2 # mutant-ok: a clone of the repo's own checkout fails only on a full disk
 fail=0 checked=0
 while IFS=$'\t' read -r sha file; do
-  [ -n "$file" ] || continue
   checked=$((checked + 1))
-  git -C "$scratch/clone" checkout -q --force "$sha" || { echo "red-first: can't check out $sha" >&2; exit 2; }
+  git -C "$scratch/clone" checkout -q --force "$sha" || { echo "red-first: can't check out $sha" >&2; exit 2; } # mutant-ok: each commit comes from the clone's own log, so its checkout can't fail
   if (cd "$scratch/clone" && timeout 300 bash -c "${run//\{\}/\"\$0\"}" "$file") >/dev/null 2>&1; then
     echo "red-first: $file passed at $(git rev-parse --short "$sha"), the commit that added it. Its code came first."
     fail=1

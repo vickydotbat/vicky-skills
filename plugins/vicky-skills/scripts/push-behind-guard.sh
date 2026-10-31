@@ -60,4 +60,4 @@ while IFS= read -r segment; do
       "Settle each conflict, rerun the checks, then push again."
   fi
 done < <(tr ';&|' '\n' <<<"$command")
-exit 0
+exit 0 # mutant-ok delete: the loop above ends with status 0 on every path

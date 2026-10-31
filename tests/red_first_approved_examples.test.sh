@@ -41,7 +41,7 @@ check "on a branch whose new approved tests each failed at the commit that added
 
 # The draft lock: a stub editor that waits stands in for the user's.
 mkdir -p "$dir/scratch" "$dir/vault"
-printf '#!/bin/sh\nsleep 30\n' > "$dir/editor"; chmod +x "$dir/editor"
+printf '#!/bin/sh\nexec sleep 30\n' > "$dir/editor"; chmod +x "$dir/editor"
 (cd "$repo" && VISUAL="$dir/editor" bash "$opener" "$dir/scratch/draft.md") & opener_pid=$!
 lockfile="$(git -C "$repo" rev-parse --absolute-git-dir)/red-pen-open"
 for _ in $(seq 50); do [ -s "$lockfile" ] && break; sleep 0.1; done
