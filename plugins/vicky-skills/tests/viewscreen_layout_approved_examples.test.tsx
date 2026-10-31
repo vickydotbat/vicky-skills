@@ -1,8 +1,20 @@
 // approved-spec: the examples the user set for the viewscreen band's layout:
 // full terminal width, one border colour, never blank. Each test is named
 // after its example and drives the band through Claude Code's mod test kit.
+import type { On } from 'claude-code'
 import { describe, expect, mock, test } from 'claude-code/testing'
 import type { Engine } from 'claude-code/testing'
+
+// The engine beneath the band, which draws nothing of its own there.
+function seat(on: On) {
+  mock.clock(on)
+  on('ui.render', { component: 'AbovePrompt' }, ($, e) => {
+    const { Box } = $.ui.resolve(e)
+    return <Box key="engine" />
+  })
+  on('turn.start', ($, e) => ({ turnId: e.turnId }))
+  on('tool.call', () => ({ deny: 'stubbed' }))
+}
 
 function band(bodyColumns: number, hasSurvey = false) {
   return {
@@ -20,9 +32,7 @@ async function frame($: Engine, columns: number, hasSurvey = false) {
 
 describe('viewscreen layout', () => {
   test('the band is as wide as the terminal, idle or working, with short or long text, and changes only with the terminal', async ($, on) => {
-    mock.clock(on)
-    on('turn.start', ($, e) => ({ turnId: e.turnId }))
-    on('tool.call', () => ({ deny: 'stubbed' }))
+    seat(on)
 
     expect((await frame($, 100)).box?.props.width).toBe(100)
     await $.turn.start({ text: 'x'.repeat(300), turnId: 't1' })
@@ -33,8 +43,7 @@ describe('viewscreen layout', () => {
   })
 
   test('every wall of the border is one colour, the same in every phase', async ($, on) => {
-    mock.clock(on)
-    on('turn.start', ($, e) => ({ turnId: e.turnId }))
+    seat(on)
 
     const idle = (await frame($, 100)).box?.props
     await $.turn.start({ text: 'fix it', turnId: 't1' })
@@ -50,8 +59,7 @@ describe('viewscreen layout', () => {
   })
 
   test('the band always shows text, never blank, a survey showing included', async ($, on) => {
-    mock.clock(on)
-    on('turn.start', ($, e) => ({ turnId: e.turnId }))
+    seat(on)
 
     expect((await frame($, 100)).text.trim()).not.toBe('')
     expect((await frame($, 100, true)).text.trim()).not.toBe('')
