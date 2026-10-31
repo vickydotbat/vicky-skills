@@ -53,6 +53,10 @@ jobs:
         run: tests/black_hole_drawing_approved_examples.test.sh
       - name: Tells lint
         run: tests/lint_tells_approved_examples.test.sh
+      - name: Lint moves
+        run: tests/lint-tells.test.sh
+      - name: human-voice guiderails
+        run: tests/human_voice_guiderails_approved_examples.test.sh
       - name: Interactive page owns every page
         run: tests/page_owns_pages_approved_examples.test.sh
       - name: Examples are the seams
