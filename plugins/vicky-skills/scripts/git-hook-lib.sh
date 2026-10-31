@@ -39,3 +39,13 @@ code=$(awk '
   { print }
 ' <<<"$command" | sed -zE "s/'[^']*'//g; s/\"([^\"\\\\]|\\\\.)*\"//g")
 refuse() { printf "%s\n" "$@" >&2; exit 2; }
+# The remote's default branch as "<remote>/<name>": its recorded HEAD, else a
+# main or master it has. Empty when none is known.
+default_ref_of() {
+  local ref name # mutant-ok delete: a local declaration: no caller reads these names
+  ref=$(git symbolic-ref -q --short "refs/remotes/$1/HEAD" 2>/dev/null)
+  for name in main master; do
+    [ -z "$ref" ] && git rev-parse -q --verify "refs/remotes/$1/$name" >/dev/null && ref="$1/$name"
+  done
+  printf '%s' "$ref"
+}

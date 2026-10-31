@@ -271,7 +271,6 @@ check_one_pull() {
       "A separate effort passes when its title or branch names a ticket filed before this session started." \
       "$allowance_hint"
   fi
-
 }
 
 # After the command ran: record the branch as this session's, only when the
@@ -301,37 +300,37 @@ refuse_gs_on_github() {
 while IFS= read -r segment; do
   # The stack rules refuse before a command runs, so the PostToolUse pass skips them.
   if [[ $event != PostToolUse ]]; then
-  # git-spice: a stack submit opens one pull request per branch.
-  if grep -Eq '(^|[^[:alnum:]_-])gs[[:space:]]+((stack|s|upstack|us|downstack|ds)[[:space:]]+(submit|s)|ss|uss|dss)([[:space:]]|$)' <<<"$segment"; then
-    refuse_gs_on_github
-    spend_allowance "a stack submit"
-    refuse "a stack submit opens one pull request per branch." "$allowance_hint"
-  fi
+    # git-spice: a stack submit opens one pull request per branch.
+    if grep -Eq '(^|[^[:alnum:]_-])gs[[:space:]]+((stack|s|upstack|us|downstack|ds)[[:space:]]+(submit|s)|ss|uss|dss)([[:space:]]|$)' <<<"$segment"; then
+      refuse_gs_on_github
+      spend_allowance "a stack submit"
+      refuse "a stack submit opens one pull request per branch." "$allowance_hint"
+    fi
 
-  # GitHub's own stacks: submit and link open or join one pull request per
-  # branch, and init and add start a stack.
-  if grep -Eq '(^|[^[:alnum:]_-])gh[[:space:]]+stack[[:space:]]+(submit|link)([[:space:]]|$)' <<<"$segment"; then
-    spend_allowance "a stack submit"
-    refuse "a stack submit opens one pull request per branch." "$allowance_hint"
-  fi
-  if grep -Eq '(^|[^[:alnum:]_-])gh[[:space:]]+stack[[:space:]]+(init|add)([[:space:]]|$)' <<<"$segment"; then
-    spend_allowance "a stacked branch"
-    refuse "'gh stack' starts a stack." \
-      "Commit on '$current_branch' and push to its open pull request." "$allowance_hint"
-  fi
+    # GitHub's own stacks: submit and link open or join one pull request per
+    # branch, and init and add start a stack.
+    if grep -Eq '(^|[^[:alnum:]_-])gh[[:space:]]+stack[[:space:]]+(submit|link)([[:space:]]|$)' <<<"$segment"; then
+      spend_allowance "a stack submit"
+      refuse "a stack submit opens one pull request per branch." "$allowance_hint"
+    fi
+    if grep -Eq '(^|[^[:alnum:]_-])gh[[:space:]]+stack[[:space:]]+(init|add)([[:space:]]|$)' <<<"$segment"; then
+      spend_allowance "a stacked branch"
+      refuse "'gh stack' starts a stack." \
+        "Commit on '$current_branch' and push to its open pull request." "$allowance_hint"
+    fi
 
-  # git-spice: a branch created off anything but trunk is a stack.
-  if grep -Eq '(^|[^[:alnum:]_-])gs[[:space:]]+((branch|b)[[:space:]]+(create|c)|bc)([[:space:]]|$)' <<<"$segment"; then
-    case "$current_branch" in
-      main | master | "") ;;
-      *)
-        refuse_gs_on_github
-        spend_allowance "a stacked branch"
-        refuse "'gs branch create' on '$current_branch' starts a stack." \
-          "Commit on '$current_branch' and push to its open pull request." "$allowance_hint"
-        ;;
-    esac
-  fi
+    # git-spice: a branch created off anything but trunk is a stack.
+    if grep -Eq '(^|[^[:alnum:]_-])gs[[:space:]]+((branch|b)[[:space:]]+(create|c)|bc)([[:space:]]|$)' <<<"$segment"; then
+      case "$current_branch" in
+        main | master | "") ;;
+        *)
+          refuse_gs_on_github
+          spend_allowance "a stacked branch"
+          refuse "'gs branch create' on '$current_branch' starts a stack." \
+            "Commit on '$current_branch' and push to its open pull request." "$allowance_hint"
+          ;;
+      esac
+    fi
 
   fi
 

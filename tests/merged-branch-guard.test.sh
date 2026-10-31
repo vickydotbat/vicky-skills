@@ -80,6 +80,8 @@ gi "$w" push -q -u origin topic 2>/dev/null
 gi "$seed" fetch -q origin topic; gi "$seed" merge -q --ff-only FETCH_HEAD
 gi "$seed" push -q origin trunk; gi "$seed" push -q origin --delete topic 2>/dev/null
 gi "$w" fetch -q origin trunk
+# A main beside the recorded default changes nothing: origin/HEAD wins.
+gi "$seed" push -q origin trunk:main; gi "$w" fetch -q origin main
 expect 2 "a fast-forward merge holds every commit" "$w" 'git commit -m x' "already in origin/trunk"
 # A merge point the trees can't find: the refusal says how to check.
 setup odd

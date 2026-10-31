@@ -205,7 +205,7 @@
     "lesson_hint": {
       "type": "boolean",
       "title": "Lesson hint",
-      "description": "When your message teaches a lesson (\"codify\", \"lesson\", \"for the future\", \"from now on\"), send the agent through engrave before it replies.",
+      "description": "When your message teaches a lesson, such as \"codify that\" or \"for the future\", send the agent through engrave before it replies. The full phrase list is in scripts/lesson-hint.sh.",
       "default": false
     },
     "guard_merged_branch": {

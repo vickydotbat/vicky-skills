@@ -29,12 +29,7 @@ case $reach in
   *) [ "$(git for-each-ref --format='%(upstream:track)' "refs/heads/$current")" = "[gone]" ] || exit 0 ;;
 esac
 
-default_ref=$(git symbolic-ref -q --short "refs/remotes/$remote/HEAD" 2>/dev/null)
-if [ -z "$default_ref" ]; then
-  for name in main master; do
-    git rev-parse -q --verify "refs/remotes/$remote/$name" >/dev/null && { default_ref="$remote/$name"; break; }
-  done
-fi
+default_ref=$(default_ref_of "$remote")
 [ -n "$default_ref" ] || default_ref="$remote/main"
 # Origin answered, so bring its default branch in: the merge is on it.
 [ "$reach" = 2 ] && GIT_TERMINAL_PROMPT=0 timeout 5 git fetch -q "$remote" "${default_ref#"$remote"/}" >/dev/null 2>&1
@@ -48,16 +43,12 @@ while read -r sha tree; do
   if grep -Fxq "$tree" <<<"$trees"; then point=$sha; break; fi
 done < <(git log --format='%H %T' "$default_ref..HEAD" 2>/dev/null)
 
-if [ -z "$(git rev-list "$default_ref..HEAD" 2>/dev/null)" ]; then
+[ -n "$point" ] && after=$(git log --reverse --format='  %h %s' "$point..HEAD")
+if [ -z "$(git rev-list "$default_ref..HEAD" 2>/dev/null)" ] || { [ -n "$point" ] && [ -z "$after" ]; }; then
   moving="Every commit here is already in $default_ref, so nothing needs moving."
 elif [ -n "$point" ]; then
-  after=$(git log --reverse --format='  %h %s' "$point..HEAD")
-  if [ -z "$after" ]; then
-    moving="The merge holds every commit here, so nothing needs moving."
-  else
-    moving="Carry the commits made after the merge onto it with 'git cherry-pick ${point:0:12}..$current':
+  moving="Carry the commits made after the merge onto it with 'git cherry-pick ${point:0:12}..$current':
 $after"
-  fi
 else
   moving="The merge point is unknown. Compare 'git log $default_ref..HEAD' with the pull request's merged head ('gh pr view --json headRefOid') before carrying anything over."
 fi

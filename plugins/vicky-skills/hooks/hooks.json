@@ -1,7 +1,5 @@
 {
-  "modules": [
-    "./viewscreen.tsx"
-  ],
+  "modules": ["./viewscreen.tsx"],
   "hooks": {
     "PreToolUse": [
       {
