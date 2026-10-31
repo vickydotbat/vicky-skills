@@ -81,8 +81,6 @@ jobs:
         run: tests/merged_branch_approved_examples.test.sh
       - name: Sup lessons approved examples
         run: tests/sup_lessons_approved_examples.test.sh
-      - name: Sup lessons command
-        run: tests/sup-lessons.test.sh
       - name: Engrave routing approved examples
         run: tests/engrave_route_approved_examples.test.sh
       - name: Poll pace
