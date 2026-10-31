@@ -17,7 +17,7 @@ An agent document is a program the model runs. Good ergonomics means the agent t
    3. **A skill**: steps or reference reached through its description.
    4. **An always-loaded line** in `AGENTS.md` or `CLAUDE.md`, ideally a pointer to one of the above.
 
-   Done when you can say why each container above yours can't hold the rule.
+   A hook beats more context: when a rule could be a hook or a line of text, write the hook, and let the text shrink to a pointer at it. Done when you can say why each container above yours can't hold the rule.
 2. **List the branches**: each distinct case the document handles, which sends different runs down different paths. Done when every case you have seen in a real session is on the list.
 3. **Write the pointer** (the description, or the `AGENTS.md` line). Lead with the trigger word. Give one trigger per branch. Done when it would fire on every branch and on nothing else.
 4. **Write the steps**, each ending in **Done when** plus a condition the agent can see. Done when no step ends on a feeling ("understood", "thorough").
