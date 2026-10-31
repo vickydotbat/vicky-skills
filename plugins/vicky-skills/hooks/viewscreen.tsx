@@ -43,6 +43,7 @@ const IDLE: ActivityNow = {
   sinceMs: 0,
 }
 
+const FRAME_COLOR = 'cyan'
 const MAX_HISTORY = 100
 const MAX_HISTORY_ROWS = 12
 const MAX_THOUGHT_CHARS = 70
@@ -425,10 +426,6 @@ export const register: Register = on => {
   })
 
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
-    if (e.props.hasSurvey) {
-      return next(e)
-    }
-
     // The band is one site for every plugin: what the plugins beneath draw
     // stays, under the box, so another mod's band is never hidden.
     const below = await next(e)
@@ -447,7 +444,8 @@ export const register: Register = on => {
 
     // One agent the headline names; more, or one beside the main loop's
     // work, get a row each.
-    const isTeamListed = working.length > 1 || (working.length === 1 && headline.phase !== 'agent')
+    // A survey shares the band: the headline stays, the rows give it room.
+    const isTeamListed = !e.props.hasSurvey && (working.length > 1 || (working.length === 1 && headline.phase !== 'agent'))
     const listed = isTeamListed ? working.slice(-MAX_AGENT_ROWS) : []
     const unlisted = isTeamListed ? working.length - listed.length : 0
 
@@ -503,7 +501,7 @@ export const register: Register = on => {
     const earlier = hidden > 0 ? [<Text dimColor>{`… ${hidden} earlier`}</Text>] : []
     const empty = entries.length === 0 ? [<Text dimColor>No actions yet</Text>] : []
 
-    const body = isOpen
+    const body = isOpen && !e.props.hasSurvey
       ? [
           <Box key="history" flexDirection="column" marginTop={1}>
             {earlier}
@@ -515,12 +513,15 @@ export const register: Register = on => {
 
     return (
       <Box flexDirection="column">
+        {/* As wide as the band, so it changes only with the terminal, and one
+            border colour on every wall: the dot carries the phase. */}
         <Box
+          key="frame"
           flexDirection="column"
           borderStyle="round"
-          borderColor={isWorking ? color : 'gray'}
+          borderColor={FRAME_COLOR}
           paddingX={1}
-          alignSelf="flex-start"
+          width={e.props.bodyColumns}
         >
           <Box key="activity" flexDirection="row">
             <Button
@@ -534,7 +535,7 @@ export const register: Register = on => {
               <Text color={color}>{isWorking ? ' ● ' : ' ○ '}</Text>
               <Text bold>Claude: </Text>
             </Box>
-            <Text wrap="truncate-end">{printable(headline.label, MAX_LABEL_CHARS)}</Text>
+            <Text wrap="truncate-end">{printable(headline.label, MAX_LABEL_CHARS) || IDLE.label}</Text>
             <Box flexShrink={0}>
               <Text dimColor>{elapsed}</Text>
             </Box>
