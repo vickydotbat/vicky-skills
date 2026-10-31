@@ -4,12 +4,14 @@
 # such a file passes.
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
 payload=$(cat)
-# A file named for approved examples, or one holding a marked test, is the contract.
+# A file named for approved examples, or one holding a marked test, is the
+# contract. A file that does not exist yet holds no approved text.
 # The mark is a test framework's tag, never a mention in prose: a comment
 # "# approved-spec:", a quoted "approved-spec", or @approved-spec.
 approved() {
+  [ -f "$1" ] || return 1
   basename -- "$1" | grep -qiE 'approved_?examples' ||
-    { [ -f "$1" ] && grep -qE '(#|//|--|;)[[:space:]]*approved-spec:|["'"'"']approved-spec["'"'"']|@approved-spec([^a-z-]|$)' "$1"; }
+    { grep -qE '(#|//|--|;)[[:space:]]*approved-spec:|["'"'"']approved-spec["'"'"']|@approved-spec([^a-z-]|$)' "$1"; }
 }
 ask() {
   jq -n --arg f "$1" '{hookSpecificOutput: {

@@ -44,7 +44,7 @@ PROOF = os.path.join(ROOT, "tests", "mutation-proof.tsv")
 GIT_GUARDS = ["push-behind-guard", "local-path-guard", "checkout_guard_approved_examples", "red_first_approved_examples"]
 TESTS = {
     "after-push.sh": ["after-push"],
-    "approved-spec-guard.sh": ["approved-spec-guard", "approved_tests_yes_approved_examples", "guard_reads_approved_examples"],
+    "approved-spec-guard.sh": ["approved-spec-guard", "approved_tests_yes_approved_examples", "guard_reads_approved_examples", "guard_new_file_approved_examples"],
     "auto-tidy.sh": ["auto-tidy"],
     "checkout-guard.sh": ["checkout-guard", "checkout_guard_approved_examples"],
     "draft-lock.sh": ["draft-lock", "red_first_approved_examples"],
