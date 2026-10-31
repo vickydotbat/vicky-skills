@@ -185,6 +185,12 @@ jobs:
         run: tests/training_wheels_approved_examples.test.sh
       - name: Over-to-you covers the whole branch
         run: tests/over_to_you_whole_branch_approved_examples.test.sh
+      - name: Rm steer
+        run: tests/rm_steer_approved_examples.test.sh
+      - name: Pr-guard refuses only AI credit
+        run: tests/pr_guard_ai_credit_approved_examples.test.sh
+      - name: Interactive page
+        run: tests/interactive_page_approved_examples.test.sh
       # The viewscreen band is a function-hook module; only Claude Code's own
       # mod test kit can load it.
       - name: Install Claude Code
