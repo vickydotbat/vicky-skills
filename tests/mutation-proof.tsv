@@ -7,11 +7,13 @@ gamma-shift.sh	83809c7deca626c1	e43bfad89de5a25f	3/3
 gate-notify.sh	deed6bf2a718196f	763abc43c6e0d149	21/21
 git-hook-lib.sh	1c01d8e528c7da65	d5dd4d62e4bd9e51	35/35
 issue-guard.sh	16ad0d0ee535d4c3	0aed944db984123f	20/20
-local-path-guard.sh	c5cdd0c28ab76a7f	7d2b1d7ad35a7ae9	28/28
+lesson-hint.sh	fdde074b9223620f	6cae5a8154084c07	8/8
+local-path-guard.sh	f3895e1021a8ebc7	37a5e70d4ffed7b7	28/28
+merged-branch-guard.sh	1eeae594027f3e71	247cd9af951a039b	43/43
 mutation-proof-guard.sh	b756820a35fb7ae0	37d209503beccd40	15/15
 plane-block-guard.sh	679f2b016852effb	2b57222ce9eb9297	14/14
 poll-pace.sh	4548d34f02261258	e42bc0ed73b06e9f	24/24
-pr-guard.sh	bcb30c6ce536ad4e	74143227b0343e38	144/144
+pr-guard.sh	a9b996c8d911be2b	d3656aa09e59e2af	160/160
 push-behind-guard.sh	9a8e46703ec8f780	85b06f48b66044c3	52/52
 red-first-check.sh	e585449df8cf7aee	ec2cf9184865ea24	20/20
 red-first-guard.sh	2d3e03d2ab8c04cb	ec2cf9184865ea24	19/19

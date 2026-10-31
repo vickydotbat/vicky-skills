@@ -67,6 +67,14 @@ jobs:
         run: tests/push-behind-guard.test.sh
       - name: Step guard
         run: tests/step_guard_approved_examples.test.sh
+      - name: Lesson hint
+        run: tests/lesson-hint.test.sh
+      - name: Engrave approved examples
+        run: tests/engrave_approved_examples.test.sh
+      - name: Merged-branch guard
+        run: tests/merged-branch-guard.test.sh
+      - name: Merged-branch approved examples
+        run: tests/merged_branch_approved_examples.test.sh
       - name: Poll pace
         run: tests/poll-pace.test.sh
       - name: Gamma-shift hook

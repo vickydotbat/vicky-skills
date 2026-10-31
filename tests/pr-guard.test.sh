@@ -60,6 +60,20 @@ run() {
 }
 cmd() { printf '{"command":%s}' "$(printf '%s' "$1" | jq -Rs .)"; }
 
+# The PostToolUse pass after a command ran, with the stdout it printed.
+opened() {
+  local cwd=$1 command=$2 out=$3
+  printf '{"hook_event_name":"PostToolUse","tool_name":"Bash","cwd":"%s","session_id":"%s","tool_input":%s,"tool_response":{"stdout":%s}}' \
+    "$scratch/$cwd" "${SESSION:-}" "$(cmd "$command")" "$(printf '%s' "$out" | jq -Rs .)" | "$hook" >/dev/null 2>&1
+}
+
+# The same pass, printing what the hook wrote to stderr.
+opened_err() {
+  local cwd=$1 command=$2 out=$3
+  printf '{"hook_event_name":"PostToolUse","tool_name":"Bash","cwd":"%s","session_id":"%s","tool_input":%s,"tool_response":{"stdout":%s}}' \
+    "$scratch/$cwd" "${SESSION:-}" "$(cmd "$command")" "$(printf '%s' "$out" | jq -Rs .)" | "$hook" 2>&1 >/dev/null
+}
+
 expect() {
   local want=$1 cwd=$2 command=$3 got
   got=$(run "$scratch/$cwd" Bash "$(cmd "$command")")
@@ -118,6 +132,7 @@ expect 0 trunk 'gs branch create feat/two'
 # session B, another effort, opens its own.
 echo '[{"index":"8","head":"theirs","author":"Someone Else"}]' >"$scratch/pulls.json"
 SESSION=A expect 0 feature 'tea pr create --base main --head feat/a --title "Fix the cache (PLAT-1)"'
+SESSION=A opened feature 'tea pr create --base main --head feat/a --title "Fix the cache (PLAT-1)"' 'https://forge.example/o/r/pulls/10'
 echo '[{"index":"10","head":"feat/a","author":"me","title":"Fix the cache (PLAT-1)"}]' >"$scratch/pulls.json"
 SESSION=A expect 0 feature 'tea pr create --base main --head feat/a'
 SESSION=A expect 2 feature 'tea pr create --base main --head feat/a2 --title "More (PLAT-9)"'
@@ -239,6 +254,29 @@ allowed feature 'tea pr create --head feat/two'
 echo '[{"index":"10","head":"feat/a","author":"me","title":"Fix the cache (PLAT-1)"}]' >"$scratch/pulls.json"
 SESSION=C allowed feature 'tea pr create --base main --head plat-1-again'
 SESSION=A allowed feature 'tea pr create --base main --head feat/a3'
+
+# A create that printed no pull request address records nothing, so another
+# session's pull request on the branch checked out at the time never counts as
+# this one's. A Pre pass alone records nothing either.
+echo '[{"index":"20","head":"feat/d","author":"me","title":"Their work"}]' >"$scratch/pulls.json"
+SESSION=D expect 0 feature 'tea pr create --base main --head feat/d'
+SESSION=D opened feature 'tea pr create --base main --head feat/d' 'aborted: you must first push the current branch'
+SESSION=D expect 0 feature 'tea pr create --base main --head feat/d2'
+SESSION=D opened feature 'tea pr create --base main --head feat/d3' 'https://forge.example/o/r/pulls/21'
+echo '[{"index":"21","head":"feat/d3","author":"me","title":"Mine"}]' >"$scratch/pulls.json"
+SESSION=D expect 2 feature 'tea pr create --base main --head feat/d4'
+# The PostToolUse pass refuses nothing: a stack submit, or a second pull
+# request the Pre pass would have refused.
+got=$(SESSION=D opened feature 'gs stack submit' '' && echo 0 || echo $?)
+[[ $got == 0 ]] || { echo "FAIL the PostToolUse pass refused a stack submit: exit $got"; failed=1; }
+got=$(SESSION=D opened feature 'tea pr create --base main --head feat/d5' 'https://forge.example/o/r/pulls/22' && echo 0 || echo $?)
+[[ $got == 0 ]] || { echo "FAIL the PostToolUse pass refused a second pull request: exit $got"; failed=1; }
+# With no session ID, or no branch to name, the pass records nothing and says nothing.
+records="$HOME/.claude/pr-guard-sessions"
+err=$(SESSION='' opened_err feature 'tea pr create --base main --head feat/n' 'https://forge.example/o/r/pulls/23')
+[[ -z $err ]] || { echo "FAIL the PostToolUse pass without a session wrote to stderr: $err"; failed=1; }
+SESSION=E opened feature "tea api -X POST -d '{}' repos/o/r/pulls" 'https://forge.example/o/r/pulls/24'
+[[ ! -e $records/E ]] || { echo "FAIL a create with no branch was recorded: $(cat "$records/E")"; failed=1; }
 
 # A pull request this session never opened doesn't make the next one a second.
 echo '[{"index":"14","head":"feat/z","author":"me","title":"Other work"}]' >"$scratch/pulls.json"

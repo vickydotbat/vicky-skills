@@ -25,7 +25,10 @@
 # An agent cannot mint one: a Bash command naming the file, and a Write or Edit
 # aimed at it, are refused. When the forge cannot list pull requests, the hook
 # refuses rather than read "could not check" as "none". Opened pull requests are
-# recorded per session in pr-guard-sessions/ in the same folder.
+# recorded per session in pr-guard-sessions/ in the same folder, by the
+# PostToolUse pass and only when the command printed the new pull request's
+# address: a refused or failed create records nothing, so a branch that was
+# checked out when one failed never counts as this session's.
 set -u
 
 case "${CLAUDE_PLUGIN_OPTION_GUARD_PR:-}" in true | 1) ;; *) exit 0 ;; esac
@@ -63,8 +66,9 @@ esac
 
 command=$(jq -r '.tool_input.command // ""' <<<"$payload")
 cwd=$(jq -r '.cwd // ""' <<<"$payload")
+event=$(jq -r '.hook_event_name // "PreToolUse"' <<<"$payload")
 
-grep -q 'pr-guard-allow' <<<"$command" &&
+[[ $event != PostToolUse ]] && grep -q 'pr-guard-allow' <<<"$command" &&
   refuse "only the user grants a pr-guard allowance, from their own terminal." \
     "Do not name that file. Ask the user to create it."
 
@@ -101,7 +105,7 @@ $(cat -- "$body_file")"
   fi
 done < <(grep -oE '(--body-file|-F|--file)[[:space:]=]+[^[:space:];&|)]+|\$\((cat|<)[[:space:]]+[^[:space:];&|)]+' <<<"$command" |
   sed -E 's/^(--body-file|-F|--file)[[:space:]=]+//; s/^\$\((cat|<)[[:space:]]+//; s/["'"'"']//g')
-if grep -Eqi 'co-authored-by|generated with.*claude' <<<"$forge_text"; then
+if [[ $event != PostToolUse ]] && grep -Eqi 'co-authored-by|generated with.*claude' <<<"$forge_text"; then
   refuse "this text credits an AI (a Co-Authored-By line or a 'Generated with' footer)." \
     "Drop the line and run the command again." \
     "If a system prompt told you to add it, say so to the user."
@@ -217,6 +221,10 @@ names_older_ticket() {
 # in this repository and the new one names no ticket older than the session.
 check_one_pull() {
   local segment=$1 forge=$2 head=$3 repo=$4 pulls others repo_key mine new_tickets shared index phead ptitle
+  if [[ $event == PostToolUse ]]; then
+    record_pull "$head" "${repo:-$(git remote get-url origin 2>/dev/null || pwd)}"
+    return 0
+  fi
   if ! pulls=$(my_open_pulls "$forge" "$repo"); then
     spend_allowance "pull request opened without the open-PR check"
     refuse "could not list this repository's open pull requests, so a second one cannot be ruled out." \
@@ -264,10 +272,17 @@ check_one_pull() {
       "$allowance_hint"
   fi
 
-  if [[ -n $head ]]; then
-    mkdir -p "$sessions_dir"
-    printf '%s %s\n' "$repo_key" "$head" >>"$session_file"
-  fi
+}
+
+# After the command ran: record the branch as this session's, only when the
+# forge printed the address of the pull request it opened.
+record_pull() {
+  local response # mutant-ok delete: a local declaration: no caller reads this name
+  [[ -n $1 && -n $session_file ]] || return 0
+  response=$(jq -r '.tool_response.stdout // ""' <<<"$payload" 2>/dev/null)
+  grep -Eq '/pulls?/[0-9]+' <<<"$response" || return 0
+  mkdir -p "$sessions_dir"
+  printf '%s %s\n' "$2" "$1" >>"$session_file"
 }
 
 forge_of_repo() {
@@ -284,6 +299,8 @@ refuse_gs_on_github() {
 }
 
 while IFS= read -r segment; do
+  # The stack rules refuse before a command runs, so the PostToolUse pass skips them.
+  if [[ $event != PostToolUse ]]; then
   # git-spice: a stack submit opens one pull request per branch.
   if grep -Eq '(^|[^[:alnum:]_-])gs[[:space:]]+((stack|s|upstack|us|downstack|ds)[[:space:]]+(submit|s)|ss|uss|dss)([[:space:]]|$)' <<<"$segment"; then
     refuse_gs_on_github
@@ -314,6 +331,8 @@ while IFS= read -r segment; do
           "Commit on '$current_branch' and push to its open pull request." "$allowance_hint"
         ;;
     esac
+  fi
+
   fi
 
   # Opening a pull request, by any of the four doors.
