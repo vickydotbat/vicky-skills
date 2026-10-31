@@ -23,8 +23,8 @@ check "given the lesson hint is off, when my message says codify that, then the 
 check "given the agent made a mistake that I caught, when it engraves the lesson, then it builds a check or a hook where one can hold the rule, and a skill line only where neither can, saying why" \
   'grep -q "a check or a hook where one can hold the rule, and a skill line only where neither can, with the reason" "$s"'
 
-check "given the agent works in a project's repo and the lesson is about a skill or hook from the plugin, when it engraves the lesson, then the change lands in the plugin's repo, handed to an idle session there or built on a fresh branch in a worktree, without asking me first" \
-  'grep -q "the plugin'"'"'s repo" "$s" && grep -q "an idle session" "$s" && grep -q "a fresh branch from its main in a worktree, without asking" "$s"'
+check "given the agent works in a project's repo, I can push to the plugin's repo, and the lesson is about a skill or hook from the plugin, when it engraves the lesson, then the change lands in the plugin's repo, handed to an idle session there or built on a fresh branch in a worktree, without asking me first" \
+  'grep -q "the plugin'"'"'s repo" "$s" && grep -q "only when the user can push to it" "$s" && grep -q "an idle session" "$s" && grep -q "a fresh branch from its main in a worktree, without asking" "$s"'
 
 check "given the lesson is about the repo the agent works in, when it engraves the lesson, then the law lands in that repo, in a test, a standard or its agent docs, on the current effort's branch" \
   'grep -q "a test, a standard or its agent docs, on the current effort'"'"'s branch" "$s"'
