@@ -7,20 +7,21 @@ description: Catch the user up in one screen — what got done, what changed, wh
 
 > _Sup? Read the record, not your memory._
 
-A **catch-up** answers four questions for someone who just walked in. They read it once and know what to do. It covers the time since the user's last message, or since the point they name.
+A **catch-up** answers four questions, plus the lessons engraved, for someone who just walked in. They read it once and know what to do. It covers the time since the user's last message, or since the point they name.
 
 ## Steps
 
 1. **Read the record, not your memory.** Check the branch, the commits, open pull requests and the tickets the work touched, now, because other sessions change them. Done when each claim you will make has a fresh command behind it.
-2. **Write the four parts**, one line per item, with a short code on each so the user can answer by code:
+2. **Write the parts**, one line per item, with a short code on each so the user can answer by code:
 
    ```markdown
    **Done** — <what landed, with its proof: a merged PR, a passing check>
    **Changed** — <decisions made or reversed, and what they replaced>
+   **Lessons** — <n> engraved: <snag>, <snag>
    **Waiting on you** — <questions and approvals, two options at most, recommendation first>
    **Next** — <the one next action>
    ```
 
-   Leave out an empty part. Done when the whole thing fits on one screen.
+   Read Lessons from `git log --since=<that point> --grep='^Engraved: ' --format=%B | grep '^Engraved: '`, one line per lesson, each with its snag. With no Engraved line, leave Lessons out, and leave out any other empty part. Done when the whole thing fits on one screen.
 3. **Add parked work.** When the user moved away from something unfinished, end with at most three lines: "Still want X?" Count only work they left, not work you found. Done when each parked item is asked once or dropped.
 4. **Look ahead.** Run `cerebro` as a forecast. Done when its proposals end the catch-up, or it found nothing to forecast.

@@ -13,13 +13,13 @@ A **snag** is one thing that went wrong: a red check, a crash, a retry, a wrong 
 
 1. **Name the snag** in one line: what happened, and what should have happened. Done when the line names a visible event, not a feeling.
 2. **Pick the law** with `robot-voice` step 1: a check or a hook where one can hold the rule, and a skill line only where neither can, with the reason. A wrong claim made from memory or a glance becomes a check that computes the answer. Done when you can say why each container above yours can't hold it.
-3. **Route it** to the repo that owns the rule:
-   - **About the repo you work in** (its code, data, build or workflow): a test, a standard or its agent docs, on the current effort's branch.
-   - **About a skill, hook or agent file from a plugin** whose repo the user can push to: the plugin's repo. Hand it to an idle session there (`ListAgents`, then `SendMessage`), else build it on a fresh branch from its main in a worktree, without asking. Never switch a checkout another session uses.
-   - **About the user's own agent setup** (global `CLAUDE.md`, machine config): the repo that declares it.
+3. **Route it.** A home the user names wins. Otherwise send each part to its own home, checked in the order plugin, user setup, repo:
+   - **The plugin's repo**, only when the user can push to it: `gh repo view <repository in plugin.json> --json viewerPermission` says `ADMIN`, `MAINTAIN` or `WRITE`. When it can't answer, the repo is not pushable. It takes a lesson that would help an agent in any repo, such as one about the plugin's skills or hooks. Hand it to an idle session in the plugin's repo (`ListAgents`, then `SendMessage`), else build it on a fresh branch from its main in a worktree, without asking. Never switch a checkout another session uses.
+   - **The user's own agent setup**: a pattern across tasks or repos. That is their `CLAUDE.md` (`~/.claude/CLAUDE.md`), or the repo that declares it when their setup lives in one.
+   - **The repo you work in**: a lesson about that repo (its code, data, build or workflow), in a test, a standard or its agent docs, on the current effort's branch.
 
-   Done when the law has one destination.
-4. **Build it** this turn, under the destination's own rules: test first where it is code, its checks run. Done when the law is committed, handed to a session that accepted it, or filed with what it waits on.
+   Done when each part of the lesson has one destination.
+4. **Build it** this turn, under the destination's own rules: test first where it is code, its checks run. When you commit the rule, the commit message ends with `Engraved: <snag>`, so `sup` can count it. Done when the law is committed, handed to a session that accepted it, or filed with what it waits on.
 5. **Report** in one line, in the reply that closes the snag:
 
    ```markdown
