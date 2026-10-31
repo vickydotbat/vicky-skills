@@ -4,11 +4,13 @@
 # in the plugin's data folder as "<checkout>\t<branch>\t<epoch>", one file per
 # session, deleted when the session ends. A branch switch is refused while
 # another session used the checkout in the last 12 hours, and a session whose
-# checkout moved to another branch since its last git command is told once.
-# Off unless the plugin option guard_checkout is true.
+# checkout moved to another branch since its last git command is told once. A
+# git command that writes history there (commit, rebase, reset, merge,
+# cherry-pick, stash, pull) is refused like a switch, so the session works in
+# its own worktree. On unless the plugin option guard_checkout is false.
 GUARD=checkout-guard
-OPTION=${CLAUDE_PLUGIN_OPTION_GUARD_CHECKOUT:-}
-case "$OPTION" in true|1) ;; *) exit 0 ;; esac
+OPTION=${CLAUDE_PLUGIN_OPTION_GUARD_CHECKOUT:-true}
+case "$OPTION" in false|0) exit 0 ;; esac
 [ -n "${CLAUDE_PLUGIN_DATA:-}" ] || exit 0 # mutant-ok delete: the records would go to /checkouts, which a hook cannot write
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
 payload=$(cat)
@@ -57,14 +59,16 @@ elif args=$(grep -oE 'git[[:space:]]+([^|;&]*[[:space:]])?checkout([[:space:]][^
     fi
   fi
 fi
-if [ -n "$switch" ]; then
+writes=""
+grep -Eq 'git[[:space:]]+([^|;&]*[[:space:]])?(commit|rebase|reset|merge|cherry-pick|stash|pull)([[:space:]]|$)' <<<"$code" && writes=yes
+if [ -n "$switch$writes" ]; then
   for other in "$records"/*; do
     [ -f "$other" ] && [ "$other" != "$mine" ] || continue
     line=$(awk -F '\t' -v t="$top" '$1 == t' "$other")
     when=${line##*	}; theirs=$(cut -f2 <<<"$line")
     case "$when" in ''|*[!0-9]*) continue ;; esac
     [ $((now - when)) -lt 43200 ] || continue
-    refuse "$GUARD: another session works this checkout on branch $theirs (its last git command was $(( (now - when) / 60 )) minutes ago). Switching would move its files." \
+    refuse "$GUARD: another session works this checkout on branch $theirs (its last git command was $(( (now - when) / 60 )) minutes ago). ${switch:+Switching would move its files.}${writes:+Writing history here would land on its branch.}" \
       "Use your own worktree instead: git worktree add <dir> <branch>"
   done
 fi
