@@ -37,6 +37,8 @@ jobs:
         run: tests/approved_spec_guard_cd_approved_examples.test.sh
       - name: Approved-spec guard locks
         run: tests/guard-locks.test.sh
+      - name: Step hints
+        run: tests/step-hint.test.sh
       - name: Skill steps
         run: tests/skill-steps.test.sh
       - name: Draw chart
