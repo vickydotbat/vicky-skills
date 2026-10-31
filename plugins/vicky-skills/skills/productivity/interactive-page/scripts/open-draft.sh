@@ -4,7 +4,8 @@
 # process id, and the draft-lock hook refuses edits to the checkout. A section
 # whose text the user changed grants the file on its location line to the
 # approved-spec guard, which reads it for approved tests only.
-# interactive-page's open-page.sh runs this script with its page as the editor.
+# open-page.sh runs this script with its page as the editor. The editor's exit
+# status is this script's, so a page nobody answered reads as no answer.
 # Usage: open-draft.sh <draft file>
 set -u
 [ $# = 1 ] || { echo "usage: open-draft.sh <draft file>" >&2; exit 2; }
@@ -34,12 +35,14 @@ before=$(cat "$1" 2>/dev/null)
 $editor "$1" & pid=$!
 [ -n "$lock" ] && printf '%s\n%s\n' "$pid" "$1" > "$lock"
 trap '[ -n "$lock" ] && rm -f "$lock"' EXIT
-wait "$pid"
-[ -n "$lock" ] && [ -f "$1" ] || exit 0
+wait "$pid"; status=$?
+[ -n "$lock" ] && [ -f "$1" ] || exit "$status"
 # Each section on one line: its location's path, a tab, then its text. The
 # location is the first line after the heading that isn't blank, since an
 # editor may save a blank line under each heading. An unticked approve box is
-# no change, so the one added above grants nothing by itself.
-sections() { awk '/^## /{if (loc != "") print loc "\t" body; loc=""; body=""; while ((getline loc) > 0 && loc == "") continue; sub(/:.*/, "", loc); next} /^- \[ \] approve$/{next} {body = body $0 "\034"} END {if (loc != "") print loc "\t" body}'; }
+# no change, so the one added above grants nothing by itself, and neither is a
+# blank line, which the page moves when it adds its closing comment. A section whose
+# location isn't <path>:<line or new>, such as the page's closing comment, grants nothing.
+sections() { awk '/^## /{if (loc != "") print loc "\t" body; loc=""; body=""; while ((getline loc) > 0 && loc == "") continue; if (loc !~ /^[^[:space:]:,]+:([0-9]+|new)$/) loc = ""; sub(/:.*/, "", loc); next} /^- \[ \] approve$/ || /^$/{next} {body = body $0 "\034"} END {if (loc != "") print loc "\t" body}'; }
 grep -vxF -f <(sections <<<"$before") <(sections < "$1") | cut -f1 >> "$(dirname "$lock")/approved-spec-grants" 2>/dev/null
-exit 0
+exit "$status"

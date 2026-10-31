@@ -15,6 +15,8 @@ The user answers in the browser, never in a Markdown editor. The file stays the 
 | --- | --- |
 | a ```` ```text ```` block | editable text |
 | `- [ ] approve` | a box to tick |
+| `- [x] <label>` | a box to tick, with its label |
+| `![<name>](<file>.svg)`, the file in the same folder | the chart, drawn full width; a click zooms in |
 | `1. [ ] <check>` | one box per mark: `[x]`, `[~]`, `[-]`, `[ ]` |
 | `notes:`, `- BUG:` and other `label:` lines | a line of text |
 | each ```` ```text ```` block, again | a comment box under it, written back as `Comment: <text>` |
@@ -37,8 +39,10 @@ A question you would ask in chat with two or more options goes on a page instead
 
 Open it as the steps below say. A Done the user leaves unchanged takes your pick.
 
+For a planning page, such as a warp's pre-flight or a council's open points, add what the caller names above the questions: each chart as an image line, and the course as one ticked box per ticket, `- [x] <key> <kind>: <title>. Needs: <what it needs from the user, or nothing>`. A question the user may answer in their own words ends its options with `- ( ) Other` and a `notes:` line.
+
 ## Steps
 
 1. **Write the file** in the form the calling skill gives: `red-pen`'s draft file, `over-to-you`'s checklist, or a question as above, in the system temp folder for a question. Done when the file exists.
-2. **Open it** with `bash <this skill's folder>/scripts/open-page.sh <file>`, run from the repo as a background command, and tell the user in one line that the page is open and that Done sends it back. It runs `red-pen`'s `open-draft.sh` with the page in the editor's place: the `draft-lock` hook holds the repo's code while the page is open, and a section the user changed or ticked grants its location to the approved-spec guard. With no display on the machine, the file opens in the user's editor instead, the way `red-pen` step 2 says. Done when the background command has exited, or the user said done in chat.
+2. **Open it** with `bash <this skill's folder>/scripts/open-page.sh <file>`, run from the repo as a background command, and tell the user in one line that the page is open and that Done sends it back. It runs `open-draft.sh`, beside it, with the page in the editor's place: the `draft-lock` hook holds the repo's code while the page is open, and a section the user changed or ticked grants its location to the approved-spec guard. With no display on the machine, the file opens in the user's editor instead, the way `red-pen` step 2 says. When the command exits with status 2 and says `no answer within`, nobody answered: the file is as it was, so ask the same questions in chat instead of taking your picks. Done when the background command has exited, or the user said done in chat.
 3. **Read it back.** Read the file again and hand it to the calling skill's read-back step; for a question, the `(x)` option is the answer. A `Comment:` line is the user's note on the block above it, and one under `## Anything else` is a note on the whole page: act on each as the calling skill says for a note, before anything else. Done when every answer is acted on.

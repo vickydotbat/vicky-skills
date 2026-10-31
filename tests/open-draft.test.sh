@@ -38,6 +38,13 @@ expect "an unchanged close grants nothing" "$(draft "$a$b" "$a$b")" ""
 expect "a ticked approve box grants its section's test" "$(draft "$a$b" "${a/- \[ \]/- [x]}$b")" "tests/a_approved_examples.test.sh"
 expect "an editor's blank line under each heading still finds the test" "$(draft "$a$b" "${spaced/Then b/Then bee}")" "tests/b_approved_examples.test.sh"
 expect "a blank line under each heading alone grants nothing" "$(draft "$a$b" "$spaced")" ""
+expect "the page's closing comment grants nothing" "$(draft "$a$b" "$a$b
+## Anything else
+Comment: tests/a_approved_examples.test.sh:1 looks fine
+")" ""
+printf '#!/usr/bin/env bash\nexit 2\n' > "$dir/editor"; chmod +x "$dir/editor"
+(cd "$dir" && VISUAL="$dir/editor" bash "$open" "$dir/draft.md" >/dev/null 2>&1); code=$?
+expect "outside a git checkout, an editor that ends without an answer passes its exit back" "$code" "2"
 
 # A section for a file that holds approved examples reaches the editor only in the form a tick can grant.
 mkdir -p "$dir/repo/tests"; echo '# approved-spec: c' > "$dir/repo/tests/c_approved_examples.test.sh"

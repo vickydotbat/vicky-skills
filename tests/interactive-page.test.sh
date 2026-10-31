@@ -134,6 +134,16 @@ finish
 check "a negative length is refused, and a typed fence line can't close its block early" \
   '[ "$negative" = 400 ] && [ "$code" = 200 ] && grep -qx " \`\`\`" "$scratch/i.md" && [ "$(grep -A3 -x "Before" "$scratch/i.md" | tail -1)" = "\`\`\`" ]'
 
+mkdir -p "$scratch/sub"; echo '<svg id=c></svg>' >"$scratch/c.svg"; echo '<svg id=d></svg>' >"$scratch/sub/d.svg"
+printf '# Plan\n\n![Here](c.svg)\n![Deeper](sub/d.svg)\n- [ ] K-1 star: one\n' >"$scratch/j.template"
+cp "$scratch/j.template" "$scratch/j.md"
+start "$scratch/j.md"
+html=$(curl -s "$url")
+code=$(post /done)
+finish
+check "a chart line comes back as written, a chart outside the page's folder stays text, and an unticked box shows unticked" \
+  '[ "$code" = 200 ] && grep -q "<svg id=c>" <<<"$html" && ! grep -q "<svg id=d>" <<<"$html" && grep -qF "![Deeper](sub/d.svg)" <<<"$html" && grep -qF "type=checkbox name=\"box.0\"> K-1 star: one" <<<"$html" && cmp -s "$scratch/j.template" "$scratch/j.md"'
+
 python3 -I "$page" >/dev/null 2>&1; none=$?
 python3 -I "$page" a b >/dev/null 2>&1; two=$?
 check "no file, or two, is a usage error" '[ "$none" = 2 ] && [ "$two" = 2 ]'
