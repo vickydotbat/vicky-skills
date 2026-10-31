@@ -43,7 +43,6 @@ const IDLE: ActivityNow = {
   sinceMs: 0,
 }
 
-const FRAME_COLOR = 'gray'
 const MAX_HISTORY = 100
 const MAX_HISTORY_ROWS = 12
 const MAX_THOUGHT_CHARS = 70
@@ -512,13 +511,12 @@ export const register: Register = on => {
 
     return (
       <Box flexDirection="column">
-        {/* As wide as the band, so it changes only with the terminal, and one
-            border colour on every wall: the dot carries the phase. */}
+        {/* Band-wide, so it resizes only with the terminal; one border colour, the dot shows the phase. */}
         <Box
           key="frame"
           flexDirection="column"
           borderStyle="round"
-          borderColor={FRAME_COLOR}
+          borderColor="gray"
           paddingX={1}
           width={e.props.bodyColumns}
         >

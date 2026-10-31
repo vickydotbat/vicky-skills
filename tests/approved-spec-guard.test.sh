@@ -38,4 +38,7 @@ check "asks on a script run as: sudo -u bob ./fix.sh" ask "$(sh_run 'sudo -u bob
 check "asks on a script run as: nix develop -c ./fix.sh" ask "$(sh_run 'nix develop -c ./fix.sh')"
 check "asks on a script run as: nix shell nixpkgs#jq --command ./fix.sh" ask "$(sh_run 'nix shell nixpkgs#jq --command ./fix.sh')"
 check "asks on a script run as: cd . && ./fix.sh" ask "$(sh_run 'cd . && ./fix.sh')"
+check "silent when only an argument names it: timeout -v; cat fix.sh" "" "$(sh_run 'timeout -v; cat fix.sh')"
+check "silent when only an argument names it: sudo -E nice cat fix.sh" "" "$(sh_run 'sudo -E nice cat fix.sh')"
+check "silent when only an argument names it: sudo -u bob git show HEAD -- fix.sh" "" "$(sh_run 'sudo -u bob git show HEAD -- fix.sh')"
 exit $fail
