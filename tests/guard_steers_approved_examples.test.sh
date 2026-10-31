@@ -3,6 +3,8 @@
 # refuses with a steer instead of asking, and a red-pen close that changed an
 # approved example grants its test file. Runs the hook and open-draft.sh.
 set -u
+# No test may reach the user's own editor.
+export VISUAL=true EDITOR=true
 root="$(cd "$(dirname "$0")/.." && pwd)"
 guard="$root/plugins/vicky-skills/scripts/approved-spec-guard.sh"
 open="$root/plugins/vicky-skills/skills/productivity/red-pen/scripts/open-draft.sh"

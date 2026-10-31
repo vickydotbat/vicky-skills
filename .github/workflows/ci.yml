@@ -41,6 +41,8 @@ jobs:
         run: tests/step-hint.test.sh
       - name: Scratch guard
         run: tests/scratch-guard.test.sh
+      - name: Rm steer decisions
+        run: tests/rm-steer.test.sh
       - name: Skill steps
         run: tests/skill-steps.test.sh
       - name: Draw chart
@@ -185,6 +187,18 @@ jobs:
         run: tests/training_wheels_approved_examples.test.sh
       - name: Over-to-you covers the whole branch
         run: tests/over_to_you_whole_branch_approved_examples.test.sh
+      - name: Rm steer
+        run: tests/rm_steer_approved_examples.test.sh
+      - name: Pr-guard refuses only AI credit
+        run: tests/pr_guard_ai_credit_approved_examples.test.sh
+      - name: Interactive page
+        run: tests/interactive_page_approved_examples.test.sh
+      - name: Interactive page decisions
+        run: tests/interactive-page.test.sh
+      - name: No test reaches the user's editor
+        run: tests/no-real-editor.test.sh
+      - name: Red-first guard reads what git add stages
+        run: tests/red-first-paths.test.sh
       # The viewscreen band is a function-hook module; only Claude Code's own
       # mod test kit can load it.
       - name: Install Claude Code

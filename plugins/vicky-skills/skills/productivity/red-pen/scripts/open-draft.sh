@@ -4,6 +4,7 @@
 # process id, and the draft-lock hook refuses edits to the checkout. A section
 # whose text the user changed grants the file on its location line to the
 # approved-spec guard, which reads it for approved tests only.
+# interactive-page's open-page.sh runs this script with its page as the editor.
 # Usage: open-draft.sh <draft file>
 set -u
 [ $# = 1 ] || { echo "usage: open-draft.sh <draft file>" >&2; exit 2; }

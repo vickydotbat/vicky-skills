@@ -7,9 +7,7 @@ description: Build, submit, sync and merge a stack of dependent pull requests on
 
 > _It's turtles all the way down: each branch stands on the one below, and the stack moves together._
 
-A guard hook that holds one pull request per effort refuses a stack submit, a
-new stacked branch and a second pull request. When one refuses a step, ask the
-user to allow that step their own way, then retry it once. When it refuses again, stop and report the refusal.
+No guard refuses a stack or a second pull request. Keep the stack clean on your own: each branch holds one slice, and it goes up only when the user asked for a stack or a `warp` builds past a blocked step.
 
 The forge picks the tool:
 
