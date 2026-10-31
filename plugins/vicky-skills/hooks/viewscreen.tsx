@@ -43,7 +43,7 @@ const IDLE: ActivityNow = {
   sinceMs: 0,
 }
 
-const FRAME_COLOR = 'cyan'
+const FRAME_COLOR = 'gray'
 const MAX_HISTORY = 100
 const MAX_HISTORY_ROWS = 12
 const MAX_THOUGHT_CHARS = 70
@@ -444,8 +444,7 @@ export const register: Register = on => {
 
     // One agent the headline names; more, or one beside the main loop's
     // work, get a row each.
-    // A survey shares the band: the headline stays, the rows give it room.
-    const isTeamListed = !e.props.hasSurvey && (working.length > 1 || (working.length === 1 && headline.phase !== 'agent'))
+    const isTeamListed = working.length > 1 || (working.length === 1 && headline.phase !== 'agent')
     const listed = isTeamListed ? working.slice(-MAX_AGENT_ROWS) : []
     const unlisted = isTeamListed ? working.length - listed.length : 0
 
@@ -501,7 +500,7 @@ export const register: Register = on => {
     const earlier = hidden > 0 ? [<Text dimColor>{`… ${hidden} earlier`}</Text>] : []
     const empty = entries.length === 0 ? [<Text dimColor>No actions yet</Text>] : []
 
-    const body = isOpen && !e.props.hasSurvey
+    const body = isOpen
       ? [
           <Box key="history" flexDirection="column" marginTop={1}>
             {earlier}
@@ -535,7 +534,7 @@ export const register: Register = on => {
               <Text color={color}>{isWorking ? ' ● ' : ' ○ '}</Text>
               <Text bold>Claude: </Text>
             </Box>
-            <Text wrap="truncate-end">{printable(headline.label, MAX_LABEL_CHARS) || IDLE.label}</Text>
+            <Text wrap="truncate-end">{printable(headline.label, MAX_LABEL_CHARS)}</Text>
             <Box flexShrink={0}>
               <Text dimColor>{elapsed}</Text>
             </Box>
