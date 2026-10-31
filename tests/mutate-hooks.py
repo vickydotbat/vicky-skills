@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Mutation pass over the plugin's hook scripts, inside a time budget.
 
-Usage: mutate-hooks.py [--jobs N] [--all] [--record] [--check] [--budget SECONDS] [script ...]
+Usage: mutate-hooks.py [--jobs N] [--all] [--survivors] [--check] [--budget SECONDS] [script ...]
 
 Each mutant changes one line of one script: an exit code, a comparison, a
 logic operator, a negation, or the whole line deleted. The script's tests run
@@ -9,12 +9,16 @@ against it, fastest first, and the first red one kills it. A mutant they all
 pass is a survivor.
 
 Only what changed is mutated. tests/mutation-proof.tsv keeps each script's
-last clean pass against two hashes, the script's and its tests'. A script
+last clean pass against two hashes: the script's, and its tests' with the
+script's own line of the test map below. A script
 whose hashes match is proven without a run. A script whose tests changed is
 mutated whole. A script whose code alone changed is mutated on the lines that
 differ from the merge base with origin/main. --all mutates every line of every
-script, and --record writes the proof after a clean run. --check mutates
-nothing: it names each script whose proof is stale and exits 1 when any is.
+script. A clean pass always writes its proof (--record is accepted and does
+nothing more). Each pass keeps its survivors in tests/.mutation-survivors, and
+--survivors mutates only those lines: a quick check of a fix before the full
+pass, which records nothing. --check mutates nothing: it names each script
+whose proof is stale and exits 1 when any is.
 
 The pass stops before it starts when its estimate (mutants x the slowest test
 time / jobs) passes the budget, 3000 seconds by default, and stops mid-run at
@@ -41,10 +45,11 @@ import time
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SCRIPTS = os.path.join(ROOT, "plugins", "vicky-skills", "scripts")
 PROOF = os.path.join(ROOT, "tests", "mutation-proof.tsv")
+SURVIVORS = os.path.join(ROOT, "tests", ".mutation-survivors")
 GIT_GUARDS = ["push-behind-guard", "merged-branch-guard", "local-path-guard", "checkout_guard_approved_examples", "red_first_approved_examples"]
 TESTS = {
     "after-push.sh": ["after-push"],
-    "approved-spec-guard.sh": ["approved-spec-guard", "approved_tests_yes_approved_examples", "guard_reads_approved_examples", "guard_new_file_approved_examples"],
+    "approved-spec-guard.sh": ["approved-spec-guard", "approved_tests_yes_approved_examples", "guard_reads_approved_examples", "guard_new_file_approved_examples", "guard_steers_approved_examples"],
     "auto-tidy.sh": ["auto-tidy"],
     "checkout-guard.sh": ["checkout-guard", "checkout_guard_approved_examples"],
     "draft-lock.sh": ["draft-lock", "red_first_approved_examples"],
@@ -109,8 +114,8 @@ def mutants(text, lines_wanted, awk=False):
             yield n, ":"
 
 
-def sha(paths):
-    digest = hashlib.sha256()
+def sha(paths, extra=""):
+    digest = hashlib.sha256(extra.encode())
     for path in paths:
         with open(path, "rb") as handle:
             digest.update(handle.read())
@@ -118,8 +123,22 @@ def sha(paths):
 
 
 def hashes(script):
-    tests = [os.path.join(ROOT, "tests", t + ".test.sh") for t in TESTS[script]] + [os.path.abspath(__file__)]
-    return sha([os.path.join(SCRIPTS, script)]), sha(tests)
+    """The script's hash, and its tests' hash with its own line of the test map: the rest of the runner is no test."""
+    tests = [os.path.join(ROOT, "tests", t + ".test.sh") for t in TESTS[script]]
+    return sha([os.path.join(SCRIPTS, script)]), sha(tests, repr(TESTS[script]))
+
+
+def last_survivors():
+    """The lines that survived the last pass, by script, kept beside the proof."""
+    found = {}
+    try:
+        with open(SURVIVORS) as handle:
+            for line in handle:
+                name, n = line.rstrip("\n").split("\t")
+                found.setdefault(name, set()).add(int(n))
+    except FileNotFoundError:
+        pass
+    return found
 
 
 def proofs():
@@ -205,7 +224,7 @@ def baseline(script):
 
 
 def main(argv):
-    jobs, names, everything, record, budget, check = os.cpu_count() or 2, [], False, False, 3000.0, False
+    jobs, names, everything, budget, check, again = os.cpu_count() or 2, [], False, 3000.0, False, False
     while argv:
         arg = argv.pop(0)
         if arg == "--jobs":
@@ -213,7 +232,9 @@ def main(argv):
         elif arg == "--all":
             everything = True
         elif arg == "--record":
-            record = True
+            pass  # a clean pass always records; the flag stays for old callers
+        elif arg == "--survivors":
+            again = True
         elif arg == "--check":
             check = True
         elif arg == "--budget":
@@ -237,14 +258,17 @@ def main(argv):
         for name in stale:
             print(f"stale: {name}")
         return 1 if stale else 0
-    proven, plan = proofs(), []
+    proven, plan, previous = proofs(), [], last_survivors()
+    if again:
+        # Only the lines the last pass left alive: a quick check before the full pass.
+        names = [n for n in names if n in previous]
     for name in names:
         code_hash, test_hash = hashes(name)
         old = proven.get(name)
-        if not everything and old and old[0] == code_hash and old[1] == test_hash:
+        if not again and not everything and old and old[0] == code_hash and old[1] == test_hash:
             print(f"script {name}: {old[2]}, proven at {code_hash}", flush=True)
             continue
-        wanted = None if everything or not old or old[1] != test_hash else changed_lines(name)
+        wanted = previous[name] if again else None if everything or not old or old[1] != test_hash else changed_lines(name)
         with open(os.path.join(SCRIPTS, name)) as handle:
             original = handle.read()
         found = list(mutants(original, wanted, name.endswith(".awk")))
@@ -280,14 +304,20 @@ def main(argv):
             print(f"script {name}: {killed.count(True)}/{len(found)}", flush=True)
             mine = [f"survivor {name}:{n + 1}: {line.strip()}" for (n, line), k in zip(found, killed) if k is False]
             survivors += mine
-            if not mine and None not in killed:
+            if not mine and None not in killed and not again:
                 count = f"{len(found)}/{len(found)}" if whole else proven.get(name, ["", "", "0/0"])[2]
                 proven[name] = [code_hash, test_hash, count]
     while not workers.empty():
         shutil.rmtree(workers.get().root, ignore_errors=True)
-    if record:
-        with open(PROOF, "w") as handle:
-            handle.writelines(f"{name}\t" + "\t".join(row) + "\n" for name, row in sorted(proven.items()) if name in TESTS)
+    with open(PROOF, "w") as handle:
+        handle.writelines(f"{name}\t" + "\t".join(row) + "\n" for name, row in sorted(proven.items()) if name in TESTS)
+    if not again:
+        alive = {name: lines for name, lines in previous.items() if name not in names}
+        for survivor in survivors:
+            name, n = survivor.split(" ")[1].rstrip(":").split(":")
+            alive.setdefault(name, set()).add(int(n))
+        with open(SURVIVORS, "w") as handle:
+            handle.writelines(f"{name}\t{n}\n" for name, lines in sorted(alive.items()) for n in sorted(lines))
     print("\n".join(survivors)) if survivors else None
     print(f"survivors: {len(survivors)}")
     print(f"mutate-hooks: {time.monotonic() - started:.0f} s", file=sys.stderr)

@@ -123,6 +123,10 @@ jobs:
         run: tests/guard_reads_approved_examples.test.sh
       - name: Guard lets new files through
         run: tests/guard_new_file_approved_examples.test.sh
+      - name: Guard steers instead of asking
+        run: tests/guard_steers_approved_examples.test.sh
+      - name: Faster mutation runner
+        run: tests/mutation_speed_approved_examples.test.sh
       - name: Cerebro mid-effort
         run: tests/cerebro_mid_effort_approved_examples.test.sh
       - name: Watch script

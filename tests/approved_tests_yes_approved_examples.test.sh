@@ -19,9 +19,9 @@ asks=0
 for c in "sed -i 's/ok/no/' $f" "echo x > $f" "echo x >> $f" "printf x | tee $f" "python3 fix.py" "python3 - <<'PY'
 open('$f','w')
 PY" "git checkout HEAD~1 -- $f" "git restore $f" "cp other.py $f" "rm $f"; do
-  [ "$(decide "$c")" = ask ] && asks=$((asks + 1)) || echo "     not asked: $c"
+  [ "$(decide "$c")" = deny ] && asks=$((asks + 1)) || echo "     not refused: $c"
 done
-check "an agent editing an approved-examples test with a shell command (sed -i, a redirect, a script, git checkout or restore) is asked first, as with the Edit tool" \
+check "an agent editing an approved-examples test with a shell command (sed -i, a redirect, a script, git checkout or restore) is refused, as with the Edit tool" \
   '[ $asks = 10 ] && grep -q "Bash" <(jq -r ".hooks.PreToolUse[] | select(.hooks[].command | test(\"approved-spec-guard\")) | .matcher" "$root/plugins/vicky-skills/hooks/hooks.json")'
 
 quiet=0
