@@ -214,6 +214,12 @@
       "title": "No commits on a merged branch",
       "description": "Refuse a commit or push on a branch whose remote branch is gone, and name the fresh branch to move to and the commits to carry over.",
       "default": false
+    },
+    "guard_scratch": {
+      "type": "boolean",
+      "title": "A scratch folder per subagent",
+      "description": "Give each subagent its own scratch folder under /tmp/<session id>/, and refuse a subagent's write to the session folder its siblings share.",
+      "default": false
     }
   }
 }
