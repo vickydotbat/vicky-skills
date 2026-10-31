@@ -4,6 +4,7 @@
   "author": {
     "name": "vickydotbat"
   },
+  "types": "./types/index.d.ts",
   "skills": [
     "./skills/engineering/away-team",
     "./skills/engineering/captains-log",
@@ -17,6 +18,7 @@
     "./skills/engineering/machine-spirit",
     "./skills/engineering/make-it-so",
     "./skills/engineering/marie-kondo",
+    "./skills/engineering/mission-brief",
     "./skills/engineering/never-lupus",
     "./skills/engineering/nwn-model-tooling",
     "./skills/engineering/placebo",
@@ -196,7 +198,7 @@
     "guard_poll_pace": {
       "type": "boolean",
       "title": "Short polls",
-      "description": "Refuse a wait that sleeps more than 30 seconds at a time or polls more than 60 times.",
+      "description": "Refuse a wait that sleeps more than 30 seconds at a time, polls more than 60 times, or loops in the foreground instead of using watch.sh.",
       "default": false
     }
   }

@@ -7,13 +7,13 @@ description: Build something behaviour-first, from a sentence in chat, a ticket 
 
 > _Do, or do not. There is no try: red first, then green, then the mutants._
 
-A **build** turns approved examples green. **The examples are the spec, and each one is a seam**: a Given / When / Then its test proves from the observer's side. Prose explains why and decides nothing. Mutation proves the tests can fail. The user brings a request typed in chat, a star, or a star chart whose stars are ready. A request too big for one session goes to `lay-course` instead, and a star with open blockers to `warp`.
+A **build** turns approved examples green. **The examples are the spec, and each one is a seam**: a Given / When / Then its test proves from the observer's side. Prose explains why and decides nothing. Mutation proves the tests can fail. The user brings a request typed in chat, a star, or a star chart whose stars are ready. A request too big for one session goes to `lay-course` instead, and a star with open blockers to `warp`. When a conversation has already settled what to build and it needs tickets, ask the user to type `/mission-brief`.
 
 ## Build one change
 
 1. **Get approved examples.** Read the ticket whole, body and comments, the decision records it points at, and the repo's glossary if it has one. When the ticket already holds approved examples, no editor opens: go to step 2. Otherwise run the `examples` skill, which hands its drafts to the user with `red-pen` before any test or code is written. A request typed in chat is the whole source. Done when every example the build rests on is approved.
 2. **Make the examples red.** Write and run their tests as `examples` step 5 says. Done when each approved test fails because the behaviour is missing. Commit them, push the branch and open a **draft** pull request: GitHub's `gh pr create --draft`, or a `WIP:` title prefix on Gitea, unless the repo's guide names another way. A draft asks no one to review it.
-3. **Go red to green, one example at a time.** Write only enough code to pass the next approved test ("The smallest complete change" below), then the next. The approved tests are the goal: add any other test that helps you reach it. An edge case the work turns up: add a test, fix the code, and list it as found in the report. Never ask about one. Mutate each example as its test goes green: run `sentinels` on its changed lines, answer each survivor as step 4 says, and put its counts in the report before you start the next example. Never ask the user where a test goes: the example's observer and words pick its seam. A behaviour the code needs that no example covers is a **missing example**: add its draft to the effort's `red-pen` draft file, park that slice, and build the rest. Done when every approved test passes.
+3. **Go red to green, one example at a time.** Write only enough code to pass the next approved test ("The smallest complete change" below), then the next. The approved tests are the goal: add any other test that helps you reach it. An edge case the work turns up: add a test, fix the code, and list it as found in the report. Never ask about one. Mutate each example as its test goes green: run `sentinels` on its changed lines, answer each survivor as step 4 says, and show its receipt, with the counts, before you start the next example ("Receipts" below). Never ask the user where a test goes: the example's observer and words pick its seam. A behaviour the code needs that no example covers is a **missing example**: add its draft to the effort's `red-pen` draft file, park that slice, and build the rest. Done when every approved test passes.
 4. **Mutate what the per-example passes missed**: the decision logic you changed (rules, limits, parsers) with `sentinels`. Kill each survivor with a test, or mark it equivalent with its reason, and put the counts in the report as proof. A survivor that shows a behaviour no example names is a missing example, as step 3 says. Done when its report line names every file and each survivor has its answer.
 5. **Run the checks the change reaches**: the typechecker, and the tests in the files and folders you touched. The repo's docs say whether the full suite runs locally or in CI. Done when they pass.
 6. **Review** with the `review` skill. Fix each finding, or record the ones you defer on a ticket. Done when every finding has an answer.
@@ -28,6 +28,17 @@ The user may be away once the examples are approved, and a question or an open e
 - **A guess too costly to undo, or an approved example the build shows is wrong**: park that slice. Add it to Check these with what it waits on, and build the rest.
 
 `make-it-so` hands the drafts and the list to the user before the pull request goes ready. Done when step 7 starts with no question asked since step 1.
+
+## Receipts
+
+Each time an approved example goes green, show its receipt in chat before you start the next example: the red run, the green run and the mutation result, each as the command and the line that shows its outcome. A receipt is for the user to see, and it asks nothing. An example only a person can check gets a receipt that says `unchecked` and names the `over-to-you` checklist that holds it.
+
+```text
+<example name>
+red:      <command> → <the failing line>
+green:    <command> → <the passing line>
+mutation: <command> → <killed>/<mutants>, survivors: <n>
+```
 
 ## The smallest complete change
 

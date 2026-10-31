@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
-# PreToolUse hook (Bash): refuses a wait longer than the poll pace allows: a
-# `sleep` over 30 seconds, or a sleeping loop of more than 60 rounds. Off
-# unless the plugin option guard_poll_pace is true.
+# PreToolUse hook (Bash): refuses a wait that skips watch.sh: a foreground
+# loop that sleeps and checks, a `sleep` over 30 seconds, or a sleeping loop
+# of more than 60 rounds. Off unless the plugin option guard_poll_pace is true.
 case "${CLAUDE_PLUGIN_OPTION_GUARD_POLL_PACE:-}" in true|1) ;; *) exit 0 ;; esac
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
-cmd=$(jq -r '.tool_input.command // ""')
+payload=$(cat)
+cmd=$(jq -r '.tool_input.command // ""' <<<"$payload")
 grep -Eq '(^|[^[:alnum:]_])sleep[[:space:]]' <<<"$cmd" || exit 0
-refuse() { echo "poll-pace: $1. Poll at most every 30 seconds, at most 60 times (30 minutes), then report what the gate waits on." >&2; exit 2; }
+refuse() { echo "poll-pace: $1. Wait with \${CLAUDE_PLUGIN_ROOT}/scripts/watch.sh '<check>', run by the Monitor tool or as a background command: it checks every 30 seconds, at most 60 times." >&2; exit 2; }
+[ "$(jq -r '.tool_input.run_in_background // false' <<<"$payload")" = true ] || {
+  grep -Eq '(^|[^[:alnum:]_])(while|until|for)[[:space:]]' <<<"$cmd" && refuse "a foreground loop that sleeps and checks holds the session"
+}
 while read -r n; do
   [ "${n%.*}" -gt 30 ] && refuse "sleep $n waits more than 30 seconds"
 done < <(grep -Eo '(^|[^[:alnum:]_])sleep[[:space:]]+[0-9]+(\.[0-9]+)?' <<<"$cmd" | grep -Eo '[0-9]+(\.[0-9]+)?$')

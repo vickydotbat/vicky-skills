@@ -22,6 +22,7 @@ A **retro** improves the agent's environment, never the agent's excuses. It look
    - **Tools**: a costly call a cheaper one would have answered.
    - **Follow-ups**: read them as `cerebro`'s [FOLLOW-UPS.md](../../productivity/cerebro/FOLLOW-UPS.md) says. For each need, name the skill or agent file that would have proposed it unasked.
    - **Information**: something the agent needed and couldn't reach, such as a server log or read access to a service.
+   - **Prompts**: each permission prompt the user answered is training wheels. Name the hook that would refuse with a steer, or the context that would lead the agent elsewhere, so the prompt never comes.
 
    Done when each place has a finding or a stated "nothing found".
 4. **Find the high points.** A **high point** is a stretch that went exceptionally well: the user said a result was exactly what they wanted, or hard work finished first time with no rework. For each one, find the line in an agent file, skill or doc that caused it, and quote it. Mark that line kept: add ` <!-- kept YYYY-MM-DD: <why> -->` at its end, with today's date and the high point in a few words. A later trim reads the mark in the same pass and leaves the line alone. Done when each high point has its line marked, or you can say "No high point found."

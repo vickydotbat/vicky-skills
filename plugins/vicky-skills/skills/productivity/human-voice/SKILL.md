@@ -44,9 +44,12 @@ Use the reader's words, never code names. A second outcome is a second example.
 ## Steps
 
 1. **Pick the register** from the audience table. Ask the user only when the
-   audience is unclear. If the user or the repo has writing of theirs in that
-   register, read it whole. Done when you can name the register and the
-   audience row that picked it.
+   audience is unclear. Then read the samples of that register:
+   the user's own samples in `${CLAUDE_PLUGIN_DATA}/voice-samples.md`, kept by `red-pen`, when
+   that file exists, and [SAMPLES.md](SAMPLES.md) when `git config user.name` is
+   `vickydotbat`, whose writing it holds. If the repo has writing of theirs in that register, read it whole
+   too. Done when you can name the register and the audience row that picked
+   it.
 2. **Gather the substance**: names, numbers, commands, the actual reason. The
    record is the source: the ADR, the ticket thread, the commit, the code.
    Done when every claim in your notes is one you could source.
