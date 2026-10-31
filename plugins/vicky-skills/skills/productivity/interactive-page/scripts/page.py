@@ -129,6 +129,9 @@ def answered(parts, form):
     def got(key, default):
         return form.get(key, [default])[0].replace("\r\n", "\n")
 
+    def line(key, default):
+        return got(key, default).replace("\n", " ").strip()
+
     out = []
     for part, n in numbered(parts):
         kind = part[0]
@@ -138,30 +141,31 @@ def answered(parts, form):
             text = got(f"text.{n}", "\n".join(part[1])).rstrip("\n")
             # Text the user left alone keeps its lines exactly, an empty
             # block and a trailing blank line included.
-            out.extend(part[1] if text == "\n".join(part[1]).rstrip("\n") else text.split("\n"))
+            # A typed fence line would close the block early on the next read,
+            # so it is written back indented, where the parser reads it as text.
+            out.extend(part[1] if text == "\n".join(part[1]).rstrip("\n")
+                       else [" ```" if typed == "```" else typed for typed in text.split("\n")])
         elif kind == "approve":
             out.append(f"- [{'x' if f'approve.{n}' in form else ' '}] approve")
         elif kind == "check":
             mark = got(f"mark.{n}", part[2])
             out.append(f"{part[1]}[{mark if mark in MARKS else part[2]}] {part[3]}")
         elif kind == "field":
-            value = got(f"field.{n}", part[2]).replace("\n", " ").strip()
+            value = line(f"field.{n}", part[2])
             out.append(f"{part[1]}:" + (f" {value}" if value else ""))
         elif kind == "comment":
-            comment = got(f"comment.{n}", "").replace("\n", " ").strip()
+            comment = line(f"comment.{n}", "")
             if comment:
                 out.append(f"Comment: {comment}")
         elif kind == "choice":
             chosen = form.get(f"choice.{part[1]}", [None])[0]
             picked = part[2] if chosen is None else chosen == part[3]
             out.append(f"- ({'x' if picked else ' '}) {part[3]}")
-    note = got("note", "").replace("\n", " ").strip()
+    note = line("note", "")
     if note:
         end = len(out) - 1 if out and out[-1] == "" else len(out)
         out[end:end] = ["", "## Anything else", f"Comment: {note}"]
     return "\n".join(out)
-
-
 
 
 def serve_form(text, path, on_post, timeout, tag="page", open_browser=True, limit=LIMIT):
@@ -194,7 +198,7 @@ def serve_form(text, path, on_post, timeout, tag="page", open_browser=True, limi
 
         def do_POST(self):
             size = int(self.headers.get("Content-Length") or 0)
-            if self.path != path or size > limit or done.is_set() or foreign(self.headers):
+            if self.path != path or not 0 <= size <= limit or done.is_set() or foreign(self.headers):
                 self.reply(400, b"Not taken.")
                 return
             on_post(self.rfile.read(size).decode())
@@ -208,7 +212,8 @@ def serve_form(text, path, on_post, timeout, tag="page", open_browser=True, limi
     url = origin + "/"
     print(f"{tag}: open {url}", file=sys.stderr, flush=True)
     if open_browser:
-        webbrowser.open(url)
+        if not webbrowser.open(url):
+            print(f"{tag}: no browser opened; give the user {url}", file=sys.stderr, flush=True)
     answered_in_time = done.wait(timeout)
     server.shutdown()
     return answered_in_time

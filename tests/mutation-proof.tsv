@@ -15,11 +15,11 @@ merged-branch-guard.sh	86e1037d0d39b0c8	2f8356630f25e2ce	43/43
 mutation-proof-guard.sh	b756820a35fb7ae0	9247f44f29feea1f	15/15
 plane-block-guard.sh	679f2b016852effb	e48687f48c6bf85b	14/14
 poll-pace.sh	4548d34f02261258	3a6e988715b44822	24/24
-pr-guard.sh	2d7fda87bbae0732	198526337e7b38b1	25/25
+pr-guard.sh	796a1be0f0d63cdc	198526337e7b38b1	25/25
 push-behind-guard.sh	1e8f867bbe25ccbe	cbaab5d1089cf671	52/52
 red-first-check.sh	e585449df8cf7aee	cb8d855ed95c81f4	20/20
 red-first-guard.sh	264573899e8d8f0f	c7df0117587b26bf	27/27
-rm-steer.sh	52eae40fec3651f9	5a77f824f2b75e5c	28/28
+rm-steer.sh	6f406b61f83e66c9	5a77f824f2b75e5c	28/28
 scratch-guard.sh	5d86e5061c016d17	836db0a7b030c4d7	31/31
 skill-ledger.sh	4f6f1ba436f648ca	0523774127c31661	22/22
 spark-joy.sh	2dc8177679887c1f	e1757c50cdac5359	24/24

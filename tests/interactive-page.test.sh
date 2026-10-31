@@ -110,7 +110,8 @@ cp "$scratch/template.md" "$scratch/g.md"
 start "$scratch/g.md"
 cross=$(curl -s -o /dev/null -w '%{http_code}' -X POST -H "Origin: https://elsewhere.example" --data-urlencode text.0=Hijacked "${url%/}/done")
 renamed=$(curl -s -o /dev/null -w '%{http_code}' -X POST -H "Host: attacker.example" --data-urlencode text.0=Hijacked "${url%/}/done")
-own=$(curl -s -o /dev/null -w '%{http_code}' -X POST -H "Origin: ${url%/}" "${same[@]/#/--data-urlencode=}" "${url%/}/done")
+own_args=(); for pair in "${same[@]}"; do own_args+=(--data-urlencode "$pair"); done
+own=$(curl -s -o /dev/null -w '%{http_code}' -X POST -H "Origin: ${url%/}" "${own_args[@]}" "${url%/}/done")
 finish
 check "a post from another web page, or under another host name, is refused; the page's own post is taken" \
   '[ "$cross" = 400 ] && [ "$renamed" = 400 ] && [ "$own" = 200 ] && ! grep -q Hijacked "$scratch/g.md"'
@@ -124,6 +125,14 @@ finish
 check "each run of options is its own question, a question left alone keeps its pick, and the page-end comment lands under Anything else" \
   '[ "$code" = 200 ] && grep -q "name=\"choice.1\" value=\"small\"" <<<"$html" && grep -q "name=\"choice.0\" value=\"red\" checked" <<<"$html" && grep -q "name=\"note\"" <<<"$html" && grep -qx -- "- (x) red" "$scratch/h.md" && grep -qx -- "- (x) small" "$scratch/h.md" && grep -qx -- "- ( ) large" "$scratch/h.md" && [ "$(tail -n 2 "$scratch/h.md")" = "## Anything else
 Comment: Looks good" ] && [ -z "$(tail -c 1 "$scratch/h.md")" ]'
+
+cp "$scratch/template.md" "$scratch/i.md"
+start "$scratch/i.md"
+negative=$(curl -s -o /dev/null -w '%{http_code}' -m 5 -X POST -H "Content-Length: -1" "${url%/}/done")
+code=$(post /done text.0=$'Before\n```\nAfter' text.1=Other comment.0= comment.1= approve.0=on mark.0="~" field.0="was slow")
+finish
+check "a negative length is refused, and a typed fence line can't close its block early" \
+  '[ "$negative" = 400 ] && [ "$code" = 200 ] && grep -qx " \`\`\`" "$scratch/i.md" && [ "$(grep -A3 -x "Before" "$scratch/i.md" | tail -1)" = "\`\`\`" ]'
 
 python3 -I "$page" >/dev/null 2>&1; none=$?
 python3 -I "$page" a b >/dev/null 2>&1; two=$?

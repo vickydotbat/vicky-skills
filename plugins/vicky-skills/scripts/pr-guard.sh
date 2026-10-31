@@ -18,9 +18,7 @@ cwd=$(jq -r '.cwd // ""' <<<"$payload" 2>/dev/null)
 code=$(awk -f "$(dirname "$0")/heredoc-strip.awk" <<<"$command")
 grep -Eq '(^|[^[:alnum:]_-])(gh|tea|gs)([[:space:]]|$)' <<<"$code" || exit 0
 
-if [ -n "$cwd" ]; then
-  cd "$cwd" 2>/dev/null || true
-fi
+[ -z "$cwd" ] || cd "$cwd" 2>/dev/null || true
 
 # A body usually arrives as a file, so read every file the command names as
 # a body. Expand the session ID, $HOME and ~ the command still holds.
