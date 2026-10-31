@@ -2,7 +2,7 @@
 # Refuses an agent's edit to a file that holds approved examples, through
 # Edit, Write or a Bash command, and steers it to `examples`' "Changing an
 # approved example". A command that only runs or reads such a file passes,
-# and so does an edit to a file the user re-approved: red-pen's open-draft.sh
+# and so does an edit to a file the user re-approved: interactive-page's open-draft.sh
 # grants a test file when the user changes its example in a draft.
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
 payload=$(cat)

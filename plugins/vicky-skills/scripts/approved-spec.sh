@@ -1,5 +1,5 @@
 # shellcheck shell=bash
-# Sourced by approved-spec-guard.sh and red-pen's open-draft.sh: whether a file holds approved examples.
+# Sourced by approved-spec-guard.sh and interactive-page's open-draft.sh: whether a file holds approved examples.
 # A file named for approved examples, or one holding a marked test, is the
 # contract. A file that does not exist yet holds no approved text.
 # The mark is a test framework's tag, never a mention in prose: a comment
