@@ -147,6 +147,8 @@ jobs:
         run: tests/lesson-ledger.test.sh
       - name: Over-to-you builds from scratch
         run: tests/over_to_you_from_scratch_approved_examples.test.sh
+      - name: Over-to-you quick notes
+        run: tests/over_to_you_quick_notes_approved_examples.test.sh
       - name: Testing standards
         run: tests/testing_standards_approved_examples.test.sh
       - name: Cerebro mid-effort
