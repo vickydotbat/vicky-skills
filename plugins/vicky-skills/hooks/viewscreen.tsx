@@ -425,10 +425,6 @@ export const register: Register = on => {
   })
 
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
-    if (e.props.hasSurvey) {
-      return next(e)
-    }
-
     // The band is one site for every plugin: what the plugins beneath draw
     // stays, under the box, so another mod's band is never hidden.
     const below = await next(e)
@@ -515,12 +511,14 @@ export const register: Register = on => {
 
     return (
       <Box flexDirection="column">
+        {/* Band-wide, so it resizes only with the terminal; one border colour, the dot shows the phase. */}
         <Box
+          key="frame"
           flexDirection="column"
           borderStyle="round"
-          borderColor={isWorking ? color : 'gray'}
+          borderColor="gray"
           paddingX={1}
-          alignSelf="flex-start"
+          width={e.props.bodyColumns}
         >
           <Box key="activity" flexDirection="row">
             <Button

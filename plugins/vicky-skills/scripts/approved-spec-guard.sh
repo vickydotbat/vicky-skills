@@ -39,22 +39,25 @@ while IFS= read -r word; do
   [ -n "$word" ] && approved "$word" && { target=$word; break; }
 done <<<"$words"
 if [ -z "$target" ]; then
-  # A script the command runs may name the file itself, and write it: a word
-  # after an interpreter, or an executable file, wrapped in timeout or not. A
-  # file the command only reads, such as a workflow listing the tests, passes.
+  # A script the command runs may name the file itself, and write it. Each
+  # segment's wrappers (timeout -s KILL 60, sudo -u bob, nix develop -c) are
+  # walked: a word after a flag may be the flag's value, so it is a candidate
+  # and the walk goes on; the first other word is the command, and the walk
+  # stops. After an interpreter, the script it runs is the command. A file
+  # the command only names as an argument, such as a workflow it reads, passes.
   while IFS= read -r word; do
     [ -f "$word" ] && [ "$(wc -c < "$word")" -lt 1000000 ] || continue
     grep -qiE 'approved_?examples' "$word" && ask "$word names an approved-examples file, and"
   done < <(tr ';&|()\n' '\n' <<<"$command" | awk '{
-    first = 1
+    flag = 0
     for (i = 1; i <= NF; i++) { # mutant-ok: from 0, field 0 is the whole segment, never a file name, so it adds no candidate
-      if (first && $i ~ /^[A-Za-z_][A-Za-z0-9_]*=/) continue
-      if ($i ~ /^(bash|sh|zsh|source|\.|python3?|node|ruby|perl)$/) { i++; while ($i ~ /^-/) i++; print "run " $i }
-      else print (first ? "run " : "exec ") $i
-      first = 0
-    } }' | tr -d "'\"" | while read -r how word; do
-      [ "$how" = run ] || [ -x "$word" ] && printf '%s\n' "$word"
-    done)
+      if ($i ~ /^(timeout|run0|sudo|env|nice|nohup|exec|time|command|xargs|stdbuf|systemd-run|nix|develop|shell)$|^[0-9.]+[smhd]?$|^[A-Za-z_][A-Za-z0-9_]*=|#/) { flag = 0; continue }
+      if ($i ~ /^-/) { flag = 1; continue }
+      if ($i ~ /^(bash|sh|zsh|source|\.|python3?|node|ruby|perl)$/) { i++; while ($i ~ /^-/) i++; print $i; break }
+      print $i
+      if (!flag) break
+      flag = 0
+    } }' | tr -d "'\"")
   exit 0
 fi
 
