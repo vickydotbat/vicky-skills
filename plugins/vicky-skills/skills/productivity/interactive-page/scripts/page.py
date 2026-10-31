@@ -55,7 +55,7 @@ BOX = re.compile(r"^- \[( |x)\] (.+)$")
 CHART = re.compile(r"^!\[[^\]]*\]\(([^/\\()\s]+\.svg)\)$")
 
 
-def parse(text, folder="."):
+def parse(text, folder):
     """The file as parts: ("line", s), ("block", [lines]), ("approve", ticked),
     ("box", ticked, label), ("chart", line, svg), ("check", prefix, mark, rest),
     ("field", label, value), ("comment",), ("choice", question, picked, option).
@@ -78,8 +78,8 @@ def parse(text, folder="."):
             parts.append(("approve", m.group(1) == "x"))
         elif m := BOX.match(line):
             parts.append(("box", m.group(1) == "x", m.group(2)))
-        elif (m := CHART.match(line)) and os.path.isfile(os.path.join(folder, m.group(1))):
-            with open(os.path.join(folder, m.group(1))) as handle:
+        elif (m := CHART.match(line)) and os.path.isfile(svg := os.path.join(folder, m.group(1))):
+            with open(svg) as handle:
                 parts.append(("chart", line, handle.read()))
         elif m := CHECK.match(line):
             parts.append(("check", m.group(1), m.group(2), m.group(3)))
@@ -192,7 +192,7 @@ def answered(parts, form):
     return "\n".join(out)
 
 
-def serve_form(text, path, on_post, timeout, tag="page", open_browser=True, limit=LIMIT):
+def serve_form(text, path, on_post, timeout):
     """Serve the page `text` on this machine only and wait for one POST to
     `path`. `on_post` takes the posted body, URL-encoded, and returns nothing.
     Returns False when no answer came before the timeout."""
@@ -221,7 +221,7 @@ def serve_form(text, path, on_post, timeout, tag="page", open_browser=True, limi
 
         def do_POST(self):
             size = int(self.headers.get("Content-Length") or 0)
-            if self.path != path or not 0 <= size <= limit or done.is_set() or foreign(self.headers):
+            if self.path != path or not 0 <= size <= LIMIT or done.is_set() or foreign(self.headers):
                 self.reply(400, b"Not taken.")
                 return
             on_post(self.rfile.read(size).decode())
@@ -233,10 +233,9 @@ def serve_form(text, path, on_post, timeout, tag="page", open_browser=True, limi
     threading.Thread(target=server.serve_forever, daemon=True).start()
     origin = f"http://127.0.0.1:{server.server_address[1]}"
     url = origin + "/"
-    print(f"{tag}: open {url}", file=sys.stderr, flush=True)
-    if open_browser:
-        if not webbrowser.open(url):
-            print(f"{tag}: no browser opened; give the user {url}", file=sys.stderr, flush=True)
+    print(f"page: open {url}", file=sys.stderr, flush=True)
+    if not webbrowser.open(url):
+        print(f"page: no browser opened; give the user {url}", file=sys.stderr, flush=True)
     answered_in_time = done.wait(timeout)
     server.shutdown()
     return answered_in_time

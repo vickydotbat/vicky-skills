@@ -144,6 +144,15 @@ finish
 check "a chart line comes back as written, a chart outside the page's folder stays text, and an unticked box shows unticked" \
   '[ "$code" = 200 ] && grep -q "<svg id=c>" <<<"$html" && ! grep -q "<svg id=d>" <<<"$html" && grep -qF "![Deeper](sub/d.svg)" <<<"$html" && grep -qF "type=checkbox name=\"box.0\"> K-1 star: one" <<<"$html" && cmp -s "$scratch/j.template" "$scratch/j.md"'
 
+printf '# Q\n\n## Q1: Which?\n- (x) One\n- ( ) Two\n- ( ) Other\n   notes:\n' >"$scratch/k.md"
+start "$scratch/k.md"
+port=${url##*:}; port=${port%/}
+bound=$(ss -ltnH "sport = :$port" 2>/dev/null | awk '{print $4}')
+code=$(post /done choice.0=Other field.0="Neither, ask me later")
+finish
+check "choosing Other with a note brings back Other and the note, and the page listens on this machine only" \
+  '[ "$code" = 200 ] && grep -qx -- "- (x) Other" "$scratch/k.md" && grep -qx -- "- ( ) One" "$scratch/k.md" && grep -qx "   notes: Neither, ask me later" "$scratch/k.md" && [ "$bound" = "127.0.0.1:$port" ]'
+
 python3 -I "$page" >/dev/null 2>&1; none=$?
 python3 -I "$page" a b >/dev/null 2>&1; two=$?
 check "no file, or two, is a usage error" '[ "$none" = 2 ] && [ "$two" = 2 ]'

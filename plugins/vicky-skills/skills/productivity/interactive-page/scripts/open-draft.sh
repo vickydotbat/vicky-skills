@@ -30,8 +30,8 @@ editor=${VISUAL:-${EDITOR:-}}
 [ -n "$editor" ] || { echo "open-draft: set VISUAL or EDITOR, or tell the user the draft's path" >&2; exit 2; }
 lock=""
 if gitdir=$(git rev-parse --absolute-git-dir 2>/dev/null); then lock="$gitdir/red-pen-open"; fi
-# shellcheck disable=SC2086 # the editor variable holds a command and its flags
 before=$(cat "$1" 2>/dev/null)
+# shellcheck disable=SC2086 # the editor variable holds a command and its flags
 $editor "$1" & pid=$!
 [ -n "$lock" ] && printf '%s\n%s\n' "$pid" "$1" > "$lock"
 trap '[ -n "$lock" ] && rm -f "$lock"' EXIT

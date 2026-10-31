@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Draw a star chart from its tickets, for any tracker.
 
-Usage: draw-chart.py <tickets.json> [--course KEY,KEY] [--png <chart.png>]
+Usage: draw-chart.py <tickets.json> [--course KEY,KEY] [--png <chart.png or chart.svg>]
 
 <tickets.json> is a list with one object per child of the chart:
 
@@ -14,7 +14,8 @@ chart doesn't own. A black hole from the chart's Black holes section is an
 object of its own, {"black_hole": "...", "threatens": ["KEY-1"]}, drawn
 beside the open tickets it threatens and left out when none is open.
 
-Prints the Mermaid. With --png, also renders it with mermaid-cli at the
+Prints the Mermaid. With --png, also renders it with mermaid-cli, as PNG or
+SVG by the output name's extension, at the
 drawing's own width, since mmdc shrinks every chart to 800 pixels by default.
 """
 import json
