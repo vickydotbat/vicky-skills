@@ -4,6 +4,8 @@
 # over-to-you do, through open-page.sh, with a stand-in browser that records
 # the page's address, then answers the page the way the browser's form does.
 set -u
+# No test may reach the user's own editor or browser.
+export VISUAL=true EDITOR=true
 root="$(cd "$(dirname "$0")/.." && pwd)"
 open_page="$root/plugins/vicky-skills/skills/productivity/interactive-page/scripts/open-page.sh"
 draft_lock="$root/plugins/vicky-skills/scripts/draft-lock.sh"
@@ -136,4 +138,25 @@ rm -f "$scratch/edited"
 status=$?
 check "with no browser on the machine, the drafts open in my editor instead, and the agent waits for the close" \
   '[ "$status" = 0 ] && [ "$(cat "$scratch/edited" 2>/dev/null)" = "$scratch/d5.md" ]'
+
+red_pen="$root/plugins/vicky-skills/skills/productivity/red-pen/SKILL.md"
+cp "$scratch/drafts.template" "$scratch/d6.md"
+start "$scratch/d6.md"
+done_with text.0="Hello there" text.1="Given a creature charmed by another" comment.0="Warmer, please" comment.1=
+check "a comment I type under a draft reaches the agent, which acts on my note before it writes the draft's text back" \
+  'gone && [ "$(grep -A2 -x "Hello there" "$scratch/d6.md" | tail -1)" = "Comment: Warmer, please" ] && sed -n "/^3\. \*\*Write back/,/^4\. /p" "$red_pen" | grep -q "act on it before you write the block back"'
+
+cat >"$scratch/question.md" <<'EOF'
+# A question for you
+
+## Q1: Which colour for the band border?
+- ( ) gray
+- (x) the phase colour
+EOF
+interactive="$root/plugins/vicky-skills/skills/productivity/interactive-page/SKILL.md"
+start "$scratch/question.md"
+html=$(page)
+done_with choice.0=gray
+check "an agent's question with options is answered on a page by clicking, not in chat" \
+  'grep -q "type=radio name=\"choice.0\" value=\"gray\"" <<<"$html" && gone && grep -qx -- "- (x) gray" "$scratch/question.md" && grep -qx -- "- ( ) the phase colour" "$scratch/question.md" && grep -qi "question" "$interactive"'
 exit $fail

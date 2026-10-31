@@ -2,6 +2,8 @@
 # The draft lock's decisions the approved examples leave out: a read while the
 # draft is open, an edit with no path, and what a refusal names.
 set -u
+# No test may reach the user's own editor.
+export VISUAL=true EDITOR=true
 root="$(cd "$(dirname "$0")/.." && pwd)"
 hook="$root/plugins/vicky-skills/scripts/draft-lock.sh"
 opener="$root/plugins/vicky-skills/skills/productivity/red-pen/scripts/open-draft.sh"

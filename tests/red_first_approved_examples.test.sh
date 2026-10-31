@@ -2,6 +2,8 @@
 # approved-spec: the examples approved on the star "Red-first is proven by
 # hooks and CI". Each check is named after its example.
 set -u
+# No test may reach the user's own editor.
+export VISUAL=true EDITOR=true
 root="$(cd "$(dirname "$0")/.." && pwd)"
 scripts="$root/plugins/vicky-skills/scripts"
 opener="$root/plugins/vicky-skills/skills/productivity/red-pen/scripts/open-draft.sh"

@@ -2,6 +2,8 @@
 # open-draft.sh's grants the approved examples leave out: an editor that saves
 # a blank line under each heading, and a ticked approve box.
 set -u
+# No test may reach the user's own editor.
+export VISUAL=true EDITOR=true
 root="$(cd "$(dirname "$0")/.." && pwd)"
 open="$root/plugins/vicky-skills/skills/productivity/red-pen/scripts/open-draft.sh"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
