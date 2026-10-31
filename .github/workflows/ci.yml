@@ -143,6 +143,8 @@ jobs:
         run: tests/over_to_you_stocks_approved_examples.test.sh
       - name: Lessons ledger
         run: tests/lesson_ledger_approved_examples.test.sh
+      - name: Red-pen grants
+        run: tests/open-draft.test.sh
       - name: Lessons ledger edges
         run: tests/lesson-ledger.test.sh
       - name: Over-to-you builds from scratch

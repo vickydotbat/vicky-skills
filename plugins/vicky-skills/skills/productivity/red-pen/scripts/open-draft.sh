@@ -18,7 +18,9 @@ $editor "$1" & pid=$!
 trap '[ -n "$lock" ] && rm -f "$lock"' EXIT
 wait "$pid"
 [ -n "$lock" ] && [ -f "$1" ] || exit 0
-# Each section on one line: its location's path, a tab, then its text.
-sections() { awk '/^## /{if (loc != "") print loc "\t" body; loc=""; body=""; getline loc; sub(/:.*/, "", loc); next} {body = body $0 "\034"} END {if (loc != "") print loc "\t" body}'; }
+# Each section on one line: its location's path, a tab, then its text. The
+# location is the first line after the heading that isn't blank, since an
+# editor may save a blank line under each heading.
+sections() { awk '/^## /{if (loc != "") print loc "\t" body; loc=""; body=""; while ((getline loc) > 0 && loc == "") continue; sub(/:.*/, "", loc); next} {body = body $0 "\034"} END {if (loc != "") print loc "\t" body}'; }
 grep -vxF -f <(sections <<<"$before") <(sections < "$1") | cut -f1 >> "$(dirname "$lock")/approved-spec-grants" 2>/dev/null
 exit 0
