@@ -20,6 +20,8 @@ A pass always ends in counts or in "unrun, because <the log line>". It never end
 - Skip code no test can see: log calls and messages to a person.
 - Time each mutant out at its tests' baseline time x 1.5 plus a few seconds. A higher timeout hides an endless loop as slowness.
 
+Read the repo's `TESTING_STANDARDS.md` first: it wins over this skill's defaults.
+
 ## Tests that make a pass fast
 
 Each mutant runs the tests that reach it, so a test's time is paid once per mutant. Hold every test a pass runs to these:

@@ -9,6 +9,8 @@ description: Finish a draft pull request and see it through CI — make it curre
 
 A pull request opens early as a **draft**: a pull request that asks no one to review it yet (GitHub's Draft state, or a `WIP:` title prefix on Gitea, unless the repo's guide names another way). The draft collects the work. **Make it so** is the order that finishes it: current, checked by the user, true, ready, green. Merging stays with the user or the repo's own automation.
 
+Read the repo's `TESTING_STANDARDS.md` first: it wins over this skill's defaults.
+
 ## Steps
 
 1. **Finish the branch.** Commit everything. Run `git fetch origin`. When the branch is behind `main`, rebase it, with `history-monks` when what landed changes the form of what the branch touches. Run the checks the change reaches. Done when the tree is clean, the branch is current, and the checks pass.
