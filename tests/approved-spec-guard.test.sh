@@ -21,4 +21,7 @@ sh_run() { jq -n --arg c "$1" --arg d "$dir" '{tool_name: "Bash", tool_input: {c
 check "asks on a script run through timeout and an interpreter" ask "$(sh_run 'timeout 60 bash fix.sh')"
 check "asks on an executable script run through a wrapper" ask "$(sh_run 'systemd-run --user --scope timeout 300 ./fix.sh')"
 check "silent on a plain file that names one, only read" "" "$(sh_run 'grep -n sed notes.txt')"
+check "silent on an executable script named as an argument" "" "$(sh_run 'git show HEAD -- fix.sh')"
+check "silent on an executable script read with cat" "" "$(sh_run 'cat fix.sh | head -3')"
+check "asks on an executable script run through run0" ask "$(sh_run 'run0 ./fix.sh')"
 exit $fail
