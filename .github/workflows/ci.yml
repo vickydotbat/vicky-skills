@@ -141,6 +141,10 @@ jobs:
         run: tests/worktree_default_approved_examples.test.sh
       - name: Over-to-you stocks the test
         run: tests/over_to_you_stocks_approved_examples.test.sh
+      - name: Lessons ledger
+        run: tests/lesson_ledger_approved_examples.test.sh
+      - name: Lessons ledger edges
+        run: tests/lesson-ledger.test.sh
       - name: Cerebro mid-effort
         run: tests/cerebro_mid_effort_approved_examples.test.sh
       - name: Watch script
