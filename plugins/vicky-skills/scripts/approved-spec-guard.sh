@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Asks the human before an agent edits a file that holds approved examples,
 # through Edit, Write or a Bash command. A command that only runs or reads
-# such a file passes.
+# such a file passes. Training wheels: a refusal that sends the agent to
+# `examples`' "Changing an approved example" would replace the ask.
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
 payload=$(cat)
 # A file named for approved examples, or one holding a marked test, is the
