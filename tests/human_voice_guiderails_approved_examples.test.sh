@@ -11,13 +11,15 @@ check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 # lint <text>: prints the lint's output, then "exit=<code>".
 lint() { printf '%s\n' "$1" > "$scratch/draft.md"; python3 "$lint" "$scratch/draft.md" 2>&1; echo "exit=$?"; }
 
-# Every tell the lint has caught by name, as TELLS.md headed them.
+# Every name the lint once printed for a tell.
 names='Puffery|Significance talk|Participle tails|Negative parallelism|Dodging "is"|Vague sourcing|Vague links|Sweep constructions|Worth|Announced importance|Totalizing|Honesty tags|Quietly|Drama words|Consultant talk|Formula openers|Formula endings|Hook lines|Talking about the writing|Placeholders|Tables and emoji|Curly quotes|Hedge stacks|Em dash flood|Bold on key terms|Even rhythm|Horizontal rules|Summary|Signpost'
-every=$'Picture this, a robust tool.\n\nIt marks a pivotal moment, highlighting change. It is not just fast but small. It serves as a hub. Studies show it works in relation to speed. Whether it\'s red or blue, it is worth noting. This matters. That\'s the whole game. Honestly, it quietly wrecked us. Let\'s pressure-test it.\n\nFurthermore, here\'s the thing. In this article we will look. [TODO] It may possibly help. She said “hi” \U0001F600.\n\nOne — two — three — four. In summary, done. One of the key aspects is cost. It is imperative that we go.\n\n**a** and **b** and **c** go.\n\n---\n# One\n\n---\n# Two'
-every=$(printf '%b' "$every")
-out=$(lint "$every")
+every=$'Picture this, a robust tool.\n\nIt marks a pivotal moment, highlighting change. It is not just fast but small. It serves as a hub. Studies show it works in relation to speed. Whether it\'s red or blue, it is worth noting. This matters. That\'s the whole game. Honestly, it quietly wrecked us. Let\'s pressure-test it.\n\nFurthermore, here\'s the thing. In this article we will look. [TODO] It may possibly help. She said “hi” \U0001F600.\n\nOne — two — three — four. In summary, done. One of the key aspects is cost. It is imperative that we go.\n\nGo with **a**, **b** and **c** now.\n\n---\n# One\n\n---\n# Two'
+# Even rhythm needs every paragraph the same size, so it gets a draft of its own.
+out=$(lint "$every"; lint $'One point here.\n\nTwo points here.\n\nThree points here.')
+moves=$(grep "^[0-9]*: " <<<"$out" | cut -d: -f3-)
 check "a draft that trips every check the lint has gets no printed line holding the name of a tell" \
-  '[ "$(grep -c "^[0-9]*: " <<<"$out")" -ge 20 ] && ! grep -Eiq "$names" <<<"$out"'
+  'grep -q "one point, longer" <<<"$moves" && grep -q "one word a reader must not miss" <<<"$moves" \
+   && [ "$(wc -l <<<"$moves")" -ge 30 ] && ! grep -Eiq "$names" <<<"$moves"'
 
 check "an agent following human-voice from first step to last never reads a list of tells, and every habit it is given is a move to make" \
   '! grep -q "TELLS.md" "$skill" && ! grep -q "→" "$skill" && ! grep -Eiq "^#+ .*(tell|metaphor)" "$skill" \
