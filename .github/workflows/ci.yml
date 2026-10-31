@@ -42,6 +42,8 @@ jobs:
         run: tests/lint_tells_approved_examples.test.sh
       - name: Answer page
         run: tests/answer_page_approved_examples.test.sh
+      - name: Examples are the seams
+        run: tests/do_examples_approved_examples.test.sh
       - name: Check ADR
         run: tests/check-adr.test.sh
       - name: After-push hook
