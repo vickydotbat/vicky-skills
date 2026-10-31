@@ -39,4 +39,7 @@ check "given a step skipped for a reason it can prove, the report names the step
 
 run false "$dir/noreview.jsonl" "gh pr ready 37"; code=$?
 check "given the step guard setting is off, marking a pull request ready with no review is not refused" '[ $code = 0 ]'
+started vicky-skills:sup > "$dir/nodo.jsonl"
+run true "$dir/nodo.jsonl" "gh pr ready 37"; code=$?
+check "given a session that never started do, marking a pull request ready with no review is not refused" '[ $code = 0 ]'
 exit $fail
