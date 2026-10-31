@@ -5,8 +5,8 @@ checkout-guard.sh	b881351e6530b045	bf8324c53d9c29bb	57/57
 draft-lock.sh	ebf828f5925afc95	5e237925bc77e36f	52/52
 gamma-shift.sh	83809c7deca626c1	5d80d48bc0ede7f1	3/3
 gate-notify.sh	deed6bf2a718196f	90a158f2cb0fe49b	21/21
-git-hook-lib.sh	ab06098427e37ecf	bb29888981d4eda3	32/32
-heredoc-strip.awk	2651757e389267ff	d339564083fda5b4	5/5
+git-hook-lib.sh	ab06098427e37ecf	3adf601c4d59bfa2	32/32
+heredoc-strip.awk	2651757e389267ff	a4b00f63dc8cc0de	5/5
 issue-guard.sh	16ad0d0ee535d4c3	6d8e3274b3564bc9	20/20
 lesson-hint.sh	fdde074b9223620f	0e96340a64d1f50a	8/8
 local-path-guard.sh	262afb6fbdb2a8d7	d1004360c6c32de8	29/29
