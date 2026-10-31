@@ -111,6 +111,28 @@
       "description": "0 does nothing. A number of days N runs spark-joy in the background at the first session start in a repo after N days, to a draft pull request.",
       "default": "0"
     },
+    "drift_every_days": {
+      "type": "string",
+      "title": "Check tickets for drift every few days",
+      "description": "0 does nothing. A number of days N starts the ticket-drift agent in the background at the first session start in a repo after N days. It comments on open tickets whose comments or merged pull requests contradict their body, and edits nothing.",
+      "default": "0"
+    },
+    "skill_ledger": {
+      "type": "boolean",
+      "title": "Keep a ledger of skill starts",
+      "description": "Add one line per skill start, the time and the skill's name, to a file in the plugin's data folder on this machine. captains-log reads it to find skills nobody starts.",
+      "default": false
+    },
+    "reader_panel": {
+      "type": "string",
+      "title": "Reader panel on big drafts",
+      "description": "How human-voice runs the panel of readers on a draft over about 400 words: one agent playing every seat, or one agent per seat, run side by side.",
+      "options": [
+        "one agent",
+        "agent per seat"
+      ],
+      "default": "one agent"
+    },
     "gate_notify": {
       "type": "boolean",
       "title": "Notify when an agent waits on you",

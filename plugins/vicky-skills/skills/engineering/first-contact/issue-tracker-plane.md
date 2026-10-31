@@ -36,3 +36,9 @@ A waiting ticket is assigned to the user and can't go on until the thing its `Wa
 - **List tickets waiting on you**: the open work items assigned to you in a not-started state (Plane's `unstarted` group, often Todo) whose body has a `Waits on:` line.
 - **Park a ticket**: assign it to the user, move it to the not-started state, and add a `Waits on: <who or what>` line to the body.
 - **Claim a waiting ticket**: move it to In Progress, before any other write.
+
+## Ticket drift
+
+Ticket drift: on
+
+Change `on` to `off` to stop the `ticket-drift` check in this repo.

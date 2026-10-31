@@ -68,3 +68,13 @@ jobs:
         run: tests/spark-joy.test.sh
       - name: Gate-notify hook
         run: tests/gate-notify.test.sh
+      - name: Skill ledger hook
+        run: tests/skill_ledger_approved_examples.test.sh
+      - name: Idle skills
+        run: tests/idle_skills_approved_examples.test.sh
+      - name: Captain's log high points
+        run: tests/captains_log_high_points_approved_examples.test.sh
+      - name: Reader panel
+        run: tests/reader_panel_approved_examples.test.sh
+      - name: Ticket-drift hook
+        run: tests/ticket_drift_approved_examples.test.sh

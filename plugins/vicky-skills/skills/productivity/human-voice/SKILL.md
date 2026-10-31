@@ -64,9 +64,15 @@ Use the reader's words, never code names. A second outcome is a second example.
 6. **Sweep.** Read [`TELLS.md`](TELLS.md) with the Read tool, the whole file,
    every time. Done when you have checked the draft against every heading in
    it and rewritten each hit.
-7. **Read it aloud as the user.** Done when every paragraph passes "would
+7. **Seat a reader panel** when the draft runs over about 400 words (`wc -w`). A shorter draft skips this step.
+   Pick three to five seats from its audience, the readers who will act on it. A runbook or doc gets a seat that does a dry run, following each step as written.
+   Lore gets a canon keeper, who checks it against the setting's other pages. Each seat reads the draft as that reader and lists the questions it is left with.
+   The `reader_panel` setting reads `${user_config.reader_panel}`, and `one agent` when it shows no value. At `one agent`, play every seat yourself, one at a time.
+   At `agent per seat`, start one subagent per seat, side by side, each briefed with its seat and the draft.
+   Answer each question in the draft, from the source. Keep a question the source can't answer for the user. Done when every question is answered in the draft or kept.
+8. **Read it aloud as the user.** Done when every paragraph passes "would
    they have written this sentence?" against their writing.
-8. **Show the draft.** A person reads every draft a player or the public will
+9. **Show the draft**, with the panel's kept questions beside it. A person reads every draft a player or the public will
    see before it is committed or published. Done when the user has read it.
 
 ## Cut rules
