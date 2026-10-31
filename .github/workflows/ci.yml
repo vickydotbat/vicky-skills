@@ -99,6 +99,12 @@ jobs:
         run: tests/step-guard.test.sh
       - name: Step guard on Gitea
         run: tests/step_guard_gitea_approved_examples.test.sh
+      - name: Mutation proof guard
+        run: tests/mutation-proof-guard.test.sh
+      - name: Plane block guard
+        run: tests/plane_block_approved_examples.test.sh
+      - name: Goal-driven do, proof guard and hints
+        run: tests/goal_driven_approved_examples.test.sh
       - name: Approved tests change only with a yes
         run: tests/approved_tests_yes_approved_examples.test.sh
       - name: Checkout guard

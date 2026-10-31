@@ -62,6 +62,16 @@
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/red-first-guard.sh\"",
             "timeout": 20
+          },
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/mutation-proof-guard.sh\"",
+            "timeout": 70
+          },
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/plane-block-guard.sh\"",
+            "timeout": 5
           }
         ]
       },

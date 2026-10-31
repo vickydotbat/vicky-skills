@@ -70,6 +70,12 @@
       "description": "Refuse a tea command that leaves stdin open, since tea blocks on it and a retry can post twice.",
       "default": false
     },
+    "guard_plane_block": {
+      "type": "boolean",
+      "title": "Plane blocks need a hard reason",
+      "description": "Refuse 'plane block' unless the command ends with '# hard: <reason>'. Plane's API can't remove a blocked-by link, so the hook sends a softer order to a 'Waits on:' line in the body.",
+      "default": false
+    },
     "guard_local_paths": {
       "type": "boolean",
       "title": "No local paths in commits",
@@ -98,6 +104,12 @@
       "type": "boolean",
       "title": "Approved tests land first",
       "description": "Refuse a commit that adds a new approved-examples test together with any other change, so the tests land red in a commit of their own.",
+      "default": false
+    },
+    "guard_mutation_proof": {
+      "type": "boolean",
+      "title": "No commit with a stale mutation proof",
+      "description": "Refuse a commit while the repo's mutation proof is out of date, in a repo whose docs/agents/testing.md names a 'Mutation proof check:' command.",
       "default": false
     },
     "guard_draft_lock": {

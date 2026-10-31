@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Mutation pass over the plugin's hook scripts, inside a time budget.
 
-Usage: mutate-hooks.py [--jobs N] [--all] [--record] [--budget SECONDS] [script ...]
+Usage: mutate-hooks.py [--jobs N] [--all] [--record] [--check] [--budget SECONDS] [script ...]
 
 Each mutant changes one line of one script: an exit code, a comparison, a
 logic operator, a negation, or the whole line deleted. The script's tests run
@@ -13,7 +13,8 @@ last clean pass against two hashes, the script's and its tests'. A script
 whose hashes match is proven without a run. A script whose tests changed is
 mutated whole. A script whose code alone changed is mutated on the lines that
 differ from the merge base with origin/main. --all mutates every line of every
-script, and --record writes the proof after a clean run.
+script, and --record writes the proof after a clean run. --check mutates
+nothing: it names each script whose proof is stale and exits 1 when any is.
 
 The pass stops before it starts when its estimate (mutants x the slowest test
 time / jobs) passes the budget, 3000 seconds by default, and stops mid-run at
@@ -61,6 +62,8 @@ TESTS = {
     "tea-stdin.awk": ["tea-stdin"],
     "tea-stdin.sh": ["tea-stdin"],
     "ticket-drift.sh": ["ticket_drift_approved_examples"],
+    "mutation-proof-guard.sh": ["mutation-proof-guard", "goal_driven_approved_examples"],
+    "plane-block-guard.sh": ["plane_block_approved_examples"],
     "poll-pace.sh": ["poll-pace"],
     "step-guard.sh": ["step-guard", "step_guard_approved_examples", "step_guard_gitea_approved_examples"],
     "step-hint.sh": ["step_guard_approved_examples"],
@@ -197,7 +200,7 @@ def baseline(script):
 
 
 def main(argv):
-    jobs, names, everything, record, budget = os.cpu_count() or 2, [], False, False, 3000.0
+    jobs, names, everything, record, budget, check = os.cpu_count() or 2, [], False, False, 3000.0, False
     while argv:
         arg = argv.pop(0)
         if arg == "--jobs":
@@ -206,6 +209,8 @@ def main(argv):
             everything = True
         elif arg == "--record":
             record = True
+        elif arg == "--check":
+            check = True
         elif arg == "--budget":
             budget = float(argv.pop(0))
         else:
@@ -222,6 +227,11 @@ def main(argv):
     if unmapped:
         print("no tests mapped for: " + " ".join(unmapped))
         return 2
+    if check:
+        stale = [n for n in names if (proofs().get(n) or [None, None])[:2] != list(hashes(n))]
+        for name in stale:
+            print(f"stale: {name}")
+        return 1 if stale else 0
     proven, plan = proofs(), []
     for name in names:
         code_hash, test_hash = hashes(name)
