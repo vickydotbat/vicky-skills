@@ -38,4 +38,26 @@ expect "an unchanged close grants nothing" "$(draft "$a$b" "$a$b")" ""
 expect "a ticked approve box grants its section's test" "$(draft "$a$b" "${a/- \[ \]/- [x]}$b")" "tests/a_approved_examples.test.sh"
 expect "an editor's blank line under each heading still finds the test" "$(draft "$a$b" "${spaced/Then b/Then bee}")" "tests/b_approved_examples.test.sh"
 expect "a blank line under each heading alone grants nothing" "$(draft "$a$b" "$spaced")" ""
+
+# A section for a file that holds approved examples reaches the editor only in the form a tick can grant.
+mkdir -p "$dir/repo/tests"; echo '# approved-spec: c' > "$dir/repo/tests/c_approved_examples.test.sh"
+opens() { # $1 draft text; prints "opened" when the editor ran, else the refusal's exit
+  rm -f "$dir/ran"; printf '%s' "$1" > "$dir/draft.md"
+  printf '#!/usr/bin/env bash\ntouch %q\n' "$dir/ran" > "$dir/editor"; chmod +x "$dir/editor"
+  (cd "$dir/repo" && VISUAL="$dir/editor" bash "$open" "$dir/draft.md" >/dev/null 2>&1); code=$?
+  [ -f "$dir/ran" ] && echo opened || echo "refused $code"
+}
+c_ok='## C
+tests/c_approved_examples.test.sh:new
+- [ ] approve
+
+```text
+Then c
+```
+'
+expect "an approved-examples section with its path:line and approve box opens" "$(opens "$c_ok")" "opened"
+expect "an approved-examples section with no approve box opens with one added" "$(opens "${c_ok/- \[ \] approve
+/}"; grep -c '^- \[ \] approve' "$dir/draft.md")" "opened
+1"
+expect "an approved-examples section whose location is not path:line never opens" "$(opens "${c_ok/c_approved_examples.test.sh:new/c_approved_examples.test.sh, the Then line}")" "refused 2"
 exit $fail

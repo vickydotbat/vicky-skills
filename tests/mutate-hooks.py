@@ -50,6 +50,7 @@ GIT_GUARDS = ["push-behind-guard", "merged-branch-guard", "local-path-guard", "c
 TESTS = {
     "after-push.sh": ["after-push"],
     "approved-spec-guard.sh": ["approved-spec-guard", "approved_tests_yes_approved_examples", "guard_reads_approved_examples", "guard_new_file_approved_examples", "guard_steers_approved_examples", "approved_spec_guard_cd_approved_examples", "guard_outside_checkout_approved_examples", "guard-locks"],
+    "approved-spec.sh": ["approved-spec-guard", "guard_reads_approved_examples", "guard-locks", "open-draft", "guard_steers_approved_examples", "guard_outside_checkout_approved_examples"],
     "auto-tidy.sh": ["auto-tidy"],
     "checkout-guard.sh": ["checkout-guard", "checkout_guard_approved_examples", "worktree_default_approved_examples"],
     "draft-lock.sh": ["draft-lock", "red_first_approved_examples"],
