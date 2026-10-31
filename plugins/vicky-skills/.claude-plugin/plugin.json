@@ -70,6 +70,12 @@
       "description": "Refuse a tea command that leaves stdin open, since tea blocks on it and a retry can post twice.",
       "default": false
     },
+    "guard_plane_block": {
+      "type": "boolean",
+      "title": "Plane blocks need a hard reason",
+      "description": "Refuse 'plane block' unless the command ends with '# hard: <reason>'. Plane's API can't remove a blocked-by link, so the hook sends a softer order to a 'Waits on:' line in the body.",
+      "default": false
+    },
     "guard_local_paths": {
       "type": "boolean",
       "title": "No local paths in commits",
@@ -86,6 +92,30 @@
       "type": "boolean",
       "title": "No push from behind main",
       "description": "Refuse a push from a branch that lacks the tip of origin's default branch.",
+      "default": false
+    },
+    "guard_checkout": {
+      "type": "boolean",
+      "title": "One session per checkout",
+      "description": "Refuse a branch switch in a checkout another session used in the last 12 hours, and tell a session when its checkout moved to another branch under it. Each session's last git command per checkout is kept in the plugin's data folder until the session ends.",
+      "default": false
+    },
+    "guard_red_first": {
+      "type": "boolean",
+      "title": "Approved tests land first",
+      "description": "Refuse a commit that adds a new approved-examples test together with any other change, so the tests land red in a commit of their own.",
+      "default": false
+    },
+    "guard_mutation_proof": {
+      "type": "boolean",
+      "title": "No commit with a stale mutation proof",
+      "description": "Refuse a commit while the repo's mutation proof is out of date, in a repo whose docs/agents/testing.md names a 'Mutation proof check:' command.",
+      "default": false
+    },
+    "guard_draft_lock": {
+      "type": "boolean",
+      "title": "No code while a draft is open",
+      "description": "While red-pen has a draft open in your editor, refuse edits to the repo's files. Writes outside the repo, such as scratch files, still run.",
       "default": false
     },
     "gamma_shift": {
@@ -156,6 +186,18 @@
       "title": "Unpacked NWN:EE resources",
       "description": "The folder that holds the stock game resources, unpacked one folder per BIF. Leave blank when there is none.",
       "default": ""
+    },
+    "step_guard": {
+      "type": "boolean",
+      "title": "No skipped do steps",
+      "description": "Refuse to mark a do build's pull request ready when its review never ran and the body gives no reason, and remind the agent at do's start that each step needs its proof.",
+      "default": false
+    },
+    "guard_poll_pace": {
+      "type": "boolean",
+      "title": "Short polls",
+      "description": "Refuse a wait that sleeps more than 30 seconds at a time or polls more than 60 times.",
+      "default": false
     }
   }
 }

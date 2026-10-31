@@ -7,6 +7,10 @@ This repo is a public Claude Code plugin. Every commit on `main` reaches users a
 - Work on a branch and open a pull request on GitHub. `main` gets finished work only and merges by squash once `checks` passes.
 - CI refuses a draft pull request and runs once it is marked ready.
 
+## Tests
+
+- A test stops only the processes it started, by the id it saved. `pkill -f <pattern>` also matches the shell that ran the test, whose command line holds the same text.
+
 ## Before every push
 
 Run `claude plugin validate .` and `tests/run-all.sh`, which runs every script in `tests/` (CI runs each as a step in `.github/workflows/ci.yml`). A new test script also gets a step in that workflow.
@@ -26,9 +30,10 @@ Every file stays free of local paths, hostnames and any project's infrastructure
 
 ## Add or change a hook
 
+- Back each rule with the strongest of these that fits: a hook that refuses or asks; a test or CI step that proves it; a hint a hook injects at the moment the rule applies (when a skill starts, or before the tool call it governs). A skill line comes last, and names what backs it.
 - Script in `plugins/vicky-skills/scripts/`, registered in `plugins/vicky-skills/hooks/hooks.json`.
 - An optional guard is off until the user turns it on: declare a `userConfig` option in `plugin.json` (default `false`) and have the script exit early unless `CLAUDE_PLUGIN_OPTION_<NAME>` is `true` or `1`.
-- Add `tests/<hook>.test.sh`, a CI step for it, and a README bullet under the hooks list.
+- Add `tests/<hook>.test.sh`, a CI step for it, and a README bullet under the hooks list. The test covers every decision the hook makes: each refusal or ask, each pass, the setting off, and a missing tool or bad input. Done when a mutation pass over the script (`sentinels`) leaves no survivor.
 
 ## Add a check a skill runs on the user's repo
 

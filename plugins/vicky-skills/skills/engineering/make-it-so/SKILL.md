@@ -12,11 +12,11 @@ A pull request opens early as a **draft**: a pull request that asks no one to re
 ## Steps
 
 1. **Finish the branch.** Commit everything. Run `git fetch origin`. When the branch is behind `main`, rebase it, with `history-monks` when what landed changes the form of what the branch touches. Run the checks the change reaches. Done when the tree is clean, the branch is current, and the checks pass.
-2. **Run the QA checklist**, Q1 to Q6, below. Fix each failure in place and run the item again. This is not a review: `review` already ran, so a design concern goes to the user as a question. Done when Q1 to Q6 each pass, or Q5 has its reason in the body.
+2. **Run the QA checklist**, Q1 to Q6, below. Fix each failure in place and run the item again. A finding on an approved-spec test goes to the user as a question, through `examples`' "Changing an approved example". This is not a review: `review` already ran, so a design concern goes to the user as a question. Done when Q1 to Q6 each pass, or Q5 has its reason in the body.
 3. **Hand over what the build held.** When the effort has a draft file, open it with `red-pen` and commit what the user leaves. Then take the pull request's Check these list to the user, one line at a time. Fix each answer that differs from the guess, build each parked slice they unblock, and delete the list. Done when the draft file is gone and Check these is empty or holds only what waits on someone else.
 4. **Make it true.** Run `ship-it` for the body and `loose-ends` for the tickets, then Q7 to Q10. Fix each failure in place and run the item again. Done when Q7 to Q10 each pass.
 5. **Push once, then mark it ready.** Push a rebased branch with `git push --force-with-lease=<branch>:<old sha>`. Then mark it ready: `gh pr ready <n>` on GitHub, or on Gitea drop the `WIP:` prefix with `tea pr edit <n> -t "<title>" </dev/null`. Push first because a repo's bot may approve or merge the commit it sees when the pull request turns ready. When marking it ready starts no run (a Gitea workflow often ignores title edits), close and reopen the pull request. Done when the pull request shows as ready and its head is your last commit.
-6. **Babysit CI.** Watch the run for the pushed commit: `gh pr checks <n> --watch --required` on GitHub, or poll `tea actions runs list` and `tea actions runs view <id>` on Gitea every minute, at most 60 times. Then:
+6. **Babysit CI.** Watch the run for the pushed commit: `gh pr checks <n> --watch --required` on GitHub, or poll `tea actions runs list` and `tea actions runs view <id>` on Gitea every 30 seconds, at most 60 times. After the 60th poll, report each check still running and its run link, and leave the pull request as it is. Then:
    - **Green**: done.
    - **Red**: read the failing job's log (`tea actions runs logs <id>`, or the check's link), then read the latest run on the base branch (`gh run list --branch <base> --limit 1`, or `tea actions runs list`). Tell the user at once, in one line: the failing check, its cause, and whether the base branch fails the same way. Fix the cause on the branch, even when the base branch carries it, without asking first: a choice between fixes that each make the check pass honestly is yours, so name your pick in the one line and build it. Ask first only when every fix breaks the spec: an approved example, the ticket, or a decision on record. Fix it with `machine-spirit` when CI itself broke, and with `never-lupus` when the code did. A test that fails only some runs is red: rerun it locally until it fails, and fix it. Rerun the checks the fix reaches, push once, and watch again.
    - **Stuck or never reports**: run `machine-spirit`.
@@ -42,7 +42,7 @@ Measured by one read:
 
 - **Q8 Title.** The title says what the change does, in the repo's title style, with no `WIP:` once ready.
 - **Q9 What and why.** The body's first paragraph says what the change does and why. Every sentence is true of `git diff origin/<base>...HEAD`.
-- **Q10 How tested.** The body names the tests or seams that prove the change, the mutation counts or why there are none, and anything left unchecked.
+- **Q10 How tested.** The body names the approved examples and the tests that prove them, the mutation counts or why there are none, and anything left unchecked.
 
 Measured after the push:
 

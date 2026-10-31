@@ -26,6 +26,9 @@ jobs:
           echo "draft: CI runs once the pull request is marked ready" >&2
           exit 1
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The red-first check reads the commits that added each approved test.
+          fetch-depth: 0
       - name: Plugin layout
         run: tests/plugin-layout.test.sh
       - name: Approved-spec guard
@@ -42,6 +45,8 @@ jobs:
         run: tests/lint_tells_approved_examples.test.sh
       - name: Answer page
         run: tests/answer_page_approved_examples.test.sh
+      - name: Examples are the seams
+        run: tests/do_examples_approved_examples.test.sh
       - name: Check ADR
         run: tests/check-adr.test.sh
       - name: After-push hook
@@ -60,6 +65,10 @@ jobs:
         run: tests/local-path-guard.test.sh
       - name: Push-behind guard
         run: tests/push-behind-guard.test.sh
+      - name: Step guard
+        run: tests/step_guard_approved_examples.test.sh
+      - name: Poll pace
+        run: tests/poll-pace.test.sh
       - name: Gamma-shift hook
         run: tests/gamma-shift.test.sh
       - name: Auto-tidy hook
@@ -78,3 +87,36 @@ jobs:
         run: tests/reader_panel_approved_examples.test.sh
       - name: Ticket-drift hook
         run: tests/ticket_drift_approved_examples.test.sh
+      - name: Hook exit codes
+        run: tests/hook-exits.test.sh
+      - name: Checkout guard decisions
+        run: tests/checkout-guard.test.sh
+      - name: Draft lock
+        run: tests/draft-lock.test.sh
+      - name: Red-first decisions
+        run: tests/red-first.test.sh
+      - name: Step guard decisions
+        run: tests/step-guard.test.sh
+      - name: Step guard on Gitea
+        run: tests/step_guard_gitea_approved_examples.test.sh
+      - name: Mutation proof guard
+        run: tests/mutation-proof-guard.test.sh
+      - name: Plane block guard
+        run: tests/plane_block_approved_examples.test.sh
+      - name: Goal-driven do, proof guard and hints
+        run: tests/goal_driven_approved_examples.test.sh
+      - name: Approved tests change only with a yes
+        run: tests/approved_tests_yes_approved_examples.test.sh
+      - name: Checkout guard
+        run: tests/checkout_guard_approved_examples.test.sh
+      - name: Red-first hooks and mutation proof
+        run: tests/red_first_approved_examples.test.sh
+      # The rule applies from the commit that added the check: an older
+      # approved test was never asked to land red.
+      - name: Red-first check
+        if: github.event_name == 'pull_request'
+        run: |
+          base=$(git merge-base "origin/${{ github.base_ref }}" HEAD)
+          added=$(git log --diff-filter=A --format=%H -1 -- plugins/vicky-skills/scripts/red-first-check.sh)
+          if ! git merge-base --is-ancestor "$added" "$base"; then base=$added; fi
+          plugins/vicky-skills/scripts/red-first-check.sh "$base"

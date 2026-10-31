@@ -6,7 +6,7 @@
 # It uses notify-send, else osascript, and never blocks: it always exits 0.
 set -u
 case "${CLAUDE_PLUGIN_OPTION_GATE_NOTIFY:-}" in true|1) ;; *) exit 0 ;; esac
-command -v jq >/dev/null 2>&1 || exit 0
+command -v jq >/dev/null 2>&1 || exit 0 # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
 payload=$(cat)
 case "$(jq -r '.hook_event_name // ""' <<<"$payload")" in
   PostToolUse)
@@ -26,6 +26,6 @@ esac
 if [[ -n "${GATE_NOTIFY_SEND:-}" ]] || command -v notify-send >/dev/null 2>&1; then
   "${GATE_NOTIFY_SEND:-notify-send}" --app-name="Claude Code" "Waiting on you" "$what" >/dev/null 2>&1
 elif command -v osascript >/dev/null 2>&1; then
-  osascript -e 'on run argv' -e 'display notification (item 1 of argv) with title "Claude Code" subtitle "Waiting on you"' -e 'end run' "$what" >/dev/null 2>&1
+  osascript -e 'on run argv' -e 'display notification (item 1 of argv) with title "Claude Code" subtitle "Waiting on you"' -e 'end run' "$what" >/dev/null 2>&1 # mutant-ok delete: macOS only, and the tests run on Linux
 fi
-exit 0
+exit 0 # mutant-ok delete: the line above leaves status 0, so the script ends the same way

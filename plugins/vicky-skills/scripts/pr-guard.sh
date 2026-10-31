@@ -31,7 +31,7 @@ set -u
 case "${CLAUDE_PLUGIN_OPTION_GUARD_PR:-}" in true | 1) ;; *) exit 0 ;; esac
 if ! command -v jq >/dev/null || ! command -v git >/dev/null; then
   echo "pr-guard: off, because jq or git is missing." >&2
-  exit 0
+  exit 0 # mutant-ok delete: the next jq read comes back empty, and the case on the tool exits 0
 fi
 
 payload=$(cat)
@@ -42,7 +42,7 @@ ignore_heads="${CLAUDE_PLUGIN_OPTION_GUARD_PR_IGNORE_HEADS:-}"
 
 refuse() {
   printf 'pr-guard: refused. %s\n' "$1" >&2
-  shift
+  shift # mutant-ok delete: the first line of a refusal would print twice, and nothing reads the wording
   for line in "$@"; do printf '%s\n' "$line" >&2; done
   exit 2
 }
@@ -55,7 +55,7 @@ case "$tool" in
     [[ $(basename -- "$path") == pr-guard-allow ]] &&
       refuse "only the user grants a pr-guard allowance, from their own terminal." \
         "Do not write that file. Ask the user to create it."
-    exit 0
+    exit 0 # mutant-ok delete: the case falls through to an empty command, which the pre-filter exits on
     ;;
   Bash) ;;
   *) exit 0 ;;
@@ -120,15 +120,15 @@ current_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)
 
 # The value after a flag in one segment, `--flag value` or `--flag=value`.
 flag_value() {
-  local segment=$1 flag
-  shift
+  local segment=$1 flag # mutant-ok delete: a local declaration: the caller passes the same value under the same name
+  shift # mutant-ok delete: the segment, read as a flag, matches nothing
   for flag in "$@"; do
     local pattern="(^|[[:space:]])${flag}[[:space:]=]+([^[:space:]]+)"
     if [[ $segment =~ $pattern ]]; then
       local value=${BASH_REMATCH[2]}
       value=${value//\"/}
       printf '%s' "${value//\'/}"
-      return
+      return # mutant-ok delete: a segment names each flag once, so the loop finds nothing more
     fi
   done
 }
@@ -136,7 +136,7 @@ flag_value() {
 # Every open pull request of the user in this repository, one
 # "index head title" per line. Heads under an ignored prefix never count.
 my_open_pulls() {
-  local forge=$1 repo=$2 list me
+  local forge=$1 repo=$2 list me # mutant-ok delete: a local declaration: no caller reads these names
   if [ "$forge" = gh ]; then
     list=$(timeout 30 gh pr list --author @me --state open --json number,headRefName,title \
       ${repo:+--repo "$repo"} </dev/null 2>&1) || { printf '%s' "$list"; return 1; }
@@ -163,7 +163,7 @@ tickets_in() {
 
 # The title a segment passes with --title or -t, quoted or bare.
 title_of() {
-  local segment=$1
+  local segment=$1 # mutant-ok delete: a local declaration: the caller passes the same value under the same name
   if [[ $segment =~ (^|[[:space:]])(--title|-t)[[:space:]=]+\"([^\"]*)\" ]] ||
      [[ $segment =~ (^|[[:space:]])(--title|-t)[[:space:]=]+\'([^\']*)\' ]] ||
      [[ $segment =~ (^|[[:space:]])(--title|-t)[[:space:]=]+([^[:space:]]+) ]]; then
@@ -181,9 +181,9 @@ session_file=""
 # When this session started, in epoch seconds: the first timestamp in its
 # transcript. Empty when the transcript is missing or holds none.
 session_started() {
-  local transcript first
+  local transcript first # mutant-ok delete: a local declaration: no caller reads these names
   transcript=$(jq -r '.transcript_path // ""' <<<"$payload")
-  [[ -r $transcript ]] || return 0
+  [[ -r $transcript ]] || return 0 # mutant-ok delete: an unreadable transcript makes head fail, and the function prints nothing the same way
   first=$(head -n 200 -- "$transcript" | jq -Rr 'fromjson? | .timestamp // empty' | head -n 1) || true
   [[ -n $first ]] && date -d "$first" +%s 2>/dev/null || true
 }
@@ -193,7 +193,7 @@ session_started() {
 ticket_created() {
   local plane=plane created
   [[ -x bin/plane ]] && plane=bin/plane
-  command -v "$plane" >/dev/null 2>&1 || return 0
+  command -v "$plane" >/dev/null 2>&1 || return 0 # mutant-ok delete: a missing tracker makes the call below fail, and the function prints nothing the same way
   created=$(timeout 30 "$plane" show --json "$1" </dev/null 2>/dev/null | jq -r '.created_at // empty' 2>/dev/null) || true
   [[ -n $created ]] && date -d "$created" +%s 2>/dev/null || true
 }
@@ -201,10 +201,10 @@ ticket_created() {
 # A second pull request from one session is a separate effort when it names a
 # ticket filed before the session started. Anything unknown counts as no.
 names_older_ticket() {
-  local started key created
-  [[ -n $1 ]] || return 1
+  local started key created # mutant-ok delete: a local declaration: no caller reads these names
+  [[ -n $1 ]] || return 1 # mutant-ok delete: with no ticket the loop below finds none and returns 1 the same way
   started=$(session_started)
-  [[ -n $started ]] || return 1
+  [[ -n $started ]] || return 1 # mutant-ok delete: with no start time every comparison below fails and returns 1 the same way
   while read -r key; do
     created=$(ticket_created "$key")
     [[ -n $created ]] && ((created < started)) && return 0
@@ -231,13 +231,13 @@ check_one_pull() {
       refuse "this repository already has your open pull request: $(cut -d' ' -f1,2 <<<"$others" | tr '\n' ' ')(index, branch)." \
         "$allowance_hint"
     fi
-    return 0
+    return 0 # mutant-ok delete: with no session file nothing below matches, and the record write fails silently
   fi
 
   new_tickets=$(tickets_in "$(title_of "$segment") $head")
   if [[ -n $new_tickets ]]; then
     while read -r index phead ptitle; do
-      [[ -n $index ]] || continue
+      [[ -n $index ]] || continue # mutant-ok delete: an empty line names no ticket, so nothing below matches it
       shared=$(comm -12 <(printf '%s\n' "$new_tickets") <(tickets_in "$ptitle $phead"))
       if [[ -n $shared ]]; then
         spend_allowance "a pull request for a ticket another one already names"
@@ -250,7 +250,7 @@ check_one_pull() {
   mine=""
   if [[ -f $session_file ]]; then
     while read -r index phead _; do
-      [[ -n $index ]] || continue
+      [[ -n $index ]] || continue # mutant-ok delete: an empty line names no branch, so nothing below matches it
       if awk -v r="$repo_key" -v h="$phead" '$1 == r && $2 == h { found = 1 } END { exit !found }' "$session_file"; then
         mine="$mine$index $phead "
       fi
@@ -335,4 +335,4 @@ while IFS= read -r segment; do
   fi
 done < <(tr ';&|\n' '\n' <<<"$command")
 
-exit 0
+exit 0 # mutant-ok delete: the loop above leaves status 0

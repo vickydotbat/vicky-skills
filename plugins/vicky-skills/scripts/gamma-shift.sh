@@ -13,4 +13,4 @@ case "${CLAUDE_PLUGIN_OPTION_GAMMA_SHIFT:-off}" in
     echo "gamma_shift is engage: run the gamma-shift skill in engage mode now, with its builds in background subagents, so the user's first request is served alongside it."
     ;;
 esac
-exit 0
+exit 0 # mutant-ok delete: the case above leaves status 0

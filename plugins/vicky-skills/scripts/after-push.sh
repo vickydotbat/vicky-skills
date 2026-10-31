@@ -3,7 +3,7 @@
 # remind the agent to make the body and its work items true again. Only adds
 # context; it never blocks. Needs jq; without it, it stays silent.
 set -u
-command -v jq >/dev/null || exit 0
+command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
 command="$(jq -r '.tool_input.command // empty' 2>/dev/null)"
 [[ "$command" =~ (^|[[:space:];\&|])git[[:space:]]+push([[:space:]]|$) ]] || exit 0
 jq -n '{hookSpecificOutput: {hookEventName: "PostToolUse", additionalContext:

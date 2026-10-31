@@ -14,6 +14,10 @@ printf '%s|' "$@" >>"$NOTIFY_LOG"; echo >>"$NOTIFY_LOG"
 FAKE
 chmod +x "$scratch/bin/notify-send"
 export NOTIFY_LOG="$scratch/log" GATE_NOTIFY_SEND="$scratch/bin/notify-send" CLAUDE_PLUGIN_OPTION_GATE_NOTIFY=true
+# No real notify-send on the PATH, so only the fake can be called.
+mkdir -p "$scratch/path"
+for tool in bash env jq cat grep sed head tr rm; do ln -s "$(command -v "$tool")" "$scratch/path/$tool"; done
+export PATH="$scratch/path"
 failed=0
 
 # A here-string, not a pipe: the hook may exit before it reads stdin, and

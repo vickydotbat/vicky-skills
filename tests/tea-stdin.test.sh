@@ -39,4 +39,33 @@ allow "bash -c 'tea pr list'"
 check 0 'tea pr list' ""
 check 0 'tea pr list' false
 check 2 'tea pr list' 1
+# A refusal ends with the command rewritten, each tea call's stdin closed.
+fixes() { # command want
+  got=$(jq -n --arg c "$1" '{tool_input:{command:$c}}' | CLAUDE_PLUGIN_OPTION_GUARD_TEA_STDIN=true "$hook" 2>&1 >/dev/null | tail -n +2)
+  if [ "$got" = "$2" ]; then echo "ok   $1 -> fix $2"; else echo "FAIL $1: fix got '$got', want '$2'"; fail=1; fi
+}
+fixes 'tea pr list' 'tea pr list </dev/null'
+fixes 'tea pr list  ' 'tea pr list </dev/null  '
+fixes 'tea pr list --login bot' 'tea pr list --login bot </dev/null'
+fixes 'tea --login bot whoami' 'tea --login bot whoami </dev/null'
+fixes 'tea pr list | jq .' 'tea pr list </dev/null | jq .'
+fixes 'cd x && tea issues' 'cd x && tea issues </dev/null'
+fixes 'echo $(tea whoami)' 'echo $(tea whoami </dev/null)'
+fixes 'tea pr list; echo done' 'tea pr list </dev/null; echo done'
+fixes 'tea pr list 2>&1 | head' 'tea pr list 2>&1 </dev/null | head'
+fixes 'FOO=1 tea pr list' 'FOO=1 tea pr list </dev/null'
+fixes 'tea pr edit 3 -d "a | b; c"' 'tea pr edit 3 -d "a | b; c" </dev/null'
+fixes 'tea pr edit 3 -d "$(cat f)"' 'tea pr edit 3 -d "$(cat f)" </dev/null'
+fixes 'tea a && tea b' 'tea a </dev/null && tea b </dev/null'
+fixes 'tea a </dev/null && tea b' 'tea a </dev/null && tea b </dev/null'
+fixes 'tea pr edit 3 -d '\''a b'\''' 'tea pr edit 3 -d '\''a b'\'' </dev/null'
+fixes 'tea pr edit 3 -d $VAR' 'tea pr edit 3 -d $VAR </dev/null'
+fixes '(tea pr list)' '(tea pr list </dev/null)'
+fixes 'tea a || tea b' 'tea a </dev/null || tea b </dev/null'
+fixes 'tea a | tea b' 'tea a </dev/null | tea b'
+fixes 'tea a & tea b' 'tea a </dev/null & tea b </dev/null'
+fixes 'tea pr list # note' 'tea pr list </dev/null # note'
+fixes 'tea a 2>&1; tea b' 'tea a 2>&1 </dev/null; tea b </dev/null'
+allow "tea pr list 'x"
+allow 'tea pr list "x'
 exit $fail

@@ -8,12 +8,12 @@ case "$OPTION" in true|1) ;; *) exit 0 ;; esac
 # Needs jq and git; without either it says so and stays off.
 set -u
 for tool in jq git; do
-  command -v "$tool" >/dev/null || { echo "$GUARD: $tool is missing, so this guard is off." >&2; exit 0; }
+  command -v "$tool" >/dev/null || { echo "$GUARD: $tool is missing, so this guard is off." >&2; exit 0; } # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
 done
 payload=$(cat)
 command=$(jq -r ".tool_input.command // \"\"" <<<"$payload")
 cwd=$(jq -r ".cwd // \"\"" <<<"$payload")
-grep -Eq "git[[:space:]]" <<<"$command" || exit 0
+grep -Eq "git[[:space:]]" <<<"$command" || exit 0 # mutant-ok delete: a fast path: the checks below find nothing to refuse in such a command
 [ -n "$cwd" ] && { cd "$cwd" 2>/dev/null || exit 0; }
 # The command may aim at another repo with `git -C <dir>` or a leading `cd <dir>`.
 # The first one wins.
@@ -27,7 +27,7 @@ fi
 target=${target//\"/}; target=${target//\'/}
 target=${target/#\~\//$HOME/}
 [ -n "$target" ] && { cd "$target" 2>/dev/null || exit 0; }
-git rev-parse --git-dir >/dev/null 2>&1 || exit 0
+git rev-parse --git-dir >/dev/null 2>&1 || exit 0 # mutant-ok delete: outside a repository each guard's own git calls fail and it refuses nothing
 # The command with quoted strings and heredoc bodies cut out, so a commit
 # message that mentions `git push` is text, not a command.
 # shellcheck disable=SC2034 # read by the guard that sources this

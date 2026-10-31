@@ -10,7 +10,7 @@ touch "$dir/skills/sup/SKILL.md" "$dir/skills/warp/SKILL.md" "$dir/skills/do/SKI
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 # Writes a ledger line for a skill started $2 days before 2026-10-30.
-line() { python3 -c 'import datetime,sys; print(f"{datetime.date(2026,10,30)-datetime.timedelta(days=int(sys.argv[2])):%Y-%m-%d}T09:00:00Z\t{sys.argv[1]}")' "$1" "$2"; }
+line() { printf '%sT09:00:00Z\t%s\n' "$(date -u -d "2026-10-30 -$2 days" +%F)" "$1"; }
 idle() { python3 "$script" "$1" "$dir/skills" --today 2026-10-30; }
 
 { line vicky-skills:do 120; line vicky-skills:warp 59; line do 3; } > "$dir/old.tsv"

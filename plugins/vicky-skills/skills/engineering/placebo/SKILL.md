@@ -33,7 +33,7 @@ Checking one test you're writing or reviewing? Match it against the shapes above
    - **Keep**: a real red, and no other case owns it.
    - **Delete**: name the shape and the **survivor**, the case that still owns the result, or "no result to own".
    - **Merge**: several cases run one setup for one result. One case keeps every assertion.
-   - **Rewrite**: a real result asserted badly. Write the case that goes red on it first, as `do` step 4 says.
+   - **Rewrite**: a real result asserted badly. Write the case that goes red on it first, as `do` step 3 says.
    - **Move to the build**: a source scan becomes a banned-symbol entry or an analyzer rule.
 
    A guard that keeps another case or a list honest has a red of its own: keep it. Slow is a cost, never a verdict. Done when every case has a red line and a verdict, and every delete names its shape and survivor.
