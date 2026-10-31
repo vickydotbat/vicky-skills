@@ -4,6 +4,7 @@
   "author": {
     "name": "vickydotbat"
   },
+  "types": "./types/index.d.ts",
   "skills": [
     "./skills/engineering/away-team",
     "./skills/engineering/captains-log",
