@@ -1,7 +1,7 @@
 after-push.sh	331d6fbcfe1f0e4c	e4926e5389ac9242	7/7
 approved-spec-guard.sh	a3a2232006d28b6e	24e2bcf9fca61c4a	59/59
 auto-tidy.sh	37372c9b2b9a5907	a448fb5f1a253884	15/15
-checkout-guard.sh	b881351e6530b045	0386189654ec87ec	57/57
+checkout-guard.sh	e7152557acf7a0f1	3ae9fdc31d0843fa	67/67
 draft-lock.sh	ebf828f5925afc95	f3d41b39eb059186	52/52
 gamma-shift.sh	83809c7deca626c1	9431e83229c56e2e	3/3
 gate-notify.sh	deed6bf2a718196f	1dfd9cc4650be109	21/21
@@ -9,7 +9,7 @@ git-hook-lib.sh	ab06098427e37ecf	480d3a7037f888d6	32/32
 heredoc-strip.awk	2651757e389267ff	f8697749a306d583	5/5
 issue-guard.sh	16ad0d0ee535d4c3	903da1a5a8e52eb0	20/20
 lesson-hint.sh	fdde074b9223620f	0ebc0d44677be659	8/8
-lesson-ledger.sh	d88261a5685862f1	9fa50cef9d563c8c	18/18
+lesson-ledger.sh	157011bb3a30fb9f	9fa50cef9d563c8c	17/17
 local-path-guard.sh	262afb6fbdb2a8d7	7c64f9fb2da22c87	29/29
 merged-branch-guard.sh	86e1037d0d39b0c8	ca23718d4aa3ac6e	43/43
 mutation-proof-guard.sh	b756820a35fb7ae0	80d2f2f09f241ab3	15/15

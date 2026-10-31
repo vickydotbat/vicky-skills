@@ -59,8 +59,20 @@ elif args=$(grep -oE 'git[[:space:]]+([^|;&]*[[:space:]])?checkout([[:space:]][^
     fi
   fi
 fi
-writes=""
-grep -Eq 'git[[:space:]]+([^|;&]*[[:space:]])?(commit|rebase|reset|merge|cherry-pick|stash|pull)([[:space:]]|$)' <<<"$code" && writes=yes
+# A history write is a git command whose subcommand, the first word after git
+# and its global options, writes history. stash list and stash show only read.
+writes=$(awk '{
+  split($0, seg, /[|;&()]/)
+  for (s in seg) {
+    m = split(seg[s], w, /[[:space:]]+/)
+    for (i = 1; i <= m; i++) {
+      if (w[i] != "git" && w[i] !~ /\/git$/) continue
+      j = i + 1
+      while (j <= m && w[j] ~ /^-/) j += (w[j] ~ /^(-C|-c|--git-dir|--work-tree|--namespace)$/) ? 2 : 1
+      if (w[j] ~ /^(commit|rebase|reset|merge|cherry-pick|pull)$/ || (w[j] == "stash" && w[j + 1] !~ /^(list|show)$/)) { print "yes"; exit }
+    }
+  }
+}' <<<"$code")
 if [ -n "$switch$writes" ]; then
   for other in "$records"/*; do
     [ -f "$other" ] && [ "$other" != "$mine" ] || continue

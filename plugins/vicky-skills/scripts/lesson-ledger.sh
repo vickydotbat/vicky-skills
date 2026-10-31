@@ -18,8 +18,8 @@ case "${1:-}" in
   since)
     [ $# = 2 ] || { echo "usage: lesson-ledger.sh since <UTC time>" >&2; exit 2; }
     # ISO times in UTC sort as text, so a string comparison is a time comparison.
-    awk -F '\t' -v t="$2" '$1 >= t {print $3 " (" $2 ")"}' "$file" 2>/dev/null
+    # awk fails when the ledger is missing, which is no lessons yet.
+    awk -F '\t' -v t="$2" '$1 >= t {print $3 " (" $2 ")"}' "$file" 2>/dev/null || true
     ;;
   *) echo "usage: lesson-ledger.sh add <home> <snag> | since <UTC time>" >&2; exit 2 ;;
 esac
-exit 0 # mutant-ok delete: each branch above ends on a command that exits 0 or exits itself
