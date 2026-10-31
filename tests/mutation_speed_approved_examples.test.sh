@@ -26,7 +26,7 @@ printf 'unseen=1\n' >> "$dir/plugins/vicky-skills/scripts/gamma-shift.sh"
 bash "$runner" --jobs 2 gamma-shift.sh > "$dir/first.out" 2>&1
 bash "$runner" --jobs 2 --survivors gamma-shift.sh > "$dir/again.out" 2>&1
 check "after a pass that left one survivor, --survivors mutates only that survivor's line" \
-  'grep -q "^survivor gamma-shift.sh:.*unseen=1" "$dir/first.out" && grep -q "^script gamma-shift.sh: 0/1$" "$dir/again.out"'
+  'n=$(grep -n "^unseen=1$" "$dir/plugins/vicky-skills/scripts/gamma-shift.sh" | cut -d: -f1) && grep -q "^survivor gamma-shift.sh:$n: " "$dir/first.out" && grep -q "^script gamma-shift.sh: 0/1$" "$dir/again.out"'
 sed -i '/^unseen=1$/d' "$dir/plugins/vicky-skills/scripts/gamma-shift.sh"
 sed -i '/^gamma-shift.sh	/d' "$dir/tests/mutation-proof.tsv"
 bash "$runner" --jobs 2 gamma-shift.sh >/dev/null 2>&1
