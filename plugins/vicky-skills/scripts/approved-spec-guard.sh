@@ -12,6 +12,9 @@ payload=$(cat)
 # "# approved-spec:", a quoted "approved-spec", or @approved-spec.
 approved() {
   [ -f "$1" ] || return 1
+  # A file outside every git checkout, such as a session log quoting a test,
+  # is no contract: approved tests are in a repo.
+  git -C "$(dirname -- "$1")" rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 1
   basename -- "$1" | grep -qiE 'approved_?examples' ||
     { grep -qE '(#|//|--|;)[[:space:]]*approved-spec:|["'"'"']approved-spec["'"'"']|@approved-spec([^a-z-]|$)' "$1"; }
 }

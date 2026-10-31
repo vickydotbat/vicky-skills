@@ -139,6 +139,8 @@ jobs:
         run: tests/red_first_approved_examples.test.sh
       - name: Guard lets reads through
         run: tests/guard_reads_approved_examples.test.sh
+      - name: Guard lets reads of files outside a checkout through
+        run: tests/guard_outside_checkout_approved_examples.test.sh
       - name: Guard lets new files through
         run: tests/guard_new_file_approved_examples.test.sh
       - name: Guard steers instead of asking

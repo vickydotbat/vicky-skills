@@ -5,6 +5,7 @@ set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
 guard="$root/plugins/vicky-skills/scripts/approved-spec-guard.sh"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
+git init -q "$dir"
 mkdir -p "$dir/tests" "$dir/.github/workflows"
 printf 'echo ok\n' > "$dir/tests/charm_approved_examples.test.sh"
 printf 'steps:\n  - run: tests/charm_approved_examples.test.sh\n' > "$dir/.github/workflows/ci.yml"

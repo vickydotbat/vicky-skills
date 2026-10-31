@@ -7,6 +7,7 @@ root="$(cd "$(dirname "$0")/.." && pwd)"
 guard="$root/plugins/vicky-skills/scripts/approved-spec-guard.sh"
 skills="$root/plugins/vicky-skills/skills"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
+git init -q "$dir"
 mkdir -p "$dir/tests"; printf 'echo ok\n' > "$dir/tests/charm_approved_examples.test.sh"
 printf 'open("tests/charm_approved_examples.test.sh", "w").write("")\n' > "$dir/fix.py"
 printf 'print("hello")\n' > "$dir/other.py"
