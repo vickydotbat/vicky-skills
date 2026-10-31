@@ -20,7 +20,7 @@ done
 check "the CI workflow lists the approved-examples test files, and an agent reading it with grep, cat or sed -n runs with no question" '[ $quiet = 4 ]'
 asks=0
 for c in "bash fix.sh" "./fix.sh" "sh fix.sh" "ls && bash fix.sh"; do
-  [ "$(decide "$c")" = ask ] && asks=$((asks + 1)) || echo "     not asked: $c"
+  [ "$(decide "$c")" = deny ] && asks=$((asks + 1)) || echo "     not refused: $c"
 done
-check "a script that names an approved-examples file asks me first when an agent runs it, as today" '[ $asks = 4 ]'
+check "a script that names an approved-examples file is refused when an agent runs it" '[ $asks = 4 ]'
 exit $fail
