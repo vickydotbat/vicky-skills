@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # approved-spec: the examples approved on the ticket "Rebuild do and examples so
-# the examples are the seams". These are agent behaviours, so each check reads
+# the examples are the seams" and the three the spec review found missing. These are agent behaviours, so each check reads
 # the skill text that makes the agent do it.
 set -u
 s="$(dirname "$0")/../plugins/vicky-skills/skills/engineering"
@@ -21,4 +21,10 @@ check "every test is named after an approved example, and no other test exists" 
   'grep -q "Write no test that no approved example names" "$do" && ! grep -q "tests at its seams" "$ex"'
 check "a planted bug no approved test catches comes back as a new example" \
   'grep -q "Answer every survivor\*\*: a missing example" "$mu" && grep -q "survivor.*missing example" "$do"'
+check "a test that only fails on a refactor, a content edit or a library upgrade is not in the pull request" \
+  'grep -q "A test that can only go red on a refactor, a content edit or a library upgrade proves nothing" "$do"'
+check "a behaviour no approved example names, met mid-build, waits as a draft and the rest still lands" \
+  'step "$do" 3 | grep -q "park that slice, and build the rest"'
+check "a refactor with no approved examples gets guard tests that pass on main first, listed in the pull request" \
+  'step "$s/spark-joy/SKILL.md" 3 | grep -q "pass on .main. before you change anything" && grep -q "guard tests" "$s/spark-joy/SKILL.md"'
 exit $fail

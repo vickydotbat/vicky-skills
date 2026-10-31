@@ -39,7 +39,7 @@ Lazy about the solution, never about the change: every caller, test, fixture and
 4. **Add nothing for later**: no abstraction, option, wrapper or layer without a current caller. Keep the repo's structure and the platform's own types.
 5. **Fix a bug at its root**: find every caller of what you touch, then fix the shared code once.
 6. **Mark a known limit** with a one-line comment, `shortcut: <the limit>, <when to upgrade>`.
-7. **End the report** with what you skipped or didn't check, and any risk the user must know.
+7. **End the report** with what you skipped or didn't check, and any risk the user must know. A skipped step names the step, the reason and the proof, also written as `Skipped: <step>, because <reason>` in the pull request body.
 
 Validation at a trust boundary, error handling that prevents data loss, security and accessibility are never cut.
 

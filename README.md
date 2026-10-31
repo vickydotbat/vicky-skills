@@ -55,6 +55,8 @@ No skill here shares a name with one of Matt's, so both plugins load without cla
   - **`tea` stdin** (`guard_tea_stdin`) refuses a `tea` call without `</dev/null`, which can hang until it times out. It needs `gawk`.
   - **No local paths** (`guard_local_paths`) refuses a commit that adds a home folder, a Nix store path or your username. It reads the staged changes, and also the unstaged and untracked ones when the same command runs `git add` or `commit -a`. `local_path_exempt_repos` lists repositories it skips.
   - **No pushing behind main** (`guard_push_behind`) refuses a push from a branch that main has moved past.
+  - **No skipped do steps** (`step_guard`) refuses to mark a `do` build's pull request ready when its review never ran and the body gives no `Skipped: review, because` reason. When `do` starts, it also reminds the agent that each step needs its proof.
+  - **Short polls** (`guard_poll_pace`) refuses a wait that sleeps more than 30 seconds at a time or polls more than 60 times.
 - **A session-start hook** runs `gamma-shift` when its `gamma_shift` setting is `remind` or `engage`, and stays quiet when it's `off`, the default.
 - **A gate-notify hook** (`gate_notify`, off by default) raises a desktop notification when an agent's message opens with `🚪 Waiting on you:`, and on Claude Code's own needs-your-input alerts. It uses `notify-send`, or `osascript` on macOS, and needs `jq`.
 - **A spark-joy hook** (`deepen_every_days`, `0` by default) runs `spark-joy` in the background at the first session start in a repo after that many days. With `gamma_shift` at `engage`, the run goes last in gamma-shift's queue instead.

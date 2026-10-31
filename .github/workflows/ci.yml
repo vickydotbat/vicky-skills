@@ -62,6 +62,10 @@ jobs:
         run: tests/local-path-guard.test.sh
       - name: Push-behind guard
         run: tests/push-behind-guard.test.sh
+      - name: Step guard
+        run: tests/step_guard_approved_examples.test.sh
+      - name: Poll pace
+        run: tests/poll-pace.test.sh
       - name: Gamma-shift hook
         run: tests/gamma-shift.test.sh
       - name: Auto-tidy hook

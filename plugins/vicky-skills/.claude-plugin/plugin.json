@@ -156,6 +156,18 @@
       "title": "Unpacked NWN:EE resources",
       "description": "The folder that holds the stock game resources, unpacked one folder per BIF. Leave blank when there is none.",
       "default": ""
+    },
+    "step_guard": {
+      "type": "boolean",
+      "title": "No skipped do steps",
+      "description": "Refuse to mark a do build's pull request ready when its review never ran and the body gives no reason, and remind the agent at do's start that each step needs its proof.",
+      "default": false
+    },
+    "guard_poll_pace": {
+      "type": "boolean",
+      "title": "Short polls",
+      "description": "Refuse a wait that sleeps more than 30 seconds at a time or polls more than 60 times.",
+      "default": false
     }
   }
 }

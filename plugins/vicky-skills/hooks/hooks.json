@@ -42,6 +42,16 @@
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/push-behind-guard.sh\"",
             "timeout": 20
+          },
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/step-guard.sh\"",
+            "timeout": 15
+          },
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/poll-pace.sh\"",
+            "timeout": 5
           }
         ]
       },
@@ -73,6 +83,16 @@
           {
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/gate-notify.sh\"",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "Skill",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/step-hint.sh\"",
             "timeout": 5
           }
         ]

@@ -33,7 +33,7 @@ liveness from Codex's own files before you wait, retry or report.
 
 ## Prove it is alive
 
-Check these, newest first, at most once a minute:
+Check these, newest first, every 30 seconds, at most 60 times:
 
 - `pgrep -af "codex exec"` shows the process.
 - The newest `~/.codex/sessions/YYYY/MM/DD/rollout-*.jsonl` belongs to this
