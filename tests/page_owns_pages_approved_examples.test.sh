@@ -82,4 +82,44 @@ check "a page nobody answers: the page stops, the file stays as it was, and the 
 
 check "one skill opens every page: it opens through interactive-page, and red-pen and lay-course have no page scripts of their own" \
   '[ -f "$open_draft" ] && [ ! -e "$skills/productivity/red-pen/scripts" ] && [ ! -e "$skills/engineering/lay-course/scripts/answer-page.py" ] && ! grep -rq "answer-page\|red-pen/scripts" "$root/plugins" && grep -q "open-page.sh" "$skills/engineering/lay-course/STAR-CHART.md"'
+
+three='# Drafts: three
+
+## One
+src/a.txt:1
+- [ ] approve
+
+```text
+One
+```
+
+## Two
+src/b.txt:1
+- [ ] approve
+
+```text
+Two
+```
+
+## Three
+src/c.txt:1
+- [ ] approve
+
+```text
+Three
+```
+'
+untouched=(text.0=One text.1=Two text.2=Three comment.0= comment.1= comment.2=)
+printf '%s' "$three" >"$scratch/all.md"
+start "$scratch/all.md"
+html=$(curl -s "$url")
+done_with "${untouched[@]}" approve_all=on
+check "approve all: when I tick approve all beside Done and press Done, every draft comes back approved, as if I had ticked each box" \
+  'grep -q "name=\"approve_all\"" <<<"$html" && gone && [ "$(grep -c "^- \[x\] approve$" "$scratch/all.md")" = 3 ]'
+
+printf '%s' "$three" >"$scratch/one.md"
+start "$scratch/one.md"
+done_with "${untouched[@]}" approve.1=on
+check "approve all, left alone: only the box I ticked comes back approved" \
+  'gone && [ "$(grep -c "^- \[x\] approve$" "$scratch/one.md")" = 1 ] && [ "$(grep -A1 -x "src/b.txt:1" "$scratch/one.md" | tail -1)" = "- [x] approve" ]'
 exit $fail
