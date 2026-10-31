@@ -278,6 +278,16 @@ err=$(SESSION='' opened_err feature 'tea pr create --base main --head feat/n' 'h
 SESSION=E opened feature "tea api -X POST -d '{}' repos/o/r/pulls" 'https://forge.example/o/r/pulls/24'
 [[ ! -e $records/E ]] || { echo "FAIL a create with no branch was recorded: $(cat "$records/E")"; failed=1; }
 
+# A create inside a heredoc is text fed to a program, never a command run.
+echo '[{"index":"7","head":"feat/one","author":"me"}]' >"$scratch/pulls.json"
+expect 0 feature "python3 - <<'EOF'
+s = 'tea pr create --base main --head feat/two'
+EOF"
+expect 2 feature "python3 - <<'EOF'
+print(1)
+EOF
+tea pr create --base main --head feat/two"
+
 # A pull request this session never opened doesn't make the next one a second.
 echo '[{"index":"14","head":"feat/z","author":"me","title":"Other work"}]' >"$scratch/pulls.json"
 SESSION=A expect 0 feature 'tea pr create --base main --head feat/a4'

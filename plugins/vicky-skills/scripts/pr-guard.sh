@@ -73,7 +73,10 @@ event=$(jq -r '.hook_event_name // "PreToolUse"' <<<"$payload")
     "Do not name that file. Ask the user to create it."
 
 # Cheap pre-filter: only the forge CLIs and git-spice are in scope.
-grep -Eq '(^|[^[:alnum:]_-])(gh|tea|gs)([[:space:]]|$)' <<<"$command" || exit 0
+# The command without heredoc bodies decides what runs. The credit check and the
+# allowance check above still read the whole text.
+code=$(awk -f "$(dirname "$0")/heredoc-strip.awk" <<<"$command")
+grep -Eq '(^|[^[:alnum:]_-])(gh|tea|gs)([[:space:]]|$)' <<<"$code" || exit 0
 
 # An allowance covers one refused command, then it is gone.
 spend_allowance() {
@@ -112,7 +115,7 @@ if [[ $event != PostToolUse ]] && grep -Eqi 'co-authored-by|generated with.*clau
 fi
 
 # Judge the repository the command really touches: the first `cd <path>` wins.
-if [[ $command =~ (^|[[:space:]\;\&\|])cd[[:space:]]+([^[:space:]\;\&\|]+) ]]; then
+if [[ $code =~ (^|[[:space:]\;\&\|])cd[[:space:]]+([^[:space:]\;\&\|]+) ]]; then
   target_dir=${BASH_REMATCH[2]}
   target_dir=${target_dir//\"/}
   target_dir=${target_dir//\'/}
@@ -351,6 +354,6 @@ while IFS= read -r segment; do
     head=$(flag_value "$segment" --branch)
     check_one_pull "$segment" "$(forge_of_repo)" "${head:-$current_branch}" ""
   fi
-done < <(tr ';&|\n' '\n' <<<"$command")
+done < <(tr ';&|\n' '\n' <<<"$code")
 
 exit 0 # mutant-ok delete: the loop above leaves status 0

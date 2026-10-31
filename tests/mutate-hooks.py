@@ -51,6 +51,7 @@ TESTS = {
     "gamma-shift.sh": ["gamma-shift"],
     "gate-notify.sh": ["gate-notify"],
     "git-hook-lib.sh": GIT_GUARDS,
+    "heredoc-strip.awk": GIT_GUARDS + ["pr-guard"],
     "issue-guard.sh": ["issue-guard"],
     "local-path-guard.sh": ["local-path-guard"],
     "pr-guard.sh": ["pr-guard"],
