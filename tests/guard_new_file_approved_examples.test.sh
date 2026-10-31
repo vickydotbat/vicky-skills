@@ -5,6 +5,7 @@ set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
 guard="$root/plugins/vicky-skills/scripts/approved-spec-guard.sh"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
+git init -q "$dir"
 mkdir -p "$dir/tests"; printf 'echo ok\n' > "$dir/draft.sh"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }

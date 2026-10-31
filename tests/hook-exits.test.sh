@@ -39,6 +39,7 @@ for script in $(cd "$scripts" && ls *.sh); do
   quiet "an edit to a plain file" "$script" "$(edit_in "$dir/repo/notes.txt")" "${on[@]}"
   quiet "input that isn't JSON" "$script" 'not json' "${on[@]}"
 done
+quiet "a write outside a repository" draft-lock.sh "$(bash_in 'touch notes.txt' "$dir/plain")" "${on[@]}"
 for script in gamma-shift.sh spark-joy.sh ticket-drift.sh auto-tidy.sh; do
   quiet "a session start with nothing due" "$script" '{"hook_event_name": "SessionStart"}' "${on[@]}" CLAUDE_PROJECT_DIR="$dir/plain" \
     CLAUDE_PLUGIN_OPTION_GAMMA_SHIFT=off CLAUDE_PLUGIN_OPTION_DEEPEN_EVERY_DAYS=0 CLAUDE_PLUGIN_OPTION_DRIFT_EVERY_DAYS=0
@@ -82,6 +83,8 @@ git -C "$dir/clone" push -q -u origin HEAD:merged 2>/dev/null; git -C "$dir/clon
 git -C "$dir/remote.git" branch -q -D merged
 speaks "a branch whose upstream is gone" auto-tidy.sh '{}' CLAUDE_PLUGIN_OPTION_AUTO_TIDY=true CLAUDE_PROJECT_DIR="$dir/clone"
 
+# The guard counts approved tests only inside a git checkout.
+git init -q "$dir/plain"
 mkdir -p "$dir/plain/tests"; printf 'x\n' > "$dir/plain/tests/a_approved_examples.test.sh"
 head -c 1100000 /dev/zero | tr '\0' 'x' > "$dir/plain/big.py"; printf '\nopen("tests/a_approved_examples.test.sh", "w")\n' >> "$dir/plain/big.py"
 quiet "reading an approved test" approved-spec-guard.sh "$(bash_in 'cat tests/a_approved_examples.test.sh' "$dir/plain")"

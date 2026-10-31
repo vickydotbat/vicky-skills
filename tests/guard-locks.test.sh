@@ -16,7 +16,8 @@ for c in "bash tests/mutate-hooks.sh approved-spec-guard.sh" "tests/mutate-hooks
   check "given the repo's mutation pass, started with tests/mutate-hooks.sh ($c), the guard lets it through" \
     "" "$(jq -n --arg c "$c" --arg d "$root" '{tool_name: "Bash", tool_input: {command: $c}, cwd: $d}' | decide)"
 done
-# A copy outside any checkout has no grants file to open it.
+# A copy in a fresh checkout has no grant to open it.
+git init -q "$dir"
 cp "$guard" "$dir/approved-spec-guard.sh"
 check "given an edit to the approved-spec guard script, when no grant exists for it, the guard refuses it" \
   deny "$(jq -n --arg f "$dir/approved-spec-guard.sh" '{tool_name: "Edit", tool_input: {file_path: $f}}' | decide)"

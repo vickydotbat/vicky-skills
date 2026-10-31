@@ -12,7 +12,7 @@ test=tests/charm_approved_examples.test.sh
 # folder without the test.
 mkdir -p "$dir/tree/tests" "$dir/granted/tests" "$dir/session/tests" "$dir/empty"
 for d in tree granted session; do printf 'echo ok\n' > "$dir/$d/$test"; done
-git init -q "$dir/granted"
+for d in tree granted session; do git init -q "$dir/$d"; done
 echo "$test" > "$(git -C "$dir/granted" rev-parse --absolute-git-dir)/approved-spec-grants"
 fail=0
 run() { jq -n --arg c "$2" --arg d "$dir/$1" '{tool_name: "Bash", tool_input: {command: $c}, cwd: $d}' | bash "$guard" | jq -r '.hookSpecificOutput.permissionDecision // empty'; }

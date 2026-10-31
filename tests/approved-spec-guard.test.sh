@@ -3,6 +3,7 @@
 set -u
 guard="$(dirname "$0")/../plugins/vicky-skills/scripts/approved-spec-guard.sh"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
+git init -q "$dir"
 printf '[Category("approved-spec")]\n' > "$dir/spec.cs"
 printf 'plain test\n' > "$dir/plain.cs"
 printf 'plain test\n' > "$dir/CharmApprovedExamples.cs"
