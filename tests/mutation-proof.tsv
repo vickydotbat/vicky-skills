@@ -8,7 +8,7 @@ gate-notify.sh	deed6bf2a718196f	90a158f2cb0fe49b	21/21
 git-hook-lib.sh	ab06098427e37ecf	bb29888981d4eda3	32/32
 heredoc-strip.awk	2651757e389267ff	d339564083fda5b4	5/5
 issue-guard.sh	16ad0d0ee535d4c3	6d8e3274b3564bc9	20/20
-lesson-hint.sh	fdde074b9223620f	792a21f961a9ee55	8/8
+lesson-hint.sh	fdde074b9223620f	0e96340a64d1f50a	8/8
 local-path-guard.sh	262afb6fbdb2a8d7	d1004360c6c32de8	29/29
 merged-branch-guard.sh	86e1037d0d39b0c8	7ca4f310a36f436c	43/43
 mutation-proof-guard.sh	b756820a35fb7ae0	a972943a09040ad0	15/15
