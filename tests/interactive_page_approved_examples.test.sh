@@ -159,4 +159,12 @@ html=$(page)
 done_with choice.0=gray
 check "an agent's question with options is answered on a page by clicking, not in chat" \
   'grep -q "type=radio name=\"choice.0\" value=\"gray\"" <<<"$html" && gone && grep -qx -- "- (x) gray" "$scratch/question.md" && grep -qx -- "- ( ) the phase colour" "$scratch/question.md" && grep -qi "question" "$interactive"'
+
+cp "$scratch/checklist.template" "$scratch/c2.md"
+start "$scratch/c2.md"
+html=$(page)
+done_with field.0= field.1= field.2= note="Too many checks for one sitting"
+check "any page ends in a comment box, and the agent reads my note there as a note on the whole page, and acts on it first" \
+  'grep -q "name=\"note\"" <<<"$html" && gone && [ "$(tail -n 2 "$scratch/c2.md")" = "## Anything else
+Comment: Too many checks for one sitting" ] && grep -q "note on the whole page" "$interactive" && grep -q "before anything else" "$interactive"'
 exit $fail
