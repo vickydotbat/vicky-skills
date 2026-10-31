@@ -25,7 +25,12 @@ A **council** is a table talk about one proposal. The seats argue with the propo
 
 Five seats speak in a round. Elrond restates and Gandalf clarifies, every round. The other three rotate: a seat that sat out the last round speaks first, then the sharpest point, so every seat speaks at least every other round. Frodo speaks only at the close. A seat reads its angle in the proposal's own domain: for a game rule or a character build, the players and the rulebook; for code, its users and the repo's standards. A seat gets one phrase of flavour at most. The rest of its line is substance.
 
-**The seats answer.** Every reply from the first round to Frodo's close is a round in the form below, spoken by the seats. A direct question from the user goes to the seat whose angle owns it, and that seat answers it in the round. Plain prose comes back only after Frodo has spoken.
+**The seats answer.** Every reply from the first round to Frodo's close is a round in the form below, spoken by the seats. A direct question from the user goes to the seat whose angle owns it, and that seat answers it in the round. Every other line a reply needs is spoken by a seat too:
+- an ack or a checkpoint mid-round, such as "running the probe", is one `**Elrond:**` line;
+- a fact found while working, such as a probe result, another session's state or a file the user edited, is Gandalf's;
+- a side matter outside the proposal, such as a hook's errand, housekeeping or a skipped step, is a `Notes:` line under Elrond's list.
+
+Every message from the first round to Frodo's line opens with a seat's name. Plain prose comes back only after Frodo has spoken.
 
 ## Steps
 
@@ -42,6 +47,7 @@ Five seats speak in a round. Elrond restates and Gandalf clarifies, every round.
    **Elrond:**
    1. <open point>: <option A> or <option B>. I'd take <pick>, because <reason>.
    Parked: <ideas outside this proposal, one line each>
+   Notes: <side matters, one line each, or drop the line>
    ```
 
    Seats answer each other by name. A rotating seat with nothing new gives its place to the next, and the form shows one possible table, not a fixed order. When a probe, a measurement or a mock-up would settle a point faster than talk, Elrond offers it as the point's pick. Done when Elrond and Gandalf have spoken, no seat has sat out two rounds running, one seat has answered another, every open point has a pick, and the round fits on one screen.
@@ -56,6 +62,7 @@ Five seats speak in a round. Elrond restates and Gandalf clarifies, every round.
    Parked: <the idea → where it was filed>
    Written: <each note, ticket, comment and message, by path or reference>
    Cerebro: <what the decision makes due, or "nothing">
+   Notes: <side matters, one line each, or drop the line>
    **Frodo:** I will take it. <the road from step 6>, once you say yes.
    ```
 
