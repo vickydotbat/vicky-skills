@@ -57,7 +57,7 @@ Each mutant runs the tests that reach it, so a test's time is paid once per muta
    - **The tool**: fix the cause its message names.
 
    After three failed runs on one file, run the manual pass on it. Done when the file has a result, or "unrun, because <the quoted line>".
-6. **Answer every survivor**: a missing example, drafted for the user to approve, whose test kills it once approved; the deletion of the code it lived in, when no input can tell it apart; or the repo's equivalence marker, with the reason no input tells it apart. A mutant no unit test reaches means engine-bound code or a missing example. The repo's docs say which. Done when every survivor has an answer.
+6. **Answer every survivor**: a test that kills it; the deletion of the code it lived in, when no input can tell it apart; or the repo's equivalence marker, with the reason no input tells it apart. A mutant no unit test reaches means engine-bound code or a missing test. The repo's docs say which. A survivor that shows a behaviour no approved example names goes to the user as a drafted example. Done when every survivor has an answer.
 7. **Report** one line per file, with the run's time, in the pull request:
    ```markdown
    - `<file>`: killed <n>, survived <n> (each answered), no coverage <n>, by <tool or "hand">

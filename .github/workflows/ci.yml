@@ -89,6 +89,16 @@ jobs:
         run: tests/ticket_drift_approved_examples.test.sh
       - name: Hook exit codes
         run: tests/hook-exits.test.sh
+      - name: Checkout guard decisions
+        run: tests/checkout-guard.test.sh
+      - name: Draft lock
+        run: tests/draft-lock.test.sh
+      - name: Red-first decisions
+        run: tests/red-first.test.sh
+      - name: Step guard decisions
+        run: tests/step-guard.test.sh
+      - name: Step guard on Gitea
+        run: tests/step_guard_gitea_approved_examples.test.sh
       - name: Approved tests change only with a yes
         run: tests/approved_tests_yes_approved_examples.test.sh
       - name: Checkout guard

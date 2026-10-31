@@ -17,10 +17,10 @@ check "edge cases are drafted up front as examples of their own" \
   'step "$ex" 2 | grep -q "limit, error path and odd input"'
 check "the agent never asks where its tests go" \
   '! grep -qi "agree the seams\|agreed seam" "$do" && grep -q "Never ask the user where a test goes" "$do"'
-check "every test is named after an approved example, and no other test exists" \
-  'grep -q "Write no test that no approved example names" "$do" && ! grep -q "tests at its seams" "$ex"'
-check "a planted bug no approved test catches comes back as a new example" \
-  'grep -q "Answer every survivor\*\*: a missing example" "$mu" && grep -q "survivor.*missing example" "$do"'
+check "each approved example has a test named after it, and the report shows them passing" \
+  'grep -q "Name the test after the example" "$ex" && grep -q "The approved tests are the goal" "$do" && step "$do" 3 | grep -q "Done when every approved test passes"'
+check "a planted bug no approved test catches shows in the mutation report killed by a test, or marked equivalent with a reason" \
+  'grep -q "Answer every survivor\*\*: a test that kills it" "$mu" && step "$do" 4 | grep -q "Kill each survivor with a test, or mark it equivalent with its reason, and put the counts in the report"'
 check "a test that only fails on a refactor, a content edit or a library upgrade is not in the pull request" \
   'grep -q "A test that can only go red on a refactor, a content edit or a library upgrade proves nothing" "$do"'
 check "a behaviour no approved example names, met mid-build, waits as a draft and the rest still lands" \

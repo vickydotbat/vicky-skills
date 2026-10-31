@@ -61,6 +61,9 @@ TESTS = {
     "tea-stdin.awk": ["tea-stdin"],
     "tea-stdin.sh": ["tea-stdin"],
     "ticket-drift.sh": ["ticket_drift_approved_examples"],
+    "poll-pace.sh": ["poll-pace"],
+    "step-guard.sh": ["step-guard", "step_guard_approved_examples", "step_guard_gitea_approved_examples"],
+    "step-hint.sh": ["step_guard_approved_examples"],
 }
 # The shared exit-code test reaches every hook and runs in a fraction of a second.
 TESTS = {name: ["hook-exits"] + tests for name, tests in TESTS.items()}
