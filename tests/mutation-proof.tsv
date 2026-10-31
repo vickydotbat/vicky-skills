@@ -1,5 +1,5 @@
 after-push.sh	331d6fbcfe1f0e4c	8170a5632f2f4da7	7/7
-approved-spec-guard.sh	7455bef1610715b3	4d376eb064740727	46/46
+approved-spec-guard.sh	7455bef1610715b3	2a2e38724a680a57	48/48
 auto-tidy.sh	37372c9b2b9a5907	eae8e88e81b5996d	15/15
 checkout-guard.sh	539cbdd46a4a0461	0c828450e62b52e1	55/55
 draft-lock.sh	ebf828f5925afc95	e10b532d14c41a6e	52/52
@@ -10,7 +10,7 @@ issue-guard.sh	16ad0d0ee535d4c3	c72b1e9e73f6754e	20/20
 local-path-guard.sh	c5cdd0c28ab76a7f	f4f3e936e63d8fb0	28/28
 mutation-proof-guard.sh	b756820a35fb7ae0	cd3e927315b5111e	15/15
 plane-block-guard.sh	679f2b016852effb	f818623a51a8840c	14/14
-poll-pace.sh	7d974ad47688a964	6052b6c3227ce871	19/19
+poll-pace.sh	4548d34f02261258	9f72ab2fe199a79b	24/24
 pr-guard.sh	bcb30c6ce536ad4e	1b8cfd80dc1db0cb	144/144
 push-behind-guard.sh	9a8e46703ec8f780	dc9311b3737d3046	52/52
 red-first-check.sh	e585449df8cf7aee	f9c849d78c226b1b	20/20
@@ -22,3 +22,4 @@ step-hint.sh	4e0b1a2e165abe61	6d8af8720243f673	9/9
 tea-stdin.awk	ddfdfc5257c31b06	c20ee526d905748d	70/70
 tea-stdin.sh	1f69ec430c059eec	c20ee526d905748d	15/15
 ticket-drift.sh	8518ba86b3c88168	397de7e33273570a	26/26
+watch.sh	5151329b7079b9ce	da68a44e50375ecb	31/31
