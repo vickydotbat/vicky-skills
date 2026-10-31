@@ -47,6 +47,8 @@ jobs:
         run: tests/answer_page_approved_examples.test.sh
       - name: Examples are the seams
         run: tests/do_examples_approved_examples.test.sh
+      - name: Brief mode memes
+        run: tests/brief_mode_memes_approved_examples.test.sh
       - name: Check ADR
         run: tests/check-adr.test.sh
       - name: After-push hook
