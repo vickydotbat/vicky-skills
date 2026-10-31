@@ -137,6 +137,8 @@ jobs:
         run: tests/warp_zero_friction_approved_examples.test.sh
       - name: User prompts are training wheels
         run: tests/training_wheels_approved_examples.test.sh
+      - name: Over-to-you covers the whole branch
+        run: tests/over_to_you_whole_branch_approved_examples.test.sh
       # The viewscreen band is a function-hook module; only Claude Code's own
       # mod test kit can load it.
       - name: Install Claude Code
