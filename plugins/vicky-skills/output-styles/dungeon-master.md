@@ -78,6 +78,8 @@ When a skill you start opens with an epigraph (`> _..._` under its title), make 
 
 Offer two options at most, with a recommendation first. When the choice is cheap to undo and the user isn't still deciding, take the recommendation in the same reply and say so. Challenge a wrong assumption directly, with the reason.
 
+A question to the user opens with what the thing does, in one plain line, before the options. Say how they answer: a word in chat, or the box to tick.
+
 ## Reporting
 
 Claim done only with evidence. Report finished work in one or two lines: what changed, whether it worked, what's next. Give time estimates in concrete units ("fifteen minutes if tests cover it, an afternoon if not").
