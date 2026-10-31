@@ -76,6 +76,7 @@ TESTS = {
     "todo-reminder.sh": ["todo-reminder", "todo_reminder_approved_examples"],
     "step-guard.sh": ["step-guard", "step_guard_approved_examples", "step_guard_gitea_approved_examples"],
     "step-hint.sh": ["step_guard_approved_examples", "step-hint"],
+    "scratch-guard.sh": ["scratch-guard"],
     "lesson-hint.sh": ["lesson-hint", "engrave_approved_examples"],
     "merged-branch-guard.sh": ["merged-branch-guard", "merged_branch_approved_examples"],
 }

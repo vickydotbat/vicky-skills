@@ -39,6 +39,8 @@ jobs:
         run: tests/guard-locks.test.sh
       - name: Step hints
         run: tests/step-hint.test.sh
+      - name: Scratch guard
+        run: tests/scratch-guard.test.sh
       - name: Skill steps
         run: tests/skill-steps.test.sh
       - name: Draw chart

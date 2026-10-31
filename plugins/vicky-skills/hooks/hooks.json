@@ -1,5 +1,7 @@
 {
-  "modules": ["./viewscreen.tsx"],
+  "modules": [
+    "./viewscreen.tsx"
+  ],
   "hooks": {
     "PreToolUse": [
       {
@@ -97,6 +99,16 @@
           {
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/draft-lock.sh\"",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "Bash|Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/scratch-guard.sh\"",
             "timeout": 5
           }
         ]
@@ -215,6 +227,18 @@
           {
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/lesson-hint.sh\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/scratch-guard.sh\"",
             "timeout": 5
           }
         ]
