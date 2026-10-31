@@ -1,5 +1,6 @@
 {
   "name": "vicky-skills",
+  "repository": "https://github.com/vickydotbat/vicky-skills",
   "description": "Approved Given / When / Then examples as the spec a build must pass, and a guard on approved tests",
   "author": {
     "name": "vickydotbat"
