@@ -22,6 +22,6 @@ A **catch-up** answers four questions, plus the lessons engraved, for someone wh
    **Next** — <the one next action>
    ```
 
-   Read Lessons from `git log --since=<that point> --grep='^Engraved: ' --format=%B | grep '^Engraved: '`, one line per lesson, each with its snag. With no Engraved line, leave Lessons out, and leave out any other empty part. Done when the whole thing fits on one screen.
+   Read Lessons from the ledger engrave keeps for every repo: `bash ${CLAUDE_PLUGIN_ROOT}/scripts/lesson-ledger.sh since <that point, in UTC>`, one line per lesson, each with its snag and its home. With no lesson, leave Lessons out, and leave out any other empty part. Done when the whole thing fits on one screen.
 3. **Add parked work.** When the user moved away from something unfinished, end with at most three lines: "Still want X?" Count only work they left, not work you found. Done when each parked item is asked once or dropped.
 4. **Look ahead.** Run `cerebro` as a forecast. Done when its proposals end the catch-up, or it found nothing to forecast.

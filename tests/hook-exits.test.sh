@@ -31,7 +31,7 @@ bash_in() { jq -n --arg c "$1" --arg d "${2:-$dir/repo}" '{session_id: "s1", hoo
 edit_in() { jq -n --arg f "$1" --arg d "$dir/repo" '{session_id: "s1", hook_event_name: "PreToolUse", tool_name: "Edit", tool_input: {file_path: $f}, cwd: $d}'; }
 
 for script in $(cd "$scripts" && ls *.sh); do
-  [ "$script" = git-hook-lib.sh ] || [ "$script" = red-first-check.sh ] || [ "$script" = watch.sh ] && continue
+  [ "$script" = git-hook-lib.sh ] || [ "$script" = red-first-check.sh ] || [ "$script" = watch.sh ] || [ "$script" = lesson-ledger.sh ] && continue
   quiet "setting off, unknown input" "$script" '{}'
   quiet "jq, git and gawk missing" "$script" "$(bash_in 'git push origin x; tea pr list')" "${on[@]}" PATH="$dir/bare"
   quiet "a command it doesn't handle" "$script" "$(bash_in 'ls -la')" "${on[@]}"

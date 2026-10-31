@@ -9,6 +9,8 @@ description: Build something behaviour-first, from a sentence in chat, a ticket 
 
 A **build** turns approved examples green. **The examples are the spec, and each one is a seam**: a Given / When / Then its test proves from the observer's side. Prose explains why and decides nothing. Mutation proves the tests can fail. The user brings a request typed in chat, a star, or a star chart whose stars are ready. A request too big for one session goes to `lay-course` instead, and a star with open blockers to `warp`. When a conversation has already settled what to build and it needs tickets, ask the user to type `/mission-brief`.
 
+Read the repo's `TESTING_STANDARDS.md` first: it wins over this skill's defaults. With no such file, the defaults stand.
+
 ## Build one change
 
 1. **Get approved examples.** Read the ticket whole, body and comments, the decision records it points at, and the repo's glossary if it has one. When the ticket already holds approved examples, no editor opens: go to step 2. Otherwise run the `examples` skill, which hands its drafts to the user with `red-pen` before any test or code is written. A request typed in chat is the whole source. Done when every example the build rests on is approved.

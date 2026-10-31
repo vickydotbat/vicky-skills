@@ -101,8 +101,8 @@
     "guard_checkout": {
       "type": "boolean",
       "title": "One session per checkout",
-      "description": "Refuse a branch switch in a checkout another session used in the last 12 hours, and tell a session when its checkout moved to another branch under it. Each session's last git command per checkout is kept in the plugin's data folder until the session ends.",
-      "default": false
+      "description": "Refuse a branch switch, or a git command that writes history, in a checkout another session used in the last 12 hours, so the session works in its own worktree. Tell a session when its checkout moved to another branch under it. Each session's last git command per checkout is kept in the plugin's data folder until the session ends.",
+      "default": true
     },
     "guard_red_first": {
       "type": "boolean",

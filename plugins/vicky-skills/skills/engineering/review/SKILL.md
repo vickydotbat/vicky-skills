@@ -15,6 +15,8 @@ Three-axis review of the diff between `HEAD` and a fixed point:
 
 The tracker is named in `docs/agents/issue-tracker.md`. If that file is missing, tell the user to run `/first-contact`.
 
+Read the repo's `TESTING_STANDARDS.md` first: it wins over this skill's defaults. With no such file, the defaults stand.
+
 ## Steps
 
 1. **Pin the fixed point.** Use what the user named. If they named nothing, ask. Run `git rev-parse <fixed-point>` and confirm `git diff <fixed-point>...HEAD` is non-empty. Done when the ref resolves and the diff has content. When it does not, say which check failed and stop.

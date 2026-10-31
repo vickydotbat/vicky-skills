@@ -81,8 +81,6 @@ jobs:
         run: tests/merged_branch_approved_examples.test.sh
       - name: Sup lessons approved examples
         run: tests/sup_lessons_approved_examples.test.sh
-      - name: Sup lessons command
-        run: tests/sup-lessons.test.sh
       - name: Engrave routing approved examples
         run: tests/engrave_route_approved_examples.test.sh
       - name: Poll pace
@@ -137,6 +135,24 @@ jobs:
         run: tests/guard_steers_approved_examples.test.sh
       - name: Faster mutation runner
         run: tests/mutation_speed_approved_examples.test.sh
+      - name: Worktree by default
+        run: tests/worktree_default_approved_examples.test.sh
+      - name: Over-to-you stocks the test
+        run: tests/over_to_you_stocks_approved_examples.test.sh
+      - name: Lessons ledger
+        run: tests/lesson_ledger_approved_examples.test.sh
+      - name: Ask plainly
+        run: tests/ask_plainly.test.sh
+      - name: Red-pen grants
+        run: tests/open-draft.test.sh
+      - name: Lessons ledger edges
+        run: tests/lesson-ledger.test.sh
+      - name: Over-to-you builds from scratch
+        run: tests/over_to_you_from_scratch_approved_examples.test.sh
+      - name: Over-to-you quick notes
+        run: tests/over_to_you_quick_notes_approved_examples.test.sh
+      - name: Testing standards
+        run: tests/testing_standards_approved_examples.test.sh
       - name: Cerebro mid-effort
         run: tests/cerebro_mid_effort_approved_examples.test.sh
       - name: Watch script
