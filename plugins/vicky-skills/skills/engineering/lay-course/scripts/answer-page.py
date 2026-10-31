@@ -23,7 +23,9 @@ import tempfile
 import urllib.parse
 
 LIMIT = 64 * 1024
-STYLE = """body{font-family:sans-serif;margin:1.5rem}
+STYLE = """:root{color-scheme:light dark}
+body{font-family:sans-serif;margin:1.5rem}
+.chart svg{background:#fff}
 .chart{margin-bottom:2rem;overflow-x:auto}
 .chart svg{max-width:100%;height:auto;cursor:zoom-in}
 table{border-collapse:collapse;margin-bottom:2rem}

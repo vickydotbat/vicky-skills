@@ -32,7 +32,8 @@ import webbrowser
 
 LIMIT = 1024 * 1024
 MARKS = ["x", "~", "-", " "]
-STYLE = """body{font-family:sans-serif;margin:1.5rem;max-width:60rem}
+STYLE = """:root{color-scheme:light dark}
+body{font-family:sans-serif;margin:1.5rem;max-width:60rem}
 textarea{width:100%;min-height:4rem;font-family:monospace}
 .text{white-space:pre-wrap;margin:.2rem 0}
 input[type=text]{width:70%}
