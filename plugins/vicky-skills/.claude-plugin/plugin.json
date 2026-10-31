@@ -37,6 +37,7 @@
     "./skills/productivity/council-of-elrond",
     "./skills/productivity/codex-image-gen",
     "./skills/productivity/human-voice",
+    "./skills/productivity/interactive-page",
     "./skills/productivity/interrogation",
     "./skills/productivity/is-this-a-meme",
     "./skills/productivity/loose-lips",
@@ -52,15 +53,9 @@
   "userConfig": {
     "guard_pr": {
       "type": "boolean",
-      "title": "One open pull request per effort",
-      "description": "Refuse a second pull request from one session, a stack nobody asked for, and AI credit in pull request text. A ticket filed before the session started counts as a separate effort.",
+      "title": "No AI credit in pull requests",
+      "description": "Refuse a gh, tea or git-spice command whose text, or the body file it sends, credits an AI with a Co-Authored-By line or a 'Generated with' footer.",
       "default": false
-    },
-    "guard_pr_ignore_heads": {
-      "type": "string",
-      "title": "Branches the pull request guard ignores",
-      "description": "Space-separated branch prefixes whose pull requests never count, such as bot branches.",
-      "default": ""
     },
     "guard_issue_threads": {
       "type": "boolean",
@@ -219,6 +214,12 @@
       "type": "boolean",
       "title": "A scratch folder per subagent",
       "description": "Give each subagent its own scratch folder under /tmp/<session id>/, and refuse a subagent's write to the session folder its siblings share.",
+      "default": false
+    },
+    "guard_rm_steer": {
+      "type": "boolean",
+      "title": "Spell out the path rm removes",
+      "description": "Refuse rm -r or rm -f on a path built from a shell variable, and tell the agent to spell the path out, so Claude Code's removal check never stops to ask you.",
       "default": false
     }
   }

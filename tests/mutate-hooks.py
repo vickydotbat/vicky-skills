@@ -59,7 +59,7 @@ TESTS = {
     "heredoc-strip.awk": GIT_GUARDS + ["pr-guard", "issue-guard"],
     "issue-guard.sh": ["issue-guard"],
     "local-path-guard.sh": ["local-path-guard"],
-    "pr-guard.sh": ["pr-guard"],
+    "pr-guard.sh": ["pr-guard", "pr_guard_ai_credit_approved_examples"],
     "push-behind-guard.sh": ["push-behind-guard"],
     "red-first-check.sh": ["red-first", "red_first_approved_examples"],
     "red-first-guard.sh": ["red-first", "red_first_approved_examples"],
@@ -77,6 +77,7 @@ TESTS = {
     "step-guard.sh": ["step-guard", "step_guard_approved_examples", "step_guard_gitea_approved_examples"],
     "step-hint.sh": ["step_guard_approved_examples", "step-hint"],
     "scratch-guard.sh": ["scratch-guard"],
+    "rm-steer.sh": ["rm-steer", "rm_steer_approved_examples"],
     "lesson-hint.sh": ["lesson-hint", "engrave_approved_examples"],
     "merged-branch-guard.sh": ["merged-branch-guard", "merged_branch_approved_examples"],
 }
