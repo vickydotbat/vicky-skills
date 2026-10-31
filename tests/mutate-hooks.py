@@ -62,7 +62,7 @@ TESTS = {
     "pr-guard.sh": ["pr-guard", "pr_guard_ai_credit_approved_examples"],
     "push-behind-guard.sh": ["push-behind-guard"],
     "red-first-check.sh": ["red-first", "red_first_approved_examples"],
-    "red-first-guard.sh": ["red-first", "red_first_approved_examples"],
+    "red-first-guard.sh": ["red-first", "red-first-paths", "red_first_approved_examples"],
     "skill-ledger.sh": ["skill_ledger_approved_examples"],
     "spark-joy.sh": ["spark-joy"],
     "tea-stdin.awk": ["tea-stdin"],

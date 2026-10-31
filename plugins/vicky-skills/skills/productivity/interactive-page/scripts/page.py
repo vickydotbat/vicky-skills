@@ -11,10 +11,13 @@ answers:
   a "1. [ ] check" line      one box per mark        (mark.N: x, ~, -, or blank)
   a "notes:" or "- TAG:" line a line of text         (field.N)
   each ```text block        a comment box under it  (comment.N)
+  "- ( ) option" lines       one choice per run of them (choice.N)
+  the end of the page        a comment box           (note)
 
 When the user presses Done, the answers are written back into the file in
 its own form, and the script exits 0. A comment lands as a "Comment: ..."
-line under its block. Answers that change nothing leave the file
+line under its block, the chosen option is marked "(x)", and the comment at
+the end lands under a closing "## Anything else" heading. Answers that change nothing leave the file
 byte for byte as it was. The page listens on this machine only. With no
 answer before the timeout (four hours by default) it exits 2 and the file
 stays as it was.
@@ -37,12 +40,14 @@ button{font-size:1.1rem;padding:.4rem 1.2rem}"""
 CHECK = re.compile(r"^(\d+\. )\[(.)\] (.*)$")
 FIELD = re.compile(r"^(\s*(?:notes|- [A-Z]+)):\s?(.*)$")
 APPROVE = re.compile(r"^- \[( |x)\] approve$")
+CHOICE = re.compile(r"^- \(( |x)\) (.*)$")
 
 
 def parse(text):
     """The file as parts: ("line", s), ("block", [lines]), ("approve", ticked),
-    ("check", prefix, mark, rest), ("field", label, value), ("comment",)."""
-    parts, lines, i = [], text.split("\n"), 0
+    ("check", prefix, mark, rest), ("field", label, value), ("comment",),
+    ("choice", question, picked, option)."""
+    parts, lines, i, question = [], text.split("\n"), 0, -1
     while i < len(lines):
         line = lines[i]
         if line == "```text":
@@ -62,6 +67,11 @@ def parse(text):
             parts.append(("check", m.group(1), m.group(2), m.group(3)))
         elif m := FIELD.match(line):
             parts.append(("field", m.group(1), m.group(2)))
+        elif m := CHOICE.match(line):
+            # A run of option lines is one question.
+            if not parts or parts[-1][0] != "choice":
+                question += 1
+            parts.append(("choice", question, m.group(1) == "x", m.group(2)))
         else:
             parts.append(("line", line))
         i += 1
@@ -105,6 +115,10 @@ def page(name, parts):
             out.append(f'<label>{e(part[1].strip())}: <input type=text name="field.{n}" value="{e(part[2])}"></label><br>')
         elif kind == "comment":
             out.append(f'<textarea name="comment.{n}" placeholder="Comment"></textarea>')
+        elif kind == "choice":
+            ticked = " checked" if part[2] else ""
+            out.append(f'<label><input type=radio name="choice.{part[1]}" value="{e(part[3])}"{ticked}> {e(part[3])}</label><br>')
+    out.append('<h2>Anything else</h2><textarea name="note" placeholder="Comment"></textarea>')
     out.append("<p><button type=submit>Done</button></p></form>")
     return "\n".join(out)
 
@@ -136,6 +150,14 @@ def answered(parts, form):
             comment = got(f"comment.{n}", "").replace("\n", " ").strip()
             if comment:
                 out.append(f"Comment: {comment}")
+        elif kind == "choice":
+            chosen = form.get(f"choice.{part[1]}", [None])[0]
+            picked = part[2] if chosen is None else chosen == part[3]
+            out.append(f"- ({'x' if picked else ' '}) {part[3]}")
+    note = got("note", "").replace("\n", " ").strip()
+    if note:
+        end = len(out) - 1 if out and out[-1] == "" else len(out)
+        out[end:end] = ["", "## Anything else", f"Comment: {note}"]
     return "\n".join(out)
 
 

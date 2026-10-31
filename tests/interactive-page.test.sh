@@ -115,6 +115,16 @@ finish
 check "a post from another web page, or under another host name, is refused; the page's own post is taken" \
   '[ "$cross" = 400 ] && [ "$renamed" = 400 ] && [ "$own" = 200 ] && ! grep -q Hijacked "$scratch/g.md"'
 
+printf '# Q\n\n## Q1: Colour?\n- (x) red\n- ( ) blue\n\n## Q2: Size?\n- ( ) small\n- (x) large\n' >"$scratch/q.template"
+cp "$scratch/q.template" "$scratch/h.md"
+start "$scratch/h.md"
+html=$(curl -s "$url")
+code=$(post /done choice.1=small note="Looks good")
+finish
+check "each run of options is its own question, a question left alone keeps its pick, and the page-end comment lands under Anything else" \
+  '[ "$code" = 200 ] && grep -q "name=\"choice.1\" value=\"small\"" <<<"$html" && grep -q "name=\"choice.0\" value=\"red\" checked" <<<"$html" && grep -q "name=\"note\"" <<<"$html" && grep -qx -- "- (x) red" "$scratch/h.md" && grep -qx -- "- (x) small" "$scratch/h.md" && grep -qx -- "- ( ) large" "$scratch/h.md" && [ "$(tail -n 2 "$scratch/h.md")" = "## Anything else
+Comment: Looks good" ] && [ -z "$(tail -c 1 "$scratch/h.md")" ]'
+
 python3 -I "$page" >/dev/null 2>&1; none=$?
 python3 -I "$page" a b >/dev/null 2>&1; two=$?
 check "no file, or two, is a usage error" '[ "$none" = 2 ] && [ "$two" = 2 ]'

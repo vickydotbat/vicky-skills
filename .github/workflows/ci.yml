@@ -197,6 +197,8 @@ jobs:
         run: tests/interactive-page.test.sh
       - name: No test reaches the user's editor
         run: tests/no-real-editor.test.sh
+      - name: Red-first guard reads what git add stages
+        run: tests/red-first-paths.test.sh
       # The viewscreen band is a function-hook module; only Claude Code's own
       # mod test kit can load it.
       - name: Install Claude Code
