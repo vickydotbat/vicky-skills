@@ -15,7 +15,7 @@ Three-axis review of the diff between `HEAD` and a fixed point:
 
 The tracker is named in `docs/agents/issue-tracker.md`. If that file is missing, tell the user to run `/first-contact`.
 
-Read the repo's `TESTING_STANDARDS.md` first: it wins over this skill's defaults.
+Read the repo's `TESTING_STANDARDS.md` first: it wins over this skill's defaults. With no such file, the defaults stand.
 
 ## Steps
 

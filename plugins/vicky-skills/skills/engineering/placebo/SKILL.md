@@ -11,7 +11,7 @@ A test earns its run time only through its **red**: the change to production beh
 
 The repo's own testing rules win over this skill. Read its standards files (`AGENTS.md` names them) before the first verdict.
 
-Read the repo's `TESTING_STANDARDS.md` first: it wins over this skill's defaults.
+Read the repo's `TESTING_STANDARDS.md` first: it wins over this skill's defaults. With no such file, the defaults stand.
 
 ## Placebo shapes
 
