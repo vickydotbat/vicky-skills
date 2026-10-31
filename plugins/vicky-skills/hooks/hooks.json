@@ -156,6 +156,11 @@
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/ticket-drift.sh\"",
             "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/todo-reminder.sh\"",
+            "timeout": 5
           }
         ]
       }
