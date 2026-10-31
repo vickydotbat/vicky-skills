@@ -19,7 +19,7 @@ pr-guard.sh	2d7fda87bbae0732	198526337e7b38b1	25/25
 push-behind-guard.sh	1e8f867bbe25ccbe	cbaab5d1089cf671	52/52
 red-first-check.sh	e585449df8cf7aee	84670b3fbec08321	20/20
 red-first-guard.sh	2d3e03d2ab8c04cb	84670b3fbec08321	19/19
-rm-steer.sh	709419bd3b731d19	8eb1d231e195579c	25/25
+rm-steer.sh	52eae40fec3651f9	5a77f824f2b75e5c	28/28
 scratch-guard.sh	5d86e5061c016d17	836db0a7b030c4d7	31/31
 skill-ledger.sh	4f6f1ba436f648ca	0523774127c31661	22/22
 spark-joy.sh	2dc8177679887c1f	e1757c50cdac5359	24/24

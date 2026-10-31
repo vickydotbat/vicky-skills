@@ -15,15 +15,12 @@ listens on this machine only, takes one answer, prints it as JSON and exits 0.
 With no answer before the timeout (an hour by default) it exits 2.
 """
 import html
-import http.server
 import importlib.util
 import json
 import os
 import sys
 import tempfile
-import threading
 import urllib.parse
-import webbrowser
 
 LIMIT = 64 * 1024
 STYLE = """body{font-family:sans-serif;margin:1.5rem}
@@ -39,14 +36,20 @@ ZOOM = """function zoom(c){const s=c.querySelector("svg"),n=(+c.dataset.z||1)%3+
 s.style.maxWidth=n>1?"none":"";s.style.width=n>1?c.clientWidth*n+"px":""}"""
 
 
+def module(name, *path):
+    """A script beside this one, or under the plugin's skills, loaded by path."""
+    spec = importlib.util.spec_from_file_location(
+        name, os.path.join(os.path.dirname(os.path.abspath(__file__)), *path))
+    sys.dont_write_bytecode = True
+    loaded = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(loaded)
+    return loaded
+
+
 def svg_of(chart):
     if "svg" in chart:
         return chart["svg"]
-    spec = importlib.util.spec_from_file_location(
-        "draw_chart", os.path.join(os.path.dirname(os.path.abspath(__file__)), "draw-chart.py"))
-    sys.dont_write_bytecode = True
-    draw = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(draw)
+    draw = module("draw_chart", "draw-chart.py")
     with tempfile.TemporaryDirectory() as folder:
         path = os.path.join(folder, "chart.svg")
         draw.render(chart["mermaid"], path)
@@ -94,41 +97,11 @@ def answers(spec, body):
 
 
 def serve(spec, timeout, open_browser):
-    text, result = page(spec).encode(), {}
-    done = threading.Event()
-
-    class Handler(http.server.BaseHTTPRequestHandler):
-        def log_message(self, *args):
-            pass
-
-        def reply(self, code, body):
-            self.send_response(code)
-            self.send_header("Content-Type", "text/html; charset=utf-8")
-            self.end_headers()
-            self.wfile.write(body)
-
-        def do_GET(self):
-            self.reply(200, text)
-
-        def do_POST(self):
-            size = int(self.headers.get("Content-Length") or 0)
-            if self.path != "/answer" or size > LIMIT or done.is_set():
-                self.reply(400, b"Not taken.")
-                return
-            result.update(answers(spec, self.rfile.read(size).decode()))
-            self.reply(200, b"<!doctype html><meta charset=utf-8><p>Sent. Back to chat.</p>")
-            done.set()
-
-    # Bound to loopback: the page answers this machine only.
-    server = http.server.HTTPServer(("127.0.0.1", 0), Handler)
-    threading.Thread(target=server.serve_forever, daemon=True).start()
-    url = f"http://127.0.0.1:{server.server_address[1]}/"
-    print(f"answer-page: open {url}", file=sys.stderr, flush=True)
-    if open_browser:
-        webbrowser.open(url)
-    answered = done.wait(timeout)
-    server.shutdown()
-    if not answered:
+    result = {}
+    # The page server is interactive-page's, shared by every page a skill opens.
+    shared = module("interactive_page", "..", "..", "..", "productivity", "interactive-page", "scripts", "page.py")
+    if not shared.serve_form(page(spec).encode(), "/answer", lambda body: result.update(answers(spec, body)),
+                             timeout, "answer-page", open_browser, LIMIT):
         sys.exit(f"answer-page: no answer within {timeout} seconds")
     print(json.dumps(result, indent=1))
 

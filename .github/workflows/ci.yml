@@ -195,6 +195,8 @@ jobs:
         run: tests/interactive_page_approved_examples.test.sh
       - name: Interactive page decisions
         run: tests/interactive-page.test.sh
+      - name: No test reaches the user's editor
+        run: tests/no-real-editor.test.sh
       # The viewscreen band is a function-hook module; only Claude Code's own
       # mod test kit can load it.
       - name: Install Claude Code

@@ -14,15 +14,17 @@ code=$(awk -f "$(dirname "$0")/heredoc-strip.awk" <<<"$command" | sed "s/'[^']*'
 
 while IFS= read -r segment; do
   read -ra words <<<"$segment"
-  # Skip leading VAR=value assignments and wrappers that run the next word.
+  # Skip leading VAR=value assignments. A wrapper that runs another command
+  # (sudo -u bob, nice -n 5, timeout 30, xargs) takes flags and values of
+  # its own, so after one the first word that is rm is the command.
   i=0
-  while [ "$i" -lt "${#words[@]}" ]; do
-    case "${words[$i]}" in
-      *=* | sudo | run0 | command | nice | env | timeout | [0-9]*) i=$((i + 1)) ;;
-      *) break ;;
-    esac
-  done
-  [ "${words[$i]:-}" = rm ] || continue
+  while [ "$i" -lt "${#words[@]}" ] && [[ ${words[$i]} == *=* ]]; do i=$((i + 1)); done
+  case "${words[$i]:-}" in
+    rm) ;;
+    sudo | run0 | command | nice | env | timeout | nohup | xargs | time)
+      while [ "$i" -lt "${#words[@]}" ] && [ "${words[$i]}" != rm ]; do i=$((i + 1)); done ;;
+    *) continue ;;
+  esac
   forced="" variable=""
   for word in "${words[@]:$((i + 1))}"; do
     case "$word" in

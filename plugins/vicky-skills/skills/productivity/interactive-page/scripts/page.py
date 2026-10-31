@@ -56,13 +56,11 @@ def parse(text):
             parts.append(("comment",))
             i = end + 1
             continue
-        if APPROVE.match(line):
-            parts.append(("approve", APPROVE.match(line).group(1) == "x"))
-        elif CHECK.match(line):
-            m = CHECK.match(line)
+        if m := APPROVE.match(line):
+            parts.append(("approve", m.group(1) == "x"))
+        elif m := CHECK.match(line):
             parts.append(("check", m.group(1), m.group(2), m.group(3)))
-        elif FIELD.match(line):
-            m = FIELD.match(line)
+        elif m := FIELD.match(line):
             parts.append(("field", m.group(1), m.group(2)))
         else:
             parts.append(("line", line))
@@ -122,7 +120,10 @@ def answered(parts, form):
         if kind == "line":
             out.append(part[1])
         elif kind == "block":
-            out.extend(got(f"text.{n}", "\n".join(part[1])).rstrip("\n").split("\n"))
+            text = got(f"text.{n}", "\n".join(part[1])).rstrip("\n")
+            # Text the user left alone keeps its lines exactly, an empty
+            # block and a trailing blank line included.
+            out.extend(part[1] if text == "\n".join(part[1]).rstrip("\n") else text.split("\n"))
         elif kind == "approve":
             out.append(f"- [{'x' if f'approve.{n}' in form else ' '}] approve")
         elif kind == "check":
@@ -138,11 +139,22 @@ def answered(parts, form):
     return "\n".join(out)
 
 
-def serve(path, timeout):
-    with open(path) as handle:
-        original = handle.read()
-    parts = parse(original)
-    text, done = page(path, parts).encode(), threading.Event()
+
+
+def serve_form(text, path, on_post, timeout, tag="page", open_browser=True, limit=LIMIT):
+    """Serve the page `text` on this machine only and wait for one POST to
+    `path`. `on_post` takes the posted body, URL-encoded, and returns nothing.
+    Returns False when no answer came before the timeout. lay-course's
+    answer-page.py serves its planning pages through this too."""
+    done = threading.Event()
+    origin = ""
+
+    def foreign(headers):
+        # Any other web page open in the browser can post a form here, and
+        # the browser names that page in Origin. Only this page's own posts,
+        # and clients that send no Origin, are taken.
+        sent = headers.get("Origin")
+        return headers.get("Host") != origin.removeprefix("http://") or (sent is not None and sent != origin)
 
     class Handler(http.server.BaseHTTPRequestHandler):
         def log_message(self, *args):
@@ -159,26 +171,38 @@ def serve(path, timeout):
 
         def do_POST(self):
             size = int(self.headers.get("Content-Length") or 0)
-            if self.path != "/done" or size > LIMIT or done.is_set():
+            if self.path != path or size > limit or done.is_set() or foreign(self.headers):
                 self.reply(400, b"Not taken.")
                 return
-            form = urllib.parse.parse_qs(self.rfile.read(size).decode(), keep_blank_values=True)
-            new = answered(parts, form)
-            if new != original:
-                with open(path, "w") as handle:
-                    handle.write(new)
+            on_post(self.rfile.read(size).decode())
             self.reply(200, b"<!doctype html><meta charset=utf-8><p>Sent. Back to chat.</p>")
             done.set()
 
     # Bound to loopback: the page answers this machine only.
     server = http.server.HTTPServer(("127.0.0.1", 0), Handler)
     threading.Thread(target=server.serve_forever, daemon=True).start()
-    url = f"http://127.0.0.1:{server.server_address[1]}/"
-    print(f"page: open {url}", file=sys.stderr, flush=True)
-    webbrowser.open(url)
+    origin = f"http://127.0.0.1:{server.server_address[1]}"
+    url = origin + "/"
+    print(f"{tag}: open {url}", file=sys.stderr, flush=True)
+    if open_browser:
+        webbrowser.open(url)
     answered_in_time = done.wait(timeout)
     server.shutdown()
-    if not answered_in_time:
+    return answered_in_time
+
+
+def serve(path, timeout):
+    with open(path) as handle:
+        original = handle.read()
+    parts = parse(original)
+
+    def write_back(body):
+        new = answered(parts, urllib.parse.parse_qs(body, keep_blank_values=True))
+        if new != original:
+            with open(path, "w") as handle:
+                handle.write(new)
+
+    if not serve_form(page(path, parts).encode(), "/done", write_back, timeout):
         print(f"page: no answer within {timeout} seconds", file=sys.stderr)
         sys.exit(2)
 

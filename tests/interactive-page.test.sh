@@ -3,6 +3,8 @@
 # a second Done, the timeout and bad arguments. Runs the page with a
 # stand-in browser that records its address.
 set -u
+# No test may reach the user's own editor or browser.
+export VISUAL=true EDITOR=true
 page="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/productivity/interactive-page/scripts/page.py"
 scratch=$(mktemp -d)
 pid=""
@@ -95,6 +97,23 @@ cp "$scratch/template.md" "$scratch/e.md"
 start "$scratch/e.md" 1
 finish
 check "no answer before the timeout exits 2 and leaves the file as it was" '[ "$status" = 2 ] && cmp -s "$scratch/template.md" "$scratch/e.md"'
+
+printf '## Empty\nx:1\n\n```text\n```\n\n## Trailing\ny:1\n\n```text\nline\n\n```\n' >"$scratch/edge.template"
+cp "$scratch/edge.template" "$scratch/f.md"
+start "$scratch/f.md"
+code=$(post /done text.0= text.1=$'line\n\n' comment.0= comment.1=)
+finish
+check "an empty block and a block ending in a blank line come back byte for byte when left alone" \
+  '[ "$code" = 200 ] && cmp -s "$scratch/edge.template" "$scratch/f.md"'
+
+cp "$scratch/template.md" "$scratch/g.md"
+start "$scratch/g.md"
+cross=$(curl -s -o /dev/null -w '%{http_code}' -X POST -H "Origin: https://elsewhere.example" --data-urlencode text.0=Hijacked "${url%/}/done")
+renamed=$(curl -s -o /dev/null -w '%{http_code}' -X POST -H "Host: attacker.example" --data-urlencode text.0=Hijacked "${url%/}/done")
+own=$(curl -s -o /dev/null -w '%{http_code}' -X POST -H "Origin: ${url%/}" "${same[@]/#/--data-urlencode=}" "${url%/}/done")
+finish
+check "a post from another web page, or under another host name, is refused; the page's own post is taken" \
+  '[ "$cross" = 400 ] && [ "$renamed" = 400 ] && [ "$own" = 200 ] && ! grep -q Hijacked "$scratch/g.md"'
 
 python3 -I "$page" >/dev/null 2>&1; none=$?
 python3 -I "$page" a b >/dev/null 2>&1; two=$?
