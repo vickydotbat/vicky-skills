@@ -9,6 +9,9 @@ set -u
 case "${CLAUDE_PLUGIN_OPTION_GUARD_ISSUE_THREADS:-}" in true | 1) ;; *) exit 0 ;; esac
 command -v jq >/dev/null || { echo "issue-guard: jq is missing, guard is off" >&2; exit 0; } # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
 command="$(jq -r '.tool_input.command // ""' 2>/dev/null)"
+# Text a heredoc feeds a program, and quoted text such as a grep pattern, is
+# never a command, so it is dropped first.
+command=$(awk -f "$(dirname "$0")/heredoc-strip.awk" <<<"$command" | sed -zE "s/'[^']*'//g; s/\"([^\"\\\\]|\\\\.)*\"//g")
 
 # Only the two forge CLIs are in scope.
 grep -Eq '(^|[^[:alnum:]_-])(gh|tea)([[:space:]]|$)' <<<"$command" || exit 0 # mutant-ok delete: a fast path: the checks below find nothing to refuse in such a command
