@@ -7,11 +7,11 @@ description: Build something behaviour-first, from a sentence in chat, a ticket 
 
 > _Do, or do not. There is no try: red first, then green, then the mutants._
 
-A **build** turns approved examples green. **The examples are the spec, and each one is a seam**: a Given / When / Then its test proves from the observer's side. Prose explains why and decides nothing. Every test proves an approved example, and mutation proves those tests can fail. The user brings a request typed in chat, a star, or a star chart whose stars are ready. A request too big for one session goes to `lay-course` instead, and a star with open blockers to `warp`.
+A **build** turns approved examples green. **The examples are the spec, and each one is a seam**: a Given / When / Then its test proves from the observer's side. Prose explains why and decides nothing. Mutation proves the tests can fail. The user brings a request typed in chat, a star, or a star chart whose stars are ready. A request too big for one session goes to `lay-course` instead, and a star with open blockers to `warp`.
 
 ## Build one change
 
-1. **Get approved examples.** Read the ticket whole, body and comments, the decision records it points at, and the repo's glossary if it has one. When the ticket already holds approved examples, no editor opens: go to step 2. Otherwise run the `examples` skill, which hands its drafts to the user with `red-pen` before any test or code is written. A request typed in chat is the whole source, and a one-sentence playback of it is optional prose. Done when every example the build rests on is approved.
+1. **Get approved examples.** Read the ticket whole, body and comments, the decision records it points at, and the repo's glossary if it has one. When the ticket already holds approved examples, no editor opens: go to step 2. Otherwise run the `examples` skill, which hands its drafts to the user with `red-pen` before any test or code is written. A request typed in chat is the whole source. Done when every example the build rests on is approved.
 2. **Make the examples red.** Write and run their tests as `examples` step 5 says. Done when each approved test fails because the behaviour is missing. Commit them, push the branch and open a **draft** pull request: GitHub's `gh pr create --draft`, or a `WIP:` title prefix on Gitea, unless the repo's guide names another way. A draft asks no one to review it.
 3. **Go red to green, one example at a time.** Write only enough code to pass the next approved test ("The smallest complete change" below), then the next. Write no test that no approved example names. Never ask the user where a test goes: the example's observer and words pick its seam. A behaviour the code needs that no example covers is a **missing example**: add its draft to the effort's `red-pen` draft file, park that slice, and build the rest. Done when every approved test passes.
 4. **Mutate** the decision logic you changed (rules, limits, parsers) with `sentinels`. Each survivor is a missing example: draft it into the `red-pen` draft file, never a test the user hasn't seen. Done when its report line names every file and each survivor has its draft or its answer.
@@ -47,8 +47,7 @@ Validation at a trust boundary, error handling that prevents data loss, security
 
 - A test goes through a public interface and survives a refactor that keeps behaviour.
 - Mock only at the system's edges: the network, the clock, randomness, a service you don't own. Your own modules run for real.
-- A test written after the code it tests, or recomputing its expected value the way the code does, can only agree with the code. Write the test first.
-- Each test takes its expected value from its approved example, never a recomputation of what the code does. A test that can only go red on a refactor, a content edit or a library upgrade proves nothing (`placebo` lists the shapes).
+- A test that can only go red on a refactor, a content edit or a library upgrade proves nothing (`placebo` lists the shapes).
 - Refactor during review, never inside the red-to-green loop.
 
 ## Build a whole star chart
