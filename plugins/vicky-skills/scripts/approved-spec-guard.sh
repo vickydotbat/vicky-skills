@@ -40,6 +40,9 @@ command=$(jq -r '.tool_input.command // empty' <<<"$payload")
 cwd=$(jq -r '.cwd // empty' <<<"$payload")
 [ -n "$cwd" ] && cd "$cwd" 2>/dev/null
 # A leading cd, such as into a worktree, sets where the command's files are.
+# shortcut: only a plain path at the command's start counts. A later cd,
+# pushd, git -C, ~, $VAR or a path with spaces leaves the session's folder;
+# upgrade when a refusal or a gap shows up in one of those forms.
 if [[ $command =~ ^[[:space:]]*cd[[:space:]]+([^[:space:]\;\&\|]+) ]]; then
   dir=${BASH_REMATCH[1]//[\"\']/}
   cd "$dir" 2>/dev/null
