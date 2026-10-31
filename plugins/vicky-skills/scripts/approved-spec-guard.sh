@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-# Asks the human before an agent edits a file that holds approved examples,
-# through Edit, Write or a Bash command. A command that only runs or reads
-# such a file passes. Training wheels: a refusal that sends the agent to
-# `examples`' "Changing an approved example" would replace the ask.
+# Refuses an agent's edit to a file that holds approved examples, through
+# Edit, Write or a Bash command, and steers it to `examples`' "Changing an
+# approved example". A command that only runs or reads such a file passes,
+# and so does an edit to a file the user re-approved: red-pen's open-draft.sh
+# grants a test file when the user changes its example in a draft.
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
 payload=$(cat)
 # A file named for approved examples, or one holding a marked test, is the
@@ -14,18 +15,24 @@ approved() {
   basename -- "$1" | grep -qiE 'approved_?examples' ||
     { grep -qE '(#|//|--|;)[[:space:]]*approved-spec:|["'"'"']approved-spec["'"'"']|@approved-spec([^a-z-]|$)' "$1"; }
 }
-ask() {
+# A file the user re-approved in red-pen, listed in the checkout's grants.
+granted() {
+  top=$(git -C "$(dirname -- "$1")" rev-parse --show-toplevel 2>/dev/null) || return 1
+  grants="$(git -C "$top" rev-parse --absolute-git-dir)/approved-spec-grants"
+  grep -qsxF "$(realpath -m -- "$1" | sed "s|^$top/||")" "$grants"
+}
+refuse() {
   jq -n --arg f "$1" '{hookSpecificOutput: {
     hookEventName: "PreToolUse",
-    permissionDecision: "ask",
-    permissionDecisionReason: ("\($f) holds approved examples. An approved example changes only when the human approves the new text.")
+    permissionDecision: "deny",
+    permissionDecisionReason: ("\($f) holds approved examples, which change only with the user'"'"'s yes. Take the new wording through the examples skill'"'"'s \"Changing an approved example\": draft it with red-pen, naming the test file on the draft'"'"'s location line. Once the user changes it there and closes the file, the edit goes through.")
   }}'
   exit 0
 }
 
 if [ "$(jq -r '.tool_name // empty' <<<"$payload")" != Bash ]; then
   file=$(jq -r '.tool_input.file_path // empty' <<<"$payload")
-  [ -n "$file" ] && approved "$file" && ask "$file"
+  [ -n "$file" ] && approved "$file" && ! granted "$file" && refuse "$file"
   exit 0 # mutant-ok delete: an empty command below finds no target and exits 0
 fi
 
@@ -47,7 +54,7 @@ if [ -z "$target" ]; then
   # the command only names as an argument, such as a workflow it reads, passes.
   while IFS= read -r word; do
     [ -f "$word" ] && [ "$(wc -c < "$word")" -lt 1000000 ] || continue
-    grep -qiE 'approved_?examples' "$word" && ask "$word names an approved-examples file, and"
+    grep -qiE 'approved_?examples' "$word" && refuse "$word names an approved-examples file, and"
   done < <(tr ';&|()\n' '\n' <<<"$command" | awk '{
     flag = 0
     for (i = 1; i <= NF; i++) { # mutant-ok: from 0, field 0 is the whole segment, never a file name, so it adds no candidate
@@ -66,9 +73,9 @@ writes='sed[^|;&]*[[:space:]](-[a-zA-Z]*i|--in-place)|perl[^|;&]*[[:space:]]-[a-
 writes+="(>|>>|tee([[:space:]]+-a)?)[[:space:]]*[^[:space:]|;&]*${name//./\\.}|"
 writes+='(^|[[:space:];&|(])(rm|mv|cp|install|ln|truncate|dd)[[:space:]]|'
 writes+='git[[:space:]]+([^|;&]*[[:space:]])?(checkout|restore|apply|reset|stash|mv|rm|am|cherry-pick)([[:space:]]|$)'
-grep -qE "$writes" <<<"$command" && ask "$target"
+grep -qE "$writes" <<<"$command" && ! granted "$target" && refuse "$target"
 # An interpreter running code of its own (-c, a heredoc, another script) that
 # names the file may write it. Running the file itself only reads it.
 first=$(grep -oE '(^|[[:space:];&|(])(python3?|node|ruby|perl|php|awk)[[:space:]]+[^[:space:]|;&]+' <<<"$command" | head -1 | awk '{print $NF}')
-[ -n "$first" ] && [ "$(basename -- "$first")" != "$name" ] && ask "$target"
+[ -n "$first" ] && [ "$(basename -- "$first")" != "$name" ] && ! granted "$target" && refuse "$target"
 exit 0 # mutant-ok delete: the line above leaves status 0, so the script ends the same way

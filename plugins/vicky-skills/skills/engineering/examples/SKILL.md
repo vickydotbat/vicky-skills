@@ -53,4 +53,4 @@ Then the frame draws faster than with it switched off
 
 ## Changing an approved example
 
-An approved test is the contract. When the build shows an example is wrong, take the new wording back through step 3, then update the ticket and the test together. The plugin's hook asks the human before any edit to a file marked `approved-spec`.
+An approved test is the contract. When the build shows an example is wrong, take the new wording back through step 3, then update the ticket and the test together. In the `red-pen` draft, the section's location line names the example's test file (`tests/charm_approved_examples.test.sh:new`). The plugin's `approved-spec-guard` refuses every edit to an approved test until the user changes its section and closes the draft, which opens that file alone for edits.
