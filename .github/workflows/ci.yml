@@ -111,6 +111,36 @@ jobs:
         run: tests/checkout_guard_approved_examples.test.sh
       - name: Red-first hooks and mutation proof
         run: tests/red_first_approved_examples.test.sh
+      - name: Guard lets reads through
+        run: tests/guard_reads_approved_examples.test.sh
+      - name: Guard lets new files through
+        run: tests/guard_new_file_approved_examples.test.sh
+      - name: Cerebro mid-effort
+        run: tests/cerebro_mid_effort_approved_examples.test.sh
+      - name: Watch script
+        run: tests/watch_approved_examples.test.sh
+      - name: Watch script edges
+        run: tests/watch.test.sh
+      - name: Do receipts
+        run: tests/receipt_approved_examples.test.sh
+      - name: Mission brief
+        run: tests/mission_brief_approved_examples.test.sh
+      - name: Todo reminder
+        run: tests/todo_reminder_approved_examples.test.sh
+      - name: Todo reminder decisions
+        run: tests/todo-reminder.test.sh
+      - name: Red-pen samples
+        run: tests/red_pen_samples_approved_examples.test.sh
+      - name: Warp writes tests up front
+        run: tests/warp_up_front_approved_examples.test.sh
+      - name: Warp zero friction
+        run: tests/warp_zero_friction_approved_examples.test.sh
+      # The viewscreen band is a function-hook module; only Claude Code's own
+      # mod test kit can load it.
+      - name: Install Claude Code
+        run: npm install --global @anthropic-ai/claude-code@2.1.316
+      - name: Viewscreen band
+        run: tests/viewscreen_approved_examples.test.sh
       # The rule applies from the commit that added the check: an older
       # approved test was never asked to land red.
       - name: Red-first check
