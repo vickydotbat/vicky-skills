@@ -53,20 +53,19 @@ Use the reader's words, never code names. A second outcome is a second example.
 2. **Gather the substance**: names, numbers, commands, the actual reason. The
    record is the source: the ADR, the ticket thread, the commit, the code.
    Done when every claim in your notes is one you could source.
-3. **Draft** in the register's voice. Done when every fact in your notes is in the draft or cut on purpose.
+3. **Draft** in the register's voice, following the guiderails below. Done when every fact in your notes is in the draft or cut on purpose.
 4. **Cut.** Walk the draft one sentence at a time against the four cut rules
    below. Done when every sentence adds a fact or an action no other sentence
    gives, and no sentence joins two independent facts.
 5. **Lint.** Write the draft to a scratch file and run
    `python3 <this skill's folder>/scripts/lint-tells.py <file>`. It prints
-   `<line>: <tell>: <match>` for each tell a script can catch.
-   Rewrite every hit with that tell's fix from `TELLS.md`. A hit the text is
-   about, such as an emoji a doc explains, goes in a code span.
+   `<line>: <matched words>: <move to make>` for each hit.
+   Rewrite every hit by making that move. A hit the text is about, such as
+   an emoji a doc explains, goes in a code span.
    Run the lint again until it prints nothing. Done when it exits 0 on the
    draft.
-6. **Sweep.** Read [`TELLS.md`](TELLS.md) with the Read tool, the whole file,
-   every time. Done when you have checked the draft against every heading in
-   it and rewritten each hit.
+6. **Walk the guiderails.** Read the draft against each guiderail below, one
+   at a time. Done when every paragraph makes each move that applies to it.
 7. **Seat a reader panel** when the draft runs over about 400 words (`wc -w`). A shorter draft skips this step.
    Pick three to five seats from its audience, the readers who will act on it. A runbook or doc gets a seat that does a dry run, following each step as written.
    Lore gets a canon keeper, who checks it against the setting's other pages. Each seat reads the draft as that reader and lists the questions it is left with.
@@ -126,35 +125,69 @@ not.
 
 **Instructions are imperatives.** "Check it against the ticket."
 
-## Claude's metaphors
+## Guiderails
 
-Claude has a stock of figurative words that sound thoughtful and say nothing
-a plain word would not. Readers spot them on sight. Write the literal word:
+Each guiderail is a move to make while you draft. Step 6 walks the draft
+against every one.
 
-- *shape* (of the problem) → kind, form, layout
-- *names*, *naming* → says, calls, is
-- *lives in* → is in
-- *carries*, *holds*, *hands back* → has, keeps, returns
-- *doing the work*, *load-bearing* → say which part matters and why
-- *lands*, *hits* → say what it changed
-- *points to*, *moves*, *turns on* → shows, depends on
-- *surface*, *throughline*, *physics* → find, common thread, rules
-- *the trip*, *the journey* (of a change) → the steps
+**Words**
 
-Idioms a person says out loud survive: "rabbit hole", "dirt cheap", "final
-nail in the coffin". The test is whether the figure came from the user's
-writing or from you.
+- Say the concrete thing: what it does, how fast, for whom, with a number or
+  a name.
+- Write the literal word: *kind*, *says*, *is in*, *has*, *keeps*,
+  *returns*, *changed*, *shows*, *depends on*, *rules*, *steps*. Keep a
+  figure of speech only when it came from the user's writing, or a person
+  says it out loud ("rabbit hole", "dirt cheap").
+- Vary your words the way a person would: a pronoun, a shorter name, a
+  fresh verb. Keep a name the same where a change would make the reader
+  wonder whether it is a different thing.
+- Point a pronoun at the noun just before it. Write the noun when the reader
+  could ask "...that what?"
+- Write the view the author holds, in their words.
+- A list of three holds three real, distinct things. One measured fact
+  replaces three vague qualities.
+- Name the thing plainly, where the reader would otherwise decode a hint.
+- Use contractions in the showcase and lazy registers.
 
-## Three rules that outrank the tell list
+**Sentences**
 
-**The user's voice wins, then the house style.** Their writing beats the tell
-list. A document's own conventions (heading case, callout style, a declared
-voice) beat your defaults.
+- Start sentences on different words, and build them in different ways: a
+  question, a fragment, a clause first, a short line on its own.
+- End a sentence where the reader didn't expect it to go, at least once a
+  paragraph in the showcase register.
+- Let the flow break where the writer's thinking does: an aside, a second
+  thought, a short line left alone.
+- Give one reason when it motivates the reader's action, as a fact in its own
+  sentence.
+
+**The piece**
+
+- Put in the detail the writer knows from being there: a name, a place, a
+  number, a thing that went wrong.
+- Keep events in the order they happened, false starts included.
+- Let the part the author cares about run long, and the rest stay short.
+- Save the punchline or metaphor for the one place it lands.
+- An explainer gives the old rule, the new rule, then why. A plain reference
+  page gives short facts and instructions.
+
+**Format**
+
+- Follow the surrounding document's heading case. Ask when there is none.
+- Write the paragraph where ideas connect. Keep bullets for what a reader
+  scans or comes back to: rules, flags, options, steps.
+- Number only a real sequence.
+- Tables hold data with real columns.
+- Match the target format: Markdown, wiki HTML, plain text or code comment.
+
+## Three rules that outrank the guiderails
+
+**The user's voice wins, then the house style.** Their writing beats the
+guiderails. A document's own conventions (heading case, callout style, a
+declared voice) beat your defaults.
 
 **Content beats voice.** A sentence with a version number, a command or a
-measured result in it is hard to mistake for filler. Most tells appear where
-the writer had nothing specific to say, so the fix is usually to find the
-specific thing.
+measured result in it is hard to mistake for filler. Where a sentence feels
+empty, find the specific thing the writer knows and say it.
 
 **The human part is the thinking, never the surface.** Write spelling,
 grammar and punctuation correctly, and invent nothing: no planted typo, no
