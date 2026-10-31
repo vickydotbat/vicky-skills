@@ -49,6 +49,10 @@ check "when session A's checkout was switched from warp-b to fix-x since its las
 git -C "$repo" switch -q warp-b
 
 rm -rf "$data"; ON=false ran A "git status"; ON=false hook B PreToolUse "git switch fix-x"; off=$code
-check "with the checkout guard setting off, as it is by default, no branch switch is refused" \
-  '[ $off = 0 ] && [ ! -e "$data/checkouts" ] && jq -e ".userConfig.guard_checkout.default == false" "$root/plugins/vicky-skills/.claude-plugin/plugin.json" >/dev/null'
+check "with the checkout guard setting turned off, session B's switch of that checkout's branch runs" \
+  '[ $off = 0 ] && [ ! -e "$data/checkouts" ]'
+
+rm -rf "$data"; unset ON; ON= ran A "git status"; age A 600; ON= hook B PreToolUse "git switch fix-x"; fresh=$code
+check "on a fresh install with no checkout guard setting, session B's switch of a checkout session A used ten minutes ago is refused" \
+  '[ $fresh = 2 ] && jq -e ".userConfig.guard_checkout.default == true" "$root/plugins/vicky-skills/.claude-plugin/plugin.json" >/dev/null'
 exit $fail
