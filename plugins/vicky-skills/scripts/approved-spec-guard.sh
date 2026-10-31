@@ -36,11 +36,15 @@ while IFS= read -r word; do
   [ -n "$word" ] && approved "$word" && { target=$word; break; }
 done <<<"$words"
 if [ -z "$target" ]; then
-  # A script the command runs may name the file itself, and write it.
+  # A script the command runs may name the file itself, and write it. A file
+  # the command only reads, such as a workflow listing the tests, passes.
   while IFS= read -r word; do
     [ -f "$word" ] && [ "$(wc -c < "$word")" -lt 1000000 ] || continue
     grep -qiE 'approved_?examples' "$word" && ask "$word names an approved-examples file, and"
-  done <<<"$words"
+  done < <(tr ';&|()\n' '\n' <<<"$command" | awk '{
+    i = 1; while ($i ~ /^[A-Za-z_][A-Za-z0-9_]*=/) i++
+    if ($i ~ /^(bash|sh|zsh|source|\.|python3?|node|ruby|perl)$/) { i++; while ($i ~ /^-/) i++ }
+    print $i }' | tr -d "'\"")
   exit 0
 fi
 

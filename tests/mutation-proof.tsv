@@ -1,5 +1,5 @@
 after-push.sh	331d6fbcfe1f0e4c	8170a5632f2f4da7	7/7
-approved-spec-guard.sh	e08b7a841ffe2412	4d376eb064740727	46/46
+approved-spec-guard.sh	7455bef1610715b3	4d376eb064740727	46/46
 auto-tidy.sh	37372c9b2b9a5907	eae8e88e81b5996d	15/15
 checkout-guard.sh	539cbdd46a4a0461	0c828450e62b52e1	55/55
 draft-lock.sh	ebf828f5925afc95	e10b532d14c41a6e	52/52
