@@ -1,5 +1,6 @@
 after-push.sh	331d6fbcfe1f0e4c	92d8c01a00c43889	7/7
-approved-spec-guard.sh	0b25af1f6b376120	6b6d7d488600de8a	63/63
+approved-spec-guard.sh	6c87485ba45ed5fe	6b6d7d488600de8a	63/63
+approved-spec.sh	111516028b41c79a	1de403e836334dde	7/7
 auto-tidy.sh	37372c9b2b9a5907	6f9ec20e856a996d	15/15
 checkout-guard.sh	e7152557acf7a0f1	384ed7237c3ec529	67/67
 draft-lock.sh	fbb2971d540ee3e1	8b73c7711364694c	53/53
@@ -24,7 +25,7 @@ scratch-guard.sh	5d86e5061c016d17	151fd134aebae3bf	31/31
 skill-ledger.sh	4f6f1ba436f648ca	9dc2c8a8e08dba73	22/22
 spark-joy.sh	2dc8177679887c1f	0cafbbe48f9727be	24/24
 step-guard.sh	72466e6912496d03	2750c64c1c579fe7	42/42
-step-hint.sh	20d07a730799c4f5	1e6e8a445d5fd303	11/11
+step-hint.sh	a857d3cb191f2890	1e6e8a445d5fd303	11/11
 tea-stdin.awk	ddfdfc5257c31b06	439ddeaf944e1eb9	70/70
 tea-stdin.sh	1f69ec430c059eec	439ddeaf944e1eb9	15/15
 ticket-drift.sh	8518ba86b3c88168	f6566336cad8135a	26/26
