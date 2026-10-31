@@ -54,6 +54,8 @@ WORDS = [
     ("Fill it in, or cut the sentence.", r"\[(citation needed|TODO)\]|\bturn\d+search\d+\b"),
     ("Use words. Emoji go only where the house style uses them.", "[\U0001F300-\U0001FAFF☀-➿]"),
     ("Use straight quotes.", "[‘’“”]"),
+    ("Write the literal word, and say which part matters and why.",
+     r"\b(load-bearing|throughline|doing the heavy lifting)\b"),
 ]
 HEDGES = r"\b(may|might|could|potentially|possibly|perhaps|generally speaking|it could be argued|arguably|somewhat)\b"
 HEDGE_MOVE = "Keep one qualifier, or commit to the claim."
@@ -94,7 +96,8 @@ def lint(text):
                 hits.append((number, match.group(0), move))
         for sentence in re.split(r"(?<=[.!?])\s+", line):
             if len(re.findall(HEDGES, sentence, re.IGNORECASE)) >= 2:
-                hits.append((number, sentence.strip()[:60], HEDGE_MOVE))
+                # A colon in the match would split the line's fields.
+                hits.append((number, sentence.strip()[:60].replace(":", ""), HEDGE_MOVE))
     counts = []
     for number, block in paragraphs(lines):
         dashes = block.count("—")

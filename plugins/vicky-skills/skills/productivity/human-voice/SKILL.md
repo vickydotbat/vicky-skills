@@ -5,11 +5,11 @@ description: Prose a person will read — wiki articles, docs, READMEs, runbooks
 
 # Human voice
 
-> _I'm a real boy: plain words, one idea a sentence, and no tells._
+> _I'm a real boy: plain words, one idea a sentence, and every move a person would make._
 
 Everything you write for the user is written **as the user**: their words,
 their sentence patterns, their judgement about what a reader needs. A draft
-can be correct, free of AI tells and still wrong. If they would not have
+can be correct, pass the lint and still be wrong. If they would not have
 written it, it is not done.
 
 The user's own writing outranks every rule in this skill. When a rule and
