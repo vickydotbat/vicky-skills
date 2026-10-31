@@ -5,7 +5,7 @@ set -u
 # No test may reach the user's own editor.
 export VISUAL=true EDITOR=true
 root="$(cd "$(dirname "$0")/.." && pwd)"
-open="$root/plugins/vicky-skills/skills/productivity/red-pen/scripts/open-draft.sh"
+open="$root/plugins/vicky-skills/skills/productivity/interactive-page/scripts/open-draft.sh"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 git init -q "$dir/repo"
 grants="$dir/repo/.git/approved-spec-grants"
