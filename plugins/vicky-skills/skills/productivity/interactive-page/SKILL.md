@@ -22,6 +22,7 @@ The user answers in the browser, never in a Markdown editor. The file stays the 
 | each ```` ```text ```` block, again | a comment box under it, written back as `Comment: <text>` |
 | a run of `- ( ) <option>` lines, `(x)` on your pick | one choice: the user clicks an option, written back as `(x)` |
 | the end of every page | a comment box, written back under a closing `## Anything else` heading |
+| two or more `- [ ] approve` lines | an "approve all" box beside Done, which ticks every one |
 
 Every other line shows as text. A Done that changes nothing leaves the file byte for byte as it was.
 

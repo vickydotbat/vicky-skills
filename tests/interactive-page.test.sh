@@ -153,6 +153,13 @@ finish
 check "choosing Other with a note brings back Other and the note, and the page listens on this machine only" \
   '[ "$code" = 200 ] && grep -qx -- "- (x) Other" "$scratch/k.md" && grep -qx -- "- ( ) One" "$scratch/k.md" && grep -qx "   notes: Neither, ask me later" "$scratch/k.md" && [ "$bound" = "127.0.0.1:$port" ]'
 
+printf '## A\na:1\n- [ ] approve\n' >"$scratch/one-box.md"
+printf '## A\na:1\n- [ ] approve\n\n## B\nb:1\n- [ ] approve\n' >"$scratch/two-box.md"
+start "$scratch/one-box.md"; one_box=$(curl -s "$url"); post /done >/dev/null; finish
+start "$scratch/two-box.md"; two_box=$(curl -s "$url"); post /done >/dev/null; finish
+check "approve all shows on a page with two approve boxes, and not on a page with one" \
+  'grep -q "name=\"approve_all\"" <<<"$two_box" && ! grep -q "approve_all" <<<"$one_box"'
+
 python3 -I "$page" >/dev/null 2>&1; none=$?
 python3 -I "$page" a b >/dev/null 2>&1; two=$?
 check "no file, or two, is a usage error" '[ "$none" = 2 ] && [ "$two" = 2 ]'
