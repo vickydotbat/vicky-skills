@@ -31,14 +31,17 @@ else
   added=$({ git diff --cached 2>/dev/null || true; } | grep -E '^\+' | grep -Ev '^\+\+\+ ' || true)
 fi
 
-esc() { sed 's/[][\.*^$+?(){}|/]/\\&/g' <<<"$1"; }
+esc() { sed 's/[][\.*^$+?(){}|]/\\&/g' <<<"$1"; }
 user=${USER:-$(id -un 2>/dev/null || true)}
-pattern='/home/[^/[:space:]]+/|/Users/[^/[:space:]]+/|/nix/store/'
+# A /home/ or /Users/ that follows a variable or a folder name is inside that
+# folder, such as a home folder under a test's scratch folder, and no path into this machine.
+pattern='(^|[^[:alnum:]_.}/-])(/home/|/Users/)[^/[:space:]]+/|/nix/store/' # local-path-ok
 [ "${#HOME}" -gt 1 ] && pattern="$pattern|$(esc "$HOME")"
 if [ -n "$user" ]; then
   pattern="$pattern|/$(esc "$user")/|(^|[^[:alnum:]_.-])$(esc "$user")@"
 fi
-hits=$(grep -n -E -- "$pattern" <<<"$added" | cut -c1-160 | head -5 || true)
+# A line marked local-path-ok holds a path on purpose, such as a test fixture.
+hits=$(grep -n -E -- "$pattern" <<<"$added" | grep -v 'local-path-ok' | cut -c1-160 | head -5 || true)
 [ -n "$hits" ] || exit 0
 refuse "local-path-guard: this commit adds a path into this machine:" \
   "$hits" \

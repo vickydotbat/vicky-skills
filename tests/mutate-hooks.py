@@ -41,7 +41,7 @@ import time
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SCRIPTS = os.path.join(ROOT, "plugins", "vicky-skills", "scripts")
 PROOF = os.path.join(ROOT, "tests", "mutation-proof.tsv")
-GIT_GUARDS = ["push-behind-guard", "local-path-guard", "checkout_guard_approved_examples", "red_first_approved_examples"]
+GIT_GUARDS = ["push-behind-guard", "merged-branch-guard", "local-path-guard", "checkout_guard_approved_examples", "red_first_approved_examples"]
 TESTS = {
     "after-push.sh": ["after-push"],
     "approved-spec-guard.sh": ["approved-spec-guard", "approved_tests_yes_approved_examples", "guard_reads_approved_examples", "guard_new_file_approved_examples"],
@@ -51,6 +51,7 @@ TESTS = {
     "gamma-shift.sh": ["gamma-shift"],
     "gate-notify.sh": ["gate-notify"],
     "git-hook-lib.sh": GIT_GUARDS,
+    "heredoc-strip.awk": GIT_GUARDS + ["pr-guard"],
     "issue-guard.sh": ["issue-guard"],
     "local-path-guard.sh": ["local-path-guard"],
     "pr-guard.sh": ["pr-guard"],
@@ -69,6 +70,8 @@ TESTS = {
     "todo-reminder.sh": ["todo-reminder", "todo_reminder_approved_examples"],
     "step-guard.sh": ["step-guard", "step_guard_approved_examples", "step_guard_gitea_approved_examples"],
     "step-hint.sh": ["step_guard_approved_examples"],
+    "lesson-hint.sh": ["lesson-hint", "engrave_approved_examples"],
+    "merged-branch-guard.sh": ["merged-branch-guard", "merged_branch_approved_examples"],
 }
 # The shared exit-code test reaches every hook and runs in a fraction of a second.
 TESTS = {name: ["hook-exits"] + tests for name, tests in TESTS.items()}

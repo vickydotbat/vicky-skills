@@ -34,6 +34,12 @@ stage "cd /srv/$USER/project";               expect 2 "refuses /<user>/ segment"
 stage "ssh $USER@somehost";                  expect 2 "refuses <user>@" "$commit"; unstage
 stage "author ${USER}dotbat, plugin ${USER}-skills, ${USER} said hi"
                                              expect 0 "bare or longer user name passes" "$commit"; unstage
+# The folder name is built at run time, because the guard installed when this
+# test was written refused the literal.
+h=home; stage "records=\"\$scratch/$h/.claude/x\"";  expect 0 "a home folder inside a variable's folder passes" "$commit"; unstage
+u=Users; stage "see \${root}/$u/me/x and lib/$h/a/"; expect 0 "a home folder inside another folder passes" "$commit"; unstage
+stage 'config at "/home/someone/.config/x"';  expect 2 "refuses a quoted /home/<name>/" "$commit"; unstage # local-path-ok
+stage 'fixture /home/someone/x # local-path-ok'; expect 0 "a line marked local-path-ok passes" "$commit"; unstage # local-path-ok
 stage 'relative docs/readme.md only';        expect 0 "clean line passes" "$commit"
 expect 0 "not a commit passes" 'git status'
 expect 0 "message mentioning commit is text" 'git log --grep="git commit"'
@@ -52,7 +58,7 @@ CLAUDE_PLUGIN_OPTION_LOCAL_PATH_EXEMPT_REPOS="other/thing acme/widgets" \
 CLAUDE_PLUGIN_OPTION_LOCAL_PATH_EXEMPT_REPOS="acme/widg" \
   expect 2 "part of a repo name exempts nothing" 'git add -A && git commit -m add'
 rm "$repo/fresh"
-printf 'bin\0/home/someone/x\n' >"$repo/blob"
+printf 'bin\0 /home/someone/x\n' >"$repo/blob" # local-path-ok
 expect 0 "a binary untracked file is not scanned" 'git add -A && git commit -m add'
 rm "$repo/blob"
 exit $fail

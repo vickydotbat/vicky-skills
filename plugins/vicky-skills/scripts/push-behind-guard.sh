@@ -14,7 +14,7 @@ grep -Eq 'git[[:space:]].*push([[:space:]]|$)' <<<"$code" || exit 0
 grep -Eq -- '--delete|[[:space:]]-d([[:space:]]|$)' <<<"$code" && exit 0
 
 current=$(git symbolic-ref --short -q HEAD) || current=""
-default_ref=$(git symbolic-ref -q --short refs/remotes/origin/HEAD 2>/dev/null || true)
+default_ref=$(default_ref_of origin)
 [ -n "$default_ref" ] || exit 0
 dflt=${default_ref#origin/}
 fetched=""

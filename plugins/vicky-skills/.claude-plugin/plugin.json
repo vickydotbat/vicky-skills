@@ -9,6 +9,7 @@
     "./skills/engineering/away-team",
     "./skills/engineering/captains-log",
     "./skills/engineering/do",
+    "./skills/engineering/engrave",
     "./skills/engineering/examples",
     "./skills/engineering/first-contact",
     "./skills/engineering/gamma-shift",
@@ -199,6 +200,18 @@
       "type": "boolean",
       "title": "Short polls",
       "description": "Refuse a wait that sleeps more than 30 seconds at a time, polls more than 60 times, or loops in the foreground instead of using watch.sh.",
+      "default": false
+    },
+    "lesson_hint": {
+      "type": "boolean",
+      "title": "Lesson hint",
+      "description": "When your message teaches a lesson, such as \"codify that\" or \"for the future\", send the agent through engrave before it replies. The full phrase list is in scripts/lesson-hint.sh.",
+      "default": false
+    },
+    "guard_merged_branch": {
+      "type": "boolean",
+      "title": "No commits on a merged branch",
+      "description": "Refuse a commit or push on a branch whose remote branch is gone, and name the fresh branch to move to and the commits to carry over.",
       "default": false
     }
   }

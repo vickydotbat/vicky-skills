@@ -1,6 +1,6 @@
 ---
 name: loose-ends
-description: Settle every ticket an effort touched and make the pull request body true of the final diff. Use before calling an effort done, after every push to an open pull request, and after a merge.
+description: Settle every ticket an effort touched, make the pull request body true of the final diff, and engrave each snag the effort hit. Use before calling an effort done, after every push to an open pull request, and after a merge.
 ---
 
 # Loose ends
@@ -22,6 +22,7 @@ New developers pick work from the tracker and trust what a ticket says. So an ef
 
    A comment settles nothing. Done when every ticket on the list has a verdict in the tracker or the body.
 3. **Make the body true.** Read the pull request body against `git diff <base>...HEAD` sentence by sentence. Rewrite a superseded sentence in place with `human-voice`, never under an "update" heading. Done when every sentence matches the diff.
-4. **After the merge**, close by hand any ticket still open that the pull request named, with a comment naming the pull request. Done when the tracker shows each one closed.
+4. **Engrave the snags**, once, before you call the effort done. List each snag the effort hit: a red check, a crash, a retry, or a correction from the user. Run `engrave` on each one. Done when the report names each snag with the law built for it, or says why it needs none.
+5. **After the merge**, close by hand any ticket still open that the pull request named, with a comment naming the pull request. Done when the tracker shows each one closed.
 
 Repeat step 3 after every push.

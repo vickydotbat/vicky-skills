@@ -31,11 +31,15 @@ git rev-parse --git-dir >/dev/null 2>&1 || exit 0 # mutant-ok delete: outside a 
 # The command with quoted strings and heredoc bodies cut out, so a commit
 # message that mentions `git push` is text, not a command.
 # shellcheck disable=SC2034 # read by the guard that sources this
-code=$(awk '
-  tag != "" { t = $0; sub(/^\t+/, "", t); if (t == tag) tag = ""; next }
-  match($0, /<<-?[[:space:]]*["\047]?[A-Za-z_][A-Za-z0-9_]*/) {
-    tag = substr($0, RSTART, RLENGTH); sub(/^<<-?[[:space:]]*["\047]?/, "", tag)
-  }
-  { print }
-' <<<"$command" | sed -zE "s/'[^']*'//g; s/\"([^\"\\\\]|\\\\.)*\"//g")
+code=$(awk -f "$(dirname "${BASH_SOURCE[0]}")/heredoc-strip.awk" <<<"$command" | sed -zE "s/'[^']*'//g; s/\"([^\"\\\\]|\\\\.)*\"//g")
 refuse() { printf "%s\n" "$@" >&2; exit 2; }
+# The remote's default branch as "<remote>/<name>": its recorded HEAD, else a
+# main or master it has. Empty when none is known.
+default_ref_of() {
+  local ref name # mutant-ok delete: a local declaration: no caller reads these names
+  ref=$(git symbolic-ref -q --short "refs/remotes/$1/HEAD" 2>/dev/null)
+  for name in main master; do
+    [ -z "$ref" ] && git rev-parse -q --verify "refs/remotes/$1/$name" >/dev/null && ref="$1/$name"
+  done
+  printf '%s' "$ref"
+}
