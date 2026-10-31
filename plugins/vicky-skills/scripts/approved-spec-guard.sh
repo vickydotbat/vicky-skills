@@ -39,6 +39,11 @@ fi
 command=$(jq -r '.tool_input.command // empty' <<<"$payload")
 cwd=$(jq -r '.cwd // empty' <<<"$payload")
 [ -n "$cwd" ] && cd "$cwd" 2>/dev/null
+# A leading cd, such as into a worktree, sets where the command's files are.
+if [[ $command =~ ^[[:space:]]*cd[[:space:]]+([^[:space:]\;\&\|]+) ]]; then
+  dir=${BASH_REMATCH[1]//[\"\']/}
+  cd "$dir" 2>/dev/null
+fi
 # Each word of the command, quotes and shell punctuation stripped.
 words=$(tr -s " \t\n;&|()<>'\"=," '\n' <<<"$command")
 target=""

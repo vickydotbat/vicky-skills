@@ -33,6 +33,8 @@ jobs:
         run: tests/plugin-layout.test.sh
       - name: Approved-spec guard
         run: tests/approved-spec-guard.test.sh
+      - name: Approved-spec guard follows a leading cd
+        run: tests/approved_spec_guard_cd_approved_examples.test.sh
       - name: Skill steps
         run: tests/skill-steps.test.sh
       - name: Draw chart
