@@ -20,5 +20,5 @@ check "the agent never asks where its tests go" \
 check "every test is named after an approved example, and no other test exists" \
   'grep -q "Write no test that no approved example names" "$do" && ! grep -q "tests at its seams" "$ex"'
 check "a planted bug no approved test catches comes back as a new example" \
-  'grep -q "missing example" "$mu" && grep -q "survivor.*missing example" "$do"'
+  'grep -q "Answer every survivor\*\*: a missing example" "$mu" && grep -q "survivor.*missing example" "$do"'
 exit $fail
