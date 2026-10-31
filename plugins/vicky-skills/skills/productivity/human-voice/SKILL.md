@@ -155,8 +155,9 @@ against every one.
   question, a fragment, a clause first, a short line on its own.
 - End a sentence where the reader didn't expect it to go, at least once a
   paragraph in the showcase register.
-- Let the flow break where the writer's thinking does: an aside, a second
-  thought, a short line left alone.
+- In the showcase register, let the flow break where the writer's thinking
+  does: an aside, a second thought, a short line left alone. Plain stays
+  free of asides.
 - Give one reason when it motivates the reader's action, as a fact in its own
   sentence.
 
