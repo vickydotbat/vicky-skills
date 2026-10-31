@@ -8,11 +8,14 @@ answers:
 
   a ```text block            editable text           (text.N)
   a "- [ ] approve" line     a box to tick           (approve.N)
+  a "- [x] <label>" line     a box to tick, labelled (box.N)
+  a "![name](chart.svg)" line the chart drawn inline, beside the file
   a "1. [ ] check" line      one box per mark        (mark.N: x, ~, -, or blank)
   a "notes:" or "- TAG:" line a line of text         (field.N)
   each ```text block        a comment box under it  (comment.N)
   "- ( ) option" lines       one choice per run of them (choice.N)
   the end of the page        a comment box           (note)
+  two or more approve boxes  "approve all" beside Done, ticking every one (approve_all)
 
 When the user presses Done, the answers are written back into the file in
 its own form, and the script exits 0. A comment lands as a "Comment: ..."
@@ -24,6 +27,7 @@ stays as it was.
 """
 import html
 import http.server
+import os
 import re
 import sys
 import threading
@@ -37,17 +41,26 @@ body{font-family:sans-serif;margin:1.5rem;max-width:60rem}
 textarea{width:100%;min-height:4rem;font-family:monospace}
 .text{white-space:pre-wrap;margin:.2rem 0}
 input[type=text]{width:70%}
-button{font-size:1.1rem;padding:.4rem 1.2rem}"""
+button{font-size:1.1rem;padding:.4rem 1.2rem}
+.chart{margin-bottom:2rem;overflow-x:auto}
+.chart svg{max-width:100%;height:auto;cursor:zoom-in;background:#fff}"""
+# Each click zooms a chart to 2x, then 3x the window width, then back to fit.
+ZOOM = """function zoom(c){const s=c.querySelector("svg"),n=(+c.dataset.z||1)%3+1;c.dataset.z=n;
+s.style.maxWidth=n>1?"none":"";s.style.width=n>1?c.clientWidth*n+"px":""}"""
 CHECK = re.compile(r"^(\d+\. )\[(.)\] (.*)$")
 FIELD = re.compile(r"^(\s*(?:notes|- [A-Z]+)):\s?(.*)$")
 APPROVE = re.compile(r"^- \[( |x)\] approve$")
 CHOICE = re.compile(r"^- \(( |x)\) (.*)$")
+BOX = re.compile(r"^- \[( |x)\] (.+)$")
+# A chart is an SVG file in the same folder as the page file.
+CHART = re.compile(r"^!\[[^\]]*\]\(([^/\\()\s]+\.svg)\)$")
 
 
-def parse(text):
+def parse(text, folder):
     """The file as parts: ("line", s), ("block", [lines]), ("approve", ticked),
-    ("check", prefix, mark, rest), ("field", label, value), ("comment",),
-    ("choice", question, picked, option)."""
+    ("box", ticked, label), ("chart", line, svg), ("check", prefix, mark, rest),
+    ("field", label, value), ("comment",), ("choice", question, picked, option).
+    A chart line whose file is missing stays a plain line."""
     parts, lines, i, question = [], text.split("\n"), 0, -1
     while i < len(lines):
         line = lines[i]
@@ -64,6 +77,11 @@ def parse(text):
             continue
         if m := APPROVE.match(line):
             parts.append(("approve", m.group(1) == "x"))
+        elif m := BOX.match(line):
+            parts.append(("box", m.group(1) == "x", m.group(2)))
+        elif (m := CHART.match(line)) and os.path.isfile(svg := os.path.join(folder, m.group(1))):
+            with open(svg) as handle:
+                parts.append(("chart", line, handle.read()))
         elif m := CHECK.match(line):
             parts.append(("check", m.group(1), m.group(2), m.group(3)))
         elif m := FIELD.match(line):
@@ -90,7 +108,7 @@ def numbered(parts):
 
 def page(name, parts):
     e = html.escape
-    out = [f"<!doctype html><meta charset=utf-8><title>{e(name)}</title><style>{STYLE}</style>",
+    out = [f"<!doctype html><meta charset=utf-8><title>{e(name)}</title><style>{STYLE}</style><script>{ZOOM}</script>",
            '<form method=post action="/done">']
     for part, n in numbered(parts):
         kind = part[0]
@@ -107,6 +125,11 @@ def page(name, parts):
         elif kind == "approve":
             ticked = " checked" if part[1] else ""
             out.append(f'<label><input type=checkbox name="approve.{n}"{ticked}> approve</label>')
+        elif kind == "box":
+            ticked = " checked" if part[1] else ""
+            out.append(f'<label><input type=checkbox name="box.{n}"{ticked}> {e(part[2])}</label><br>')
+        elif kind == "chart":
+            out.append(f'<div class=chart onclick="zoom(this)">{part[2]}</div>')
         elif kind == "check":
             radios = "".join(
                 f'<label><input type=radio name="mark.{n}" value="{e(m)}"{" checked" if m == part[2] else ""}>[{e(m)}]</label> '
@@ -120,7 +143,10 @@ def page(name, parts):
             ticked = " checked" if part[2] else ""
             out.append(f'<label><input type=radio name="choice.{part[1]}" value="{e(part[3])}"{ticked}> {e(part[3])}</label><br>')
     out.append('<h2>Anything else</h2><textarea name="note" placeholder="Comment"></textarea>')
-    out.append("<p><button type=submit>Done</button></p></form>")
+    # Two or more approve boxes get one more beside Done that ticks them all.
+    approve_all = ('<label><input type=checkbox name="approve_all"> approve all</label> '
+                   if sum(part[0] == "approve" for part in parts) > 1 else "")
+    out.append(f"<p>{approve_all}<button type=submit>Done</button></p></form>")
     return "\n".join(out)
 
 
@@ -135,7 +161,7 @@ def answered(parts, form):
     out = []
     for part, n in numbered(parts):
         kind = part[0]
-        if kind == "line":
+        if kind in ("line", "chart"):
             out.append(part[1])
         elif kind == "block":
             text = got(f"text.{n}", "\n".join(part[1])).rstrip("\n")
@@ -146,7 +172,9 @@ def answered(parts, form):
             out.extend(part[1] if text == "\n".join(part[1]).rstrip("\n")
                        else [" ```" if typed == "```" else typed for typed in text.split("\n")])
         elif kind == "approve":
-            out.append(f"- [{'x' if f'approve.{n}' in form else ' '}] approve")
+            out.append(f"- [{'x' if f'approve.{n}' in form or 'approve_all' in form else ' '}] approve")
+        elif kind == "box":
+            out.append(f"- [{'x' if f'box.{n}' in form else ' '}] {part[2]}")
         elif kind == "check":
             mark = got(f"mark.{n}", part[2])
             out.append(f"{part[1]}[{mark if mark in MARKS else part[2]}] {part[3]}")
@@ -168,11 +196,10 @@ def answered(parts, form):
     return "\n".join(out)
 
 
-def serve_form(text, path, on_post, timeout, tag="page", open_browser=True, limit=LIMIT):
+def serve_form(text, path, on_post, timeout):
     """Serve the page `text` on this machine only and wait for one POST to
     `path`. `on_post` takes the posted body, URL-encoded, and returns nothing.
-    Returns False when no answer came before the timeout. lay-course's
-    answer-page.py serves its planning pages through this too."""
+    Returns False when no answer came before the timeout."""
     done = threading.Event()
     origin = ""
 
@@ -198,7 +225,7 @@ def serve_form(text, path, on_post, timeout, tag="page", open_browser=True, limi
 
         def do_POST(self):
             size = int(self.headers.get("Content-Length") or 0)
-            if self.path != path or not 0 <= size <= limit or done.is_set() or foreign(self.headers):
+            if self.path != path or not 0 <= size <= LIMIT or done.is_set() or foreign(self.headers):
                 self.reply(400, b"Not taken.")
                 return
             on_post(self.rfile.read(size).decode())
@@ -210,10 +237,9 @@ def serve_form(text, path, on_post, timeout, tag="page", open_browser=True, limi
     threading.Thread(target=server.serve_forever, daemon=True).start()
     origin = f"http://127.0.0.1:{server.server_address[1]}"
     url = origin + "/"
-    print(f"{tag}: open {url}", file=sys.stderr, flush=True)
-    if open_browser:
-        if not webbrowser.open(url):
-            print(f"{tag}: no browser opened; give the user {url}", file=sys.stderr, flush=True)
+    print(f"page: open {url}", file=sys.stderr, flush=True)
+    if not webbrowser.open(url):
+        print(f"page: no browser opened; give the user {url}", file=sys.stderr, flush=True)
     answered_in_time = done.wait(timeout)
     server.shutdown()
     return answered_in_time
@@ -222,7 +248,7 @@ def serve_form(text, path, on_post, timeout, tag="page", open_browser=True, limi
 def serve(path, timeout):
     with open(path) as handle:
         original = handle.read()
-    parts = parse(original)
+    parts = parse(original, os.path.dirname(os.path.abspath(path)))
 
     def write_back(body):
         new = answered(parts, urllib.parse.parse_qs(body, keep_blank_values=True))

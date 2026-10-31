@@ -6,7 +6,7 @@ set -u
 export VISUAL=true EDITOR=true
 root="$(cd "$(dirname "$0")/.." && pwd)"
 scripts="$root/plugins/vicky-skills/scripts"
-opener="$root/plugins/vicky-skills/skills/productivity/red-pen/scripts/open-draft.sh"
+opener="$root/plugins/vicky-skills/skills/productivity/interactive-page/scripts/open-draft.sh"
 dir=$(mktemp -d); trap 'kill $(jobs -p) 2>/dev/null; rm -rf "$dir"' EXIT
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }

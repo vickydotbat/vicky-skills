@@ -6,7 +6,7 @@ set -u
 export VISUAL=true EDITOR=true
 root="$(cd "$(dirname "$0")/.." && pwd)"
 hook="$root/plugins/vicky-skills/scripts/draft-lock.sh"
-opener="$root/plugins/vicky-skills/skills/productivity/red-pen/scripts/open-draft.sh"
+opener="$root/plugins/vicky-skills/skills/productivity/interactive-page/scripts/open-draft.sh"
 dir=$(mktemp -d); trap 'kill "$(head -1 "$lock" 2>/dev/null)" 2>/dev/null; rm -rf "$dir"' EXIT
 repo="$dir/repo"; git init -q "$repo"; mkdir -p "$repo/scripts"; printf 'x\n' > "$repo/scripts/c.sh"
 printf '#!/bin/sh\nexec sleep 30\n' > "$dir/editor"; chmod +x "$dir/editor"

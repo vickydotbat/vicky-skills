@@ -7,7 +7,7 @@ set -u
 export VISUAL=true EDITOR=true
 root="$(cd "$(dirname "$0")/.." && pwd)"
 guard="$root/plugins/vicky-skills/scripts/approved-spec-guard.sh"
-open="$root/plugins/vicky-skills/skills/productivity/red-pen/scripts/open-draft.sh"
+open="$root/plugins/vicky-skills/skills/productivity/interactive-page/scripts/open-draft.sh"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 git init -q "$dir/repo"; mkdir -p "$dir/repo/tests"
 printf 'echo ok\n' > "$dir/repo/tests/charm_approved_examples.test.sh"

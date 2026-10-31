@@ -134,6 +134,32 @@ finish
 check "a negative length is refused, and a typed fence line can't close its block early" \
   '[ "$negative" = 400 ] && [ "$code" = 200 ] && grep -qx " \`\`\`" "$scratch/i.md" && [ "$(grep -A3 -x "Before" "$scratch/i.md" | tail -1)" = "\`\`\`" ]'
 
+mkdir -p "$scratch/sub"; echo '<svg id=c></svg>' >"$scratch/c.svg"; echo '<svg id=d></svg>' >"$scratch/sub/d.svg"
+printf '# Plan\n\n![Here](c.svg)\n![Deeper](sub/d.svg)\n- [ ] K-1 star: one\n' >"$scratch/j.template"
+cp "$scratch/j.template" "$scratch/j.md"
+start "$scratch/j.md"
+html=$(curl -s "$url")
+code=$(post /done)
+finish
+check "a chart line comes back as written, a chart outside the page's folder stays text, and an unticked box shows unticked" \
+  '[ "$code" = 200 ] && grep -q "<svg id=c>" <<<"$html" && ! grep -q "<svg id=d>" <<<"$html" && grep -qF "![Deeper](sub/d.svg)" <<<"$html" && grep -qF "type=checkbox name=\"box.0\"> K-1 star: one" <<<"$html" && cmp -s "$scratch/j.template" "$scratch/j.md"'
+
+printf '# Q\n\n## Q1: Which?\n- (x) One\n- ( ) Two\n- ( ) Other\n   notes:\n' >"$scratch/k.md"
+start "$scratch/k.md"
+port=${url##*:}; port=${port%/}
+bound=$(ss -ltnH "sport = :$port" 2>/dev/null | awk '{print $4}')
+code=$(post /done choice.0=Other field.0="Neither, ask me later")
+finish
+check "choosing Other with a note brings back Other and the note, and the page listens on this machine only" \
+  '[ "$code" = 200 ] && grep -qx -- "- (x) Other" "$scratch/k.md" && grep -qx -- "- ( ) One" "$scratch/k.md" && grep -qx "   notes: Neither, ask me later" "$scratch/k.md" && [ "$bound" = "127.0.0.1:$port" ]'
+
+printf '## A\na:1\n- [ ] approve\n' >"$scratch/one-box.md"
+printf '## A\na:1\n- [ ] approve\n\n## B\nb:1\n- [ ] approve\n' >"$scratch/two-box.md"
+start "$scratch/one-box.md"; one_box=$(curl -s "$url"); post /done >/dev/null; finish
+start "$scratch/two-box.md"; two_box=$(curl -s "$url"); post /done >/dev/null; finish
+check "approve all shows on a page with two approve boxes, and not on a page with one" \
+  'grep -q "name=\"approve_all\"" <<<"$two_box" && ! grep -q "approve_all" <<<"$one_box"'
+
 python3 -I "$page" >/dev/null 2>&1; none=$?
 python3 -I "$page" a b >/dev/null 2>&1; two=$?
 check "no file, or two, is a usage error" '[ "$none" = 2 ] && [ "$two" = 2 ]'
