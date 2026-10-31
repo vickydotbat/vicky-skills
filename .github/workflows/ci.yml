@@ -79,6 +79,8 @@ jobs:
         run: tests/merged-branch-guard.test.sh
       - name: Merged-branch approved examples
         run: tests/merged_branch_approved_examples.test.sh
+      - name: Sup lessons approved examples
+        run: tests/sup_lessons_approved_examples.test.sh
       - name: Poll pace
         run: tests/poll-pace.test.sh
       - name: Gamma-shift hook
