@@ -25,7 +25,7 @@ Read the repo's `TESTING_STANDARDS.md` first: it wins over this skill's defaults
 
 The user may be away once the examples are approved, and a question or an open editor would stall the build until they return. From step 3 on, keep going and hold everything for the end:
 
-- **Drafts**, missing examples included: add each to the effort's `red-pen` draft file. Write other draft text at its destination and commit it there, unless the repo's guide keeps unread text out of commits: then leave those hunks unstaged until `make-it-so`. Leave the draft file closed.
+- **Drafts**, missing examples included: add each to the effort's `red-pen` draft file. Each player-facing or UI text the build writes or changes is a draft: add its section the moment you write it, and never list it as unread in the pull request body or ask for it in an `over-to-you` item. Write other draft text at its destination and commit it there, unless the repo's guide keeps unread text out of commits: then leave those hunks unstaged until `make-it-so`. Leave the draft file closed.
 - **Questions**: A choice that no example settles and that changes no behaviour: take your pick, build on, and name it in the report. For any other, take the answer cheapest to undo, build on it, and add a line to a **Check these** list in the pull request body: the question, your answer, and the commit that holds it.
 - **A guess too costly to undo, or an approved example the build shows is wrong**: park that slice. Add it to Check these with what it waits on, and build the rest.
 
