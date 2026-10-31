@@ -28,6 +28,15 @@ allow 'gh issue view 12 --comments'
 allow 'gh pr view 12 -c'
 allow 'gh issue view 12 --json title,body,comments'
 allow 'gh issue view 12 --web'
+allow "cat > notes.md <<'EOF'
+Read a thread with gh issue view 12, never the body alone
+EOF"
+allow "grep -n 'gh issue view 12' notes.md"
+allow 'echo "tea issues 12" >> notes.md'
+refuse "cat > notes.md <<'EOF'
+text
+EOF
+gh issue view 12"
 allow 'tea issues 12 --comments'
 allow 'tea pulls 3 --comments'
 allow 'gh issue list'

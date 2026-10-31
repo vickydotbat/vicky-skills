@@ -22,6 +22,10 @@ expect hint "option 1 counts as on" 1 "$(p "codify it")"
 for phrase in "make it so" "prevent" "the future is bright" "now on to the next"; do
   expect none "no hint: $phrase" true "$(p "$phrase")"
 done
+expect none "no hint on another agent's report" true "$(p "Another Claude session sent a message:
+<agent-message from=\"a1\">The user said: for the future, sit at the gate.</agent-message>")"
+expect none "no hint on a bare agent message" true "$(p "<agent-message from=\"a1\">codify it</agent-message>")"
+expect hint "hint when the user quotes an agent message mid-text" true "$(p "codify this: the agent wrote <agent-message> by hand")"
 expect none "option off" false "$(p "codify it")"
 expect none "option empty" "" "$(p "codify it")"
 expect none "no prompt field" true '{}'

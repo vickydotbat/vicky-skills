@@ -16,6 +16,8 @@ cwd=$(jq -r '.cwd // empty' <<<"$payload")
 tool=$(jq -r '.tool_name // empty' <<<"$payload")
 if [ "$tool" = Bash ]; then
   command=$(jq -r '.tool_input.command // empty' <<<"$payload")
+  # A stream sent to another stream (2>&1) or to /dev/null writes no file.
+  command=$(sed -E 's#[0-9&]*>>?[[:space:]]*(&[0-9-]|/dev/null)##g' <<<"$command")
   # A read-only command passes; a write form sends it to the check below.
   grep -qE 'sed[^|;&]*[[:space:]](-[a-zA-Z]*i|--in-place)|perl[^|;&]*[[:space:]]-[a-zA-Z]*i|>|(^|[[:space:];&|(])(tee|rm|mv|cp|install|ln|truncate|dd|touch|mkdir|python3?|node|ruby|perl|patch)([[:space:]]|$)|git[[:space:]]+([^|;&]*[[:space:]])?(commit|checkout|restore|apply|reset|stash|merge|rebase|mv|rm|am|cherry-pick|switch)([[:space:]]|$)' <<<"$command" || exit 0
   # The command writes inside the checkout unless every path it names is outside.

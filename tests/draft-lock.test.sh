@@ -19,6 +19,9 @@ expect() { # name want-exit want-in-message json
 }
 bash_in() { jq -n --arg c "$1" --arg d "$repo" '{tool_name: "Bash", tool_input: {command: $c}, cwd: $d}'; }
 expect "a read while the draft is open runs" 0 "" "$(bash_in 'cat scripts/c.sh')"
+expect "a read that sends stderr to stdout runs" 0 "" "$(bash_in 'grep x scripts/c.sh 2>&1 | tail -3')"
+expect "a read that drops its output in /dev/null runs" 0 "" "$(bash_in 'grep -q x scripts/c.sh >/dev/null 2> /dev/null')"
+expect "a write beside a 2>&1 is still refused" 2 "$repo waits" "$(bash_in 'echo y > scripts/c.sh 2>&1')"
 expect "an edit with no path runs" 0 "" "$(jq -n --arg d "$repo" '{tool_name: "Edit", tool_input: {}, cwd: $d}')"
 expect "a refused shell write names the checkout and the draft" 2 "$repo waits" "$(bash_in 'echo y > scripts/c.sh')"
 grep -qF "$dir/draft.md" "$dir/err" || { echo "FAIL the refusal names the draft"; fail=1; }
