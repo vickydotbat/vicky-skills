@@ -19,6 +19,10 @@ gitdir=$(git rev-parse --absolute-git-dir 2>/dev/null) || exit 0 # mutant-ok: gi
 event=$(jq -r '.hook_event_name // empty' <<<"$input" 2>/dev/null)
 case "$event" in SessionStart|PostToolUse) ;; *) exit 0 ;; esac
 if [ "$event" = PostToolUse ]; then
+  over=$(sed '/^# springboard start/,/^# springboard end/d' .todo 2>/dev/null | awk 'length > 80')
+  if [ -n "$over" ] && grep -q '\.todo' <<<"$input"; then
+    jq -n --arg o "$over" '{hookSpecificOutput:{hookEventName:"PostToolUse",additionalContext:("A .todo line is one sentence of at most 80 characters that points at its star, chart or ticket. Shorten these now:\n" + $o)}}'
+  fi
   cmd=$(jq -r '.tool_input.command // empty' <<<"$input" 2>/dev/null)
   grep -qE '(^|[;&|[:space:]])(git push|gh pr merge|tea (pr|pulls) merge)([[:space:]]|$)|open-(page|draft)\.sh' <<<"$cmd" || exit 0
 fi

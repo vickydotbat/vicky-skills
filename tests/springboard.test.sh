@@ -63,7 +63,19 @@ reset; pr 7 false SUCCESS "" | jq -s . > "$GH_PRS"; start >/dev/null; printf 'Re
 out=$(echo '{}' | bash "$reminder")
 check "the todo reminder lists your lines and none of the block" 'grep -q "Rename the flag" <<<"$out" && ! grep -q "springboard\|N1" <<<"$out"'
 le="$root/plugins/vicky-skills/skills/engineering/loose-ends/SKILL.md"
-check "loose-ends puts small waiting work in .todo, and the agent alone keeps those lines" 'grep -q "goes in the repo'"'"'s \`.todo\` in place of a ticket" "$le" && grep -q "Work with real impact always gets a ticket or a star" "$le" && grep -q "the user never edits \`.todo\`" "$le"'
+check "loose-ends puts small waiting work in .todo, and the agent alone keeps those lines" 'grep -q "Small waiting work starts as a line" "$le" && grep -q "Work with real impact always gets a ticket or a star" "$le" && grep -q "the user never has to edit \`.todo\`" "$le"'
 check "the reminder has the agent do each item whose wait is over, unasked" 'grep -q "whose wait is over now, without asking" <<<"$out"'
+L81=$(printf 'x%.0s' $(seq 81)); L80=$(printf 'y%.0s' $(seq 80))
+reset; printf '%s\n%s\n' "$L81" "$L80" > "$fx/repo/.todo"
+edit() { jq -n --arg f "$1" '{hook_event_name:"PostToolUse",tool_input:{file_path:$f}}' | bash "$hook"; }
+warn=$(edit "$fx/repo/.todo")
+check "a write that leaves a .todo line over 80 characters is told to shorten it" 'grep -q "at most 80 characters" <<<"$warn" && grep -q "$L81" <<<"$warn" && ! grep -q "$L80" <<<"$warn"'
+check "a write elsewhere says nothing of .todo" '[ -z "$(edit "$fx/repo/x.md")" ]'
+printf '%s\n' "$L80" > "$fx/repo/.todo"
+check "a .todo of short lines draws no warning" '[ -z "$(edit "$fx/repo/.todo")" ]'
+printf '%s\n' "$L81" > "$fx/repo/.todo"
+rem=$(echo '{}' | bash "$reminder")
+check "a long line you wrote draws no word at session start" '! grep -q "Shorten\|80 characters" <<<"$rem" && grep -q "$L81" <<<"$rem"'
+check "loose-ends caps a .todo line at one sentence of 80 characters, pointing at its star" 'grep -q "one sentence of at most 80 characters that points at the star, chart or ticket it moves" "$le" && grep -q "A line goes when what it points at closes" "$le"'
 check "a first session has no since line" 'reset; rm -f "$fx/repo/.git/springboard-last-session"; ! start | grep -q "Since then"'
 exit $fail

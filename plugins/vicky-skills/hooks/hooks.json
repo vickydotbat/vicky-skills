@@ -179,6 +179,16 @@
             "timeout": 5
           }
         ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/springboard.sh\"",
+            "timeout": 15
+          }
+        ]
       }
     ],
     "SessionStart": [
