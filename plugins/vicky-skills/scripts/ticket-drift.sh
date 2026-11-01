@@ -12,6 +12,7 @@ case "$days" in ''|*[!0-9]*) exit 0 ;; esac
 [ "$days" -gt 0 ] || exit 0
 cd "${CLAUDE_PROJECT_DIR:-.}" 2>/dev/null || exit 0
 gitdir=$(git rev-parse --git-common-dir 2>/dev/null) || exit 0
+[ -n "$(git remote)" ] || exit 0 # a repo with no remote has no tracker or pull requests
 grep -qix 'Ticket drift: off' docs/agents/issue-tracker.md 2>/dev/null && exit 0
 stamp="$gitdir/ticket-drift-last"
 now=$(date +%s)

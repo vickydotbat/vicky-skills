@@ -5,6 +5,10 @@
 # default. The tracker query lives in the gamma-shift skill, since the hook
 # can't know the repo's tracker.
 set -u
+# A git repo with no remote has no tracker or pull requests to work on.
+if git -C "${CLAUDE_PROJECT_DIR:-.}" rev-parse --git-dir >/dev/null 2>&1; then
+  [ -n "$(git -C "${CLAUDE_PROJECT_DIR:-.}" remote)" ] || exit 0
+fi
 case "${CLAUDE_PLUGIN_OPTION_GAMMA_SHIFT:-off}" in
   remind)
     echo "gamma_shift is remind: before your first reply, run the gamma-shift skill in remind mode. It adds at most one line to that reply."

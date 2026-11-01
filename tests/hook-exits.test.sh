@@ -7,7 +7,7 @@ set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
 scripts="$root/plugins/vicky-skills/scripts"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
-git init -q -b main "$dir/repo"
+git init -q -b main "$dir/repo"; git -C "$dir/repo" remote add origin https://example.invalid/r.git
 mkdir -p "$dir/plain" "$dir/data" "$dir/bare"
 # A PATH with the basic tools and none of jq, git or gawk.
 for tool in bash sh cat grep sed awk tr head tail cut date mkdir mv rm dirname basename wc printf env id sort uniq timeout ls touch; do
