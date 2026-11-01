@@ -73,7 +73,6 @@ jobs:
         run: tests/state_writes_approved_examples.test.sh
       - name: Marie Kondo fast-forwards stale default branches
         run: tests/marie-kondo-fast-forward.test.sh
-||||||| parent of 37c1bd6 (Every tracker can move a ticket's state and list what changed, and waiting on you reads the Waits on line)
       - name: Every tracker can move a state and list what changed
         run: tests/tracker_operations_approved_examples.test.sh
       - name: gamma-shift reads every waiting ticket
