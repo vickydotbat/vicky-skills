@@ -14,7 +14,7 @@ Read the repo's `TESTING_STANDARDS.md` first: it wins over this skill's defaults
 ## Steps
 
 1. **Finish the branch.** Commit everything. Run `git fetch origin`. When the branch is behind `main`, rebase it, with `history-monks` when what landed changes the form of what the branch touches. Run the checks the change reaches. Done when the tree is clean, the branch is current, and the checks pass.
-2. **Run the QA checklist**, Q1 to Q6, below. Fix each failure in place and run the item again. A finding on an approved-spec test goes to the user as a question, through `examples`' "Changing an approved example". This is not a review: `review` already ran, so a design concern goes to the user as a question. Done when Q1 to Q6 each pass, or Q5 has its reason in the body.
+2. **Run the QA checklist**, Q0 to Q6, below. Q0 comes first: when no review of the branch is on record, run `review` now, with the merge-base as its fixed point, fix each finding, and record it as Q0 says. Fix each other failure in place and run the item again. A finding on an approved-spec test goes to the user as a question, through `examples`' "Changing an approved example". Q1 to Q6 are not a review: once Q0 passes, a new design concern goes to the user as a question. Done when Q0 to Q6 each pass, or Q5 has its reason in the body.
 3. **Hand over what the build held.** When the effort has a draft file, open it with `red-pen` and commit what the user leaves. Then take the pull request's Check these list to the user, one line at a time. Fix each answer that differs from the guess, build each parked slice they unblock, and delete the list. Done when the draft file is gone and Check these is empty or holds only what waits on someone else.
 4. **Make it true.** Run `ship-it` for the body and `loose-ends` for the tickets, then Q7 to Q10. Fix each failure in place and run the item again. Done when Q7 to Q10 each pass.
 5. **Push once, then mark it ready.** Push a rebased branch with `git push --force-with-lease=<branch>:<old sha>`. Then mark it ready: `gh pr ready <n>` on GitHub, or on Gitea drop the `WIP:` prefix with `tea pr edit <n> -t "<title>" </dev/null`. Push first because a repo's bot may approve or merge the commit it sees when the pull request turns ready. Wait until the push's own run shows in `gh run list --branch <branch> --limit 1` for your head commit before you mark it ready: a push event that lands after the ready event still sees a draft, and cancels the ready run. When marking it ready starts no run (a Gitea workflow often ignores title edits), close and reopen the pull request. Done when the pull request shows as ready and its head is your last commit.
@@ -24,7 +24,7 @@ Read the repo's `TESTING_STANDARDS.md` first: it wins over this skill's defaults
    - **Stuck or never reports**: run `machine-spirit`.
 
    A merge or approval only someone else can give is a gate: handle it as `warp`'s "Punch through" says, in a warp or not. Stop after three red rounds, or when the cause sits outside the repository, and report what you found. Done when Q11 passes.
-7. **Report** in one or two lines: the pull request link, the run, its result, the checklist (`Q1-Q11 pass`, or each item that failed and why), and anything left for the user, such as the merge. Then run `cerebro` as a forecast. Done when the reply holds all of it.
+7. **Report** in one or two lines: the pull request link, the run, its result, the checklist (`Q0-Q11 pass`, or each item that failed and why), and anything left for the user, such as the merge. Then run `cerebro` as a forecast. Done when the reply holds all of it.
 
 **State at every stop.** At every stop, write the pull request body's Status section, as `ship-it` says: a draft opened, a slice parked, a gate reached, the run ended.
 
@@ -34,6 +34,7 @@ Each item passes or fails on a command's output or one read of named text. `<bas
 
 Measured by a command:
 
+- **Q0 Reviewed.** A pull request comment or the body holds a line `Reviewed <sha>`, and every commit in `git log <sha>..HEAD` fixes a finding that review listed, or came from a rebase onto `<base>`. Read them with `gh pr view <n> --comments`, or `tea pr <n> --comments </dev/null`. With no such line, or a later commit that adds new work, run `review` over the branch, fix each finding, then post one comment: `Reviewed <the sha review saw>`, one line per finding with the fix's commit, and the axes' closing lines. A review run in this session before make-it-so counts once its comment is posted.
 - **Q1 Current.** `git merge-base --is-ancestor origin/<base> HEAD` exits 0, and `git log --merges --oneline origin/<base>..HEAD` prints nothing.
 - **Q2 Clean tree.** `git status --porcelain` prints nothing.
 - **Q3 No leftovers.** The added lines of `git diff origin/<base>...HEAD` hold no conflict marker, debug print, commented-out code, focused or skipped test (`.only(`, `fit(`, `xit(`, `[Ignore]`, `t.Skip(`, `@skip`), or TODO without a ticket key. Every file `git diff --name-status origin/<base>...HEAD` adds is one the change needs.
