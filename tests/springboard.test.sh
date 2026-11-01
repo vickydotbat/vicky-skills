@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# The springboard's decisions beyond its approved examples: which repos it
+# touches, which commands rebuild it, the page and waiting-on-you actions,
+# and the todo reminder leaving the block alone.
+set -u
+root="$(cd "$(dirname "$0")/.." && pwd)"
+hook="$root/plugins/vicky-skills/scripts/springboard.sh"
+reminder="$root/plugins/vicky-skills/scripts/todo-reminder.sh"
+fx=$(mktemp -d); trap 'rm -rf "$fx"' EXIT
+mkdir -p "$fx/bin" "$fx/repo" "$fx/plain"
+printf '#!/usr/bin/env bash\ncat "$GH_PRS"\n' > "$fx/bin/gh"; chmod +x "$fx/bin/gh"
+export PATH="$fx/bin:$PATH" GH_PRS="$fx/prs.json" CLAUDE_PROJECT_DIR="$fx/repo"
+git -C "$fx/repo" init -q; printf '.todo\n' > "$fx/repo/.gitignore"
+git -C "$fx/plain" init -q
+fail=0
+check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
+start() { echo '{"hook_event_name":"SessionStart"}' | bash "$hook"; }
+after() { jq -n --arg c "$1" '{hook_event_name:"PostToolUse",tool_input:{command:$c}}' | bash "$hook"; }
+pr() { jq -n --argjson n "$1" --argjson d "$2" --arg s "$3" --arg b "$4" '{number:$n,title:"T\($n)",url:"u/\($n)",isDraft:$d,body:$b,statusCheckRollup:[{conclusion:$s}]}'; }
+reset() { rm -f "$fx/repo/.todo"; }
+
+pr 3 true "" "\`Waits on:\` you, the merge order" | jq -s . > "$GH_PRS"
+start >/dev/null
+check "a draft whose Waits on line names you is listed with what it waits on" 'grep -q "^N1 #3 waits on you: you, the merge order u/3" "$fx/repo/.todo"'
+pr 4 false FAILURE "" | jq -s . > "$GH_PRS"; start >/dev/null
+check "a ready pull request with a failed check is not a merge" 'grep -q "nothing waits on you" "$fx/repo/.todo"'
+jq -n '[{number:5,title:"T5",url:"u/5",isDraft:false,body:"",statusCheckRollup:[]}]' > "$GH_PRS"; start >/dev/null
+check "a pull request with no checks is not a merge" 'grep -q "nothing waits on you" "$fx/repo/.todo"'
+pr 6 false SKIPPED "" | jq -s . > "$GH_PRS"; start >/dev/null
+check "skipped checks count as green" 'grep -q "^N1 merge #6 T6 u/6" "$fx/repo/.todo"'
+echo '[]' > "$GH_PRS"
+printf '123\n/drafts/x.md\n' > "$fx/repo/.git/red-pen-open"; start >/dev/null
+check "an open draft page comes first" 'grep -q "^N1 press Done on the draft page for /drafts/x.md" "$fx/repo/.todo"'
+rm "$fx/repo/.git/red-pen-open"
+
+reset; printf 'Rename the flag\n' > "$fx/repo/.todo"; start >/dev/null
+check "a .todo of your lines alone gains the block below them" '[ "$(head -1 "$fx/repo/.todo")" = "Rename the flag" ] && grep -q "^# springboard start" "$fx/repo/.todo"'
+reset; check "a session start exits 0" 'start >/dev/null; [ $? = 0 ]'
+reset; check "a rebuild after a push exits 0" 'after "git push" >/dev/null; [ $? = 0 ]'
+reset; check "a plain command exits 0" 'after "git status" >/dev/null; [ $? = 0 ]'
+reset; check "a plain command rebuilds nothing" '[ -z "$(after "git status")" ] && [ ! -f "$fx/repo/.todo" ]'
+for c in "git push" "gh pr merge 3 --squash" "tea pr merge 3" "bash x/open-page.sh f.md"; do
+  reset; after "$c" >/dev/null
+  check "$c rebuilds the block" 'grep -q "^# springboard start" "$fx/repo/.todo"'
+done
+reset; check "a rebuild after a command says nothing to the agent" '[ -z "$(after "git push")" ]'
+reset; check "a word that holds push rebuilds nothing" 'after "echo git pushing" >/dev/null; [ ! -f "$fx/repo/.todo" ]'
+
+check "a repo that doesn't ignore .todo gets no file" 'CLAUDE_PROJECT_DIR="$fx/plain" start >/dev/null; [ ! -f "$fx/plain/.todo" ]'
+mkdir -p "$fx/repo/docs/agents"; printf 'Todo file: off\n' > "$fx/repo/docs/agents/domain.md"; reset
+check "Todo file: off leaves the repo alone" '[ -z "$(start)" ] && [ ! -f "$fx/repo/.todo" ]'
+check "Todo file: off exits 0" 'start >/dev/null; [ $? = 0 ]'
+rm "$fx/repo/docs/agents/domain.md"
+check "outside a repository it is silent and exits 0" 'out=$(CLAUDE_PROJECT_DIR="$fx" start); [ $? = 0 ] && [ -z "$out" ]'
+reset; check "bad input exits 0 and rebuilds nothing" 'echo "not json" | bash "$hook"; [ $? = 0 ] && [ ! -f "$fx/repo/.todo" ]'
+
+reset; pr 7 false SUCCESS "" | jq -s . > "$GH_PRS"; start >/dev/null; printf 'Rename the flag\n' >> "$fx/repo/.todo"
+out=$(echo '{}' | bash "$reminder")
+check "the todo reminder lists your lines and none of the block" 'grep -q "Rename the flag" <<<"$out" && ! grep -q "springboard\|N1" <<<"$out"'
+check "a first session has no since line" 'reset; rm -f "$fx/repo/.git/springboard-last-session"; ! start | grep -q "Since then"'
+exit $fail

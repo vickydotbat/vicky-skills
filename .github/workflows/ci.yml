@@ -77,6 +77,10 @@ jobs:
         run: tests/tracker_operations_approved_examples.test.sh
       - name: gamma-shift reads every waiting ticket
         run: tests/waiting-list.test.sh
+      - name: Springboard examples
+        run: tests/springboard_approved_examples.test.sh
+      - name: Springboard hook
+        run: tests/springboard.test.sh
       - name: Brief mode memes
         run: tests/brief_mode_memes_approved_examples.test.sh
       - name: Red pen quick close

@@ -49,7 +49,7 @@ pr 7 false SUCCESS "" | prs
 { echo "Rename the cache flag"; block; echo "Drop the old fixture"; } > "$fx/todo"; cp "$fx/todo" "$fx/repo/.todo"
 start >/dev/null
 check "your own lines stay yours" \
-  '[ "$(head -1 "$fx/repo/.todo")" = "Rename the cache flag" ] && [ "$(tail -1 "$fx/repo/.todo")" = "Drop the old fixture" ] && [ "$(grep -vc "^N[0-9] \|^# springboard" "$fx/repo/.todo")" = 2 ]'
+  'block | grep -q "^N1 merge #7 " && [ "$(head -1 "$fx/repo/.todo")" = "Rename the cache flag" ] && [ "$(tail -1 "$fx/repo/.todo")" = "Drop the old fixture" ] && [ "$(grep -vc "^N[0-9] \|^# springboard" "$fx/repo/.todo")" = 2 ]'
 
 # Given a draft pull request with CI still running and a ticket waiting on another person
 # When the springboard rebuilds
@@ -57,7 +57,7 @@ check "your own lines stay yours" \
 { pr 8 true "" ""; pr 9 true SUCCESS "\`Waits on:\` Sam reviews the API"; } | jq 'if .number == 8 then .statusCheckRollup = [{conclusion:"", status:"IN_PROGRESS"}] else . end' | prs
 start >/dev/null
 check "only your actions make the list" \
-  '! block | grep -q "#8\|#9"'
+  'block | grep -q "nothing waits on you" && ! block | grep -q "#8\|#9"'
 
 # Given a repo where nothing waits on you
 # When a session starts

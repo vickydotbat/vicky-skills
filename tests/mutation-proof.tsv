@@ -24,12 +24,13 @@ rm-steer.sh	6f406b61f83e66c9	98e9664a2f704803	28/28
 scratch-guard.sh	5d86e5061c016d17	a678617232ccdf1a	31/31
 skill-ledger.sh	4f6f1ba436f648ca	0ab74783df113cb7	22/22
 spark-joy.sh	fdba362c4426f908	872e442440cc98e7	27/27
+springboard.sh	b861ea8380285842	2edc1c76c8b07968	38/38
 stale-copy-hint.sh	4e663d08786adf6b	e3e630065ae5eaca	27/27
 step-guard.sh	72466e6912496d03	f299232a5be8544f	42/42
 step-hint.sh	1de7b11feb9a79af	c810b77ec9811a56	11/11
 tea-stdin.awk	ddfdfc5257c31b06	52c4813ce0d89b85	70/70
 tea-stdin.sh	1f69ec430c059eec	52c4813ce0d89b85	15/15
 ticket-drift.sh	eb07b2b78671d7b0	63ae9c10fd63a43d	32/32
-todo-reminder.sh	794305672da6b183	a7fc9412438cad2c	9/9
+todo-reminder.sh	4e3cc713d2163771	a7fc9412438cad2c	9/9
 watch.sh	5151329b7079b9ce	90dc7662306336ee	31/31
 worktree-place.sh	9cb9490030329d3a	09c45ade5c2085f6	57/57
