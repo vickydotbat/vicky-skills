@@ -5,9 +5,11 @@
 # default. The tracker query lives in the gamma-shift skill, since the hook
 # can't know the repo's tracker.
 set -u
-# A git repo with no remote has no tracker or pull requests to work on.
-if git -C "${CLAUDE_PROJECT_DIR:-.}" rev-parse --git-dir >/dev/null 2>&1; then
-  [ -n "$(git -C "${CLAUDE_PROJECT_DIR:-.}" remote)" ] || exit 0
+# A repo with no remote, or no tracker file, has no waiting tickets to work.
+cd "${CLAUDE_PROJECT_DIR:-.}" 2>/dev/null || exit 0
+[ -f docs/agents/issue-tracker.md ] || exit 0
+if git rev-parse --git-dir >/dev/null 2>&1; then
+  [ -n "$(git remote)" ] || exit 0
 fi
 case "${CLAUDE_PLUGIN_OPTION_GAMMA_SHIFT:-off}" in
   remind)

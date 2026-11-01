@@ -3,6 +3,9 @@
 # nothing when the option is off, unset or unknown.
 set -u
 hook="$(dirname "$0")/../plugins/vicky-skills/scripts/gamma-shift.sh"
+fx=$(mktemp -d); trap 'rm -rf "$fx"' EXIT
+git -C "$fx" init -q; git -C "$fx" remote add origin https://example.invalid/r.git
+mkdir -p "$fx/docs/agents"; : > "$fx/docs/agents/issue-tracker.md"; export CLAUDE_PROJECT_DIR="$fx"
 fail=0
 check() { # option want-pattern (empty: no output)
   got=$(CLAUDE_PLUGIN_OPTION_GAMMA_SHIFT="$1" "$hook" </dev/null); code=$?
