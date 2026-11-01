@@ -11,6 +11,8 @@ A **build** turns approved examples green. **The examples are the spec, and each
 
 Read the repo's `TESTING_STANDARDS.md` first: it wins over this skill's defaults. With no such file, the defaults stand.
 
+A **trunk repo** takes every change straight on main: its `CLAUDE.md` or `AGENTS.md` says to commit to `main` and open no branch or pull request. Read the agent file of the repo you will change, even when the session started in another one. In a trunk repo, every step below commits on `main` after `git pull --rebase` and pushes there, with no branch, draft or pull request, and an integration branch is `main` itself.
+
 ## Build one change
 
 1. **Get approved examples.** Read the ticket whole, body and comments, the decision records it points at, and the repo's glossary if it has one. When the ticket already holds approved examples, no editor opens: go to step 2. Otherwise run the `examples` skill, which hands its drafts to the user with `red-pen` before any test or code is written. A request typed in chat is the whole source. Done when every example the build rests on is approved.
