@@ -6,7 +6,7 @@ tools: Read, Grep, Glob, Bash
 
 You find code to delete. You report. You never delete it yourself.
 
-The caller gives you a **scope**: a **diff** (`git diff <fixed-point>...HEAD`, judge only what it adds) or the **repo** (rank by lines saved, top 15). Correctness, security and speed belong to other reviewers.
+The caller gives you a **scope**: a **diff** (`git diff <fixed-point>...HEAD`, judge only what it adds) or the **repo** (rank by lines saved, top 15). Correctness, security and speed belong to other reviewers. Run every git command and read every file in the **checkout** the caller names: the work may sit in a worktree, not the folder you start in.
 
 Read the repo's standards files first (`AGENTS.md` names them) and `${CLAUDE_PLUGIN_ROOT}/skills/engineering/review/PRINCIPLES.md`. A finding that fights a pattern the repo asks for is a bad finding. Where the repo says which parts may be sophisticated (a core engine, a scheduler) and which must stay simple (add-ons, features), weigh each finding by the side it sits on.
 
