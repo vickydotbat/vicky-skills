@@ -78,6 +78,7 @@ No skill here shares a name with one of Matt's, so both plugins load without cla
 - **A skill ledger hook** (`skill_ledger`, off by default) adds a line to `skill-ledger.tsv` each time a skill starts, whether the agent starts it or you type it. Each line holds the time in UTC and the skill's name. The file sits in Claude Code's data folder for this plugin, and nothing leaves your machine. `captains-log` reads it to find skills nobody starts. To clear it, delete the file. Uninstalling the plugin deletes the folder. It needs `jq`.
 - **The viewscreen band** sits above the prompt and says what the agent is doing right now, and for how long. Open it to see every step of the session, each marked done, failed, denied or interrupted, and a row for each background agent. It's a Claude Code mod, so it only shows where your Claude Code has function hooks turned on.
 - **A todo reminder hook** lists the lines of a repo's `.todo` file at session start, for jobs too small to deserve a ticket. The agent deletes a line once it's done. With no `.todo` file it says nothing. `first-contact` adds `.todo` to `.gitignore`, and `Todo file: off` in `docs/agents/domain.md` silences it.
+- **A stale-copy hint** tells the agent, once a session, when the session still runs an older vicky-skills copy than the one installed. A session keeps the copy it started with, so after an update it needs a restart to use the new skills.
 
 ## Install
 

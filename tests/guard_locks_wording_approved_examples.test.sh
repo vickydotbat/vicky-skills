@@ -41,6 +41,16 @@ removed=$(write "$(grep -v '^# When' "$f")")
 check "G2 an edit that changes, adds or removes a Given, When or Then line is refused, quotes the line, and steers to red-pen" \
   '[ "$(decision <<<"$changed")" = deny ] && [ "$(decision <<<"$added")" = deny ] && [ "$(decision <<<"$removed")" = deny ] && grep -qF "# Then the charm ends" <<<"$(reason <<<"$changed")" && grep -qF "# And the charmer is hostile" <<<"$(reason <<<"$added")" && grep -qF "# When its charmer hits it" <<<"$(reason <<<"$removed")" && grep -q "Changing an approved example" <<<"$(reason <<<"$changed")"'
 
+old="$dir/repo/tests/sleep_approved_examples.test.sh"
+printf 'echo ok\n' >"$old"
+unwritten=$(jq -n --arg f "$old" '{tool_name: "Edit", tool_input: {file_path: $f, old_string: "ok", new_string: "fine"}}' | bash "$guard")
+
+# Given an approved test file with no Given, When or Then comment lines in it
+# When the agent edits any line of it
+# Then the edit is refused, and the refusal steers the agent to copy the file's approved examples from its ticket into it as Given, When and Then comments through red-pen, after which a harness edit goes through
+check "G3 an approved test with no written examples stays locked, and the refusal steers to writing them in through red-pen once" \
+  '[ "$(decision <<<"$unwritten")" = deny ] && grep -q "from its ticket" <<<"$(reason <<<"$unwritten")" && grep -q "Given, When and Then" <<<"$(reason <<<"$unwritten")" && grep -q "red-pen" <<<"$(reason <<<"$unwritten")"'
+
 # Given an approved test file with its examples written in it
 # When a Bash command writes the file, such as sed -i or a redirect
 # Then it is refused, and the refusal says a harness edit goes through with the Edit tool

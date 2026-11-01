@@ -248,6 +248,11 @@
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/lesson-hint.sh\"",
             "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/stale-copy-hint.sh\"",
+            "timeout": 5
           }
         ]
       }
