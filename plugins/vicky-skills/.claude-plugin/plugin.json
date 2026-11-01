@@ -246,6 +246,12 @@
       "title": "Standing orders",
       "description": "Keep a .todo springboard: a hook lists at most five actions only you can take and opens each session on the first, and agents jot short .todo lines for later work without asking. Off: no .todo block, no jotted lines.",
       "default": true
+    },
+    "guard_no_v1": {
+      "type": "boolean",
+      "title": "Never a V1",
+      "description": "An effort ships complete. When the agent ends its turn offering found work as a follow-up pull request, a later ticket or a v2, or asking whether to fold it in, it is sent back once to fold the work in. Work that waits on someone, and a later version the user named, go through.",
+      "default": false
     }
   }
 }

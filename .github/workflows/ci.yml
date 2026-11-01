@@ -81,6 +81,10 @@ jobs:
         run: tests/springboard_approved_examples.test.sh
       - name: Springboard hook
         run: tests/springboard.test.sh
+      - name: Never a V1 examples
+        run: tests/no_v1_approved_examples.test.sh
+      - name: Never a V1 hook
+        run: tests/no-v1.test.sh
       - name: Brief mode memes
         run: tests/brief_mode_memes_approved_examples.test.sh
       - name: Red pen quick close
