@@ -21,14 +21,13 @@ It runs one of two ways:
 3. **Forecast the next asks.** Name at most three things the user is likely to ask next, each from the need: the same need on the next piece of work, a risk the report raised and left open, or a decision the last change makes due. Done when each forecast names the need it comes from.
 4. **Find the gaps.** For each forecast and for the need, find where the setup or the work falls short: a skill, an agent file (`AGENTS.md`, `CLAUDE.md`), the output style, a hook, a setting, a ticket, or the code just shipped. Read each one before you call it short. Done when you hold three gaps at most, each with its file and the change.
 5. **Ask as the user.** Read each change as the user would, and list the questions the user would ask about it: what they will see, what it replaces, what it costs to undo. Answer each from the record, and fold the answer into that proposal or the ticket it files. A proposal that raises no question stands alone, with no empty question list. Done when every question has its answer in a proposal or a ticket.
-6. **Propose and stop.** After the answer or the report, give each gap one line, then your pick:
+6. **Take the picks.** The user wants each recommended change: assume the yes. Build every proposal you would pick in this turn, then report each one with its proof. Ask first only for a proposal a wrong guess would make expensive to undo, such as a deletion, a published post or a setting another person relies on:
 
    ```markdown
    🧠 **Cerebro**
-   - C1: <the change> in `<file>`, because <the next ask it answers>.
-   - C2: ...
-   I'd take C1. Want it?
+   - C1: <the change> in `<file>`, because <the next ask it answers>. Done: <proof>.
+   - C2: <the change> in `<file>`, because <...>. Waits on you: <why a wrong guess costs too much>. Want it?
    ```
 
-   Under a proposal that raised questions in step 5, indent one line per question with its answer. Edit nothing the user hasn't picked. Done when the reply ends on the proposals and the one-line ask.
+   Under a proposal that raised questions in step 5, indent one line per question with its answer. Done when every picked proposal is built and reported, and the reply asks only about the ones a wrong guess would make expensive to undo.
 7. **Remember the need**, only when the session has auto memory: a memory directory shows in your context. Save the need and the user's answer as one feedback memory, so the next session proposes it unasked. With auto memory off, keep nothing: no notes file and no stand-in for memory. Done when the memory is saved, or auto memory is off.
