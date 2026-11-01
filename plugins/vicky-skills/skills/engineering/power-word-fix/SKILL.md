@@ -26,9 +26,9 @@ The user names something broken. Sort it, run the skills its kind calls for, and
 | **Leak** | a secret, host, path or account power in text that left or is about to leave | `loose-lips` |
 | **Red check** | CI, a hook, a linter or a test failing in a pipeline | `machine-spirit`, then the kind its cause turns out to be |
 | **Bug** | wrong behaviour, a crash, a slowdown, a flaky test | `never-lupus`, then `do` |
-| **Review finding** | a reviewer's hard or judgement finding | `do` for code, `red-pen` for prose, then `review` on the axis that found it |
+| **Review finding** | a reviewer's hard or judgement finding | `do` for code, `human-voice` for prose (`red-pen` only for audience-facing text), then `review` on the axis that found it |
 | **Stale decision** | a ticket, doc or agent file that says the old thing | `plot-twist` |
-| **Wrong text** | a typo, a tone, a doc that says something false | `red-pen` with `human-voice` for what people read, `robot-voice` for what agents read |
+| **Wrong text** | a typo, a tone, a doc that says something false | `human-voice` for what people read, through `red-pen` when it meets an audience; `robot-voice` for what agents read |
 | **Broken skill or agent file** | an agent keeps skipping, misreading or overdoing an instruction | `robot-voice`, "Debugging an instruction the agent ignores" |
 | **Mess** | stale branches, worktrees or scratch files | `marie-kondo` |
 | **Unknown** | none of the above fits | `interrogation` until a kind fits |

@@ -1,13 +1,13 @@
 ---
 name: red-pen
-description: Hand drafts to the user to edit on a page in their browser, then write their text back to where it belongs. Use whenever text needs the user's read before it is committed or published — player-facing or UI text, release notes, posts, wiki pages, docs in their voice — and when the user says "drafts", "let me edit it" or "open it for me".
+description: Hand drafts to the user to edit on a page in their browser, then write their text back to where it belongs. Use whenever text meets an audience before it is committed or published — players, customers, the public: player-facing or UI text, release notes, posts, public wiki pages — where writing that reads as AI could cost reputation; whenever approved examples need the user's tick; and when the user says "drafts", "let me edit it" or "open it for me".
 ---
 
 # Red pen
 
 > _The red pen is theirs. Copy back exactly what it leaves._
 
-The user edits drafts on a page in their browser, never in the chat. During a `council-of-elrond`, the draft file waits until Frodo has chosen the road. Collect every draft of the effort in one **draft file**, open it, and copy back exactly what they leave there.
+The user edits drafts on a page in their browser, never in the chat. Only audience-facing writing and examples to approve come here: a spec, a ticket body, a pull request body or an internal doc goes straight to its destination, written with `human-voice`. During a `council-of-elrond`, the draft file waits until Frodo has chosen the road. Collect every draft of the effort in one **draft file**, open it, and copy back exactly what they leave there.
 
 ## Steps
 
