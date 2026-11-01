@@ -81,8 +81,6 @@ jobs:
         run: tests/springboard_approved_examples.test.sh
       - name: Springboard hook
         run: tests/springboard.test.sh
-      - name: Summit examples
-        run: tests/summit_approved_examples.test.sh
       - name: Summit record
         run: tests/summit.test.sh
       - name: cerebro takes its picks
@@ -261,6 +259,8 @@ jobs:
         run: npm install --global @anthropic-ai/claude-code@2.1.316
       - name: Viewscreen band
         run: tests/viewscreen_approved_examples.test.sh
+      - name: Summit examples, which include the band's
+        run: tests/summit_approved_examples.test.sh
       # The rule applies from the commit that added the check: an older
       # approved test was never asked to land red.
       - name: Red-first check
