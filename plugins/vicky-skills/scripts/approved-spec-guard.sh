@@ -64,14 +64,16 @@ fi
 # runs_only drops each mention that only runs a file: a mention at a command's
 # start, after bash, sh, zsh, source or a dot. Running a file reads it, so a
 # script or command left naming no approved file once these go only runs them.
-runs_only() { sed -E 's#(^|[;&|])[[:space:]]*((bash|sh|zsh|source|\.)[[:space:]]+)?[^[:space:];&|()"'"'"']*approved_?examples(\.test)?\.[a-z]+([[:space:]]|$)#\1\5#gI'; }
-# A heredoc fed to cat or tee is data for another file, so its body is
-# dropped. An interpreter's heredoc is code that may write, and stays.
+runs_only() { sed -E 's#(^|[;&|])[[:space:]]*((bash|sh|zsh|source|\.)[[:space:]]+)?[^[:space:];&|()<>"'"'"']*approved_?examples(\.test)?\.[a-z]+([[:space:]]|$)#\1\5#gI'; }
+# A quoted heredoc fed to cat or tee, on a line with no pipe, is data for
+# another file, so its body is dropped: quoting stops $( ) running in it. An
+# interpreter's heredoc, or one piped on, is code that may write, and stays.
+# The body ends at its tag, leading tabs stripped as <<- strips them.
 command=$(awk '
-  tag != "" { if ($0 == tag) tag = ""; next }
+  tag != "" { t = $0; sub(/^\t+/, "", t); if (t == tag) tag = ""; next }
   { print }
-  match($0, /(^|[;&|(][[:space:]]*)(cat|tee)[[:space:]][^<]*<<-?[[:space:]]*["\047]?[A-Za-z_][A-Za-z0-9_]*/) {
-    tag = substr($0, RSTART, RLENGTH); sub(/.*<<-?[[:space:]]*["\047]?/, "", tag)
+  $0 !~ /\|/ && match($0, /(^|[;&(][[:space:]]*)(cat|tee)[[:space:]][^<]*<<-?[[:space:]]*["\047][A-Za-z_][A-Za-z0-9_]*["\047]/) {
+    tag = substr($0, RSTART, RLENGTH); sub(/.*<<-?[[:space:]]*["\047]/, "", tag); sub(/["\047]$/, "", tag)
   }' <<<"$command")
 # Each word of the command, quotes and shell punctuation stripped.
 words=$(tr -s " \t\n;&|()<>'\"=," '\n' <<<"$command")

@@ -31,4 +31,11 @@ check "refuses a cat heredoc written onto one" deny "$(sh_run "$(printf 'cat > f
 check "silent on a cat heredoc whose later lines mention one" "" "$(sh_run "$(printf "cat > body.md <<'EOF'\nplain\nfoo_approved_examples.sh, then cp it.\nEOF\necho done")")"
 check "refuses a write after a cat heredoc ends" deny "$(sh_run "$(printf "cat > body.md <<'EOF'\nplain\nEOF\nsed -i s/a/b/ foo_approved_examples.sh")")"
 check "a command that only runs one exits 0" 0 "$(jq -n --arg c 'bash foo_approved_examples.sh' --arg d "$dir" '{tool_name: "Bash", tool_input: {command: $c}, cwd: $d}' | "$guard" >/dev/null; echo $?)"
+for c in '>foo_approved_examples.sh' '>>foo_approved_examples.sh' 'ls;>>foo_approved_examples.sh'; do
+  check "refuses an unspaced redirect onto one: $c" deny "$(sh_run "$c")"
+done
+check "refuses a cat heredoc piped to a shell" deny "$(sh_run "$(printf "cat <<'EOF' | bash\nrm foo_approved_examples.sh\nEOF")")"
+check "refuses an unquoted cat heredoc whose body could run code" deny "$(sh_run "$(printf 'cat > body.md <<EOF\n$(rm foo_approved_examples.sh)\nEOF')")"
+check "refuses a write after a tab-indented heredoc end" deny "$(sh_run "$(printf "cat > body.md <<-'EOF'\nplain\n\tEOF\nrm foo_approved_examples.sh")")"
+check "refuses a write after a heredoc with a double-quoted tag" deny "$(sh_run "$(printf 'cat > body.md <<"EOF"\nplain\nEOF\nrm foo_approved_examples.sh')")"
 exit $fail
