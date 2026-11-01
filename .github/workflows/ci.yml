@@ -39,6 +39,10 @@ jobs:
         run: tests/approved_spec_prose_approved_examples.test.sh
       - name: Approved-spec guard follows a leading cd
         run: tests/approved_spec_guard_cd_approved_examples.test.sh
+      - name: Approved-spec guard follows a leading cd ~/
+        run: tests/guard_cd_home_approved_examples.test.sh
+      - name: Approved-spec guard lets a runner that names tests through
+        run: tests/guard_runner_approved_examples.test.sh
       - name: Approved-spec guard locks
         run: tests/guard-locks.test.sh
       - name: Step hints
@@ -103,6 +107,8 @@ jobs:
         run: tests/engrave_route_approved_examples.test.sh
       - name: Poll pace
         run: tests/poll-pace.test.sh
+      - name: Poll-pace reads a heredoc as text
+        run: tests/poll_pace_heredoc_approved_examples.test.sh
       - name: Gamma-shift hook
         run: tests/gamma-shift.test.sh
       - name: Auto-tidy hook
@@ -127,6 +133,8 @@ jobs:
         run: tests/checkout-guard.test.sh
       - name: Draft lock
         run: tests/draft-lock.test.sh
+      - name: Draft-lock lets reads and scratch writes run
+        run: tests/draft_lock_reads_approved_examples.test.sh
       - name: Red-first decisions
         run: tests/red-first.test.sh
       - name: Step guard decisions

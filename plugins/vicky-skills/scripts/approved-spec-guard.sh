@@ -54,10 +54,11 @@ cwd=$(jq -r '.cwd // empty' <<<"$payload")
 [ -n "$cwd" ] && cd "$cwd" 2>/dev/null
 # A leading cd, such as into a worktree, sets where the command's files are.
 # shortcut: only a plain path at the command's start counts. A later cd,
-# pushd, git -C, ~, $VAR or a path with spaces leaves the session's folder;
+# pushd, git -C, $VAR or a path with spaces leaves the session's folder;
 # upgrade when a refusal or a gap shows up in one of those forms.
 if [[ $command =~ ^[[:space:]]*cd[[:space:]]+([^[:space:]\;\&\|]+) ]]; then
   dir=${BASH_REMATCH[1]//[\"\']/}
+  [[ $dir == "~" || $dir == "~/"* ]] && dir=$HOME${dir:1}
   cd "$dir" 2>/dev/null
 fi
 # Each word of the command, quotes and shell punctuation stripped.
@@ -73,9 +74,11 @@ if [ -z "$target" ]; then
   # and the walk goes on; the first other word is the command, and the walk
   # stops. After an interpreter, the script it runs is the command. A file
   # the command only names as an argument, such as a workflow it reads, passes.
+  # A script must name the file in full, extension and all: one that lists
+  # tests by bare name only runs them, as the mutation run does.
   while IFS= read -r word; do
     [ -f "$word" ] && [ "$(wc -c < "$word")" -lt 1000000 ] || continue
-    grep -qiE 'approved_?examples' "$word" && refuse "$word names an approved-examples file, and"
+    grep -qiE 'approved_?examples(\.test)?\.[a-z]+' "$word" && refuse "$word names an approved-examples file, and"
   done < <(tr ';&|()\n' '\n' <<<"$command" | awk '{
     flag = 0
     for (i = 1; i <= NF; i++) { # mutant-ok: from 0, field 0 is the whole segment, never a file name, so it adds no candidate
