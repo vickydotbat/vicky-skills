@@ -105,6 +105,12 @@
       "description": "Refuse a push from a branch that lacks the tip of origin's default branch.",
       "default": false
     },
+    "guard_worktree_place": {
+      "type": "boolean",
+      "title": "Worktrees in each repo's .claude/worktrees",
+      "description": "Refuse git worktree add outside the repo's own .claude/worktrees folder, and keep that folder out of git status. After a git merge, remove the merged branch's worktree and branch once every commit has landed and nothing is uncommitted.",
+      "default": false
+    },
     "guard_checkout": {
       "type": "boolean",
       "title": "One session per checkout",

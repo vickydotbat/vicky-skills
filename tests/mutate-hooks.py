@@ -73,6 +73,7 @@ TESTS = {
     "plane-block-guard.sh": ["plane_block_approved_examples"],
     "poll-pace.sh": ["poll-pace", "watch_approved_examples"],
     "watch.sh": ["watch", "watch_approved_examples"],
+    "worktree-place.sh": ["worktree-place", "worktree_place_approved_examples", "worktree_cleanup_approved_examples"],
     "lesson-ledger.sh": ["lesson-ledger", "lesson_ledger_approved_examples"],
     "todo-reminder.sh": ["todo-reminder", "todo_reminder_approved_examples"],
     "step-guard.sh": ["step-guard", "step_guard_approved_examples", "step_guard_gitea_approved_examples"],

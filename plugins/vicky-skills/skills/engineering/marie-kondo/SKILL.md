@@ -22,4 +22,6 @@ A branch **sparks joy** while it holds work that exists nowhere else. A branch w
 4. **Delete the "goes" branches** with `git branch -d`. Use `-D` only when the merged pull request proves the work landed. Done when `git branch` shows none of them.
 5. **Report** under the headline `✨ Tidied: <n> branches`, each deletion by name, each branch kept with its reason, and the "ask" pile as one question. Done when all three are in your reply.
 
+Every worktree lives in the repo's own `.claude/worktrees/` folder. A worktree `git worktree list` shows anywhere else is sorted like the rest, and a kept one moves there with `git worktree move <path> .claude/worktrees/<branch>`.
+
 Delete only local branches and worktrees. A remote branch is deleted only when the user asks.

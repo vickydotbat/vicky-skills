@@ -20,6 +20,11 @@
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/pr-guard.sh\"",
             "timeout": 60
+          },
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/worktree-place.sh\"",
+            "timeout": 10
           }
         ]
       },
@@ -142,6 +147,11 @@
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/pr-guard.sh\"",
             "timeout": 60
+          },
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/worktree-place.sh\"",
+            "timeout": 30
           }
         ]
       },
