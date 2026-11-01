@@ -93,5 +93,7 @@ check "standing-orders jots unasked on todo, for later, or a park" 'grep -q "\"t
 check "a line grows into a star and goes when its work closes" 'grep -q "rewrite the line to point at it" "$so" && grep -q "Delete a line once its work is done or what it points at closes" "$so"'
 check "loose-ends strikes lines whose work closed" 'grep -q "Strike each \`.todo\` line whose work is done" "$le"'
 check "gamma-shift works each standing order whose wait is over" 'grep -q "one whose wait is over is built like a cleared ticket" "$gs"'
+check "gamma-shift files a bare line as a star before it builds" 'grep -q "A line that names no star or ticket becomes one first: file it as a star" "$gs"'
+check "gamma-shift asks before it charts a line too big for one star" 'grep -q "chart it with \`lay-course\`?" "$gs"'
 check "a first session has no since line" 'reset; rm -f "$fx/repo/.git/springboard-last-session"; ! start | grep -q "Since then"'
 exit $fail
