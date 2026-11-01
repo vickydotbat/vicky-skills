@@ -36,6 +36,8 @@ A warp is one effort: every star it builds goes on one branch and one pull reque
 6. **Finish the build.** Run `review` over the whole branch, then `make-it-so`. A warp through several stars passes `make-it-so`'s size item with the body line "A warp through <n> stars, one pull request per effort." Done when the pull request's required checks are green.
 7. **Land.** Redraw each chart the course crossed, without the course. Run `loose-ends`. Open the landing report with one sign-off line that drops out of warp, in the voice the session's output style sets ("🖖 Dropped out of warp. <n> stars are Done."). Then give the pull request, each target still open with what keeps it out of reach, and what is left. Done when every ticket the warp touched is settled and the landing report is sent.
 
+**State at every stop.** At every stop, write the pull request body's Status section, as `ship-it` says: a draft opened, a slice parked, a gate reached, the run ended. A ticket whose slice is parked: move its ticket back to the not-started state with a `Waits on:` line, as "Waiting work" in `docs/agents/issue-tracker.md` says.
+
 ## Mid-flight questions
 
 A question only the user can answer that turns up after pre-flight never stops the build. Ask it once, with your pick. When no answer comes before the work needs it, take your pick, record it in the pull request's Check these, and fly on. A pick too costly to undo takes one of two courses:
