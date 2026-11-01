@@ -17,7 +17,10 @@ The user answers in the browser, never in a Markdown editor. The file stays the 
 | `- [ ] approve` | a box to tick |
 | `- [x] <label>` | a box to tick, with its label |
 | `![<name>](<file>.svg)`, the file in the same folder | the chart, drawn full width; a click zooms in |
-| `1. [ ] <check>` | one box per mark: `[x]`, `[~]`, `[-]`, `[ ]` |
+| `1. [ ] <check> → <expected>`, with its indented `person:`, `kit:` and `notes:` lines | a card: the action, the expected result, one choice per mark labelled from the `Mark each item:` legend line (which then leaves the page), and the notes |
+| `signed off:` and `proven by:` lines | one collapsed header |
+| `quick notes:` and its `- TAG:` lines | one collapsed block, open when a note is filled |
+| `` `code` ``, `**bold**` and `*italics*` in any line | drawn as Markdown |
 | `notes:`, `- BUG:` and other `label:` lines | a line of text |
 | each ```` ```text ```` block, again | a comment box under it, written back as `Comment: <text>` |
 | a run of `- ( ) <option>` lines, `(x)` on your pick | one choice: the user clicks an option, written back as `(x)` |

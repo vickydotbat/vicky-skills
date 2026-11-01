@@ -53,7 +53,7 @@ Lazy about the solution, never about the change: every caller, test, fixture and
 2. **Take the first option that fully works**, in this order: not needed at all; a helper, pattern or service the repo already has; the language's standard library; an installed dependency; one line a reader gets at a glance; the least new code.
 3. **Deepen, don't spread**: put new behaviour inside the module that owns its concept, behind the interface it already has. A new module passes the deletion test in the review principles.
 4. **Add nothing for later**: no abstraction, option, wrapper or layer without a current caller. Keep the repo's structure and the platform's own types.
-5. **Fix a bug at its root**: find every caller of what you touch, then fix the shared code once.
+5. **Fix a bug at its root**: make the bad state impossible, as the design moves in [PRINCIPLES.md](../review/PRINCIPLES.md) teach, before you handle it downstream. Build new code with those moves too. Find every caller of what you touch, then fix the shared code once.
 6. **Mark a known limit** with a one-line comment, `shortcut: <the limit>, <when to upgrade>`.
 7. **End the report** with each approved example with its red run and its green run, then what you skipped or didn't check, and any risk the user must know. An example only a person can check is marked unchecked and handed to `over-to-you` as a checklist. A skipped step names the step, the reason and the proof, also written as `Skipped: <step>, because <reason>` in the pull request body.
 

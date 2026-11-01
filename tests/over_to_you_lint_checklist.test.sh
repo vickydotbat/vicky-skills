@@ -22,4 +22,14 @@ check "a checklist whose items each name a person-only reason passes" 'python3 "
 check "an item with no person line is refused" '! python3 "$lint" "$dir/no-person.md" >/dev/null && python3 "$lint" "$dir/no-person.md" | grep -q "no \`person:\` line"'
 check "a reason a command could prove is refused" '! python3 "$lint" "$dir/bad-reason.md" >/dev/null'
 check "a checklist that names nothing the agent ran is refused" '! python3 "$lint" "$dir/no-proof.md" >/dev/null'
+sed 's/Open the hub/Spawn the blueprint `i_paper` into your pack/' "$dir/good.md" > "$dir/no-kit.md"
+sed 's/^   person: look$/&\n   kit: `\/runscript paper_kit` in the game chat/' "$dir/no-kit.md" > "$dir/kit.md"
+sed 's/^   person: look$/&\n   kit:/' "$dir/no-kit.md" > "$dir/blank-kit.md"
+sed 's/Open the hub → the grid draws/Look at the hub → the paper you were given shows/' "$dir/good.md" > "$dir/give-after.md"
+check "an item that spawns a thing with no kit line is refused, even when it names the resref" '! python3 "$lint" "$dir/no-kit.md" >/dev/null && python3 "$lint" "$dir/no-kit.md" | grep -q "^4: .*no \`kit:\` line with its command"'
+check "an item that spawns a thing and names its kit passes" 'python3 "$lint" "$dir/kit.md" >/dev/null'
+sed 's/^   person: look$/&\n   kit: the paper script/' "$dir/no-kit.md" > "$dir/prose-kit.md"
+check "a kit line with no command in backticks is refused" '! python3 "$lint" "$dir/prose-kit.md" >/dev/null'
+check "an empty kit line is no kit" '! python3 "$lint" "$dir/blank-kit.md" >/dev/null'
+check "a reach verb after the arrow, in what you should see, needs no kit" 'python3 "$lint" "$dir/give-after.md" >/dev/null'
 exit $fail
