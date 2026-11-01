@@ -73,6 +73,10 @@ jobs:
         run: tests/state_writes_approved_examples.test.sh
       - name: Marie Kondo fast-forwards stale default branches
         run: tests/marie-kondo-fast-forward.test.sh
+      - name: Every tracker can move a state and list what changed
+        run: tests/tracker_operations_approved_examples.test.sh
+      - name: gamma-shift reads every waiting ticket
+        run: tests/waiting-list.test.sh
       - name: Brief mode memes
         run: tests/brief_mode_memes_approved_examples.test.sh
       - name: Red pen quick close

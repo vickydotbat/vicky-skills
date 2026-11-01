@@ -21,9 +21,12 @@ Tickets are GitLab issues in this repo. Work them with [`glab`](https://gitlab.c
 
 ## Waiting work
 
-A waiting ticket is assigned to the user and can't go on until the thing its `Waits on:` line names is done. `loose-ends` parks one, and `gamma-shift` works through them.
+A waiting ticket can't go on until the thing its `Waits on:` line names is done. It waits on you when that line names you: your decision, answer or merge. Every agent acts as your account, so the assignee can't tell your move from an agent's. `loose-ends` parks one, and `gamma-shift` works through them.
 
-- **List tickets waiting on you**: `glab issue list --assignee=@me --search "Waits on:" --in description`.
+- **List waiting tickets**: `glab issue list --search "Waits on:" --in description`.
+- **List tickets waiting on you**: `glab issue list --search "Waits on:" --in description`, keeping each whose `Waits on:` line names you: your decision, answer or merge.
+- **Move a ticket to <state>**: GitLab has only opened and closed. Started is open with a branch or draft merge request that names it; not-started is open with none. Done is `glab issue close <n>`, and back from done is `glab issue reopen <n>`.
+- **List items created or changed since <time>**: `glab api "projects/:fullpath/issues?updated_after=<time>&order_by=updated_at"`. An item whose `created_at` is at or after `<time>` is new, any other is edited. Show at most five, then a count of the rest.
 - **Park a ticket**: `glab issue update <n> --assignee @me`, then add a `Waits on: <who or what>` line to the description. GitLab has no not-started state: an open, assigned ticket with that line is waiting.
 - **Claim a waiting ticket**: delete its `Waits on:` line, before any other write.
 

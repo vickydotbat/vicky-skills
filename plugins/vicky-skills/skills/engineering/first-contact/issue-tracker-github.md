@@ -24,9 +24,12 @@ A bare `#42` can be an issue or a pull request. Try `gh pr view 42 --comments` f
 
 ## Waiting work
 
-A waiting ticket is assigned to the user and can't go on until the thing its `Waits on:` line names is done. `loose-ends` parks one, and `gamma-shift` works through them.
+A waiting ticket can't go on until the thing its `Waits on:` line names is done. It waits on you when that line names you: your decision, answer or merge. Every agent acts as your account, so the assignee can't tell your move from an agent's. `loose-ends` parks one, and `gamma-shift` works through them.
 
-- **List tickets waiting on you**: `gh issue list --assignee @me --state open --search '"Waits on:" in:body'`.
+- **List waiting tickets**: `gh issue list --state open --search '"Waits on:" in:body' --json number,title,body`.
+- **List tickets waiting on you**: `gh issue list --state open --search '"Waits on:" in:body' --json number,title,body`, keeping each whose `Waits on:` line names you: your decision, answer or merge.
+- **Move a ticket to <state>**: GitHub has only open and closed. Started is open with a branch or draft pull request that names it; not-started is open with none. Done is `gh issue close <n> --comment "<why>"`, and back from done is `gh issue reopen <n>`.
+- **List items created or changed since <time>**: `gh issue list --state all --search 'updated:>=<time>' --json number,title,createdAt,updatedAt`. An item created at or after `<time>` is new, any other is edited. Show at most five, then a count of the rest.
 - **Park a ticket**: `gh issue edit <n> --add-assignee @me`, then add a `Waits on: <who or what>` line to the body. GitHub has no not-started state: an open, assigned ticket with that line is waiting.
 - **Claim a waiting ticket**: delete its `Waits on:` line, before any other write.
 
