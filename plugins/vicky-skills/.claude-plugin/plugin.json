@@ -49,7 +49,7 @@
     "./skills/productivity/standing-orders",
     "./skills/productivity/sup",
     "./skills/productivity/video-captions",
-    "./skills/productivity/you-have-the-conn"
+    "./skills/productivity/conn"
   ],
   "userConfig": {
     "guard_pr": {
