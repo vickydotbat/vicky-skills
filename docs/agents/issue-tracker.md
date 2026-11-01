@@ -37,6 +37,7 @@ A waiting ticket can't go on until the thing its `Waits on:` line names is done.
 - **List tickets waiting on you**: `grep -l '^Waits on:' "<vault>/vicky-skills/"*.md`, keeping each note whose `Waits on:` line names you: your decision, answer or merge.
 - **Move a ticket to <state>**: set `status:` in the frontmatter to `open` for not-started, `claimed` for started, `waiting` when parked or `done`.
 - **List items created or changed since <time>**: `find "<vault>/vicky-skills/" -name '*.md' -newermt '<time>'`. A note whose name's timestamp is at or after `<time>` is new, any other is edited. Show at most five, then a count of the rest.
+- **List items closed since <time>**: `find "<vault>/vicky-skills/" -name '*.md' -newermt '<time>' -exec grep -l '^status: done' {} +`. Give the count.
 - **Park a ticket**: set `status: waiting` and add a `Waits on: <who or what>` line under the frontmatter.
 - **Claim a waiting ticket**: set `status: claimed`, before any other work.
 

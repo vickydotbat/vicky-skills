@@ -9,7 +9,8 @@ hook="$root/plugins/vicky-skills/scripts/draft-lock.sh"
 opener="$root/plugins/vicky-skills/skills/productivity/interactive-page/scripts/open-draft.sh"
 dir=$(mktemp -d); trap 'kill "$(head -1 "$lock" 2>/dev/null)" 2>/dev/null; rm -rf "$dir"' EXIT
 repo="$dir/repo"; git init -q "$repo"; mkdir -p "$repo/scripts"; printf 'x\n' > "$repo/scripts/c.sh"
-printf '#!/bin/sh\nexec sleep 30\n' > "$dir/editor"; chmod +x "$dir/editor"
+# The stand-in editor outlives the slowest run; the trap above stops it.
+printf '#!/bin/sh\nexec sleep 900\n' > "$dir/editor"; chmod +x "$dir/editor"
 (cd "$repo" && VISUAL="$dir/editor" bash "$opener" "$dir/draft.md") &
 lock="$repo/.git/red-pen-open"
 for _ in $(seq 50); do [ -s "$lock" ] && break; sleep 0.1; done

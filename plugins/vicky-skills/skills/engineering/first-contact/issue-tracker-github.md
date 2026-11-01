@@ -30,6 +30,7 @@ A waiting ticket can't go on until the thing its `Waits on:` line names is done.
 - **List tickets waiting on you**: `gh issue list --state open --search '"Waits on:" in:body' --json number,title,body`, keeping each whose `Waits on:` line names you: your decision, answer or merge.
 - **Move a ticket to <state>**: GitHub has only open and closed. Started is open with a branch or draft pull request that names it; not-started is open with none. Done is `gh issue close <n> --comment "<why>"`, and back from done is `gh issue reopen <n>`.
 - **List items created or changed since <time>**: `gh issue list --state all --search 'updated:>=<time>' --json number,title,createdAt,updatedAt`. An item created at or after `<time>` is new, any other is edited. Show at most five, then a count of the rest.
+- **List items closed since <time>**: `gh issue list --state closed --search 'closed:>=<time>' --json number,title,closedAt`. Give the count.
 - **Park a ticket**: `gh issue edit <n> --add-assignee @me`, then add a `Waits on: <who or what>` line to the body. GitHub has no not-started state: an open, assigned ticket with that line is waiting.
 - **Claim a waiting ticket**: delete its `Waits on:` line, before any other write.
 
