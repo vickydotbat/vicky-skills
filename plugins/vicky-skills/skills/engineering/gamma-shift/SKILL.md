@@ -27,6 +27,8 @@ The run mode comes from its caller: `remind` from the session-start hook, `engag
 5. **Ask the decisions in one round.** For each ticket that asks: the question, two options at most, your pick and why, in one message. Write each answer into its ticket as a comment and drop the `Waits on:` line. A ticket whose answer clears it goes to step 4. Done when the user has answered or the round is sent.
 6. **Report** in the form below. Done when the report is sent.
 
+**State at every stop.** At every stop, write the pull request body's Status section, as `ship-it` says: a draft opened, a slice parked, a gate reached, the run ended. A ticket whose slice is parked: move its ticket back to the not-started state with a `Waits on:` line, as "Waiting work" in `docs/agents/issue-tracker.md` says.
+
 ## Subagent brief
 
 ```text

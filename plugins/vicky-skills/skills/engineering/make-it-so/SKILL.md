@@ -26,6 +26,8 @@ Read the repo's `TESTING_STANDARDS.md` first: it wins over this skill's defaults
    A merge or approval only someone else can give is a gate: handle it as `warp`'s "Punch through" says, in a warp or not. Stop after three red rounds, or when the cause sits outside the repository, and report what you found. Done when Q11 passes.
 7. **Report** in one or two lines: the pull request link, the run, its result, the checklist (`Q1-Q11 pass`, or each item that failed and why), and anything left for the user, such as the merge. Then run `cerebro` as a forecast. Done when the reply holds all of it.
 
+**State at every stop.** At every stop, write the pull request body's Status section, as `ship-it` says: a draft opened, a slice parked, a gate reached, the run ended.
+
 ## QA checklist
 
 Each item passes or fails on a command's output or one read of named text. `<base>` is the pull request's base branch, after `git fetch origin`. A failing item is fixed, never only reported. An item you can't fix, such as a change too big to split this turn or a ticket that waits on someone else, goes in the body with its reason, and the report names it.

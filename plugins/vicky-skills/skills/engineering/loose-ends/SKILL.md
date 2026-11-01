@@ -25,4 +25,6 @@ New developers pick work from the tracker and trust what a ticket says. So an ef
 4. **Engrave the snags**, once, before you call the effort done. List each snag the effort hit: a red check, a crash, a retry, or a correction from the user. Run `engrave` on each one. Done when the report names each snag with the law built for it, or says why it needs none.
 5. **After the merge**, close by hand any ticket still open that the pull request named, with a comment naming the pull request. Done when the tracker shows each one closed.
 
+A ticket whose state lags the work moves now: one the pull request names moves to the started state while the pull request is open, a parked one to the not-started state, and the report names each move.
+
 Repeat step 3 after every push.
