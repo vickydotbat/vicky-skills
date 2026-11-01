@@ -14,6 +14,7 @@ lesson-ledger.sh	157011bb3a30fb9f	8530825678c5b043	17/17
 local-path-guard.sh	262afb6fbdb2a8d7	12c00ca74cc26d5d	29/29
 merged-branch-guard.sh	86e1037d0d39b0c8	96d7b82610f97268	43/43
 mutation-proof-guard.sh	b756820a35fb7ae0	a2ca1ecffde83049	15/15
+no-v1.sh	37fdddc784cca7bf	45f5b0b560aade22	20/20
 plane-block-guard.sh	679f2b016852effb	d66b2c1fe2ef4c6f	14/14
 poll-pace.sh	cc90c835ae2a1c38	e608e1f93612adc9	25/25
 pr-guard.sh	2baad98ea289a954	2a177ea70357e655	103/103

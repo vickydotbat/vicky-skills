@@ -16,7 +16,7 @@ reply() {
 }
 stop() { jq -nc --arg t "$fx/t.jsonl" '{hook_event_name:"Stop",stop_hook_active:false,transcript_path:$t}' | bash "$hook" 2>/dev/null; }
 blocked() { stop | jq -e '.decision == "block" and (.reason | test("fold"; "i"))' >/dev/null 2>&1; }
-passes() { [ -z "$(stop)" ]; }
+passes() { [ -f "$hook" ] && [ -z "$(stop)" ]; }
 
 # Given an agent that found more work it could do in this effort
 # When its reply asks whether to fold it in or leave it for a follow-up
