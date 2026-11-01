@@ -130,7 +130,7 @@ The drawing shows the course ahead, so closed tickets stay out of it. It marks t
 
 ## Answer pages
 
-A warp's course, a council's open points and a probe's questions open as a page in the user's browser, so they answer without switching windows. The page is `interactive-page`'s.
+A warp's course, a council's next moves once Frodo has chosen the road, and a probe's questions open as a page in the user's browser, so they answer without switching windows. The page is `interactive-page`'s.
 
 1. **Write `<scratch>/page.md`**, a planning page as [interactive-page](../../productivity/interactive-page/SKILL.md) says: a title, then each chart as an image line naming its SVG in the same folder, drawn with `draw-chart.py <scratch>/tickets.json --png <scratch>/<chart>.svg` (the output name picks the format), then the course as one ticked box per ticket in order, then one section per question with your pick marked. Done when every chart, ticket and question is in the file.
 2. **Open it** with `bash <interactive-page's folder>/scripts/open-page.sh <scratch>/page.md`, run from the repo in the background. Tell the user the page is open in a message that opens with the `🚪 Waiting on you:` line. Done when the script has exited.

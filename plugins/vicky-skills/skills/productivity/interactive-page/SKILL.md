@@ -43,7 +43,7 @@ A question you would ask in chat with two or more options goes on a page instead
 
 Open it as the steps below say. A Done the user leaves unchanged takes your pick.
 
-For a planning page, such as a warp's pre-flight or a council's open points, add what the caller names above the questions: each chart as an image line, and the course as one ticked box per ticket, `- [x] <key> <kind>: <title>. Needs: <what it needs from the user, or nothing>`. A question the user may answer in their own words ends its options with `- ( ) Other` and a `notes:` line.
+For a planning page, such as a warp's pre-flight or a council's next moves after Frodo has chosen the road, add what the caller names above the questions: each chart as an image line, and the course as one ticked box per ticket, `- [x] <key> <kind>: <title>. Needs: <what it needs from the user, or nothing>`. A question the user may answer in their own words ends its options with `- ( ) Other` and a `notes:` line.
 
 ## Steps
 
