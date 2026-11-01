@@ -240,6 +240,12 @@
       "title": "Spell out the path rm removes",
       "description": "Refuse rm -r or rm -f on a path built from a shell variable, and tell the agent to spell the path out, so Claude Code's removal check never stops to ask you.",
       "default": false
+    },
+    "standing_orders": {
+      "type": "boolean",
+      "title": "Standing orders",
+      "description": "Keep a .todo springboard: a hook lists at most five actions only you can take and opens each session on the first, and agents jot short .todo lines for later work without asking. Off: no .todo block, no jotted lines.",
+      "default": true
     }
   }
 }

@@ -12,6 +12,11 @@
 # shortcut: reads pull requests from GitHub only; add tea when a Gitea repo wants the block.
 set -u
 input=$(cat)
+case "${CLAUDE_PLUGIN_OPTION_STANDING_ORDERS:-true}" in
+  false|0)
+    grep -q '"SessionStart"' <<<"$input" && echo "Standing orders are off in the vicky-skills settings: keep no .todo lines, and report parked work in chat."
+    exit 0 ;;
+esac
 cd "${CLAUDE_PROJECT_DIR:-.}" 2>/dev/null || exit 0 # mutant-ok: the project folder exists whenever Claude Code starts a session in it
 grep -qs '^Todo file: off' docs/agents/*.md && exit 0
 git check-ignore -q .todo 2>/dev/null || exit 0

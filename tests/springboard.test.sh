@@ -76,7 +76,17 @@ check "a .todo of short lines draws no warning" '[ -z "$(edit "$fx/repo/.todo")"
 printf '%s\n' "$L81" > "$fx/repo/.todo"
 rem=$(echo '{}' | bash "$reminder")
 check "a long line you wrote draws no word at session start" '! grep -q "Shorten\|80 characters" <<<"$rem" && grep -q "$L81" <<<"$rem"'
+pr 7 false SUCCESS "" | jq -s . > "$GH_PRS"
+for v in false 0; do
+  reset; off=$(CLAUDE_PLUGIN_OPTION_STANDING_ORDERS=$v start)
+  check "standing_orders=$v keeps no block and says so at session start" '[ ! -f "$fx/repo/.todo" ] && grep -q "Standing orders are off" <<<"$off" && ! grep -q "next:" <<<"$off"'
+  reset; check "standing_orders=$v is silent after a push" '[ -z "$(CLAUDE_PLUGIN_OPTION_STANDING_ORDERS=$v after "git push")" ] && [ ! -f "$fx/repo/.todo" ]'
+  check "standing_orders=$v exits 0" 'CLAUDE_PLUGIN_OPTION_STANDING_ORDERS=$v start >/dev/null; [ $? = 0 ]'
+done
+reset; check "standing_orders=true keeps the block" 'CLAUDE_PLUGIN_OPTION_STANDING_ORDERS=true start | grep -q "next: N1"'
+check "the setting is on by default" '[ "$(jq ".userConfig.standing_orders.default" "$root/plugins/vicky-skills/.claude-plugin/plugin.json")" = true ]'
 so="$root/plugins/vicky-skills/skills/productivity/standing-orders/SKILL.md"
+check "standing-orders keeps no lines when the setting is off" 'grep -q "standing orders are off, keep no \`.todo\` lines" "$so"'
 gs="$root/plugins/vicky-skills/skills/engineering/gamma-shift/SKILL.md"
 check "standing-orders caps a line at one sentence of 80 characters, pointing at its star" 'grep -q "one sentence of at most 80 characters, and it points at the star, chart or ticket" "$so" && grep -q "A line the user wrote may run longer" "$so"'
 check "standing-orders jots unasked on todo, for later, or a park" 'grep -q "\"todo\", \"add to todo\" or \"for later\", or you would report something as parked" "$so" && grep -q "Ask first only when it is truly unclear" "$so" && grep -q "Never write \"parked:\"" "$so"'

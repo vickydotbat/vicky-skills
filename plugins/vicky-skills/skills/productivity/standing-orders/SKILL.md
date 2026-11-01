@@ -9,6 +9,8 @@ description: Jot a line in the repo's .todo so work carries over between session
 
 A **standing order** is one line in the repo's `.todo`, outside the springboard block, that keeps work moving between sessions. It is one sentence of at most 80 characters, and it points at the star, chart or ticket it moves when one exists: `Finish the inventory 2.0 star chart (GAME-12)`. The plugin's `springboard` hook tells you to shorten a longer line after you write it. A line the user wrote may run longer.
 
+When the session-start context says standing orders are off, keep no `.todo` lines and report parked work in chat.
+
 ## Steps
 
 1. **Jot it, unasked.** When the user says "todo", "add to todo" or "for later", or you would report something as parked or as a follow-up, append its line to `.todo` now. Ask first only when it is truly unclear whether the user wants the work at all. Done when the line is in `.todo`.
