@@ -20,6 +20,7 @@ A waiting ticket can't go on until the thing its `Waits on:` line names is done.
 - **List tickets waiting on you**: `grep -l '^Waits on:' .scratch/*/issues/*.md`, keeping each ticket whose `Waits on:` line names you: your decision, answer or merge.
 - **Move a ticket to <state>**: set the `Status:` line to `open` for not-started, `claimed` for started, `waiting` when parked or `done`.
 - **List items created or changed since <time>**: `find .scratch -path '*/issues/*.md' -newermt '<time>'`. A ticket that `git log --diff-filter=A --since=<time>` adds is new, any other is edited. Show at most five, then a count of the rest.
+- **List items closed since <time>**: `git log --since=<time> -G '^Status: done' --name-only --format= -- .scratch | sort -u`, keeping each ticket whose `Status:` line now reads `done`. Give the count.
 - **Park a ticket**: set `Status: waiting` and add a `Waits on: <who or what>` line.
 - **Claim a waiting ticket**: set `Status: claimed`, before any other work.
 

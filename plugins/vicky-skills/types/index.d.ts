@@ -78,6 +78,7 @@ declare module 'claude-code' {
       history: readonly ActivityEntry[]
       agents: readonly ActivityAgent[]
       isExpanded: boolean
+      summit: string
     }
   }
 }

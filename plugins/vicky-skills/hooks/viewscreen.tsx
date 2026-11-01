@@ -67,6 +67,9 @@ const team = atom(
   [] as readonly ActivityAgent[],
 )
 
+// The summit line summit.sh last printed this session, or '' before any count.
+const summit = atom({ plugin: 'vicky-skills', key: 'summit' } as const, '')
+
 const isExpanded = atom(
   { plugin: 'vicky-skills', key: 'isExpanded' } as const,
   false,
@@ -275,6 +278,8 @@ export const register: Register = on => {
 
     try {
       const result = await next(e)
+      const told = summitOf(result)
+      if (told !== null) await update($, summit, () => told)
 
       outcome = result.deny !== undefined ? 'denied' : result.isError ? 'error' : 'ok'
 
@@ -435,6 +440,7 @@ export const register: Register = on => {
     const entries = await read($, history)
     const working = await read($, team)
     const isOpen = await read($, isExpanded)
+    const summitLine = await read($, summit)
     const nowMs = await $.clock.now()
 
     const isWorking = headline.phase !== 'idle'
@@ -537,6 +543,7 @@ export const register: Register = on => {
               <Text dimColor>{elapsed}</Text>
             </Box>
           </Box>
+          {summitLine === '' ? [] : [<Box key="summit"><Text dimColor wrap="truncate-end">{printable(summitLine, MAX_LABEL_CHARS)}</Text></Box>]}
           {teamBox}
           {body}
         </Box>
@@ -544,6 +551,13 @@ export const register: Register = on => {
       </Box>
     )
   })
+}
+
+/** The text after the last `summit: ` line in a tool's output, or null when it has none. */
+function summitOf(result: unknown): string | null {
+  const text = JSON.stringify(result ?? null)
+  const found = [...text.matchAll(/summit: ((?:[^"\\]|\\[^n])*)/g)].at(-1)
+  return found === undefined ? null : (JSON.parse(`"${found[1]}"`) as string)
 }
 
 /** The headline as the live view has it. */

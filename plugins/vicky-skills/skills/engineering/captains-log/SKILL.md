@@ -22,6 +22,7 @@ A **retro** improves the agent's environment, never the agent's excuses. It look
    - **Tools**: a costly call a cheaper one would have answered.
    - **Follow-ups**: read them as `cerebro`'s [FOLLOW-UPS.md](../../productivity/cerebro/FOLLOW-UPS.md) says. For each need, name the skill or agent file that would have proposed it unasked.
    - **Information**: something the agent needed and couldn't reach, such as a server log or read access to a service.
+   - **Summit**: run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/summit.sh show` from the repo and name its 30-day verdict. On B or C, propose ways to close more, never ways to find less: smaller tickets, a closing pass, a done line that ends a ticket sooner. On `nothing counted yet`, say so.
    - **Prompts**: each permission prompt the user answered is training wheels. Name the hook that would refuse with a steer, or the context that would lead the agent elsewhere, so the prompt never comes.
 
    Done when each place has a finding or a stated "nothing found".

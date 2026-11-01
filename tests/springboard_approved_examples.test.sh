@@ -76,10 +76,11 @@ after "git push origin topic" >/dev/null
 check "the block follows a push, a merge or a closed page" \
   'block | grep -q "^# springboard start" && ! block | grep -q "#7"'
 
-# Given four tickets created and six edited since your last session in this repo
+# Given four tickets opened and nine closed since your last session in this repo, which started on Saturday 31 October, and Claude Code with function hooks turned off
 # When a session starts
-# Then one line reads Since then: 4 new, 6 edited. Say since for the list.
+# Then one line reads Since Sat: 4 opened, 9 closed. Say since for the list.
+date -d yesterday -Iseconds > "$fx/repo/.git/springboard-last-session"
 out=$(start)
 check "since you last worked" \
-  'grep -q "List items created or changed since <time>" <<<"$out" && grep -q "Since then: <n> new, <m> edited. Say \`since\` for the list." <<<"$out" && grep -qE "since [0-9]{4}-[0-9]{2}-[0-9]{2}T" <<<"$out"'
+  'grep -q "List items created or changed since <time>" <<<"$out" && grep -q "List items closed since <time>" <<<"$out" && grep -qF "Since $(date -d yesterday +%a): <n> opened, <m> closed. Say \`since\` for the list." <<<"$out" && grep -qE "since [0-9]{4}-[0-9]{2}-[0-9]{2}T" <<<"$out"'
 exit $fail

@@ -76,7 +76,7 @@ check "only closing" 'verdict 0 3 | grep -q ", A$"'
 # When a second session starts today
 # Then the line shows that count, and the agent is not asked to count again
 fresh; record 611 451 >/dev/null; start >/dev/null; out=$(start)
-check "counted once a day" 'grep -qF "30 days: +611 / −451, C" <<<"$out" && ! grep -q "List items closed since" <<<"$out"'
+check "counted once a day" 'grep -qF "30 days: +611 / −451, C" <<<"$out" && ! grep -q "summit.sh record" <<<"$out"'
 
 # Given the 30-day count was taken yesterday
 # When a session starts
