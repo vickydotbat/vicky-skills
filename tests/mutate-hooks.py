@@ -77,6 +77,7 @@ TESTS = {
     "worktree-place.sh": ["worktree-place", "worktree_place_approved_examples", "worktree_cleanup_approved_examples"],
     "lesson-ledger.sh": ["lesson-ledger", "lesson_ledger_approved_examples"],
     "todo-reminder.sh": ["todo-reminder", "todo_reminder_approved_examples"],
+    "springboard.sh": ["springboard", "springboard_approved_examples"],
     "step-guard.sh": ["step-guard", "step_guard_approved_examples", "step_guard_gitea_approved_examples"],
     "step-hint.sh": ["step_guard_approved_examples", "step-hint"],
     "scratch-guard.sh": ["scratch-guard"],

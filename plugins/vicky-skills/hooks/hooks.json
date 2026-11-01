@@ -152,6 +152,11 @@
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/worktree-place.sh\"",
             "timeout": 30
+          },
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/springboard.sh\"",
+            "timeout": 15
           }
         ]
       },
@@ -172,6 +177,16 @@
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/step-hint.sh\"",
             "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/springboard.sh\"",
+            "timeout": 15
           }
         ]
       }
@@ -204,6 +219,11 @@
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/todo-reminder.sh\"",
             "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/springboard.sh\"",
+            "timeout": 15
           }
         ]
       }

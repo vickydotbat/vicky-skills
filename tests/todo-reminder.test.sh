@@ -15,7 +15,7 @@ printf 'one\n' > "$dir/on/.todo"; printf 'Todo file: on\n' > "$dir/on/docs/agent
 expect "two items, blank lines skipped" "This repo's .todo file lists small items to do:
 - one
 - two
-Delete an item's line from .todo once it is done." "$(run "$dir/a")"
+Do each item whose wait is over now, without asking, then delete its line from .todo. A line whose star, chart or ticket has closed goes too." "$(run "$dir/a")"
 expect "only blank lines, silent" "" "$(run "$dir/blank")"
 expect "no .todo, silent" "" "$(run "$dir")"
 expect "Todo file: off, silent" "" "$(run "$dir/off")"
