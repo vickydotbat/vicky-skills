@@ -23,4 +23,10 @@ check '' ''
 check bogus ''
 got=$(env -u CLAUDE_PLUGIN_OPTION_GAMMA_SHIFT "$hook" </dev/null)
 [ -z "$got" ] && echo "ok   unset -> silent" || { echo "FAIL unset printed: $got"; fail=1; }
+# Nothing to work on: no tracker file, no remote, or no project folder.
+rm "$fx/docs/agents/issue-tracker.md"
+check engage ''
+: > "$fx/docs/agents/issue-tracker.md"; git -C "$fx" remote remove origin
+check engage ''
+CLAUDE_PROJECT_DIR="$fx/gone" check engage ''
 exit $fail
