@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
-# Plain test, not approved-spec: marie-kondo fast-forwards a stale default
-# branch (Vicky, 2026-11-01, "o1 fold it in"). Its example waits on her read.
+# Plain regression test, not approved-spec: the behaviour was built before
+# its example was approved on 2026-11-01, so the test could not go red first.
+# Given a checkout on main with a clean tree, six merges behind its remote
+# When marie-kondo runs
+# Then that checkout's main matches its remote, and a checkout with local
+# work stays as it was and is named in the report
 set -u
 f="$(dirname "$0")/../plugins/vicky-skills/skills/engineering/marie-kondo/SKILL.md"
 step6=$(grep '^6\. \*\*Fast-forward the default branch' "$f")
