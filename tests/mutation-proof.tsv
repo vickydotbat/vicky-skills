@@ -1,5 +1,5 @@
 after-push.sh	b3917174236ca28a	f83cc14680f725e3	16/16
-approved-spec-guard.sh	96db5c169b3d7ee3	e791eb5ffe2f7b63	77/77
+approved-spec-guard.sh	4c804ad1d8ae43ee	0a1bc5a785da1bf2	90/90
 approved-spec.sh	1de73515ee00e8b1	06fcb1ed295a135f	8/8
 auto-tidy.sh	37372c9b2b9a5907	602eb5cca7baadec	15/15
 checkout-guard.sh	baae812fc4ccfc3e	e2bc415ea42fbbfa	67/67
@@ -14,7 +14,7 @@ lesson-ledger.sh	157011bb3a30fb9f	64cb36bada5a9008	17/17
 local-path-guard.sh	262afb6fbdb2a8d7	75b5ff966740dbd5	29/29
 merged-branch-guard.sh	86e1037d0d39b0c8	4676118109c19b3f	43/43
 mutation-proof-guard.sh	b756820a35fb7ae0	33016b5d3af69040	15/15
-no-v1.sh	37fdddc784cca7bf	c6b9b87c795ac839	20/20
+no-v1.sh	5ce019ffd4a12b28	d5fd71d338d6fe35	20/20
 plane-block-guard.sh	679f2b016852effb	05a2885b8940c46d	14/14
 poll-pace.sh	cc90c835ae2a1c38	957f004a8c4eb99d	25/25
 pr-guard.sh	2baad98ea289a954	966753288b6eca02	103/103

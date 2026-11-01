@@ -7,7 +7,7 @@ description: Hand drafts to the user to edit on a page in their browser, then wr
 
 > _The red pen is theirs. Copy back exactly what it leaves._
 
-The user edits drafts on a page in their browser, never in the chat. Collect every draft of the effort in one **draft file**, open it, and copy back exactly what they leave there.
+The user edits drafts on a page in their browser, never in the chat. During a `council-of-elrond`, the draft file waits until Frodo has chosen the road. Collect every draft of the effort in one **draft file**, open it, and copy back exactly what they leave there.
 
 ## Steps
 

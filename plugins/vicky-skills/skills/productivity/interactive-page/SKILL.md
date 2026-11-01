@@ -31,7 +31,7 @@ Every other line shows as text. A Done that changes nothing leaves the file byte
 
 ## A question with options
 
-A question you would ask in chat with two or more options goes on a page instead. Write it as one section per question, your pick marked `(x)`:
+A question you would ask in chat with two or more options goes on a page instead. During a `council-of-elrond`, before Frodo chooses the road, the question stays in the round. Write it as one section per question, your pick marked `(x)`:
 
 ```markdown
 # A question for you
@@ -43,7 +43,7 @@ A question you would ask in chat with two or more options goes on a page instead
 
 Open it as the steps below say. A Done the user leaves unchanged takes your pick.
 
-For a planning page, such as a warp's pre-flight or a council's open points, add what the caller names above the questions: each chart as an image line, and the course as one ticked box per ticket, `- [x] <key> <kind>: <title>. Needs: <what it needs from the user, or nothing>`. A question the user may answer in their own words ends its options with `- ( ) Other` and a `notes:` line.
+For a planning page, such as a warp's pre-flight or a council's next moves after Frodo has chosen the road, add what the caller names above the questions: each chart as an image line, and the course as one ticked box per ticket, `- [x] <key> <kind>: <title>. Needs: <what it needs from the user, or nothing>`. A question the user may answer in their own words ends its options with `- ( ) Other` and a `notes:` line.
 
 ## Steps
 
