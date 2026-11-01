@@ -238,6 +238,10 @@ def serve_form(text, path, on_post, timeout):
     origin = f"http://127.0.0.1:{server.server_address[1]}"
     url = origin + "/"
     print(f"page: open {url}", file=sys.stderr, flush=True)
+    # A dev shell's LD_LIBRARY_PATH points at its own libraries, and a
+    # desktop opener such as kde-open crashes loading them. The browser
+    # gets the session's environment without it.
+    os.environ.pop("LD_LIBRARY_PATH", None)
     if not webbrowser.open(url):
         print(f"page: no browser opened; give the user {url}", file=sys.stderr, flush=True)
     answered_in_time = done.wait(timeout)

@@ -160,6 +160,15 @@ start "$scratch/two-box.md"; two_box=$(curl -s "$url"); post /done >/dev/null; f
 check "approve all shows on a page with two approve boxes, and not on a page with one" \
   'grep -q "name=\"approve_all\"" <<<"$two_box" && ! grep -q "approve_all" <<<"$one_box"'
 
+printf '#!/usr/bin/env bash\necho "${LD_LIBRARY_PATH-unset}" >"%s/libpath"\necho "$1" >"%s/url"\n' "$scratch" "$scratch" >"$scratch/env-browser"
+chmod +x "$scratch/env-browser"
+cp "$scratch/template.md" "$scratch/e.md"
+cp "$scratch/browser" "$scratch/plain-browser"; cp "$scratch/env-browser" "$scratch/browser"
+LD_LIBRARY_PATH=/stale/dev-shell/lib start "$scratch/e.md"; post /done >/dev/null; finish
+cp "$scratch/plain-browser" "$scratch/browser"
+check "a dev shell's LD_LIBRARY_PATH stays out of the browser the page starts, so a desktop opener loads its own libraries" \
+  '[ "$(cat "$scratch/libpath" 2>/dev/null)" = unset ]'
+
 python3 -I "$page" >/dev/null 2>&1; none=$?
 python3 -I "$page" a b >/dev/null 2>&1; two=$?
 check "no file, or two, is a usage error" '[ "$none" = 2 ] && [ "$two" = 2 ]'
