@@ -111,9 +111,9 @@ The Examples are the star's spec, and the only one: the sentence and the Pointer
 
 ## Filing a star
 
-Every new star, and every anomaly, probe or task that holds build work, is filed this way, whichever skill files it. A research ticket closed as it opens, and waiting work parked on its own ticket, are records and skip it.
+Every new star, and every anomaly, probe or task that holds build work, is filed this way, whichever skill files it. A research ticket closed as it opens is a record and skips it. A parked waiting ticket skips it only while it holds no build work.
 
-1. **Slice.** Each star is a vertical slice: a thin path through every layer, shown working on its own, sized to one session, and landing green on the default branch. A change that can't land green in one step goes expand–contract: build the new form beside the old, move the callers, then delete the old. A plan that takes something away and puts it back later ("reset to stock, then re-add") is no slice: re-cut it. An integration branch is a last resort, for a wide refactor only, and its landing follows `lay-course`'s "Where work lands". Done when every star can be shown working and merged on its own.
+1. **Slice.** Each star is a vertical slice: a thin path through every layer, shown working on its own, sized to one session, and landing green on the base the repo's rules name. A change that can't land green in one step goes expand–contract: build the new form beside the old, move the callers, then delete the old. A plan that takes something away and puts it back later ("reset to stock, then re-add") is no slice: re-cut it. An integration branch is a last resort, for a wide refactor only. Where any star lands follows `lay-course`'s "Where work lands". Done when every star stands on its own.
 2. **Draft** each star's Given / When / Then examples with `examples`, steps 1 and 2. Done when every star has its examples, or "Examples: not written yet".
 3. **Approve the examples before filing.** Put every star's examples in the effort's one `red-pen` draft file, a section per star with an approve box. The star bodies stay out of it. The user approves, edits or cuts there. A star waits on the close, and is filed with the examples the user left. A star whose examples the user cut is filed with "Examples: not written yet". Done when each star filed holds the user's examples.
 
