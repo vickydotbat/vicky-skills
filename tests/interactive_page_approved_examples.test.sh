@@ -5,11 +5,18 @@
 # the page's address, then answers the page the way the browser's form does.
 set -u
 # No test may reach the user's own editor or browser.
-export VISUAL=true EDITOR=true
+export VISUAL=true EDITOR=true BROWSER=true
 root="$(cd "$(dirname "$0")/.." && pwd)"
 open_page="$root/plugins/vicky-skills/skills/productivity/interactive-page/scripts/open-page.sh"
 draft_lock="$root/plugins/vicky-skills/scripts/draft-lock.sh"
 scratch=$(mktemp -d)
+# page.py hands the browser the desktop session's environment, read through
+# systemctl. This desktop names the fake browser, so a mutant that drops
+# BROWSER still reaches no real one.
+mkdir -p "$scratch/desktop"
+printf '#!/usr/bin/env bash\necho "PATH=$PATH"\necho "BROWSER=${BROWSER:-true}"\n' >"$scratch/desktop/systemctl"
+chmod +x "$scratch/desktop/systemctl"
+export PATH="$scratch/desktop:$PATH"
 pids=()
 cleanup() { for p in "${pids[@]}"; do kill "$p" 2>/dev/null; done; rm -rf "$scratch"; }
 trap cleanup EXIT
