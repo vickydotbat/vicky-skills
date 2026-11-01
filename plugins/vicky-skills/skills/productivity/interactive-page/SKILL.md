@@ -31,7 +31,7 @@ Every other line shows as text. A Done that changes nothing leaves the file byte
 
 ## A question with options
 
-A question you would ask in chat with two or more options goes on a page instead. Write it as one section per question, your pick marked `(x)`:
+A question you would ask in chat with two or more options goes on a page instead. During a `council-of-elrond`, before Frodo chooses the road, the question stays in the round. Write it as one section per question, your pick marked `(x)`:
 
 ```markdown
 # A question for you

@@ -12,7 +12,7 @@ Open the first round with those two lines, then stay plain: the room is the mood
 
 An **interrogation** walks a **design tree**: each decision branches into the ones that hang off it. The **frontier** is every decision whose prerequisites are already answered. Nobody leaves the room while the frontier has a question on it.
 
-Every answer comes from the user. You ask questions and give **leads**: facts you read this session, each with its source. You give no options, no recommendation and no guess, so nothing you made up gets into the answers. A user who wants ideas proposed wants `council-of-elrond`.
+Every answer comes from the user. You ask questions and give **leads**: facts you read this session, each with its source. You give no options, no recommendation and no guess, so nothing you made up gets into the answers. A user who wants ideas proposed wants `council-of-elrond`. A council in progress stays a council: an interrogation starts only once its Frodo has chosen the road, never in its place.
 
 1. **Ask the frontier in one round**, at most five questions, the sharpest first: a question that exposes a contradiction between two answers, an assumption the user hasn't stated, or a case their plan doesn't cover. A question that depends on another still open waits for a later round. Number each one:
 
