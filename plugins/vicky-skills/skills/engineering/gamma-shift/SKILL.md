@@ -14,7 +14,7 @@ The run mode comes from its caller: `remind` from the session-start hook, `engag
 ## Steps
 
 1. **Find the tracker.** Read the "Waiting work" section of `docs/agents/issue-tracker.md`. When the file or the section is missing, say "gamma shift: this repo's tracker has no waiting list; `/first-contact` adds one" in a typed run, and stop silently in a hook run. Done when you have its "List waiting tickets" command, or "List tickets waiting on you" where it has no such line.
-2. **List the waiting tickets** with that command. Read each one whole, body and comments. A ticket with no `Waits on:` line is assigned work, not waiting work: leave it off. In `remind` mode, count only those whose `Waits on:` line names the user, and open your first reply with `<n> follow-ups wait on you: run /gamma-shift`, or nothing when `<n>` is 0, and stop. Done when every listed ticket is read.
+2. **List the waiting tickets** with that command. Read each one whole, body and comments. A ticket with no `Waits on:` line is assigned work, not waiting work: leave it off. In `remind` mode, count only those whose `Waits on:` line names the user, and open your first reply with `<n> follow-ups wait on you: run /gamma-shift`, or nothing when `<n>` is 0, and stop. Read the repo's `.todo` lines outside the springboard block too: each is a standing order (`standing-orders`), and one whose wait is over is built like a cleared ticket. Done when every listed ticket and `.todo` line is read.
 3. **Check each wait.** Read the thing the `Waits on:` line names, now:
    - A ticket or pull request: **cleared** when it is closed or merged.
    - A release, tag or deploy: **cleared** when the tag exists or the deployed version is the named one or newer.

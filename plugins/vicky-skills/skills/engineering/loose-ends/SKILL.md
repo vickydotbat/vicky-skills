@@ -18,7 +18,7 @@ New developers pick work from the tracker and trust what a ticket says. So an ef
    - **Excluded**: nothing ships for it. Remove its reference from the pull request body and commits to come.
    - **Waits**: the rest can't be done now, because it waits on the user's decision, another person, a deploy or release, or a repo out of reach. Park it as "Waiting work" in `docs/agents/issue-tracker.md` says: assign it to the user, move it to the not-started state where the tracker has one, and add a `Waits on: <who or what>` line to its body, naming a ticket, pull request, tag or person `gamma-shift` can check. Narrow the body first when part of it ships.
 
-   The repo's `.todo` keeps work moving between sessions. Each line sits outside the springboard block and is one sentence of at most 80 characters that points at the star, chart or ticket it moves, such as `Finish the inventory 2.0 star chart (GAME-12)`. Small waiting work starts as a line. When it grows past one line it becomes a star, and the line then points at the star. A line goes when what it points at closes. Work with real impact always gets a ticket or a star. The agent writes and deletes these lines itself, and the user never has to edit `.todo`. The limit binds agents: a line the user wrote may run longer.
+   Small waiting work that one line covers goes in `.todo` with `standing-orders` in place of a ticket. Work with real impact always gets a ticket or a star. Strike each `.todo` line whose work is done or whose star or ticket has closed.
 
    A ticket blocked by a ticket its body never names as a hard dependency holds a link only a person can remove where the tracker can't (Plane): name it in the report and ask the user to remove the link.
 
