@@ -3,7 +3,7 @@ approved-spec-guard.sh	96db5c169b3d7ee3	e791eb5ffe2f7b63	77/77
 approved-spec.sh	1de73515ee00e8b1	06fcb1ed295a135f	8/8
 auto-tidy.sh	37372c9b2b9a5907	602eb5cca7baadec	15/15
 checkout-guard.sh	baae812fc4ccfc3e	e2bc415ea42fbbfa	67/67
-draft-lock.sh	d53aa4ec529bb6c1	7093353ecde02a70	57/57
+draft-lock.sh	d53aa4ec529bb6c1	c5bd47da13be1635	57/57
 gamma-shift.sh	bf7b0a15b596e9fc	63ec8ded691a38f5	12/12
 gate-notify.sh	7ba893f680c5d672	95caddab09ffef10	25/25
 git-hook-lib.sh	ab06098427e37ecf	5d5299c5a118a654	32/32
