@@ -32,7 +32,7 @@ The run mode comes from its caller: `remind` from the session-start hook, `engag
 ```text
 Build <ticket> to a draft pull request. You work alone: no question reaches the user, and you dispatch no agent.
 1. Claim the ticket with "Claim a waiting ticket" in docs/agents/issue-tracker.md, before any other write. A claimed ticket drops off every other session's waiting list.
-2. git fetch --prune, then git switch -c <ticket>-<slug> origin/main.
+2. Read the agent file (CLAUDE.md or AGENTS.md) of the repo the ticket changes. When it says to commit straight to main, this is a trunk repo: git pull --rebase on main, build there, push to main, and open no pull request. Otherwise git fetch --prune, then git switch -c <ticket>-<slug> origin/main.
 3. Run the `do` skill on the ticket, steps 1 to 5. The ticket is the request.
 4. Unapproved examples: write them with `examples`, commit them, open the draft, and stop. Report "examples wait on the user's approval".
 5. Run `loose-ends`. Stop at the draft: `make-it-so` is the user's call.
