@@ -61,9 +61,21 @@ if [[ $command =~ ^[[:space:]]*cd[[:space:]]+([^[:space:]\;\&\|]+) ]]; then
   [[ $dir == "~" || $dir == "~/"* ]] && dir=$HOME${dir:1}
   cd "$dir" 2>/dev/null
 fi
+# runs_only drops each mention that only runs a file: a mention at a command's
+# start, after bash, sh, zsh, source or a dot. Running a file reads it, so a
+# script or command left naming no approved file once these go only runs them.
+runs_only() { sed -E 's#(^|[;&|])[[:space:]]*((bash|sh|zsh|source|\.)[[:space:]]+)?[^[:space:];&|()"'"'"']*approved_?examples(\.test)?\.[a-z]+([[:space:]]|$)#\1\5#gI'; }
+# A heredoc fed to cat or tee is data for another file, so its body is
+# dropped. An interpreter's heredoc is code that may write, and stays.
+command=$(awk '
+  tag != "" { if ($0 == tag) tag = ""; next }
+  { print }
+  match($0, /(^|[;&|(][[:space:]]*)(cat|tee)[[:space:]][^<]*<<-?[[:space:]]*["\047]?[A-Za-z_][A-Za-z0-9_]*/) {
+    tag = substr($0, RSTART, RLENGTH); sub(/.*<<-?[[:space:]]*["\047]?/, "", tag)
+  }' <<<"$command")
 # Each word of the command, quotes and shell punctuation stripped.
 words=$(tr -s " \t\n;&|()<>'\"=," '\n' <<<"$command")
-target=""
+target="" # mutant-ok delete: an unset target reads as empty, the same as this
 while IFS= read -r word; do
   [ -n "$word" ] && approved "$word" && { target=$word; break; }
 done <<<"$words"
@@ -78,7 +90,7 @@ if [ -z "$target" ]; then
   # tests by bare name only runs them, as the mutation run does.
   while IFS= read -r word; do
     [ -f "$word" ] && [ "$(wc -c < "$word")" -lt 1000000 ] || continue
-    grep -qiE 'approved_?examples(\.test)?\.[a-z]+' "$word" && refuse "$word names an approved-examples file, and"
+    runs_only <"$word" | grep -qiE 'approved_?examples(\.test)?\.[a-z]+' && refuse "$word names an approved-examples file, and"
   done < <(tr ';&|()\n' '\n' <<<"$command" | awk '{
     flag = 0
     for (i = 1; i <= NF; i++) { # mutant-ok: from 0, field 0 is the whole segment, never a file name, so it adds no candidate
@@ -93,6 +105,7 @@ if [ -z "$target" ]; then
 fi
 
 name=$(basename -- "$target")
+runs_only <<<"$command" | grep -qF "$name" || exit 0
 writes='sed[^|;&]*[[:space:]](-[a-zA-Z]*i|--in-place)|perl[^|;&]*[[:space:]]-[a-zA-Z]*i|'
 writes+="(>|>>|tee([[:space:]]+-a)?)[[:space:]]*[^[:space:]|;&]*${name//./\\.}|"
 writes+='(^|[[:space:];&|(])(rm|mv|cp|install|ln|truncate|dd)[[:space:]]|'
