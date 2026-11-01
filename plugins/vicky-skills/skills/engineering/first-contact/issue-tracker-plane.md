@@ -31,9 +31,12 @@ A pull request closes a work item when its body has a line such as `Closes GAME-
 
 ## Waiting work
 
-A waiting ticket is assigned to the user and can't go on until the thing its `Waits on:` line names is done. `loose-ends` parks one, and `gamma-shift` works through them.
+A waiting ticket can't go on until the thing its `Waits on:` line names is done. It waits on you when that line names you: your decision, answer or merge. Every agent acts as your account, so the assignee can't tell your move from an agent's. `loose-ends` parks one, and `gamma-shift` works through them.
 
-- **List tickets waiting on you**: the open work items assigned to you in a not-started state (Plane's `unstarted` group, often Todo) whose body has a `Waits on:` line.
+- **List waiting tickets**: the open work items whose body has a `Waits on:` line.
+- **List tickets waiting on you**: the open work items whose `Waits on:` line names you: your decision, answer or merge.
+- **Move a ticket to <state>**: the table's "Move to a named state" command with the state's name, such as `Todo` for not-started or `In Progress` for started.
+- **List items created or changed since <time>**: `plane since <PROJECT> <time>` when the repo's CLI has it: one line per item, newest first, marked `new` or `edited`. `<time>` is a bare date or ISO 8601 with an offset. Otherwise the CLI's list command filtered on each item's created and updated times. Show at most five, then a count of the rest.
 - **Park a ticket**: assign it to the user, move it to the not-started state, and add a `Waits on: <who or what>` line to the body.
 - **Claim a waiting ticket**: move it to In Progress, before any other write.
 

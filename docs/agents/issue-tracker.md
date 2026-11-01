@@ -31,9 +31,12 @@ blocked_by: ["[[<blocker note title>]]"]
 
 ## Waiting work
 
-A waiting ticket is assigned to the user and can't go on until the thing its `Waits on:` line names is done. `loose-ends` parks one, and `gamma-shift` works through them.
+A waiting ticket can't go on until the thing its `Waits on:` line names is done. It waits on you when that line names you: your decision, answer or merge. Every agent acts as your account, so the assignee can't tell your move from an agent's. `loose-ends` parks one, and `gamma-shift` works through them.
 
-- **List tickets waiting on you**: `grep -l '^status: waiting' "<vault>/vicky-skills/"*.md`.
+- **List waiting tickets**: `grep -l '^Waits on:' "<vault>/vicky-skills/"*.md`.
+- **List tickets waiting on you**: `grep -l '^Waits on:' "<vault>/vicky-skills/"*.md`, keeping each note whose `Waits on:` line names you: your decision, answer or merge.
+- **Move a ticket to <state>**: set `status:` in the frontmatter to `open` for not-started, `claimed` for started, `waiting` when parked or `done`.
+- **List items created or changed since <time>**: `find "<vault>/vicky-skills/" -name '*.md' -newermt '<time>'`. A note whose name's timestamp is at or after `<time>` is new, any other is edited. Show at most five, then a count of the rest.
 - **Park a ticket**: set `status: waiting` and add a `Waits on: <who or what>` line under the frontmatter.
 - **Claim a waiting ticket**: set `status: claimed`, before any other work.
 

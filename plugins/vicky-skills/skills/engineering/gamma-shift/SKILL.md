@@ -7,14 +7,14 @@ description: Work through the tickets waiting on the user. Each one whose wait i
 
 > _You have the bridge, Number One. Build what's cleared, stop at a draft, and leave the rest on the captain's desk._
 
-A **waiting ticket** is an open ticket assigned to the user with a `Waits on: <who or what>` line in its body, in its tracker's not-started state where it has one. `loose-ends` parks a ticket this way, and the tracker's "Waiting work" section says how its tracker marks one when an effort can't finish it. A gamma shift checks each waiting ticket's wait and builds every one whose wait is over.
+A **waiting ticket** is an open ticket with a `Waits on: <who or what>` line in its body, and it waits on the user when that line names them, in its tracker's not-started state where it has one. `loose-ends` parks a ticket this way, and the tracker's "Waiting work" section says how its tracker marks one when an effort can't finish it. A gamma shift checks each waiting ticket's wait and builds every one whose wait is over.
 
 The run mode comes from its caller: `remind` from the session-start hook, `engage` from the hook or a typed run. The plugin setting is `${user_config.gamma_shift}`.
 
 ## Steps
 
-1. **Find the tracker.** Read the "Waiting work" section of `docs/agents/issue-tracker.md`. When the file or the section is missing, say "gamma shift: this repo's tracker has no waiting list; `/first-contact` adds one" in a typed run, and stop silently in a hook run. Done when you have the list command.
-2. **List the waiting tickets** with that command. Read each one whole, body and comments. A ticket with no `Waits on:` line is assigned work, not waiting work: leave it off. In `remind` mode, open your first reply with `<n> follow-ups wait on you: run /gamma-shift`, or nothing when `<n>` is 0, and stop. Done when every listed ticket is read.
+1. **Find the tracker.** Read the "Waiting work" section of `docs/agents/issue-tracker.md`. When the file or the section is missing, say "gamma shift: this repo's tracker has no waiting list; `/first-contact` adds one" in a typed run, and stop silently in a hook run. Done when you have its "List waiting tickets" command, or "List tickets waiting on you" where it has no such line.
+2. **List the waiting tickets** with that command. Read each one whole, body and comments. A ticket with no `Waits on:` line is assigned work, not waiting work: leave it off. In `remind` mode, count only those whose `Waits on:` line names the user, and open your first reply with `<n> follow-ups wait on you: run /gamma-shift`, or nothing when `<n>` is 0, and stop. Done when every listed ticket is read.
 3. **Check each wait.** Read the thing the `Waits on:` line names, now:
    - A ticket or pull request: **cleared** when it is closed or merged.
    - A release, tag or deploy: **cleared** when the tag exists or the deployed version is the named one or newer.

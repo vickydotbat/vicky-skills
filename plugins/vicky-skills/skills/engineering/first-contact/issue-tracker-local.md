@@ -14,9 +14,12 @@ Tickets are Markdown files under `.scratch/`, one folder per effort. Comments go
 
 ## Waiting work
 
-A waiting ticket is assigned to the user and can't go on until the thing its `Waits on:` line names is done. `loose-ends` parks one, and `gamma-shift` works through them.
+A waiting ticket can't go on until the thing its `Waits on:` line names is done. It waits on you when that line names you: your decision, answer or merge. Every agent acts as your account, so the assignee can't tell your move from an agent's. `loose-ends` parks one, and `gamma-shift` works through them.
 
-- **List tickets waiting on you**: `grep -l '^Status: waiting' .scratch/*/issues/*.md`.
+- **List waiting tickets**: `grep -l '^Waits on:' .scratch/*/issues/*.md`.
+- **List tickets waiting on you**: `grep -l '^Waits on:' .scratch/*/issues/*.md`, keeping each ticket whose `Waits on:` line names you: your decision, answer or merge.
+- **Move a ticket to <state>**: set the `Status:` line to `open` for not-started, `claimed` for started, `waiting` when parked or `done`.
+- **List items created or changed since <time>**: `find .scratch -path '*/issues/*.md' -newermt '<time>'`. A ticket that `git log --diff-filter=A --since=<time>` adds is new, any other is edited. Show at most five, then a count of the rest.
 - **Park a ticket**: set `Status: waiting` and add a `Waits on: <who or what>` line.
 - **Claim a waiting ticket**: set `Status: claimed`, before any other work.
 
