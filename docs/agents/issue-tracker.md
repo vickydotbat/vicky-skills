@@ -18,6 +18,8 @@ blocked_by: ["[[<blocker note title>]]"]
 | Comment | Append `- YYYY-MM-DD: <text>` under `## Comments`. |
 | Find | `grep -l '<text>' "<vault>/vicky-skills/"*.md` |
 | Close | Comment the reason, then set `status: done`. |
+| List items created or changed since <time> | `ls "<vault>/vicky-skills/" \| awk '$1 >= "<YYYYMMDDHHMMSS>"'`. The name's timestamp is the day it was filed, so every line is a new item. |
+| List items closed since <time> | `grep -l '^status: done' "<vault>/vicky-skills/"*.md`, then keep each note whose last `- YYYY-MM-DD:` comment is on or after <time>. |
 
 ## Star chart operations
 

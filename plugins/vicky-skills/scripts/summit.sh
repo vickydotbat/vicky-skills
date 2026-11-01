@@ -14,6 +14,15 @@
 # The line goes out as "summit: <text>", which the viewscreen band shows.
 set -u
 top=$(git -C "${CLAUDE_PROJECT_DIR:-.}" rev-parse --show-toplevel 2>/dev/null) || { echo "summit: not in a repository" >&2; exit 2; }
+# Hooks get CLAUDE_PLUGIN_DATA and the agent's shell does not. An installed copy
+# sits at <plugins>/cache/<marketplace>/<plugin>/<version>/scripts, and its data
+# folder is <plugins>/data/<plugin>-<marketplace>.
+if [ -z "${CLAUDE_PLUGIN_DATA:-}" ]; then
+  here=$(cd "$(dirname "$0")" && pwd)
+  if [[ "$here" =~ ^(.*)/cache/([^/]+)/([^/]+)/[^/]+/scripts$ ]]; then
+    CLAUDE_PLUGIN_DATA="${BASH_REMATCH[1]}/data/${BASH_REMATCH[3]}-${BASH_REMATCH[2]}"
+  fi
+fi
 file="${CLAUDE_PLUGIN_DATA:-}/summit/$(tr '/' '_' <<<"$top")"
 stamp="$(git -C "$top" rev-parse --absolute-git-dir)/springboard-last-session"
 num() { [[ "$1" =~ ^[0-9]+$ ]] || { echo "summit: counts are whole numbers, got '$1'" >&2; exit 2; }; }
