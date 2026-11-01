@@ -4,9 +4,16 @@
 # stand-in browser that records its address.
 set -u
 # No test may reach the user's own editor or browser.
-export VISUAL=true EDITOR=true
+export VISUAL=true EDITOR=true BROWSER=true
 page="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/productivity/interactive-page/scripts/page.py"
 scratch=$(mktemp -d)
+# page.py hands the browser the desktop session's environment, read through
+# systemctl. This desktop names the fake browser, so a mutant that drops
+# BROWSER still reaches no real one.
+mkdir -p "$scratch/desktop"
+printf '#!/usr/bin/env bash\necho "PATH=$PATH"\necho "BROWSER=${BROWSER:-true}"\n' >"$scratch/desktop/systemctl"
+chmod +x "$scratch/desktop/systemctl"
+export PATH="$scratch/desktop:$PATH"
 pid=""
 trap '[ -n "$pid" ] && kill "$pid" 2>/dev/null; rm -rf "$scratch"' EXIT
 printf '#!/usr/bin/env bash\necho "$1" >"%s/url"\n' "$scratch" >"$scratch/browser"
@@ -159,6 +166,29 @@ start "$scratch/one-box.md"; one_box=$(curl -s "$url"); post /done >/dev/null; f
 start "$scratch/two-box.md"; two_box=$(curl -s "$url"); post /done >/dev/null; finish
 check "approve all shows on a page with two approve boxes, and not on a page with one" \
   'grep -q "name=\"approve_all\"" <<<"$two_box" && ! grep -q "approve_all" <<<"$one_box"'
+
+printf '#!/usr/bin/env bash\necho "${LD_LIBRARY_PATH-unset}" >"%s/libpath"\necho "$1" >"%s/url"\n' "$scratch" "$scratch" >"$scratch/env-browser"
+chmod +x "$scratch/env-browser"
+cp "$scratch/template.md" "$scratch/e.md"
+cp "$scratch/browser" "$scratch/plain-browser"; cp "$scratch/env-browser" "$scratch/browser"
+mkdir -p "$scratch/nosession" "$scratch/session"
+printf '#!/usr/bin/env bash\nexit 1\n' >"$scratch/nosession/systemctl"
+cat >"$scratch/session/systemctl" <<'EOF'
+#!/usr/bin/env bash
+echo "PATH=$PATH"
+echo "DESKTOP_ONLY=from-the-desktop"
+echo "ODD=\$'a\\nb'"
+EOF
+chmod +x "$scratch/nosession/systemctl" "$scratch/session/systemctl"
+PATH="$scratch/nosession:$PATH" LD_LIBRARY_PATH=/stale/dev-shell/lib start "$scratch/e.md"; post /done >/dev/null; finish
+check "with no desktop session to read, a dev shell's LD_LIBRARY_PATH still stays out of the browser the page starts" \
+  '[ "$(cat "$scratch/libpath" 2>/dev/null)" = unset ]'
+printf '#!/usr/bin/env bash\necho "${DESKTOP_ONLY-unset} ${DEV_ONLY-unset} ${LD_LIBRARY_PATH-unset} ${ODD-unset}" >"%s/libpath"\necho "$1" >"%s/url"\n' "$scratch" "$scratch" >"$scratch/browser"
+cp "$scratch/template.md" "$scratch/e.md"
+PATH="$scratch/session:$PATH" DEV_ONLY=dev LD_LIBRARY_PATH=/stale/dev-shell/lib start "$scratch/e.md"; post /done >/dev/null; finish
+check "the browser gets the desktop session's environment, with nothing the dev shell added, and an escaped value skipped" \
+  '[ "$(cat "$scratch/libpath" 2>/dev/null)" = "from-the-desktop unset unset unset" ]'
+cp "$scratch/plain-browser" "$scratch/browser"
 
 python3 -I "$page" >/dev/null 2>&1; none=$?
 python3 -I "$page" a b >/dev/null 2>&1; two=$?

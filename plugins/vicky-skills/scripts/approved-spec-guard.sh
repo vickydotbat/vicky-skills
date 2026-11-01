@@ -15,19 +15,38 @@ granted() {
   grants="$(git -C "$top" rev-parse --absolute-git-dir)/approved-spec-grants"
   grep -qsxF "$(realpath -m -- "$1" | sed "s|^$top/||")" "$grants"
 }
+# refuse <file> [what the edit changed]
 refuse() {
-  jq -n --arg f "$1" '{hookSpecificOutput: {
+  jq -n --arg f "$1" --arg why "${2:-}" '{hookSpecificOutput: {
     hookEventName: "PreToolUse",
     permissionDecision: "deny",
-    permissionDecisionReason: ("\($f) holds approved examples, which change only with the user'"'"'s yes. Take the new wording through the examples skill'"'"'s \"Changing an approved example\": draft it with red-pen, naming the test file on the draft'"'"'s location line. Once the user changes it there and closes the file, the edit goes through.")
+    permissionDecisionReason: ("\($f) holds approved examples, which change only with the user'"'"'s yes.\($why) Take the new wording through the examples skill'"'"'s \"Changing an approved example\": draft it with red-pen, naming the test file on the draft'"'"'s location line. Once the user changes it there and closes the file, the edit goes through.")
   }}'
   exit 0
 }
+# An approved example's wording: the file's comment lines that start with Given, When, Then or And.
+wording() { grep -E '^[[:space:]]*(#|//|--|;|\*)[[:space:]]*(Given|When|Then|And)[[:space:]]' || true; }
+# The file as an Edit or Write would leave it, or nothing for a tool whose result can't be read ahead.
+after_edit() {
+  case "$(jq -r '.tool_name // empty' <<<"$payload")" in
+    Write) jq -r '.tool_input.content // empty' <<<"$payload" ;;
+    Edit) jq -Rrs --argjson p "$payload" '($p.tool_input.old_string) as $o | ($p.tool_input.new_string) as $n
+      | if $p.tool_input.replace_all then split($o) | join($n)
+        else split($o) as $parts | if ($parts | length) < 2 then . else $parts[0] + $n + ($parts[1:] | join($o)) end end' <"$1" ;;
+  esac
+}
+# The first wording line an edit changes, adds or removes, or nothing when it keeps them all.
+changed_wording() { diff <(wording <"$1") <(after_edit "$1" | wording) | grep -m1 '^[<>]' | cut -c3-; }
 
 if [ "$(jq -r '.tool_name // empty' <<<"$payload")" != Bash ]; then
   file=$(jq -r '.tool_input.file_path // empty' <<<"$payload")
-  [ -n "$file" ] && approved "$file" && ! granted "$file" && refuse "$file"
-  exit 0 # mutant-ok delete: an empty command below finds no target and exits 0
+  [ -n "$file" ] && approved "$file" && ! granted "$file" || exit 0
+  # A file with no wording lines holds its examples elsewhere, so every line of it stays locked.
+  [ -n "$(wording <"$file")" ] || refuse "$file" " It has no Given, When or Then comment lines, so every line of it is locked. To unlock its harness for good, copy its approved examples from its ticket into it as Given, When and Then comments above their tests, and take that edit through red-pen once."
+  # An edit whose result can't be read ahead leaves no wording lines, so it reads as changing them.
+  line=$(changed_wording "$file")
+  [ -z "$line" ] && exit 0
+  refuse "$file" "${line:+ This edit changes its wording: \"$line\".}"
 fi
 
 command=$(jq -r '.tool_input.command // empty' <<<"$payload")
@@ -75,7 +94,9 @@ writes='sed[^|;&]*[[:space:]](-[a-zA-Z]*i|--in-place)|perl[^|;&]*[[:space:]]-[a-
 writes+="(>|>>|tee([[:space:]]+-a)?)[[:space:]]*[^[:space:]|;&]*${name//./\\.}|"
 writes+='(^|[[:space:];&|(])(rm|mv|cp|install|ln|truncate|dd)[[:space:]]|'
 writes+='git[[:space:]]+([^|;&]*[[:space:]])?(checkout|restore|apply|reset|stash|mv|rm|am|cherry-pick)([[:space:]]|$)'
-grep -qE "$writes" <<<"$command" && ! granted "$target" && refuse "$target"
+harness="" # mutant-ok delete: an unset harness reads as empty, the same as this
+[ -n "$(wording <"$target")" ] && harness=" A shell command can't be read ahead, so make a harness edit, one that keeps every Given, When and Then line, with the Edit tool, which lets it through."
+grep -qE "$writes" <<<"$command" && ! granted "$target" && refuse "$target" "$harness"
 # An interpreter running code of its own (-c, a heredoc, another script) that
 # names the file may write it. Running the file itself only reads it.
 first=$(grep -oE '(^|[[:space:];&|(])(python3?|node|ruby|perl|php|awk)[[:space:]]+[^[:space:]|;&]+' <<<"$command" | head -1 | awk '{print $NF}')

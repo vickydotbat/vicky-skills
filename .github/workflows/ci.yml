@@ -149,6 +149,14 @@ jobs:
         run: tests/guard_new_file_approved_examples.test.sh
       - name: Guard steers instead of asking
         run: tests/guard_steers_approved_examples.test.sh
+      - name: Guard locks wording, not harness
+        run: tests/guard_locks_wording_approved_examples.test.sh
+      - name: Guard reads what an Edit would leave
+        run: tests/guard-wording.test.sh
+      - name: Stale plugin copy hint
+        run: tests/stale_copy_hint_approved_examples.test.sh
+      - name: Stale plugin copy hint decisions
+        run: tests/stale-copy-hint.test.sh
       - name: Faster mutation runner
         run: tests/mutation_speed_approved_examples.test.sh
       - name: Worktree by default

@@ -1,5 +1,5 @@
 after-push.sh	331d6fbcfe1f0e4c	75b32c59e53f48d3	7/7
-approved-spec-guard.sh	58c2504d82db4a53	42c1d10ab5253187	57/57
+approved-spec-guard.sh	b54f65f0638766f3	7d7716eb64d33d3f	73/73
 approved-spec.sh	fac101224829cfdd	338d877a1e82db0e	7/7
 auto-tidy.sh	37372c9b2b9a5907	c2b2af0ca4e91c3a	15/15
 checkout-guard.sh	baae812fc4ccfc3e	df5a5dd0dfd60560	67/67
@@ -24,6 +24,7 @@ rm-steer.sh	6f406b61f83e66c9	98e9664a2f704803	28/28
 scratch-guard.sh	5d86e5061c016d17	a678617232ccdf1a	31/31
 skill-ledger.sh	4f6f1ba436f648ca	0ab74783df113cb7	22/22
 spark-joy.sh	fdba362c4426f908	872e442440cc98e7	27/27
+stale-copy-hint.sh	4e663d08786adf6b	e3e630065ae5eaca	27/27
 step-guard.sh	72466e6912496d03	f299232a5be8544f	42/42
 step-hint.sh	1de7b11feb9a79af	c810b77ec9811a56	11/11
 tea-stdin.awk	ddfdfc5257c31b06	52c4813ce0d89b85	70/70

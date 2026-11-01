@@ -29,6 +29,7 @@ import html
 import http.server
 import os
 import re
+import subprocess
 import sys
 import threading
 import urllib.parse
@@ -196,6 +197,38 @@ def answered(parts, form):
     return "\n".join(out)
 
 
+def use_desktop_env():
+    """Give the browser the desktop session's environment, not this one.
+
+    A session started in a dev shell carries that shell's library and tool
+    paths, and a desktop opener such as kde-open crashes loading them. The
+    user's systemd session holds the environment the desktop itself started
+    with. Where it can't be read, only LD_LIBRARY_PATH is dropped. BROWSER
+    is the user's own choice of browser, so it is kept either way.
+    """
+    browser = os.environ.get("BROWSER")
+    try:
+        listed = subprocess.run(["systemctl", "--user", "show-environment"],
+                                capture_output=True, text=True, timeout=5)
+    except (OSError, subprocess.SubprocessError):
+        listed = None
+    desktop = {}
+    if listed is not None and listed.returncode == 0:
+        for line in listed.stdout.splitlines():
+            key, sep, value = line.partition("=")
+            # systemd writes a value holding special characters as $'...';
+            # such a value is skipped rather than half-decoded.
+            if sep and not value.startswith("$'"):
+                desktop[key] = value
+    if desktop:
+        os.environ.clear()
+        os.environ.update(desktop)
+    else:
+        os.environ.pop("LD_LIBRARY_PATH", None)
+    if browser is not None:
+        os.environ["BROWSER"] = browser
+
+
 def serve_form(text, path, on_post, timeout):
     """Serve the page `text` on this machine only and wait for one POST to
     `path`. `on_post` takes the posted body, URL-encoded, and returns nothing.
@@ -238,6 +271,7 @@ def serve_form(text, path, on_post, timeout):
     origin = f"http://127.0.0.1:{server.server_address[1]}"
     url = origin + "/"
     print(f"page: open {url}", file=sys.stderr, flush=True)
+    use_desktop_env()
     if not webbrowser.open(url):
         print(f"page: no browser opened; give the user {url}", file=sys.stderr, flush=True)
     answered_in_time = done.wait(timeout)
