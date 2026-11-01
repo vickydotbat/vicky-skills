@@ -37,7 +37,7 @@ was=$(awk -F '\t' -v t="$top" '$1 == t {print $2}' "$mine" 2>/dev/null)
 if [ -n "$was" ] && [ "$was" != "$branch" ]; then
   remember
   refuse "$GUARD: this checkout moved from $was to $branch since your last git command here. Another session switched it." \
-    "Leave $branch to that session, and work on yours in its own worktree: git worktree add <dir> $was"
+    "Leave $branch to that session, and work on yours in its own worktree: git worktree add <dir> $was, with <dir> at .claude/worktrees/$was"
 fi
 
 # A switch moves the checkout: git switch, or a checkout of a branch or commit
@@ -81,6 +81,6 @@ if [ -n "$switch$writes" ]; then
     case "$when" in ''|*[!0-9]*) continue ;; esac
     [ $((now - when)) -lt 43200 ] || continue
     refuse "$GUARD: another session works this checkout on branch $theirs (its last git command was $(( (now - when) / 60 )) minutes ago). ${switch:+Switching would move its files.}${writes:+Writing history here would land on its branch.}" \
-      "Use your own worktree instead: git worktree add <dir> <branch>"
+      "Use your own worktree instead: git worktree add .claude/worktrees/<branch> <branch>"
   done
 fi

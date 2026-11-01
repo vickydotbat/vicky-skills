@@ -199,6 +199,12 @@ jobs:
         run: tests/pr_guard_ai_credit_approved_examples.test.sh
       - name: Pr-guard keeps an effort to one pull request
         run: tests/pr_guard_one_pr_approved_examples.test.sh
+      - name: Worktrees live in .claude/worktrees
+        run: tests/worktree_place_approved_examples.test.sh
+      - name: A merged worktree is cleaned up
+        run: tests/worktree_cleanup_approved_examples.test.sh
+      - name: Worktree-place
+        run: tests/worktree-place.test.sh
       - name: Interactive page
         run: tests/interactive_page_approved_examples.test.sh
       - name: Interactive page decisions

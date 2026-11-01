@@ -2,7 +2,7 @@ after-push.sh	331d6fbcfe1f0e4c	92d8c01a00c43889	7/7
 approved-spec-guard.sh	58c2504d82db4a53	372e05d67bb71cfb	57/57
 approved-spec.sh	fac101224829cfdd	328d504926148a1f	7/7
 auto-tidy.sh	37372c9b2b9a5907	6f9ec20e856a996d	15/15
-checkout-guard.sh	e7152557acf7a0f1	384ed7237c3ec529	67/67
+checkout-guard.sh	baae812fc4ccfc3e	384ed7237c3ec529	67/67
 draft-lock.sh	fbb2971d540ee3e1	32ca99eea0f1c45a	53/53
 gamma-shift.sh	83809c7deca626c1	a4bf5501ec1927b7	3/3
 gate-notify.sh	7ba893f680c5d672	22a02167253407e6	25/25
@@ -31,3 +31,4 @@ tea-stdin.sh	1f69ec430c059eec	439ddeaf944e1eb9	15/15
 ticket-drift.sh	8518ba86b3c88168	f6566336cad8135a	26/26
 todo-reminder.sh	794305672da6b183	010690049b6cbf64	9/9
 watch.sh	5151329b7079b9ce	8019d31a50b06e0c	31/31
+worktree-place.sh	9cb9490030329d3a	e7ce448ade33ddca	57/57
