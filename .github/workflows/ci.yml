@@ -195,8 +195,10 @@ jobs:
         run: tests/over_to_you_whole_branch_approved_examples.test.sh
       - name: Rm steer
         run: tests/rm_steer_approved_examples.test.sh
-      - name: Pr-guard refuses only AI credit
+      - name: Pr-guard refuses AI credit, and stacks pass
         run: tests/pr_guard_ai_credit_approved_examples.test.sh
+      - name: Pr-guard keeps an effort to one pull request
+        run: tests/pr_guard_one_pr_approved_examples.test.sh
       - name: Interactive page
         run: tests/interactive_page_approved_examples.test.sh
       - name: Interactive page decisions

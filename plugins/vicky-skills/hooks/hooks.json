@@ -19,7 +19,7 @@
           {
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/pr-guard.sh\"",
-            "timeout": 10
+            "timeout": 60
           }
         ]
       },
@@ -137,6 +137,11 @@
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/checkout-guard.sh\"",
             "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/pr-guard.sh\"",
+            "timeout": 60
           }
         ]
       },

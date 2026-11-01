@@ -9,6 +9,7 @@ has() { if grep -qF -- "$3" <<<"$(hint "$2")"; then echo "ok   $1"; else echo "F
 has "do sends player text to the draft file as it is written" vicky-skills:do "red-pen draft file"
 has "over-to-you refuses wording as a checklist item" vicky-skills:over-to-you "never an over-to-you item"
 has "over-to-you opens the draft file before the sitting" over-to-you "before this sitting"
+has "over-to-you puts the branch in the clone itself" over-to-you "switch the clone to it"
 has "make-it-so checks player text went through the draft file" vicky-skills:make-it-so "red-pen draft file"
 has "do keeps its proof hint" do "ends with its proof"
 for s in vicky-skills:sup review; do

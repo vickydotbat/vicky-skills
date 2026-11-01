@@ -5,9 +5,9 @@ auto-tidy.sh	37372c9b2b9a5907	6f9ec20e856a996d	15/15
 checkout-guard.sh	e7152557acf7a0f1	384ed7237c3ec529	67/67
 draft-lock.sh	fbb2971d540ee3e1	32ca99eea0f1c45a	53/53
 gamma-shift.sh	83809c7deca626c1	a4bf5501ec1927b7	3/3
-gate-notify.sh	deed6bf2a718196f	38cc9a4be2a6c7e1	21/21
+gate-notify.sh	7ba893f680c5d672	22a02167253407e6	25/25
 git-hook-lib.sh	ab06098427e37ecf	8dd19f3fdb5546a0	32/32
-heredoc-strip.awk	2651757e389267ff	5bfa0dedecf07a1d	5/5
+heredoc-strip.awk	2651757e389267ff	18961a332a2967ff	5/5
 issue-guard.sh	70b80cdfa628e1dd	d43c190e48dcee01	21/21
 lesson-hint.sh	1ee1826c304ec982	3ef5fd5eb3b101bf	11/11
 lesson-ledger.sh	157011bb3a30fb9f	0afd864492a01d23	17/17
@@ -16,7 +16,7 @@ merged-branch-guard.sh	86e1037d0d39b0c8	a082101dd8e153fb	43/43
 mutation-proof-guard.sh	b756820a35fb7ae0	e74aea08b9450c01	15/15
 plane-block-guard.sh	679f2b016852effb	3de5f5faecb5e361	14/14
 poll-pace.sh	4548d34f02261258	9682451d2278983f	24/24
-pr-guard.sh	796a1be0f0d63cdc	2e6d2c7143f80c1a	25/25
+pr-guard.sh	2baad98ea289a954	125fccb6a046f9d3	103/103
 push-behind-guard.sh	1e8f867bbe25ccbe	c1c539dfdd9e5099	52/52
 red-first-check.sh	e585449df8cf7aee	974fa986d41b1575	20/20
 red-first-guard.sh	264573899e8d8f0f	bcff3143cddb7f76	27/27
@@ -25,7 +25,7 @@ scratch-guard.sh	5d86e5061c016d17	151fd134aebae3bf	31/31
 skill-ledger.sh	4f6f1ba436f648ca	9dc2c8a8e08dba73	22/22
 spark-joy.sh	2dc8177679887c1f	0cafbbe48f9727be	24/24
 step-guard.sh	72466e6912496d03	2750c64c1c579fe7	42/42
-step-hint.sh	a857d3cb191f2890	1e6e8a445d5fd303	11/11
+step-hint.sh	1de7b11feb9a79af	163f5a261aaef00d	11/11
 tea-stdin.awk	ddfdfc5257c31b06	439ddeaf944e1eb9	70/70
 tea-stdin.sh	1f69ec430c059eec	439ddeaf944e1eb9	15/15
 ticket-drift.sh	8518ba86b3c88168	f6566336cad8135a	26/26

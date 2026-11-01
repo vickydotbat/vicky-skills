@@ -53,9 +53,21 @@
   "userConfig": {
     "guard_pr": {
       "type": "boolean",
-      "title": "No AI credit in pull requests",
-      "description": "Refuse a gh, tea or git-spice command whose text, or the body file it sends, credits an AI with a Co-Authored-By line or a 'Generated with' footer.",
+      "title": "One pull request per effort, and no AI credit",
+      "description": "Keep each session's effort to one pull request, opened once: a new one opens only stacked on it, labelled stacked, on a big enough pull request or as separate work. Also refuse a gh, tea or git-spice command whose text, or the body file it sends, credits an AI.",
       "default": false
+    },
+    "guard_pr_stack_min_lines": {
+      "type": "string",
+      "title": "Lines before a follow-up may stack",
+      "description": "How many lines a pull request changes before pr-guard lets a follow-up stack on it, unless the follow-up says it is separate work.",
+      "default": "300"
+    },
+    "guard_pr_stack_limit": {
+      "type": "string",
+      "title": "Pull requests in one stack",
+      "description": "The most open pull requests one session's stack holds.",
+      "default": "3"
     },
     "guard_issue_threads": {
       "type": "boolean",
@@ -165,7 +177,7 @@
     "gate_notify": {
       "type": "boolean",
       "title": "Notify when an agent waits on you",
-      "description": "Raise a desktop notification when an agent's message opens with the gate line, and on Claude Code's own needs-your-input alerts. Uses notify-send, or osascript on macOS.",
+      "description": "Raise a desktop notification when an agent's message opens with the gate line, and on Claude Code's own alerts except the idle one. Uses notify-send, or osascript on macOS.",
       "default": false
     },
     "nwn_blender": {

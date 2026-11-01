@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # The gate-notify hook announces a message that opens with the gate line and
-# Claude Code's own alerts, and nothing else. It is quiet while its option is
+# Claude Code's own alerts except the idle one, and nothing else. It is quiet while its option is
 # off. A fake notify-send records each call.
 set -euo pipefail
 
@@ -45,6 +45,10 @@ run '{hook_event_name:"PostToolUse",tool_name:"SendUserMessage",tool_input:{mess
 says "a gate line below the first stays quiet" ""
 run '{hook_event_name:"Notification",message:"Claude needs your permission to use Bash"}'
 says "Claude Code's own alert notifies" "--app-name=Claude Code|Waiting on you|Claude needs your permission to use Bash|"
+run '{hook_event_name:"Notification",notification_type:"permission_prompt",message:"Claude needs your permission to use Bash"}'
+says "a permission alert notifies" "--app-name=Claude Code|Waiting on you|Claude needs your permission to use Bash|"
+run '{hook_event_name:"Notification",notification_type:"idle_prompt",message:"Claude is waiting for your input"}'
+says "the idle alert stays quiet" ""
 run '{hook_event_name:"Notification",message:""}'
 says "an empty alert stays quiet" ""
 run '{hook_event_name:"Stop"}'
@@ -53,5 +57,5 @@ CLAUDE_PLUGIN_OPTION_GATE_NOTIFY=false run '{hook_event_name:"PostToolUse",tool_
 says "the option off stays quiet" ""
 grep -qv '^exit=0$' "$scratch/exits" && { echo "FAIL the hook exited non-zero"; failed=1; }
 
-if [[ $failed -eq 0 ]]; then echo "ok   gate-notify announces a gate line and Claude Code alerts, nothing else"; fi
+if [[ $failed -eq 0 ]]; then echo "ok   gate-notify announces a gate line and Claude Code alerts but the idle one, nothing else"; fi
 exit "$failed"
