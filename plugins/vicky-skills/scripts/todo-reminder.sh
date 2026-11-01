@@ -8,4 +8,4 @@ grep -qs '^Todo file: off' docs/agents/*.md && exit 0
 items=$(sed '/^# springboard start/,/^# springboard end/d' .todo 2>/dev/null | grep -v '^[[:space:]]*$') || exit 0
 echo "This repo's .todo file lists small items to do:"
 printf '%s\n' "$items" | sed 's/^/- /'
-echo "Do each item whose wait is over now, without asking, then delete its line from .todo. A line whose star, chart or ticket has closed goes too."
+echo "Do each item whose wait is over now, without asking, then delete its line from .todo. A line that still waits on the user stays until they engage it. A line whose star, chart or ticket has closed goes too."

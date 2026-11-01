@@ -14,7 +14,7 @@ transcript="$(jq -r '.transcript_path // empty' <<<"$input" 2>/dev/null)"
 say() { jq -n --arg t "$1" '{hookSpecificOutput: {hookEventName: "PostToolUse", additionalContext: $t}}'; }
 if [[ "$command" =~ (^|[[:space:];\&|])(gh[[:space:]]+pr[[:space:]]+create[[:space:]].*--draft|tea[[:space:]]+(pr|pulls)[[:space:]]+create[[:space:]].*WIP:) ]]; then
   if [ -n "$transcript" ] && grep -qE 'vicky-skills:warp|"skill": *"warp"' "$transcript" 2>/dev/null; then
-    say "You opened a draft pull request in a warp run. Finish it now with the make-it-so skill, through green CI, without asking. Stop only at a gate: a decision of the user's or another person's move. Then write that gate into the pull request as a \`Waits on:\` line."
+    say "You opened a draft pull request in a warp run. Keep building every target on it, then finish it with the make-it-so skill at warp step 6, through green CI, without asking. Stop only at a gate: a decision of the user's or another person's move. Then write that gate into the pull request as a \`Waits on:\` line."
   else
     say "You opened a draft pull request. Finish it with the make-it-so skill only if the ask needs a finished pull request (\"one PR\", \"ship it\", \"done\"). Otherwise stop at the draft and report it."
   fi
