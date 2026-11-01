@@ -54,6 +54,11 @@ const MAX_AGENT_NAME_CHARS = 40
 const MAX_AGENT_ROWS = 6
 const STREAM_THROTTLE_MS = 250
 const TICK_MS = 1000
+// Below this the band cannot hold its dot, name and a few letters of label.
+const MIN_BAND_COLUMNS = 30
+// What the frame, the toggle, the dot and "Claude: " take from the row.
+const ROW_CHROME_COLUMNS = 4 + 2 + 3 + 8
+const MIN_LABEL_CHARS = 8
 
 const now = atom({ plugin: 'vicky-skills', key: 'now' } as const, IDLE)
 
@@ -69,6 +74,10 @@ const team = atom(
 
 // The summit line summit.sh last printed this session, or '' before any count.
 const summit = atom({ plugin: 'vicky-skills', key: 'summit' } as const, '')
+
+// Where the agent works: a linked worktree's branch, "main checkout" in the
+// main one, or '' outside a git repo.
+const place = atom({ plugin: 'vicky-skills', key: 'place' } as const, '')
 
 const isExpanded = atom(
   { plugin: 'vicky-skills', key: 'isExpanded' } as const,
@@ -196,6 +205,7 @@ export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     const result = await next(e)
 
+    await locate($, e.cwd)
     await publish($, live)
 
     return result
@@ -441,11 +451,21 @@ export const register: Register = on => {
     const working = await read($, team)
     const isOpen = await read($, isExpanded)
     const summitLine = await read($, summit)
+    const placeLine = await read($, place)
     const nowMs = await $.clock.now()
 
     const isWorking = headline.phase !== 'idle'
     const color = PHASE_COLORS[headline.phase]
     const elapsed = isWorking ? ` · ${durationOf(nowMs - headline.sinceMs)}` : ''
+
+    // The layout engine is handed a width the label can use, never left to
+    // squeeze it: a width that is missing, zero or tiny would blank the frame
+    // or leave the label two letters with the time far to the right.
+    const asked = e.props.bodyColumns
+    const columns = Number.isFinite(asked) && asked > 0 ? Math.max(asked, MIN_BAND_COLUMNS) : undefined
+    const labelChars = columns === undefined
+      ? MAX_LABEL_CHARS
+      : Math.min(MAX_LABEL_CHARS, Math.max(MIN_LABEL_CHARS, columns - ROW_CHROME_COLUMNS - elapsed.length))
 
     // One agent the headline names; more, or one beside the main loop's
     // work, get a row each.
@@ -524,7 +544,7 @@ export const register: Register = on => {
           borderStyle="round"
           borderColor="gray"
           paddingX={1}
-          width={e.props.bodyColumns}
+          width={columns}
         >
           <Box key="activity" flexDirection="row">
             <Button
@@ -538,11 +558,12 @@ export const register: Register = on => {
               <Text color={color}>{isWorking ? ' ● ' : ' ○ '}</Text>
               <Text bold>Claude: </Text>
             </Box>
-            <Text wrap="truncate-end">{printable(headline.label, MAX_LABEL_CHARS)}</Text>
+            <Text wrap="truncate-end">{printable(headline.label, labelChars)}</Text>
             <Box flexShrink={0}>
               <Text dimColor>{elapsed}</Text>
             </Box>
           </Box>
+          {placeLine === '' ? [] : [<Box key="place"><Text dimColor wrap="truncate-end">{printable(placeLine, MAX_LABEL_CHARS)}</Text></Box>]}
           {summitLine === '' ? [] : [<Box key="summit"><Text dimColor wrap="truncate-end">{printable(summitLine, MAX_LABEL_CHARS)}</Text></Box>]}
           {teamBox}
           {body}
@@ -551,6 +572,46 @@ export const register: Register = on => {
       </Box>
     )
   })
+}
+
+/**
+ * Reads where the agent works and publishes it: the branch of a linked
+ * worktree, "main checkout" in the main one, nothing outside a git repo.
+ */
+async function locate($: EngineInterface, cwd: string | undefined): Promise<void> {
+  const where = await placeOf($, cwd)
+
+  await update($, place, () => where)
+}
+
+async function placeOf($: EngineInterface, cwd: string | undefined): Promise<string> {
+  if (typeof cwd !== 'string' || cwd === '') {
+    return ''
+  }
+
+  try {
+    const dirs = await $.process.run(
+      ['git', '-C', cwd, 'rev-parse', '--path-format=absolute', '--absolute-git-dir', '--git-common-dir'],
+      { timeoutMs: 3000 },
+    )
+
+    const [gitDir, commonDir] = dirs.stdout.split('\n').map(line => line.trim())
+
+    if (dirs.exitCode !== 0 || !gitDir || !commonDir) {
+      return ''
+    }
+
+    if (gitDir === commonDir) {
+      return 'main checkout'
+    }
+
+    const branch = await $.process.run(['git', '-C', cwd, 'branch', '--show-current'], { timeoutMs: 3000 })
+    const name = branch.exitCode === 0 ? branch.stdout.trim() : ''
+
+    return `worktree: ${name === '' ? 'detached HEAD' : name}`
+  } catch {
+    return ''
+  }
 }
 
 /** The text after the last `summit: ` line in a tool's output, or null when it has none. */

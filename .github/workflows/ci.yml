@@ -271,6 +271,8 @@ jobs:
         run: npm install --global @anthropic-ai/claude-code@2.1.316
       - name: Viewscreen band
         run: tests/viewscreen_approved_examples.test.sh
+      - name: Viewscreen band fit and place
+        run: tests/viewscreen_band_fit.test.sh
       - name: Summit examples, which include the band's
         run: tests/summit_approved_examples.test.sh
       # The rule applies from the commit that added the check: an older
