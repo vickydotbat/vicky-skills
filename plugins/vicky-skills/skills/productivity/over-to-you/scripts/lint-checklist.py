@@ -6,6 +6,8 @@
 Prints `<line>: <problem>` for each problem and exits 1, or prints nothing and exits 0.
 A checklist needs a `proven by:` line naming what the agent already ran, and each item
 needs a `person:` line under it naming one reason no command can prove the item.
+An item that reaches a thing (spawn, give, create...) also needs a `kit:` line holding
+the exact command, in backticks, that puts the thing in reach.
 """
 import re
 import sys
@@ -13,6 +15,8 @@ import sys
 REASONS = ("look", "feel", "real client", "second client", "extender", "hardware", "outside account", "timing")
 ITEM = re.compile(r"^\s*\d+[a-z]?\. \[[ x~-]\] ")
 PERSON = re.compile(r"^\s*person:\s*(.*)$")
+KIT = re.compile(r"^\s*kit:.*`[^`]+`")
+REACHES = re.compile(r"\b(spawn|give|create|place|equip|summon|seed|load)s?\b", re.IGNORECASE)
 
 
 def lint(lines):
@@ -22,14 +26,16 @@ def lint(lines):
     for number, line in enumerate(lines, 1):
         if not ITEM.match(line):
             continue
-        reason = None
+        reason, kit = None, False
         for after in lines[number:]:
             if ITEM.match(after) or after.startswith("#"):
                 break
             found = PERSON.match(after)
-            if found:
+            if found and reason is None:
                 reason = found.group(1).strip()
-                break
+            kit = kit or bool(KIT.match(after))
+        if REACHES.search(line.split("→")[0]) and not kit:
+            problems.append((number, "item reaches a thing but has no `kit:` line with its command in backticks"))
         if reason is None:
             problems.append((number, "item has no `person:` line"))
         elif not reason.startswith(REASONS):

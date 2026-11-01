@@ -44,7 +44,18 @@ textarea{width:100%;min-height:4rem;font-family:monospace}
 input[type=text]{width:70%}
 button{font-size:1.1rem;padding:.4rem 1.2rem}
 .chart{margin-bottom:2rem;overflow-x:auto}
-.chart svg{max-width:100%;height:auto;cursor:zoom-in;background:#fff}"""
+.chart svg{max-width:100%;height:auto;cursor:zoom-in;background:#fff}
+p.text{margin:.6rem 0}
+code{background:#8882;padding:0 .25rem;border-radius:3px}
+.card{border:1px solid #8886;border-radius:8px;padding:.7rem 1rem;margin:.8rem 0}
+.card .act{font-weight:bold}
+.card .exp{margin:.2rem 0 .5rem}
+.card .meta{font-size:.85rem;opacity:.75;margin:.2rem 0}
+.marks label{margin-right:1rem}
+.card input[type=text]{width:100%}
+details{margin:.6rem 0}
+summary{cursor:pointer;opacity:.85}
+details.quick label{display:block;margin:.2rem 0}"""
 # Each click zooms a chart to 2x, then 3x the window width, then back to fit.
 ZOOM = """function zoom(c){const s=c.querySelector("svg"),n=(+c.dataset.z||1)%3+1;c.dataset.z=n;
 s.style.maxWidth=n>1?"none":"";s.style.width=n>1?c.clientWidth*n+"px":""}"""
@@ -55,6 +66,37 @@ CHOICE = re.compile(r"^- \(( |x)\) (.*)$")
 BOX = re.compile(r"^- \[( |x)\] (.+)$")
 # A chart is an SVG file in the same folder as the page file.
 CHART = re.compile(r"^!\[[^\]]*\]\(([^/\\()\s]+\.svg)\)$")
+
+
+INLINE = re.compile(r"`([^`]+)`|\*\*([^*]+)\*\*|(?<![\w*])\*([^*\s][^*]*)\*(?![\w*])|(?<!\w)_([^_\s][^_]*)_(?!\w)")
+LEGEND = re.compile(r"\[(.)\] ([^,.\[]+)")
+HEADER = ("signed off:", "proven by:")
+META = re.compile(r"^\s+(person|kit):\s*(.*)$")
+
+
+def inline(text):
+    """A line's text as HTML, with Markdown code spans, bold and italics drawn."""
+    out, at = [], 0
+    for m in INLINE.finditer(text):
+        out.append(html.escape(text[at:m.start()]))
+        code, bold, em, em2 = m.groups()
+        if code is not None:
+            out.append(f"<code>{html.escape(code)}</code>")
+        elif bold is not None:
+            out.append(f"<strong>{html.escape(bold)}</strong>")
+        else:
+            out.append(f"<em>{html.escape(em or em2)}</em>")
+        at = m.end()
+    out.append(html.escape(text[at:]))
+    return "".join(out)
+
+
+def legend(parts):
+    """The mark labels a "Mark each item: [x] ..., [~] ..." line gives, by mark."""
+    for part in parts:
+        if part[0] == "line" and part[1].startswith("Mark each item:"):
+            return {m: label.strip() for m, label in LEGEND.findall(part[1])}
+    return {}
 
 
 def parse(text, folder):
@@ -109,17 +151,49 @@ def numbered(parts):
 
 def page(name, parts):
     e = html.escape
+    labels = legend(parts)
     out = [f"<!doctype html><meta charset=utf-8><title>{e(name)}</title><style>{STYLE}</style><script>{ZOOM}</script>",
            '<form method=post action="/done">']
+    card = quick = False
+    quick_at = 0
+    header = [part[1] for part in parts if part[0] == "line" and part[1].startswith(HEADER)]
+
+    def close():
+        nonlocal card, quick
+        if quick:
+            out.append("</details>")
+        if card:
+            out.append("</div>")
+        card = quick = False
+
     for part, n in numbered(parts):
         kind = part[0]
         if kind == "line":
             line = part[1]
             if line.startswith("#"):
+                close()
                 level = min(len(line) - len(line.lstrip("#")), 6)
-                out.append(f"<h{level}>{e(line.lstrip('#').strip())}</h{level}>")
+                out.append(f"<h{level}>{inline(line.lstrip('#').strip())}</h{level}>")
+            elif line.startswith("Mark each item:") and labels:
+                continue
+            elif line.startswith(HEADER):
+                # Signed off and proven by fold into one small header, where the first stands.
+                if line == header[0]:
+                    rows = "".join(f"<p class=text>{inline(h)}</p>" for h in header)
+                    out.append(f"<details><summary>Signed off and proven by</summary>{rows}</details>")
+            elif line == "quick notes:":
+                close()
+                quick_at = len(out)
+                out.append("<details class=quick><summary>Quick notes: BUG, QUIRK, FRICTION, UGLY, IDEA, RULE, WIP, QUESTION</summary>")
+                quick = True
+            elif card and (m := META.match(line)):
+                out.append(f"<div class=meta>{e(m.group(1))}: {inline(m.group(2))}</div>")
+            elif line.strip() == "":
+                if card:
+                    close()
             elif line not in ("```text", "```"):
-                out.append(f"<div class=text>{e(line)}</div>")
+                close()
+                out.append(f"<p class=text>{inline(line)}</p>")
         elif kind == "block":
             body = "\n".join(part[1])
             out.append(f'<textarea name="text.{n}" rows="{max(3, len(part[1]) + 1)}">{e(body)}</textarea>')
@@ -128,21 +202,33 @@ def page(name, parts):
             out.append(f'<label><input type=checkbox name="approve.{n}"{ticked}> approve</label>')
         elif kind == "box":
             ticked = " checked" if part[1] else ""
-            out.append(f'<label><input type=checkbox name="box.{n}"{ticked}> {e(part[2])}</label><br>')
+            out.append(f'<label><input type=checkbox name="box.{n}"{ticked}> {inline(part[2])}</label><br>')
         elif kind == "chart":
             out.append(f'<div class=chart onclick="zoom(this)">{part[2]}</div>')
         elif kind == "check":
+            # Each item is a card: the action, what to expect, the mark, then its notes.
+            close()
+            card = True
+            action, _, expect = part[3].partition("→")
             radios = "".join(
-                f'<label><input type=radio name="mark.{n}" value="{e(m)}"{" checked" if m == part[2] else ""}>[{e(m)}]</label> '
-                for m in MARKS)
-            out.append(f"<div>{e(part[1])}{radios}{e(part[3])}</div>")
+                f'<label><input type=radio name="mark.{n}" value="{e(m)}"{" checked" if m == part[2] else ""}> '
+                f'{e(labels.get(m, f"[{m}]"))}</label>' for m in MARKS)
+            out.append(f'<div class=card><div class=act>{e(part[1])}{inline(action.strip())}</div>')
+            if expect.strip():
+                out.append(f"<div class=exp>→ {inline(expect.strip())}</div>")
+            out.append(f"<div class=marks>{radios}</div>")
         elif kind == "field":
-            out.append(f'<label>{e(part[1].strip())}: <input type=text name="field.{n}" value="{e(part[2])}"></label><br>')
+            if quick and part[2]:
+                # A block holding a note opens, so the note shows.
+                out[quick_at] = "<details class=quick open>" + out[quick_at].removeprefix("<details class=quick>")
+            out.append(f'<label>{e(part[1].strip().lstrip("- "))}: <input type=text name="field.{n}" value="{e(part[2])}"></label>')
         elif kind == "comment":
+            close()
             out.append(f'<textarea name="comment.{n}" placeholder="Comment"></textarea>')
         elif kind == "choice":
             ticked = " checked" if part[2] else ""
-            out.append(f'<label><input type=radio name="choice.{part[1]}" value="{e(part[3])}"{ticked}> {e(part[3])}</label><br>')
+            out.append(f'<label><input type=radio name="choice.{part[1]}" value="{e(part[3])}"{ticked}> {inline(part[3])}</label><br>')
+    close()
     out.append('<h2>Anything else</h2><textarea name="note" placeholder="Comment"></textarea>')
     # Two or more approve boxes get one more beside Done that ticks them all.
     approve_all = ('<label><input type=checkbox name="approve_all"> approve all</label> '

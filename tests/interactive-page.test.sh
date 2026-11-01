@@ -193,4 +193,34 @@ cp "$scratch/plain-browser" "$scratch/browser"
 python3 -I "$page" >/dev/null 2>&1; none=$?
 python3 -I "$page" a b >/dev/null 2>&1; two=$?
 check "no file, or two, is a usage error" '[ "$none" = 2 ] && [ "$two" = 2 ]'
+# A checklist draws as cards, with Markdown drawn and the legend as mark labels.
+cat >"$scratch/cards.md" <<'MD'
+# Over to you, Bob!
+
+Open `the client` and **look**.
+signed off: nothing yet
+proven by: `health.sh` answers ok
+Mark each item: [x] completed as expected, [~] completed with changes, [-] failed to complete, [ ] not tested at all.
+
+## Pack
+
+1. [ ] Spawn `i_paper` → the *sheet* shows
+   person: real client
+   kit: `/runscript paper`
+   notes:
+
+quick notes:
+- BUG:
+- IDEA: later
+MD
+render() { python3 -I -c 'import sys; sys.path.insert(0, sys.argv[1]); import page; print(page.page("x", page.parse(sys.stdin.read(), "/")))' "$(dirname "$page")"; }
+html=$(render <"$scratch/cards.md")
+check "inline code, bold and italics draw as Markdown" 'grep -q "<code>the client</code>" <<<"$html" && grep -q "<strong>look</strong>" <<<"$html" && grep -q "<em>sheet</em>" <<<"$html" && ! grep -q "\`" <<<"$html"'
+check "an item is a card with its action, expected result and meta lines" 'grep -q "<div class=card><div class=act>1. Spawn <code>i_paper</code></div>" <<<"$html" && grep -q "<div class=exp>→ the <em>sheet</em> shows</div>" <<<"$html" && grep -q "<div class=meta>kit: <code>/runscript paper</code></div>" <<<"$html"'
+check "the legend becomes the mark labels and leaves the page body" 'grep -q "value=\"x\"> completed as expected</label>" <<<"$html" && ! grep -q "Mark each item" <<<"$html" && ! grep -qF "[x]" <<<"$html"'
+check "signed off and proven by fold into one collapsed header" '[ "$(grep -c "<summary>Signed off and proven by" <<<"$html")" = 1 ] && grep -q "<code>health.sh</code>" <<<"$html"'
+check "quick notes fold into a block that opens when a note is filled" 'grep -q "<details class=quick open><summary>Quick notes" <<<"$html" && grep -q "IDEA: <input type=text name=\"field.2\" value=\"later\">" <<<"$html"'
+blank=$(sed 's/^- IDEA: later$/- IDEA:/' "$scratch/cards.md" | render)
+check "a quick-notes block with no note stays closed" 'grep -q "<details class=quick><summary>" <<<"$blank"'
+check "a no-op Done writes the checklist back byte for byte" 'python3 -I -c "import sys; sys.path.insert(0, sys.argv[1]); import page; t=open(sys.argv[2]).read(); sys.exit(page.answered(page.parse(t, \"/\"), {}) != t)" "$(dirname "$page")" "$scratch/cards.md"'
 exit $fail
