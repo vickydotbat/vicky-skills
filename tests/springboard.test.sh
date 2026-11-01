@@ -3,11 +3,16 @@
 # touches, which commands rebuild it, the page and waiting-on-you actions,
 # and the todo reminder leaving the block alone.
 set -u
+export VISUAL=true EDITOR=true BROWSER=true
 root="$(cd "$(dirname "$0")/.." && pwd)"
 hook="$root/plugins/vicky-skills/scripts/springboard.sh"
 reminder="$root/plugins/vicky-skills/scripts/todo-reminder.sh"
 fx=$(mktemp -d); trap 'rm -rf "$fx"' EXIT
-mkdir -p "$fx/bin" "$fx/repo" "$fx/plain"
+mkdir -p "$fx/bin" "$fx/repo" "$fx/plain" "$fx/desktop"
+# The hook never opens a page, but it names the page script, so a fake
+# desktop stands in should a mutant reach one.
+printf '#!/usr/bin/env bash\necho "BROWSER=true"\n' >"$fx/desktop/systemctl"; chmod +x "$fx/desktop/systemctl"
+export PATH="$fx/desktop:$PATH"
 printf '#!/usr/bin/env bash\ncat "$GH_PRS"\n' > "$fx/bin/gh"; chmod +x "$fx/bin/gh"
 export PATH="$fx/bin:$PATH" GH_PRS="$fx/prs.json" CLAUDE_PROJECT_DIR="$fx/repo"
 git -C "$fx/repo" init -q; printf '.todo\n' > "$fx/repo/.gitignore"
@@ -57,5 +62,8 @@ reset; check "bad input exits 0 and rebuilds nothing" 'echo "not json" | bash "$
 reset; pr 7 false SUCCESS "" | jq -s . > "$GH_PRS"; start >/dev/null; printf 'Rename the flag\n' >> "$fx/repo/.todo"
 out=$(echo '{}' | bash "$reminder")
 check "the todo reminder lists your lines and none of the block" 'grep -q "Rename the flag" <<<"$out" && ! grep -q "springboard\|N1" <<<"$out"'
+le="$root/plugins/vicky-skills/skills/engineering/loose-ends/SKILL.md"
+check "loose-ends puts small waiting work in .todo, and the agent alone keeps those lines" 'grep -q "goes in the repo'"'"'s \`.todo\` in place of a ticket" "$le" && grep -q "Work with real impact always gets a ticket or a star" "$le" && grep -q "the user never edits \`.todo\`" "$le"'
+check "the reminder has the agent do each item whose wait is over, unasked" 'grep -q "whose wait is over now, without asking" <<<"$out"'
 check "a first session has no since line" 'reset; rm -f "$fx/repo/.git/springboard-last-session"; ! start | grep -q "Since then"'
 exit $fail

@@ -18,6 +18,8 @@ New developers pick work from the tracker and trust what a ticket says. So an ef
    - **Excluded**: nothing ships for it. Remove its reference from the pull request body and commits to come.
    - **Waits**: the rest can't be done now, because it waits on the user's decision, another person, a deploy or release, or a repo out of reach. Park it as "Waiting work" in `docs/agents/issue-tracker.md` says: assign it to the user, move it to the not-started state where the tracker has one, and add a `Waits on: <who or what>` line to its body, naming a ticket, pull request, tag or person `gamma-shift` can check. Narrow the body first when part of it ships.
 
+   Small waiting work that one line covers, with no decision to record, goes in the repo's `.todo` in place of a ticket: one line outside the springboard block, naming what it waits on. Work with real impact always gets a ticket or a star. The agent writes and deletes these lines itself, and the user never edits `.todo`.
+
    A ticket blocked by a ticket its body never names as a hard dependency holds a link only a person can remove where the tracker can't (Plane): name it in the report and ask the user to remove the link.
 
    A comment settles nothing. Done when every ticket on the list has a verdict in the tracker or the body.
