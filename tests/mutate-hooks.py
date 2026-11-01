@@ -51,7 +51,7 @@ TESTS = {
     "after-push.sh": ["after-push"],
     "approved-spec-guard.sh": ["approved-spec-guard", "approved_tests_yes_approved_examples", "guard_reads_approved_examples", "guard_new_file_approved_examples", "guard_steers_approved_examples", "approved_spec_guard_cd_approved_examples", "guard_outside_checkout_approved_examples", "guard-locks", "guard_locks_wording_approved_examples", "guard-wording"],
     "stale-copy-hint.sh": ["stale_copy_hint_approved_examples", "stale-copy-hint"],
-    "approved-spec.sh": ["approved-spec-guard", "guard_reads_approved_examples", "guard-locks", "open-draft", "guard_steers_approved_examples", "guard_outside_checkout_approved_examples"],
+    "approved-spec.sh": ["approved-spec-guard", "approved-spec-tags", "approved_spec_prose_approved_examples", "guard_reads_approved_examples", "guard-locks", "open-draft", "guard_steers_approved_examples", "guard_outside_checkout_approved_examples"],
     "auto-tidy.sh": ["auto-tidy"],
     "checkout-guard.sh": ["checkout-guard", "checkout_guard_approved_examples", "worktree_default_approved_examples"],
     "draft-lock.sh": ["draft-lock", "red_first_approved_examples"],
