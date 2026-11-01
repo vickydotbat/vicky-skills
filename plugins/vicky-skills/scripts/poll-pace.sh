@@ -6,6 +6,8 @@ case "${CLAUDE_PLUGIN_OPTION_GUARD_POLL_PACE:-}" in true|1) ;; *) exit 0 ;; esac
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
 payload=$(cat)
 cmd=$(jq -r '.tool_input.command // ""' <<<"$payload")
+# A heredoc body is text, unless the heredoc feeds a shell or an interpreter.
+cmd=$(awk -v code=1 -f "$(dirname "$0")/heredoc-strip.awk" <<<"$cmd")
 grep -Eq '(^|[^[:alnum:]_])sleep[[:space:]]' <<<"$cmd" || exit 0
 refuse() { echo "poll-pace: $1. Wait with \${CLAUDE_PLUGIN_ROOT}/scripts/watch.sh '<check>', run by the Monitor tool or as a background command: it checks every 30 seconds, at most 60 times." >&2; exit 2; }
 [ "$(jq -r '.tool_input.run_in_background // false' <<<"$payload")" = true ] || {

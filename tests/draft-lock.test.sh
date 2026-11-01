@@ -28,4 +28,7 @@ expect "an edit with no path runs" 0 "" "$(jq -n --arg d "$repo" '{tool_name: "E
 expect "a refused shell write names the checkout and the draft" 2 "$repo waits" "$(bash_in 'echo y > scripts/c.sh')"
 grep -qF "$dir/draft.md" "$dir/err" || { echo "FAIL the refusal names the draft"; fail=1; }
 expect "a refused edit names the file" 2 "$repo/scripts/c.sh waits" "$(jq -n --arg f "$repo/scripts/c.sh" --arg d "$repo" '{tool_name: "Edit", tool_input: {file_path: $f}, cwd: $d}')"
+expect "a copy between two folders outside the checkout runs" 0 "" "$(bash_in "cp $dir/a $dir/b")"
+expect "a copy into the checkout is still refused" 2 "$repo waits" "$(bash_in "cp $dir/a $repo/scripts/c.sh")"
+expect "a git write that names an outside path is still refused" 2 "$repo waits" "$(bash_in "git commit -F $dir/msg")"
 exit $fail

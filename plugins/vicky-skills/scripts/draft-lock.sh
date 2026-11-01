@@ -18,13 +18,27 @@ if [ "$tool" = Bash ]; then
   command=$(jq -r '.tool_input.command // empty' <<<"$payload")
   # A stream sent to another stream (2>&1) or to /dev/null writes no file.
   command=$(sed -E 's#[0-9&]*>>?[[:space:]]*(&[0-9-]|/dev/null)##g' <<<"$command")
+  # Text in single quotes (a grep, awk or jq pattern) is never a redirect.
+  command=$(sed -E "s/'[^']*'/''/g" <<<"$command")
+  # A write form other than a redirect or tee. An interpreter writes only
+  # through code of its own (-c, -e, a heredoc); a script run by path reads.
+  other='sed[^|;&]*[[:space:]](-[a-zA-Z]*i|--in-place)|perl[^|;&]*[[:space:]]-[a-zA-Z]*i|(^|[[:space:];&|(])(rm|mv|cp|install|ln|truncate|dd|touch|mkdir|patch)([[:space:]]|$)|(^|[[:space:];&|(])(python3?|node|ruby|perl)[[:space:]][^|;&]*(-[a-zA-Z]*[ce]([[:space:]]|$)|<<)|git[[:space:]]+([^|;&]*[[:space:]])?(commit|checkout|restore|apply|reset|stash|merge|rebase|mv|rm|am|cherry-pick|switch)([[:space:]]|$)'
   # A read-only command passes; a write form sends it to the check below.
-  grep -qE 'sed[^|;&]*[[:space:]](-[a-zA-Z]*i|--in-place)|perl[^|;&]*[[:space:]]-[a-zA-Z]*i|>|(^|[[:space:];&|(])(tee|rm|mv|cp|install|ln|truncate|dd|touch|mkdir|python3?|node|ruby|perl|patch)([[:space:]]|$)|git[[:space:]]+([^|;&]*[[:space:]])?(commit|checkout|restore|apply|reset|stash|merge|rebase|mv|rm|am|cherry-pick|switch)([[:space:]]|$)' <<<"$command" || exit 0
-  # The command writes inside the checkout unless every path it names is outside.
-  dirs=$(tr -s " \t\n;&|()<>'\"=," '\n' <<<"$command" | grep '^/' || true)
+  grep -qE "$other|>|(^|[[:space:];&|(])tee([[:space:]]|$)" <<<"$command" || exit 0
+  # The paths it may write: with only redirects and tee, their targets;
+  # otherwise every absolute path the command names.
+  if grep -qE "$other" <<<"$command"; then
+    dirs=$(tr -s " \t\n;&|()<>'\"=," '\n' <<<"$command" | grep '^/' || true)
+    # A git write or an interpreter's code lands in the checkout whatever it names.
+    grep -qE '>|tee|cp|mv|rm|sed|touch|mkdir' <<<"$command" || dirs=""
+  else
+    dirs=$(grep -oE '(>>?|tee([[:space:]]+-a)?)[[:space:]]*[^[:space:]|;&<>]+' <<<"$command" | sed -E 's/^(>>?|tee([[:space:]]+-a)?)[[:space:]]*//' | tr -d "'\"")
+    # A relative target lands in the checkout.
+    grep -qv '^/' <<<"$dirs" && dirs="" # mutant-ok: -vv is -v, grep reads a repeated flag once
+  fi
   top=$(git rev-parse --show-toplevel 2>/dev/null) || exit 0
   inside=yes
-  if [ -n "$dirs" ] && grep -qE '>|tee|cp|mv|rm|sed|touch|mkdir' <<<"$command"; then
+  if [ -n "$dirs" ]; then
     inside=""
     while IFS= read -r path; do case "$path" in "$top"|"$top"/*) inside=yes ;; esac; done <<<"$dirs"
   fi
