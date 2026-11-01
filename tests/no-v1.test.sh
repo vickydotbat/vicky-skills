@@ -25,6 +25,13 @@ check "a tool result does not end the reply" 'blocked'
 check "a fold-in-or question is stopped" 'blocked'
 { user "go"; text "The next ticket on the chart is GAME-7, and I closed GAME-6."; } > "$fx/t.jsonl"
 check "naming the next ticket on a chart is no offer" '[ -z "$(stop)" ]'
+for r in "That's a different hook, so I left it out of this PR." "I kept them out of the pull request." "Still want #74 fixed next, in its own PR? My pick is yes." "Each one can get their own pull request." "Should I take issue 12 next?" "Want me to fix the ticket too?" "Should I build #9?"; do
+  { user "go"; text "$r"; } > "$fx/t.jsonl"
+  check "an open ticket kept out or offered is stopped: $r" 'blocked'
+done
+{ user "go"; text "Want me to rename the variable?"; } > "$fx/t.jsonl"
+check "a question that names no ticket goes through" '[ -z "$(stop)" ]'
+check "the steer points at open tickets and the summit" '{ user "go"; text "Should I take issue 12 next?"; } > "$fx/t.jsonl"; stop | jq -r .reason | grep -q "every open ticket here that waits on no one" && stop | jq -r .reason | grep -q "summit"'
 { user "go"; text "All done."; } > "$fx/t.jsonl"
 check "a plain reply goes through" '[ -z "$(stop)" ]'
 check "a missing transcript goes through" '[ -z "$(jq -nc "{transcript_path:\"$fx/none\"}" | bash "$hook")" ]'
