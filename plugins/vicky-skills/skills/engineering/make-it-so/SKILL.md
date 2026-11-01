@@ -1,6 +1,6 @@
 ---
 name: make-it-so
-description: Finish a draft pull request and see it through CI — make it current and true, hold it to a measured QA checklist, mark it ready, then babysit CI until every required check is green. Use when the user says "make it so", "finish the PR", "mark it ready", "ship it", "babysit CI" or "make sure CI passes", and when `do` ends.
+description: Finish a draft pull request and see it through CI — make it current and true, hold it to a measured QA checklist, mark it ready, then babysit CI until every required check is green. Use when the user says "make it so", "finish the PR", "mark it ready", "ship it", "babysit CI" or "make sure CI passes", when `warp` ends, and when an effort's ask needs a finished pull request ("one PR", "ship it", "done").
 ---
 
 # Make it so
