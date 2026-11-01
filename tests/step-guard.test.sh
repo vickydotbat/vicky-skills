@@ -8,7 +8,7 @@ guard="$root/scripts/step-guard.sh"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 fail=0
 started() { jq -nc --arg s "$1" '{type:"assistant",message:{content:[{type:"tool_use",name:"Skill",input:{skill:$s}}]}}'; }
-started vicky-skills:do > "$dir/noreview.jsonl"
+{ started vicky-skills:do; started vicky-skills:sentinels; } > "$dir/noreview.jsonl"
 mkdir "$dir/ok" "$dir/broken"
 printf '#!/bin/sh\ncat "%s/body"\n' "$dir" > "$dir/ok/gh"
 printf '#!/bin/sh\njq -n --rawfile b "%s/body" "{body: \\$b}"\n' "$dir" > "$dir/ok/tea"
@@ -32,4 +32,7 @@ mkdir "$dir/garbled"; printf '#!/bin/sh\necho not json\n' > "$dir/garbled/tea"; 
 expect "a Gitea answer that isn't JSON lets it through" 0 garbled "$dir/noreview.jsonl" 'tea pr edit 12 -t "Step guard" </dev/null'
 echo 'Skipped: review, because the diff is one typo' > "$dir/body"
 expect "a skip reason on Gitea lets it through" 0 ok "$dir/noreview.jsonl" 'tea pr edit 12 -t "Step guard" </dev/null'
+started vicky-skills:warp > "$dir/warponly.jsonl"
+printf 'Skipped: sentinels, because a\nSkipped: review, because b\n' > "$dir/body"
+expect "a warp that skipped all but do is still refused for do" 2 ok "$dir/warponly.jsonl" 'gh pr ready 37'
 exit $fail

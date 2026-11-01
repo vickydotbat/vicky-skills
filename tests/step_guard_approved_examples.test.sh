@@ -16,18 +16,18 @@ run() { # $1 option, $2 transcript, $3 command
   jq -nc --arg c "$3" --arg t "$2" '{tool_input:{command:$c},transcript_path:$t}' |
     PATH="$dir/bin:$PATH" CLAUDE_PLUGIN_OPTION_STEP_GUARD=$1 "$guard" 2>"$dir/err"; }
 
-started vicky-skills:do > "$dir/noreview.jsonl"
+{ started vicky-skills:do; started vicky-skills:sentinels; } > "$dir/noreview.jsonl"
 run true "$dir/noreview.jsonl" "gh pr ready 37"; code=$?
 check "given a do build whose review step never ran, marking its pull request ready is refused and names the review step" \
   '[ $code = 2 ] && grep -q "review" "$dir/err"'
 
-{ started vicky-skills:do; started vicky-skills:review; } > "$dir/reviewed.jsonl"
+{ started vicky-skills:do; started vicky-skills:sentinels; started vicky-skills:review; } > "$dir/reviewed.jsonl"
 run true "$dir/reviewed.jsonl" "gh pr ready 37"; code=$?
-check "given a do build whose review ran, the pull request goes ready" '[ $code = 0 ]'
+check "given a do build whose sentinels and review ran, the pull request goes ready" '[ $code = 0 ]'
 
 echo 'Skipped: review, because the diff is one typo' > "$dir/body"
 run true "$dir/noreview.jsonl" "gh pr ready 37"; code=$?
-check "given a do build whose pull request body says Skipped: review, because <reason>, the pull request goes ready" '[ $code = 0 ]'
+check "given a do build whose sentinels ran and whose pull request body says Skipped: review, because <reason>, the pull request goes ready" '[ $code = 0 ]'
 : > "$dir/body"
 
 out=$(jq -nc '{tool_input:{skill:"vicky-skills:do"}}' | CLAUDE_PLUGIN_OPTION_STEP_GUARD=true "$hint")
