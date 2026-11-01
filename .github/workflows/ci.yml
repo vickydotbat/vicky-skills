@@ -33,6 +33,10 @@ jobs:
         run: tests/plugin-layout.test.sh
       - name: Approved-spec guard
         run: tests/approved-spec-guard.test.sh
+      - name: Approved-spec guard keeps real test tags locked
+        run: tests/approved-spec-tags.test.sh
+      - name: Approved-spec guard leaves a doc that shows the mark editable
+        run: tests/approved_spec_prose_approved_examples.test.sh
       - name: Approved-spec guard follows a leading cd
         run: tests/approved_spec_guard_cd_approved_examples.test.sh
       - name: Approved-spec guard locks
