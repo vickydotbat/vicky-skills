@@ -6,7 +6,7 @@
 set -u
 hook="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/scripts/spark-joy.sh"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
-git init -q "$dir/repo"
+git init -q "$dir/repo"; git -C "$dir/repo" remote add origin https://example.invalid/r.git
 stamp="$dir/repo/.git/spark-joy-last"
 day=86400
 fail=0

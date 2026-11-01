@@ -8,7 +8,7 @@ root="$(cd "$(dirname "$0")/.." && pwd)"
 hook="$root/plugins/vicky-skills/scripts/ticket-drift.sh"
 agent="$root/plugins/vicky-skills/agents/ticket-drift.md"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
-git init -q "$dir/repo"
+git init -q "$dir/repo"; git -C "$dir/repo" remote add origin https://example.invalid/r.git; mkdir -p "$dir/repo/docs/agents"; touch "$dir/repo/docs/agents/issue-tracker.md"
 stamp="$dir/repo/.git/ticket-drift-last"
 day=86400
 fail=0
