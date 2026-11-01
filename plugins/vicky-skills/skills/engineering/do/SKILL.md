@@ -70,7 +70,7 @@ Validation at a trust boundary, error handling that prevents data loss, security
 
 The frontier is every open, unblocked star on the chart.
 
-1. Create one **integration branch** for the chart. Open its draft pull request after the first merge, closing every star. Done when the branch exists and its draft pull request is open.
+1. Create one **integration branch** for the chart, from the default branch. It exists only for this whole-chart run with parallel implementers: their branches merge into it locally, and it reaches the default branch through one pull request, based on the default branch. A single star built on its own opens its pull request against the base the repo's rules name, never against an integration branch. Open its draft pull request after the first merge, closing every star. Done when the branch exists and its draft pull request is open.
 2. Give each frontier ticket to its own implementer subagent, in its own worktree, on a branch from the integration branch. Each one runs steps 1 to 5 above with no stops, reports its drafts and Check these lines, then brings the integration branch into its own before it reports. Done when each implementer has reported.
 3. Merge each finished branch into the integration branch. When that opens new frontier tickets, start their subagents. Done when no open unblocked star is left without a subagent or a merge.
 4. Once every ticket is done, run step 6 on the integration branch and fix its findings in one more subagent.

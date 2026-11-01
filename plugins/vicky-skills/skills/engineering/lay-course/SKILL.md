@@ -12,6 +12,10 @@ disable-model-invocation: true
 
 The words, the chart body, the ticket forms and the drawing are in [STAR-CHART.md](STAR-CHART.md): read it before the first write. The tracker is named in `docs/agents/issue-tracker.md`, and its "Star chart operations" section says how this repo expresses children, blocking, the frontier and the drawing. If the file is missing, tell the user to run `/first-contact`.
 
+## Where work lands
+
+A plan that says where work lands (a side branch, a stack, a pull request base, work held back from a release) first reads the target repo's `AGENTS.md` and `CLAUDE.md` for its branch, pull request and release rules, and what "live" means there: the default branch, a tag, a deploy. Quote the rule the plan follows. A landing that departs from those rules, however sound its reason, goes to the user as a decision: two options, the repo's way and the departure, with your pick and why. Until the user picks, a ticket body names the landing as `Waits on: the landing decision`, never as settled.
+
 ## Start an effort
 
 The user brings a loose idea. When they bring the result of a council or an interrogation instead, start at step 4.
@@ -24,7 +28,7 @@ The user brings a loose idea. When they bring the result of a council or an inte
    - **One session of work**: one star, written and filed by `examples` through its Record step. Its one sentence states the mission. Go on to step 7.
 
    Done when the user has taken one or named another.
-5. **Create the chart** with Mission, Prime directive, Sensor log, Black holes and Nebulae filled in. Create the anomalies, away teams, probes, tasks and stars you can state now as its children. Wire blocking in a second pass, once every ticket has a key. Draw the chart. Done when the chart shows every child and every blocker.
+5. **Create the chart** with Mission, Prime directive, Sensor log, Black holes and Nebulae filled in. Create the anomalies, away teams, probes, tasks and stars you can state now as its children. Wire blocking in a second pass, once every ticket has a key. Where a star says how it lands, follow "Where work lands". Draw the chart. Done when the chart shows every child and every blocker, and every landing a star names quotes the repo's rule or the user's pick.
 6. **Dispatch one `away-team` subagent per away team ticket.** Done when each one is running.
 7. **Engage or stop.** Ask: "Warp through the chart now, or stop here?" For one star, ask "Warp to <star> now, or stop here?" On "warp", run `warp` on the chart or the star. Done when `warp` is running or the user has said stop.
 
@@ -34,7 +38,7 @@ The user brings a star chart, and maybe a ticket. Resolve one anomaly per sessio
 
 1. **Load the chart body.** Read other tickets only when the work needs them. Done when you can state the mission.
 2. **Pick the ticket**: the user's, or the first on the frontier. Assign it to the user before any other work. Done when the tracker shows the assignment.
-3. **Resolve it** with the skills its kind names. For an anomaly, ask the method first (Start an effort, step 1). A council resolves every ticket its settled points answer. Done when the question has an answer the human gave or the evidence supports.
+3. **Resolve it** with the skills its kind names. For an anomaly, ask the method first (Start an effort, step 1). A council resolves every ticket its settled points answer. An answer that decides where work lands follows "Where work lands". Done when the question has an answer the human gave or the evidence supports.
 4. **Record it.** Post the answer as a comment and close the ticket. Write a decision record when the answer will outlast the chart. Write both with `human-voice`. Add its line under Decisions, with the method that answered it. Then run `cerebro` as a forecast on what the decision makes due. Done when the ticket is closed, the chart holds its line and cerebro has proposed or found nothing.
 5. **Move the chart forward.** Turn a nebula that is now sharp into tickets. When a decision makes a star specifiable, file it and run `examples` for it. Close a ticket the answer puts past the mission, with its line under Neutral zone. Update or close any ticket the answer makes wrong. Redraw the chart. Done when every line of the chart body is true.
 
