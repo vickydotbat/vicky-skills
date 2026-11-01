@@ -109,6 +109,14 @@ Then <result>
 
 The Examples are the star's spec, and the only one: the sentence and the Pointers are for the person reading. "Done when" stands in for Examples only when the work has no behaviour to show. The `examples` skill writes the Examples, and a star is ready once the human approves them. Size a star to one session: a thin slice through every layer that can be shown working on its own. A refactor too wide for one green slice goes in three stars: add the new form beside the old, move callers over in batches, then delete the old form.
 
+## Filing a star
+
+Every new star, and every anomaly, probe or task that holds build work, is filed this way, whichever skill files it. A research ticket closed as it opens, and waiting work parked on its own ticket, are records and skip it.
+
+1. **Slice.** Each star is a vertical slice: a thin path through every layer, shown working on its own, sized to one session, and landing green on the default branch. A change that can't land green in one step goes expand–contract: build the new form beside the old, move the callers, then delete the old. A plan that takes something away and puts it back later ("reset to stock, then re-add") is no slice: re-cut it. An integration branch is a last resort, for a wide refactor only, and its landing follows `lay-course`'s "Where work lands". Done when every star can be shown working and merged on its own.
+2. **Draft** each star's Given / When / Then examples with `examples`, steps 1 and 2. Done when every star has its examples, or "Examples: not written yet".
+3. **Approve the examples before filing.** Put every star's examples in the effort's one `red-pen` draft file, a section per star with an approve box. The star bodies stay out of it. The user approves, edits or cuts there. A star waits on the close, and is filed with the examples the user left. A star whose examples the user cut is filed with "Examples: not written yet". Done when each star filed holds the user's examples.
+
 ## Drawing the chart
 
 Every chart shows how its tickets connect, drawn from the tracker, never by hand. Redraw after every change to the chart's children or blockers.
