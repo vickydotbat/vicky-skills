@@ -11,7 +11,7 @@ An effort keeps one pull request, opened once, so CI runs once: every minor chan
 
 The forge picks the tool:
 
-- **GitHub**: `gh stack`. Load the `gh-stack` skill first, because bare
+- **GitHub**: `gh stack`. Load the `gh-stack` skill first (it ships with the gh-stack extension, not this plugin), because bare
   `submit`, `init`, `add` and `view` block on a prompt. `gh stack init
   <branch>`, `gh stack add <name>`, then `gh stack submit --auto`, which
   takes no label: add it to each new pull request with `gh pr edit <n>

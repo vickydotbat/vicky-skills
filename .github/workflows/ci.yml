@@ -89,6 +89,12 @@ jobs:
         run: tests/do-open-pr.test.sh
       - name: Never a V1 examples
         run: tests/no_v1_approved_examples.test.sh
+      - name: conn examples
+        run: tests/conn_approved_examples.test.sh
+      - name: Session-start hooks stay quiet with no remote
+        run: tests/no-remote-quiet.test.sh
+      - name: over-to-you lints its checklist
+        run: tests/over_to_you_lint_checklist.test.sh
       - name: Never a V1 hook
         run: tests/no-v1.test.sh
       - name: Brief mode memes

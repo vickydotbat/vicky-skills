@@ -19,8 +19,8 @@ Read the repo's `TESTING_STANDARDS.md` first: it wins over this skill's defaults
 
 ## Steps
 
-1. **Pin the fixed point.** Use what the user named. If they named nothing, ask. Run `git rev-parse <fixed-point>` and confirm `git diff <fixed-point>...HEAD` is non-empty. Done when the ref resolves and the diff has content. When it does not, say which check failed and stop.
-2. **Find the spec.** A ticket key in a commit or the branch name, a path the user passed, or ask. Done when you hold a ticket key or the user's "none".
+1. **Pin the fixed point.** Use what the user named. When `do`, `warp` or `gamma-shift` calls this skill, the fixed point is the merge-base with the pull request's base branch (`git merge-base HEAD origin/<base>`): never ask. Otherwise, if the user named nothing, ask. Run `git rev-parse <fixed-point>` and confirm `git diff <fixed-point>...HEAD` is non-empty. Done when the ref resolves and the diff has content. When it does not, say which check failed and stop.
+2. **Find the spec.** A ticket key in a commit or the branch name, a path the user passed, or ask. Called from `do`, `warp` or `gamma-shift`, take the build's ticket, or "none" for a chat request, and never ask. Done when you hold a ticket key or the user's "none".
 3. **Size the diff** with `git diff --shortstat <fixed-point>...HEAD`. A **small diff** has fewer than 40 lines inserted and deleted together. Done when you know which branch step 4 takes.
 4. **Review it.**
    - **Small diff, unless the user asked for a full review**: review it yourself, with no subagent. Read the diff once per axis. For Standards, read the rules the repo's `AGENTS.md` names for the touched files. For Spec, read the ticket's approved examples, and its prose only for asks no example covers. For Simplicity, ask what could be cut. Check every claim the diff makes about the repo, such as a file, a command or a setting, against the repo.

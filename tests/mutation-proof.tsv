@@ -1,4 +1,4 @@
-after-push.sh	821d9172baeb41ff	e341a1868b999378	16/16
+after-push.sh	b3917174236ca28a	f83cc14680f725e3	16/16
 approved-spec-guard.sh	96db5c169b3d7ee3	e791eb5ffe2f7b63	77/77
 approved-spec.sh	1de73515ee00e8b1	06fcb1ed295a135f	8/8
 auto-tidy.sh	37372c9b2b9a5907	602eb5cca7baadec	15/15
@@ -33,6 +33,6 @@ summit.sh	17f71340bd90012e	24cc4228f5fcd1f4	52/52
 tea-stdin.awk	ddfdfc5257c31b06	3950130321bf8149	70/70
 tea-stdin.sh	1f69ec430c059eec	3950130321bf8149	15/15
 ticket-drift.sh	eb07b2b78671d7b0	26cbf8050212f9ee	32/32
-todo-reminder.sh	5657efc1bbc6f828	9e932e5b89dcdbee	9/9
+todo-reminder.sh	15ef77134a257884	c1c14ce6094f44fa	9/9
 watch.sh	5151329b7079b9ce	c8da02f576e1cbbb	31/31
 worktree-place.sh	9cb9490030329d3a	7b0e29093846776a	57/57
