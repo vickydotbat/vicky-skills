@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # PostToolUse on SendUserMessage, and Notification: a desktop notification when
 # an agent waits on the user. A message whose first line is the gate line,
-# "🚪 Waiting on you: <what>", notifies with <what>, and so does Claude Code's
-# own needs-your-input alert. Off unless the plugin option gate_notify is on.
+# "🚪 Waiting on you: <what>", notifies with <what>, and so does each of Claude
+# Code's own alerts except the idle one. Off unless the plugin option
+# gate_notify is on.
 # It uses notify-send, else osascript, and never blocks: it always exits 0.
 set -u
 case "${CLAUDE_PLUGIN_OPTION_GATE_NOTIFY:-}" in true|1) ;; *) exit 0 ;; esac
@@ -17,6 +18,8 @@ case "$(jq -r '.hook_event_name // ""' <<<"$payload")" in
     what="${what# }"
     ;;
   Notification)
+    # The idle alert fires whenever a turn ends, with nothing blocked.
+    [[ "$(jq -r '.notification_type // ""' <<<"$payload")" == idle_prompt ]] && exit 0
     what=$(jq -r '.message // ""' <<<"$payload")
     [[ -n "$what" ]] || exit 0
     ;;

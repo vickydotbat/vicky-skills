@@ -165,7 +165,7 @@
     "gate_notify": {
       "type": "boolean",
       "title": "Notify when an agent waits on you",
-      "description": "Raise a desktop notification when an agent's message opens with the gate line, and on Claude Code's own needs-your-input alerts. Uses notify-send, or osascript on macOS.",
+      "description": "Raise a desktop notification when an agent's message opens with the gate line, and on Claude Code's own alerts except the idle one. Uses notify-send, or osascript on macOS.",
       "default": false
     },
     "nwn_blender": {

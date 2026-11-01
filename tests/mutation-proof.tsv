@@ -5,7 +5,7 @@ auto-tidy.sh	37372c9b2b9a5907	6f9ec20e856a996d	15/15
 checkout-guard.sh	e7152557acf7a0f1	384ed7237c3ec529	67/67
 draft-lock.sh	fbb2971d540ee3e1	32ca99eea0f1c45a	53/53
 gamma-shift.sh	83809c7deca626c1	a4bf5501ec1927b7	3/3
-gate-notify.sh	deed6bf2a718196f	38cc9a4be2a6c7e1	21/21
+gate-notify.sh	7ba893f680c5d672	22a02167253407e6	25/25
 git-hook-lib.sh	ab06098427e37ecf	8dd19f3fdb5546a0	32/32
 heredoc-strip.awk	2651757e389267ff	5bfa0dedecf07a1d	5/5
 issue-guard.sh	70b80cdfa628e1dd	d43c190e48dcee01	21/21
