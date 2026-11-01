@@ -8,4 +8,5 @@ Test props: <where test props and throwaway scripts go>
 Never holds test props: <what ships, such as the live module or the content folder>
 Commit test cruft: no
 Test kinds: <unit, integration, live, visual: how to run each, and its limits>
+Mutation: <the mutation tool and the command that runs it on changed lines, or by hand, against which tests>
 Live checks: <how a person runs one, step by step, so people and agents read the same steps>

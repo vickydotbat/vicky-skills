@@ -21,9 +21,8 @@ A **trunk repo** takes every change straight on main: its `CLAUDE.md` or `AGENTS
 4. **Mutate what the per-example passes missed**: the decision logic you changed (rules, limits, parsers) with `sentinels`. Kill each survivor with a test, or mark it equivalent with its reason, and put the counts in the report as proof. A survivor that shows a behaviour no example names is a missing example, as step 3 says. Done when its report line names every file and each survivor has its answer.
 5. **Run the checks the change reaches**: the typechecker, and the tests in the files and folders you touched. The repo's docs say whether the full suite runs locally or in CI. Done when they pass.
 6. **Review** with the `review` skill. Fix each finding in the same pull request. Only a finding that waits on the user's decision, another person, a deploy or a repo out of reach goes on a ticket, with a `Waits on:` line. Done when every finding has an answer.
-7. **Make it so.** Finish the draft with the `make-it-so` skill. It hands the missing examples to the user, and each one approved goes back through step 2. Done when it reports every required check green.
 
-## No stops from step 3 to step 7
+## No stops from step 3 to step 6
 
 The user may be away once the examples are approved, and a question or an open editor would stall the build until they return. From step 3 on, keep going and hold everything for the end:
 
@@ -31,7 +30,7 @@ The user may be away once the examples are approved, and a question or an open e
 - **Questions**: A choice that no example settles and that changes no behaviour: take your pick, build on, and name it in the report. For any other, take the answer cheapest to undo, build on it, and add a line to a **Check these** list in the pull request body: the question, your answer, and the commit that holds it.
 - **A guess too costly to undo, or an approved example the build shows is wrong**: park that slice. Add it to Check these with what it waits on, and build the rest.
 
-`make-it-so` hands the drafts and the list to the user before the pull request goes ready. Done when step 7 starts with no question asked since step 1.
+`make-it-so`, run by `warp` or when the ask needs a finished pull request, hands the drafts and the list to the user before the pull request goes ready. Done when step 6 ends with no question asked since step 1.
 
 **State at every stop.** At every stop, write the pull request body's Status section, as `ship-it` says: a draft opened, a slice parked, a gate reached, the run ended. A ticket whose slice is parked: move its ticket back to the not-started state with a `Waits on:` line, as "Waiting work" in `docs/agents/issue-tracker.md` says.
 

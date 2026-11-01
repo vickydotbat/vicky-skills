@@ -1,6 +1,6 @@
 ---
 name: make-it-so
-description: Finish a draft pull request and see it through CI — make it current and true, hold it to a measured QA checklist, mark it ready, then babysit CI until every required check is green. Use when the user says "make it so", "finish the PR", "mark it ready", "ship it", "babysit CI" or "make sure CI passes", and when `do` ends.
+description: Finish a draft pull request and see it through CI — make it current and true, hold it to a measured QA checklist, mark it ready, then babysit CI until every required check is green. Use when the user says "make it so", "finish the PR", "mark it ready", "ship it", "babysit CI" or "make sure CI passes", when `warp` ends, and when an effort's ask needs a finished pull request ("one PR", "ship it", "done").
 ---
 
 # Make it so
@@ -46,7 +46,7 @@ Measured by one read:
 
 - **Q8 Title.** The title says what the change does, in the repo's title style, with no `WIP:` once ready.
 - **Q9 What and why.** The body's first paragraph says what the change does and why. Every sentence is true of `git diff origin/<base>...HEAD`.
-- **Q10 How tested.** The body names the approved examples and the tests that prove them, the mutation counts or why there are none, and anything left unchecked.
+- **Q10 How tested.** The body names the approved examples and the tests that prove them, the mutation counts, or `unrun, because <the log line or reason>`, and anything left unchecked.
 
 Measured after the push:
 

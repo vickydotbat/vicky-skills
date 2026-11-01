@@ -38,7 +38,7 @@ Build <ticket> to a draft pull request. You work alone: no question reaches the 
 3. Run the `do` skill on the ticket, steps 1 to 5. The ticket is the request.
 4. Unapproved examples: write them with `examples`, commit them, open the draft, and stop. Report "examples wait on the user's approval".
 5. Run `loose-ends`. Stop at the draft: `make-it-so` is the user's call.
-Report: the pull request link, its Check these list, and anything you skipped.
+Report: the pull request link, its Check these list, the mutation counts from `do`'s sentinels pass, and anything you skipped.
 ```
 
 ## Report

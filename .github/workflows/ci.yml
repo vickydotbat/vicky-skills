@@ -163,6 +163,8 @@ jobs:
         run: tests/step-guard.test.sh
       - name: Step guard on Gitea
         run: tests/step_guard_gitea_approved_examples.test.sh
+      - name: Warp reaches do, do reaches sentinels
+        run: tests/mutation_step_approved_examples.test.sh
       - name: Mutation proof guard
         run: tests/mutation-proof-guard.test.sh
       - name: Plane block guard

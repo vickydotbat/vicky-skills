@@ -16,12 +16,12 @@ run() { # transcript command
   jq -nc --arg c "$2" --arg t "$1" '{tool_input:{command:$c},transcript_path:$t}' |
     PATH="$dir/bin:$PATH" CLAUDE_PLUGIN_OPTION_STEP_GUARD=true "$guard" 2>"$dir/err"; }
 
-started vicky-skills:do > "$dir/noreview.jsonl"
+{ started vicky-skills:do; started vicky-skills:sentinels; } > "$dir/noreview.jsonl"
 run "$dir/noreview.jsonl" 'tea pr edit 12 -t "Step guard on Gitea" </dev/null'; code=$?
 check "given a do build on Gitea whose review never ran, dropping WIP: from its pull request title is refused and names the review step" \
   '[ $code = 2 ] && grep -q "review" "$dir/err"'
 
-{ started vicky-skills:do; started vicky-skills:review; } > "$dir/reviewed.jsonl"
+{ started vicky-skills:do; started vicky-skills:sentinels; started vicky-skills:review; } > "$dir/reviewed.jsonl"
 run "$dir/reviewed.jsonl" 'tea pr edit 12 -t "Step guard on Gitea" </dev/null'; code=$?
-check "given a do build on Gitea whose review ran, dropping WIP: from its pull request title changes the title" '[ $code = 0 ]'
+check "given a do build on Gitea whose sentinels and review ran, dropping WIP: from its pull request title changes the title" '[ $code = 0 ]'
 exit $fail

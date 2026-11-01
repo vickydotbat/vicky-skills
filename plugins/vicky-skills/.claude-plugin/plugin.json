@@ -209,7 +209,7 @@
     "step_guard": {
       "type": "boolean",
       "title": "No skipped do steps",
-      "description": "Refuse to mark a do build's pull request ready when its review never ran and the body gives no reason, and remind the agent at do's start that each step needs its proof.",
+      "description": "Refuse to mark a do or warp build's pull request ready when do, sentinels or review never ran and the body gives no reason, and remind the agent at do's and warp's start what each step needs.",
       "default": false
     },
     "guard_poll_pace": {
