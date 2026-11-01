@@ -13,9 +13,9 @@ A **council** is a design table about one proposal. The seats argue with the pro
 
 Three laws hold from the first round until Frodo chooses the road:
 
-- **The seats speak every turn.** Every message opens with a seat's name and stays in their voices. The seats may stay wholly in character. Plain prose returns after Frodo's line.
-- **The table stays in chat.** Open points, options and picks go in the round. Open no page during the council: no `red-pen` draft, no `interactive-page` answer page, no `over-to-you` list, whatever those skills' own triggers say. A draft, an example or a ticket body the council would write waits until after the road, as the settled points it rests on.
-- **The council never turns into an interrogation.** Every question to the user comes from a seat, with its options and the seat's pick. A turn of bare questions, or one that withholds the pick, is `interrogation`, and the two skills never cross. When the user asks to be grilled mid-council, Elrond notes it, and `interrogation` may start after the road is chosen.
+- **The seats speak every turn.** Every message opens with a seat's name and stays in their voices, wholly in character if they like. Plain prose returns after Frodo's line.
+- **The table stays in chat.** Open no page during the council: no `red-pen` draft, no `interactive-page` answer page, no `over-to-you` list. Each of those skills names this exception. A draft, an example or a ticket body waits until step 6.
+- **The council never turns into an interrogation.** Every question to the user comes from a seat, with its pick. A turn of bare questions is `interrogation`, and the two skills never cross. When the user asks to be grilled mid-council, Elrond notes it, and `interrogation` may start after the road is chosen.
 
 ## The seats
 
@@ -31,10 +31,9 @@ Three laws hold from the first round until Frodo chooses the road:
 | **Merry and Pippin** | The idea nobody planned on: a twist, a reference from elsewhere, a sidebar. |
 | **Frodo** | Chooses the road. He speaks once, and his line concludes the council. |
 
-Five seats speak in a round. Elrond restates and Gandalf clarifies, every round. The other three rotate: a seat that sat out the last round speaks first, then the sharpest point, so every seat speaks at least every other round. A seat reads its angle in the proposal's own domain: for a game rule, the players and the rulebook; for code, its users and the repo's standards. A seat's character colours its line, and its substance answers its angle.
+Five seats speak in a round. Elrond restates and Gandalf clarifies, every round. The other three rotate: a seat that sat out the last round speaks first, then the sharpest point, so every seat speaks at least every other round. A seat reads its angle in the proposal's own domain: for a game rule, the players and the rulebook; for code, its users and the repo's standards.
 
 Every other line a turn needs belongs to a seat:
-- a direct question from the user goes to the seat whose angle owns it;
 - an ack or a checkpoint, such as "running the probe", is one `**Elrond:**` line;
 - a fact found while working, such as a probe result or another session's state, is Gandalf's;
 - a side matter outside the proposal, such as a hook's errand, is a `Notes:` line under Elrond's list.
@@ -57,11 +56,11 @@ Every other line a turn needs belongs to a seat:
    Notes: <side matters, one line each, or drop the line>
    ```
 
-   Seats answer each other by name. A rotating seat with nothing new gives its place to the next: the form shows one possible table, not a fixed order. When a probe, a measurement or a mock-up would settle a point faster than talk, Elrond offers it as the point's pick. Done when Elrond and Gandalf have spoken, one seat has answered another, every open point has options and a pick, and the round fits on one screen.
+   A rotating seat with nothing new gives its place to the next. When a probe, a measurement or a mock-up would settle a point faster than talk, Elrond offers it as the point's pick. Done when Elrond and Gandalf have spoken, no seat has sat out two rounds running, one seat has answered another by name, every open point has options and a pick, and the round fits on one screen.
 3. **Hand the table to the user** and stop. The open points stay in the round, in chat. Done when the reply ends on Elrond's numbered open points.
-4. **Next round.** React to what the user said, in the round form. Build on an idea they adopted, never re-argue it. When they call the proposal a spiderweb, Gimli cuts it back to its core before anyone adds more. When they are still musing, the council talks and settles nothing. Repeat steps 3 and 4 until the user calls the close or no open point is left. Done when each reply is a round in the seats' voices that answers every point the user raised.
+4. **Next round.** React to what the user said, in the round form. Build on an idea they adopted, never re-argue it. When they call the proposal a spiderweb, Gimli cuts it back to its core before anyone adds more. When they are still musing, the council talks and settles nothing. Go back to step 3, or to step 5 when the user calls the close or no open point is left. Done when the reply is a round in the seats' voices that answers every point the user raised.
 5. **Frodo chooses the road.** This reply concludes the council. Elrond sums up, and Frodo chooses one road for what was settled:
-   - **Too big for one session**: a star chart. `lay-course` starts only when a person types it, so his line asks the user to type `/lay-course`, and the chart starts from the settled points.
+   - **Too big for one session**: a star chart. his line asks the user to type `/lay-course`, and the chart starts from the settled points.
    - **One build for a later session**: a star, written by `examples` up to its Record step.
    - **Fits this session**: a star, then a build, by `warp` to it.
 
@@ -72,12 +71,13 @@ Every other line a turn needs belongs to a seat:
    Settled: <D1: the point, one line each>
    Open: <what stays open, or "none">
    Parked: <the idea → where it was filed>
-   **Frodo:** I will take it. <the road>.
-
    Written: <each note, ticket, comment and message, by path or reference>
    Cerebro: <what the decision makes due, or "nothing">
-   Next: <the next moves, each with its pick>
+   Notes: <side matters, one line each, or drop the line>
+   **Frodo:** I will take it. <the road>.
+
+   Next: <the next moves, each with its pick, in plain prose>
    ```
 
-   Done when Frodo's line names one road, every settled and parked item is written down and named in Written, and cerebro has proposed or found nothing.
+   Done when Frodo's line names one road, every settled and parked item is written down, and cerebro has proposed or found nothing.
 6. **Decide the next moves.** Only now may a page open, and only for the next moves: the road's first step, a parked idea's home, an unapproved example to approve. With three or more next moves, open them as an answer page with `interactive-page`, one question per move with its pick. Otherwise ask in chat. Take the road the user confirms, or the one they name instead. When the user is tired, ask them to type `/conn` for a handoff. Done when the user has taken the road or named another.

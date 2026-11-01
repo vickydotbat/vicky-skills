@@ -7,7 +7,7 @@ description: Hand the live checks only a person can do to the human, as a short 
 
 > _Over to you in the field. Everything the agent can run, it already ran._
 
-Everything the agent can run, it runs, and only the rest goes **over to you**.
+Everything the agent can run, it runs, and only the rest goes **over to you**. During a `council-of-elrond`, the list waits until Frodo has chosen the road.
 
 ## Steps
 
