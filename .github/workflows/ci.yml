@@ -85,6 +85,8 @@ jobs:
         run: tests/summit.test.sh
       - name: cerebro takes its picks
         run: tests/cerebro-picks.test.sh
+      - name: do builds on an open pull request
+        run: tests/do-open-pr.test.sh
       - name: Never a V1 examples
         run: tests/no_v1_approved_examples.test.sh
       - name: Never a V1 hook
