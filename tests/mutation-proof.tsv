@@ -7,7 +7,7 @@ draft-lock.sh	fbb2971d540ee3e1	32ca99eea0f1c45a	53/53
 gamma-shift.sh	83809c7deca626c1	a4bf5501ec1927b7	3/3
 gate-notify.sh	7ba893f680c5d672	22a02167253407e6	25/25
 git-hook-lib.sh	ab06098427e37ecf	8dd19f3fdb5546a0	32/32
-heredoc-strip.awk	2651757e389267ff	5bfa0dedecf07a1d	5/5
+heredoc-strip.awk	2651757e389267ff	18961a332a2967ff	5/5
 issue-guard.sh	70b80cdfa628e1dd	d43c190e48dcee01	21/21
 lesson-hint.sh	1ee1826c304ec982	3ef5fd5eb3b101bf	11/11
 lesson-ledger.sh	157011bb3a30fb9f	0afd864492a01d23	17/17
@@ -16,7 +16,7 @@ merged-branch-guard.sh	86e1037d0d39b0c8	a082101dd8e153fb	43/43
 mutation-proof-guard.sh	b756820a35fb7ae0	e74aea08b9450c01	15/15
 plane-block-guard.sh	679f2b016852effb	3de5f5faecb5e361	14/14
 poll-pace.sh	4548d34f02261258	9682451d2278983f	24/24
-pr-guard.sh	796a1be0f0d63cdc	2e6d2c7143f80c1a	25/25
+pr-guard.sh	2baad98ea289a954	125fccb6a046f9d3	103/103
 push-behind-guard.sh	1e8f867bbe25ccbe	c1c539dfdd9e5099	52/52
 red-first-check.sh	e585449df8cf7aee	974fa986d41b1575	20/20
 red-first-guard.sh	264573899e8d8f0f	bcff3143cddb7f76	27/27
