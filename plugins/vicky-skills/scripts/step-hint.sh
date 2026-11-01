@@ -9,7 +9,7 @@ command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every la
 skill=$(jq -r '.tool_input.skill // ""' | sed 's/.*://')
 case "$skill" in
   do) hint='Every do step ends with its proof. To skip one, write "Skipped: <step>, because <reason>" with the proof in the pull request body. Each player-facing or UI text the build writes or changes joins the effort'"'"'s red-pen draft file when you write it, never a pull request list of unread text.' ;;
-  over-to-you) hint='An outcome a test could assert becomes that test, run green, never an item: each item names its person-only reason on a person: line. Wording is never an over-to-you item. Every player-facing or UI text the branch writes or changes goes in the effort'"'"'s red-pen draft file, opened before this sitting.' ;;
+  over-to-you) hint='An outcome a test could assert becomes that test, run green, never an item: each item names its person-only reason on a person: line. Wording is never an over-to-you item. Every player-facing or UI text the branch writes or changes goes in the effort'"'"'s red-pen draft file, opened before this sitting. The user tests in the main checkout: push the branch, remove its worktree, and switch the main checkout to it.' ;;
   make-it-so) hint='Before the pull request goes ready, every player-facing or UI text the branch adds or changes has passed through the effort'"'"'s red-pen draft file.' ;;
   examples) hint='The drafts open in the editor through red-pen, never in the chat, and nothing is built until the user closes them.' ;;
   *) exit 0 ;;
