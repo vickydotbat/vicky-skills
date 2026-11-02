@@ -59,6 +59,8 @@ Lazy about the solution, never about the change: every caller, test, fixture and
 
 Validation at a trust boundary, error handling that prevents data loss, security and accessibility are never cut.
 
+Keep the build loop in the main thread: each run turns up what the next step needs, and a handoff loses it. Hand a slice to a subagent only when one number or one artifact checks its result: a census, a passing filter, a filed ticket key. Check that number yourself when it comes back.
+
 ## Tests worth keeping
 
 - A test goes through a public interface and survives a refactor that keeps behaviour.

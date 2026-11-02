@@ -1,6 +1,6 @@
 ---
 name: ticket-drift
-description: Finds open tickets whose body is contradicted by their own comments or by the merged pull requests that name them, and comments on each one. Use when the ticket-drift hook says a check is due, or the user asks which tickets have drifted.
+description: Finds open tickets whose body is contradicted by their own comments or by the merged pull requests that name them, and comments on each one. Use when a gamma shift queues a drift check, or the user asks which tickets have drifted.
 tools: Read, Grep, Glob, Bash
 ---
 

@@ -34,7 +34,7 @@ Every file stays free of local paths, hostnames and any project's infrastructure
 - A hook that asks the user is training wheels, the last resort. Refuse with a steer, or inject context that leads the agent elsewhere. When asking is all that fits for now, say in the script's header comment what would replace it.
 - Script in `plugins/vicky-skills/scripts/`, registered in `plugins/vicky-skills/hooks/hooks.json`.
 - An optional guard is off until the user turns it on: declare a `userConfig` option in `plugin.json` (default `false`) and have the script exit early unless `CLAUDE_PLUGIN_OPTION_<NAME>` is `true` or `1`. The exception is a guard the user chose to have on by default, such as `guard_checkout`: its option defaults to `true`, and the script exits early only when it is `false` or `0`.
-- Add `tests/<hook>.test.sh`, a CI step for it, and a README bullet under the hooks list. The test covers every decision the hook makes: each refusal or ask, each pass, the setting off, and a missing tool or bad input. Done when a mutation pass over the script (`sentinels`) leaves no survivor.
+- Add `tests/<hook>.test.sh`, a CI step for it, and a row in the README's hooks table, tagged (recommended) when it only refuses, asks or warns and (experimental) when it starts work on its own. The test covers every decision the hook makes: each refusal or ask, each pass, the setting off, and a missing tool or bad input. Done when a mutation pass over the script (`sentinels`) leaves no survivor.
 
 ## Add a check a skill runs on the user's repo
 

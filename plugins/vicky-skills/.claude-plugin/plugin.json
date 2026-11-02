@@ -151,8 +151,8 @@
     },
     "gamma_shift": {
       "type": "string",
-      "title": "Gamma shift at session start",
-      "description": "off does nothing. remind says how many tickets wait on you. engage builds every ticket whose wait is over, in the background, to a draft pull request.",
+      "title": "Gamma shift at session start (experimental)",
+      "description": "The experimental backlog-clearing powerhouse. Use it with care. off does nothing. remind says how many tickets wait on you. engage works with no one watching: it builds every ticket whose wait is over, runs spark-joy and the drift check on their schedules below, puts all of it on one draft pull request, and comments on tickets.",
       "options": [
         "off",
         "remind",
@@ -168,15 +168,15 @@
     },
     "deepen_every_days": {
       "type": "string",
-      "title": "Deepen the code every few days",
-      "description": "0 does nothing. A number of days N runs spark-joy in the background at the first session start in a repo after N days, to a draft pull request.",
-      "default": "0"
+      "title": "Gamma shift: deepen the code every few days",
+      "description": "Runs only when gamma_shift is engage. A spark-joy run joins the gamma shift at the first session start in a repo after this many days, 7 by default. 0 turns it off.",
+      "default": "7"
     },
     "drift_every_days": {
       "type": "string",
-      "title": "Check tickets for drift every few days",
-      "description": "0 does nothing. A number of days N starts the ticket-drift agent in the background at the first session start in a repo after N days. It comments on open tickets whose comments or merged pull requests contradict their body, and edits nothing.",
-      "default": "0"
+      "title": "Gamma shift: check tickets for drift every few days",
+      "description": "Runs only when gamma_shift is engage. The ticket-drift agent joins the gamma shift at the first session start in a repo after this many days, 7 by default. It comments on open tickets whose comments or merged pull requests contradict their body, and edits nothing. 0 turns it off.",
+      "default": "7"
     },
     "skill_ledger": {
       "type": "boolean",

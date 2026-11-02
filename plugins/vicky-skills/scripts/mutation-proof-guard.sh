@@ -19,6 +19,7 @@ refresh=$(sed -n 's/^Mutation proof refresh: //p' "$doc" | head -1)
 # The check runs from the repo root, and must answer fast: it compares, never mutates.
 if ! out=$(cd "$top" && timeout 60 bash -c "$check" 2>&1); then
   refuse "$GUARD: the mutation proof is out of date:" "$out" \
-    "Refresh it with: ${refresh:-the command docs/agents/testing.md names}, then commit the proof with the change."
+    "Refresh it with: ${refresh:-the command docs/agents/testing.md names}, then commit the proof with the change." \
+    "When the stale change is not part of this commit, copy it to a folder outside the repo, git restore it, commit, then copy it back."
 fi
 exit 0 # mutant-ok delete: the if above leaves status 0

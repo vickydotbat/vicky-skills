@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # The proof guard's decisions the approved examples leave out: a git command
-# that is no commit, and a commit made from a folder below the repo root.
+# that is no commit, a commit made from a folder below the repo root, and the
+# steer for a stale change that this commit leaves out.
 set -u
 guard="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/scripts/mutation-proof-guard.sh"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
@@ -15,4 +16,9 @@ expect() { # name want cwd command
 }
 expect "a git command that is no commit runs, with the proof stale" 0 "$repo" 'git status'
 expect "a commit from a folder below the root is checked from the root" 2 "$repo/sub" 'git commit -m x'
+msg=$(jq -n --arg d "$repo" '{tool_name: "Bash", tool_input: {command: "git commit -m x"}, cwd: $d}' |
+  CLAUDE_PLUGIN_OPTION_GUARD_MUTATION_PROOF=true bash "$guard" 2>&1 >/dev/null)
+grep -q "not part of this commit.*git restore it, commit, then copy it back" <<<"$msg" \
+  && echo "ok   the refusal says how to commit around a stale change the commit leaves out" \
+  || { echo "FAIL the refusal has no steer for a stale change outside the commit: $msg"; fail=1; }
 exit $fail

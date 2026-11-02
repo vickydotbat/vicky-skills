@@ -15,7 +15,8 @@ row() { grep -F "| **$1**" <<<"$rows"; }
 # Then every hook the plugin registers is one row of a table, with what it does and how to turn it on
 missing=""
 for script in $(jq -r '.hooks[][].hooks[].command' "$plugin/hooks/hooks.json" | sed 's/.*scripts\///; s/"//g' | sort -u); do
-  opt=$(grep -o 'CLAUDE_PLUGIN_OPTION_[A-Z0-9_]*' "$plugin/scripts/$script" | head -1 | sed 's/CLAUDE_PLUGIN_OPTION_//' | tr 'A-Z' 'a-z')
+  opts=$(grep -o 'CLAUDE_PLUGIN_OPTION_[A-Z0-9_]*' "$plugin/scripts/$script" | sort -u | sed 's/CLAUDE_PLUGIN_OPTION_//' | tr 'A-Z' 'a-z')
+  # A hook with no setting needs a line here naming its row.
   case "$script" in
     after-push.sh) name="After push" ;;
     approved-spec-guard.sh) name="Approved examples guard" ;;
@@ -24,7 +25,10 @@ for script in $(jq -r '.hooks[][].hooks[].command' "$plugin/hooks/hooks.json" | 
     *) name="" ;;
   esac
   if [ -n "$name" ]; then row "$name" | grep -q 'Always on' || missing="$missing $script"
-  else grep -q "\`$opt\`" <<<"$rows" || missing="$missing $script"; fi
+  else
+    found=""; for opt in $opts; do grep -q "\`$opt\`" <<<"$rows" && found=1; done
+    [ -n "$found" ] || missing="$missing $script"
+  fi
 done
 jq -e '.modules | index("./viewscreen.tsx")' "$plugin/hooks/hooks.json" >/dev/null && { row "Viewscreen band" | grep -q . || missing="$missing viewscreen"; }
 short=$(awk -F'|' 'NF != 5 || $3 ~ /^ *$/ || $4 ~ /^ *$/' <<<"$rows")

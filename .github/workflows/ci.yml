@@ -167,6 +167,12 @@ jobs:
         run: tests/reader_panel_approved_examples.test.sh
       - name: Ticket-drift hook
         run: tests/ticket_drift_approved_examples.test.sh
+      - name: Gamma shift runs spark-joy and the drift check on one branch
+        run: tests/gamma_powerhouse_approved_examples.test.sh
+      - name: README shows every hook in one table
+        run: tests/hooks_table_approved_examples.test.sh
+      - name: do hands a slice over only when one number checks it
+        run: tests/do_delegate_approved_examples.test.sh
       - name: Hook exit codes
         run: tests/hook-exits.test.sh
       - name: Checkout guard decisions

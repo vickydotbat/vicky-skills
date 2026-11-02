@@ -44,9 +44,9 @@ for script in gamma-shift.sh spark-joy.sh ticket-drift.sh auto-tidy.sh; do
   quiet "a session start with nothing due" "$script" '{"hook_event_name": "SessionStart"}' "${on[@]}" CLAUDE_PROJECT_DIR="$dir/plain" \
     CLAUDE_PLUGIN_OPTION_GAMMA_SHIFT=off CLAUDE_PLUGIN_OPTION_DEEPEN_EVERY_DAYS=0 CLAUDE_PLUGIN_OPTION_DRIFT_EVERY_DAYS=0
 done
-for days in '' x -1 0; do
-  quiet "days set to '$days'" spark-joy.sh '{}' CLAUDE_PLUGIN_OPTION_DEEPEN_EVERY_DAYS="$days" CLAUDE_PROJECT_DIR="$dir/repo"
-  quiet "days set to '$days'" ticket-drift.sh '{}' CLAUDE_PLUGIN_OPTION_DRIFT_EVERY_DAYS="$days" CLAUDE_PROJECT_DIR="$dir/repo"
+for days in x -1 0; do
+  quiet "days set to '$days'" spark-joy.sh '{}' CLAUDE_PLUGIN_OPTION_GAMMA_SHIFT=engage CLAUDE_PLUGIN_OPTION_DEEPEN_EVERY_DAYS="$days" CLAUDE_PROJECT_DIR="$dir/repo"
+  quiet "days set to '$days'" ticket-drift.sh '{}' CLAUDE_PLUGIN_OPTION_GAMMA_SHIFT=engage CLAUDE_PLUGIN_OPTION_DRIFT_EVERY_DAYS="$days" CLAUDE_PROJECT_DIR="$dir/repo"
 done
 quiet "a session end" checkout-guard.sh '{"session_id": "s1", "hook_event_name": "SessionEnd"}' "${on[@]}"
 quiet "a git command after it ran" checkout-guard.sh "$(bash_in 'git status' | jq '.hook_event_name = "PostToolUse"')" "${on[@]}"
@@ -65,6 +65,7 @@ speaks() {
 }
 for hook in spark-joy:DEEPEN ticket-drift:DRIFT; do
   script=${hook%%:*}.sh; var=CLAUDE_PLUGIN_OPTION_${hook#*:}_EVERY_DAYS
+  export CLAUDE_PLUGIN_OPTION_GAMMA_SHIFT=engage
   quiet "a project folder that is gone" "$script" '{}' "$var=3" CLAUDE_PROJECT_DIR="$dir/gone"
   quiet "a project folder outside a repository" "$script" '{}' "$var=3" CLAUDE_PROJECT_DIR="$dir/plain"
   rm -f "$dir/repo/.git/"*-last
@@ -73,6 +74,7 @@ for hook in spark-joy:DEEPEN ticket-drift:DRIFT; do
 done
 mkdir -p "$dir/repo/docs/agents"; printf 'Ticket drift: off\n' > "$dir/repo/docs/agents/issue-tracker.md"; rm -f "$dir/repo/.git/"*-last
 quiet "a repo that turned it off" ticket-drift.sh '{}' CLAUDE_PLUGIN_OPTION_DRIFT_EVERY_DAYS=3 CLAUDE_PROJECT_DIR="$dir/repo"
+unset CLAUDE_PLUGIN_OPTION_GAMMA_SHIFT
 rm -rf "$dir/repo/docs"
 
 quiet "a project folder that is gone" auto-tidy.sh '{}' CLAUDE_PLUGIN_OPTION_AUTO_TIDY=true CLAUDE_PROJECT_DIR="$dir/gone"
