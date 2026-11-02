@@ -57,6 +57,34 @@ check "a v2 you named stays a v2" 'passes'
 check "review findings land in the same pull request" \
   'grep -q "Fix each finding in the same pull request" "$root/plugins/vicky-skills/skills/engineering/do/SKILL.md" && ! grep -q "record the ones you defer on a ticket" "$root/plugins/vicky-skills/skills/engineering/do/SKILL.md"'
 
+# Given an agent whose reply lists its checks as V1, V2 and V3
+# When it ends its turn
+# Then the reply goes through untouched
+reply "Checked: **V1.** The hook sees a typed command. **V2.** The hook has no memory. V3: the two pull requests touch different lines."
+check "a check label is no v2" 'passes'
+
+# Given an agent whose reply says the rest can wait for a v2
+# When it ends its turn
+# Then the reply is stopped, and the agent folds the work in
+ok=1
+for r in "The rest can wait for a v2." "Save the sorting for v2." "Sorting can come in the v2."; do
+  reply "$r"; blocked || ok=0
+done
+check "a v2 offer still stops" '[ $ok = 1 ]'
+
+# Given an agent whose reply quotes a hook's pattern in backticks, such as `follow-up PR` or `my pick`
+# When it ends its turn
+# Then neither no-v1 nor take-pick stops it
+take="$root/plugins/vicky-skills/scripts/take-pick.sh"
+reply 'The hook blocks a sentence holding `a follow-up PR`, and take-pick reads `my pick` with a question. Should the steer name `I recommend` too?'
+check "code in backticks is text, not an offer" 'passes && [ -z "$(jq -nc --arg t "$fx/t.jsonl" "{stop_hook_active:false,transcript_path:\$t}" | CLAUDE_PLUGIN_OPTION_GUARD_TAKE_PICK=true bash "$take" 2>/dev/null)" ]'
+
+# Given an agent whose reply offers a follow-up PR in plain words
+# When it ends its turn
+# Then no-v1 stops it, as before
+reply 'Done. The `export` column widths could use a follow-up PR.'
+check "the same words outside backticks still stop" 'blocked'
+
 # Given the never-a-V1 setting switched off
 # When an agent's reply offers a follow-up
 # Then the reply goes through untouched
