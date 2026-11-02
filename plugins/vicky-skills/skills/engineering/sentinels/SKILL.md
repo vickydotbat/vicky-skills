@@ -24,13 +24,7 @@ Read the repo's `TESTING_STANDARDS.md` first: it wins over this skill's defaults
 
 ## Tests that make a pass fast
 
-Each mutant runs the tests that reach it, so a test's time is paid once per mutant. Hold every test a pass runs to these:
-
-- **It finishes in about a second.** Share a fixture across the suite: one container, one server, one clone. Fake the network and the clock. A test never sleeps to wait: it polls with a cap, or waits on the process it started.
-- **A stand-in exits when it's told to.** A stub editor or server `exec`s its command, so the process id the test saves is the one it kills. A child left behind holds the test's output open, and the runner waits for it on every mutant.
-- **A fast check runs first.** A small test of exit codes and quiet paths across the code kills most mutants in a fraction of a second. The slow, thorough tests then run only against the mutants that survive it.
-- **The runner pays its setup once.** Copy the repo, build, or start a runner once per worker, and put the original back after each mutant, never a fresh copy per mutant.
-- **The first red test ends the mutant.** Keep the tool's bail on.
+When a pass runs slow, hold its tests to "Tests that make a pass fast" in [SPEED.md](SPEED.md).
 
 ## Steps
 
