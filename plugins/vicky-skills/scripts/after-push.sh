@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 # PostToolUse hook: a push can change what the pull request body describes, so
 # remind the agent to make the body and its work items true again. A draft
-# pull request just opened in a session that started `warp` (typed, or a Skill
-# call; the skill listing alone names it too) gets a steer to
+# pull request just opened in a session that typed or Skill-called `warp` gets a steer to
 # finish it with make-it-so; any other draft gets a hint to finish only when
 # the ask needs a finished pull request, since a `do` the user started by hand
 # may get more steps from them. Only adds context; it never blocks. Needs jq;
