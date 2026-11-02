@@ -163,4 +163,7 @@ leave='then delete feat/next here and on the remote'
 grep -qF "$leave" <<<"$(told hub "gh pr create --title N --body x")" && echo "ok   a second pull request is told to delete the branch it leaves" || { echo "FAIL a second pull request is told to delete the branch it leaves"; fail=1; }
 grep -qF "$leave" <<<"$(told hub "gh pr create --body x --base feat/one --label stacked")" && echo "ok   a too-small base is told to delete the branch it leaves" || { echo "FAIL a too-small base is told to delete the branch it leaves"; fail=1; }
 grep -qF "$leave" <<<"$(told big "gh pr create --body x --base feat/one --label stacked" CLAUDE_PLUGIN_OPTION_GUARD_PR_STACK_LIMIT=1)" && echo "ok   a full stack is told to delete the branch it leaves" || { echo "FAIL a full stack is told to delete the branch it leaves"; fail=1; }
+git -C "$scratch/hub" switch -q --detach
+out=$(told hub "gh pr create --title N --body x"); grep -q "already has an open pull request" <<<"$out" && ! grep -q "delete" <<<"$out" && echo "ok   a detached head is told to delete nothing" || { echo "FAIL a detached head is told to delete nothing"; fail=1; }
+git -C "$scratch/hub" switch -q feat/next
 exit $fail

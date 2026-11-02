@@ -131,7 +131,8 @@ lines_of() {
 
 # The line that keeps a moved effort from leaving its old branch behind.
 left_behind() {
-  echo "If the work is already committed on $current, cherry-pick it onto $1, then delete $current here and on the remote (git push origin --delete $current), so no copy outlives the move."
+  case "$current" in ''|HEAD) return 0 ;; esac
+  echo "If the work is already committed on $current, cherry-pick it onto $1. Once every commit is there and no pull request is open from $current, then delete $current here and on the remote (git push origin --delete $current), so no copy outlives the move."
 }
 
 # Checks one command that may open a pull request. <kind> is pr for a plain
