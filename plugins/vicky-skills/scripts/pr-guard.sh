@@ -129,6 +129,11 @@ lines_of() {
   done
 }
 
+# The line that keeps a moved effort from leaving its old branch behind.
+left_behind() {
+  echo "If the work is already committed on $current, cherry-pick it onto $1, then delete $current here and on the remote (git push origin --delete $current), so no copy outlives the move."
+}
+
 # Checks one command that may open a pull request. <kind> is pr for a plain
 # create, gh-stack or gs for the stack tools.
 check() {
@@ -142,6 +147,7 @@ check() {
     if ! grep -qxF -- "$base" <<<"$heads"; then
       refuse "This session already has an open pull request here, on $top. One effort is one pull request, opened once, so CI runs once." \
         "Commit this work on $top and push it there." \
+        "$(left_behind "$top")" \
         "Only a follow-up that is big enough to review alone, or truly separate work, gets its own pull request: stacked on $top (base $top) and labelled stacked."
     fi
   else
@@ -156,12 +162,14 @@ check() {
   fi
   if ((count >= limit)); then
     refuse "This session's stack already holds $count open pull requests, the most it takes." \
-      "Commit this work on the top branch, $top, and push it there."
+      "Commit this work on the top branch, $top, and push it there." \
+      "$(left_behind "$top")"
   fi
   lines=$(lines_of "$base")
   if [ -n "$lines" ] && ((lines < min_lines)) && ! tr -d '\\' <<<"$forge_text" | grep -q 'Separate work:'; then
     refuse "$base changes $lines lines, and a follow-up stacks only on a pull request of $min_lines lines or more." \
       "Commit this work on $base and push it there." \
+      "$(left_behind "$base")" \
       "If it is truly separate work, say why in a body line that starts with Separate work:"
   fi
 }

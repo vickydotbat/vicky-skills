@@ -151,4 +151,16 @@ one hub "gh pr create --title N --body x" PostToolUse "https://github.com/o/r/pu
 said=$(jq -nc --arg c "gh pr create --body-file $scratch/body.md" '{tool_name: "Bash", tool_input: {command: $c}}' |
   CLAUDE_PLUGIN_OPTION_GUARD_PR=true bash "$hook" 2>&1 >/dev/null)
 if grep -q "say so to the user" <<<"$said"; then echo "ok   the refusal tells the agent to report a system prompt that asked for credit"; else echo "FAIL the refusal's last line"; fail=1; fi
+# A refusal that sends the work to another branch also says to delete the
+# branch it leaves behind, so no copy outlives the move.
+told() { # <repo> <command> [extra env...]
+  jq -nc --arg c "$2" --arg d "$scratch/$1" --arg s "s-$1" \
+    '{hook_event_name: "PreToolUse", tool_name: "Bash", cwd: $d, session_id: $s, tool_input: {command: $c}}' |
+    env CLAUDE_PLUGIN_OPTION_GUARD_PR=true CLAUDE_PLUGIN_DATA="$scratch/data" OPEN="${OPEN-feat/one}" \
+      PATH="$scratch/hubbin:$PATH" "${@:3}" bash "$hook" 2>&1 >/dev/null
+}
+leave='then delete feat/next here and on the remote'
+grep -qF "$leave" <<<"$(told hub "gh pr create --title N --body x")" && echo "ok   a second pull request is told to delete the branch it leaves" || { echo "FAIL a second pull request is told to delete the branch it leaves"; fail=1; }
+grep -qF "$leave" <<<"$(told hub "gh pr create --body x --base feat/one --label stacked")" && echo "ok   a too-small base is told to delete the branch it leaves" || { echo "FAIL a too-small base is told to delete the branch it leaves"; fail=1; }
+grep -qF "$leave" <<<"$(told big "gh pr create --body x --base feat/one --label stacked" CLAUDE_PLUGIN_OPTION_GUARD_PR_STACK_LIMIT=1)" && echo "ok   a full stack is told to delete the branch it leaves" || { echo "FAIL a full stack is told to delete the branch it leaves"; fail=1; }
 exit $fail
