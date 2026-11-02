@@ -101,6 +101,8 @@ jobs:
         run: tests/over_to_you_lint_checklist.test.sh
       - name: Never a V1 hook
         run: tests/no-v1.test.sh
+      - name: Take the pick hook
+        run: tests/take-pick.test.sh
       - name: Brief mode memes
         run: tests/brief_mode_memes_approved_examples.test.sh
       - name: Red pen quick close
