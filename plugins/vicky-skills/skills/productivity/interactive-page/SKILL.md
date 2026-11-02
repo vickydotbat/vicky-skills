@@ -1,6 +1,6 @@
 ---
 name: interactive-page
-description: Open what the user must read, approve, tick or choose (a red-pen draft file, an over-to-you checklist, a question with options) as a page in their browser, and write their answers back into the file. Use whenever a skill hands the user a file to edit or tick, and whenever you would ask the user a question with options.
+description: Open what the user must read, approve, tick or choose (a red-pen draft file, an over-to-you checklist, a question with options) as a page in their browser, and write their answers back into the file. Use whenever a skill hands the user a file to edit or tick, and whenever a question's options need room to read.
 ---
 
 # Interactive page
@@ -31,7 +31,7 @@ Every other line shows as text. A Done that changes nothing leaves the file byte
 
 ## A question with options
 
-A question you would ask in chat with two or more options goes on a page instead. During a `council-of-elrond`, before Frodo chooses the road, the question stays in the round. Write it as one section per question, your pick marked `(x)`:
+A quick pick between short options goes through `AskUserQuestion` in the terminal. A question whose options need room to read goes on a page instead. During a `council-of-elrond`, before Frodo chooses the road, the question stays in the round. Write it as one section per question, your pick marked `(x)`:
 
 ```markdown
 # A question for you
