@@ -36,12 +36,12 @@ liveness from Codex's own files before you wait, retry or report.
 Check these, newest first, with `${CLAUDE_PLUGIN_ROOT}/scripts/watch.sh '<check>'`, run by the Monitor tool:
 
 - `pgrep -af "codex exec"` shows the process.
-- The newest `~/.codex/sessions/YYYY/MM/DD/rollout-*.jsonl` belongs to this
-  run, and its modification time moves. Reading the image skill and the
-  reference images makes it large early. That is input, not output.
-- `~/.codex/generated_images/<session id>/` appears when the image lands.
-  The session id is the tail of the rollout file name.
-- The target path exists.
+- `find ~/.codex/sessions -name 'rollout-*.jsonl' -mmin -5 | grep -q .`: this
+  run's rollout file still moves. Reading the image skill and the reference
+  images makes it large early. That is input, not output.
+- `test -d ~/.codex/generated_images/<session id>`: the image landed. The
+  session id is the tail of the rollout file name.
+- `test -e <target path>`.
 
 Silent means none of these moved for five minutes while the process lives.
 Then take the last 20 lines of the rollout file and look for a usage limit,
