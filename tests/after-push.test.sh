@@ -15,9 +15,13 @@ check "silent on a word that holds push" "" "$(run 'echo git pushing')"
 fx=$(mktemp -d); trap 'rm -rf "$fx"' EXIT
 printf '%s\n' '{"type":"user","message":{"content":"<command-name>/vicky-skills:warp</command-name>"}}' > "$fx/warp.jsonl"
 printf '%s\n' '{"type":"user","message":{"content":"<command-name>/vicky-skills:do</command-name>"}}' > "$fx/do.jsonl"
+printf '%s\n' '{"type":"assistant","message":{"content":[{"type":"tool_use","name":"Skill","input":{"skill": "vicky-skills:warp"}}]}}' > "$fx/warp-call.jsonl"
+printf '%s\n' '{"type":"attachment","content":"- vicky-skills:warp: Warp through a star chart"}' > "$fx/listing.jsonl"
 text() { jq -n --arg c "$1" --arg t "${2:-}" '{tool_input:{command:$c}, transcript_path:$t}' | "$hook" | jq -r '.hookSpecificOutput.additionalContext // empty'; }
 check "a draft in a warp run is sent to make-it-so" yes "$(text 'git push -u origin x && gh pr create --draft --title T' "$fx/warp.jsonl" | grep -q "then finish it with the make-it-so skill at warp step 6" && echo yes)"
 check "the warp steer names the gate it may stop at" yes "$(text 'gh pr create --draft' "$fx/warp.jsonl" | grep -q "Waits on:" && echo yes)"
+check "a draft after a Skill call to warp is sent to make-it-so" yes "$(text 'gh pr create --draft' "$fx/warp-call.jsonl" | grep -q "at warp step 6" && echo yes)"
+check "a skill listing that names warp gets the soft hint" yes "$(text 'gh pr create --draft' "$fx/listing.jsonl" | grep -q "only if the ask needs a finished pull request" && echo yes)"
 check "a draft in a do run by hand gets the soft hint" yes "$(text 'gh pr create --draft' "$fx/do.jsonl" | grep -q "only if the ask needs a finished pull request" && echo yes)"
 check "the soft hint never says finish it now" "" "$(text 'gh pr create --draft' "$fx/do.jsonl" | grep -o "at warp step 6")"
 check "a draft with no transcript gets the soft hint" yes "$(text 'gh pr create --draft' | grep -q "Otherwise stop at the draft" && echo yes)"

@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # PostToolUse hook: a push can change what the pull request body describes, so
 # remind the agent to make the body and its work items true again. A draft
-# pull request just opened in a session that started `warp` gets a steer to
+# pull request just opened in a session that started `warp` (typed, or a Skill
+# call; the skill listing alone names it too) gets a steer to
 # finish it with make-it-so; any other draft gets a hint to finish only when
 # the ask needs a finished pull request, since a `do` the user started by hand
 # may get more steps from them. Only adds context; it never blocks. Needs jq;
@@ -13,7 +14,7 @@ command="$(jq -r '.tool_input.command // empty' <<<"$input" 2>/dev/null)"
 transcript="$(jq -r '.transcript_path // empty' <<<"$input" 2>/dev/null)"
 say() { jq -n --arg t "$1" '{hookSpecificOutput: {hookEventName: "PostToolUse", additionalContext: $t}}'; }
 if [[ "$command" =~ (^|[[:space:];\&|])(gh[[:space:]]+pr[[:space:]]+create[[:space:]].*--draft|tea[[:space:]]+(pr|pulls)[[:space:]]+create[[:space:]].*WIP:) ]]; then
-  if [ -n "$transcript" ] && grep -qE 'vicky-skills:warp|"skill": *"warp"' "$transcript" 2>/dev/null; then
+  if [ -n "$transcript" ] && grep -qE '<command-name>/(vicky-skills:)?warp</command-name>|"skill": *"(vicky-skills:)?warp"' "$transcript" 2>/dev/null; then
     say "You opened a draft pull request in a warp run. Keep building every target on it, then finish it with the make-it-so skill at warp step 6, through green CI, without asking. Stop only at a gate: a decision of the user's or another person's move. Then write that gate into the pull request as a \`Waits on:\` line."
   else
     say "You opened a draft pull request. Finish it with the make-it-so skill only if the ask needs a finished pull request (\"one PR\", \"ship it\", \"done\"). Otherwise stop at the draft and report it."
