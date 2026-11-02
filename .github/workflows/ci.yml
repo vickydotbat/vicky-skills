@@ -135,6 +135,8 @@ jobs:
         run: tests/step_guard_approved_examples.test.sh
       - name: Lesson hint
         run: tests/lesson-hint.test.sh
+      - name: Token savings
+        run: tests/token-savings.test.sh
       - name: Engrave approved examples
         run: tests/engrave_approved_examples.test.sh
       - name: Merged-branch guard
