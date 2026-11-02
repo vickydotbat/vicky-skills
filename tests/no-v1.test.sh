@@ -38,7 +38,7 @@ for r in "Sorting waits until v2." "That is next v2 work." "Leave it for the lat
   { user "go"; text "$r"; } > "$fx/t.jsonl"
   check "a v2 after its lead word is an offer: $r" 'blocked'
 done
-for r in "V2: the hook has no memory." "**V2.** Done." "We shipped v2 of the parser today." "The hook reads \`a follow-up PR\` as an offer."; do
+for r in "Plurals like \"follow-up tickets\" still get caught." "It matched “a pull request for later” too." "V2: the hook has no memory." "**V2.** Done." "We shipped v2 of the parser today." "The hook reads \`a follow-up PR\` as an offer."; do
   { user "go"; text "$r"; } > "$fx/t.jsonl"
   check "a label, a past v2 or quoted code is no offer: $r" '[ -z "$(stop)" ]'
 done

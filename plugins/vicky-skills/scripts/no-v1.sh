@@ -6,7 +6,8 @@
 # stop is blocked once with a steer: fold it in, then report what was folded.
 # A v2 counts only after a word such as "a" or "for", so a check labelled
 # V2 is no offer, and code in backticks is dropped first. Ticket words match
-# only as whole words, so "pr" inside "surprises" is no offer. A sentence that
+# only as whole words, so "pr" inside "surprises" is no offer, and text in
+# double quotes is a mention, dropped like code. A sentence that
 # names a wait (Waits on, waits on) or quotes the user (as you said) goes
 # through. It steers once per turn: with stop_hook_active set, the
 # reply goes through, so a misjudged one never loops.
@@ -14,7 +15,7 @@ set -u
 case "${CLAUDE_PLUGIN_OPTION_GUARD_NO_V1:-}" in true|1) ;; *) exit 0 ;; esac
 # shellcheck source=stop-reply.sh
 . "$(dirname "$0")/stop-reply.sh"
-offers=$(prose | tr '\n' ' ' | sed 's/\([.?!]\) /\1\n/g' \
+offers=$(prose | sed 's/"[^"]*"//g; s/“[^”]*”//g' | tr '\n' ' ' | sed 's/\([.?!]\) /\1\n/g' \
   | grep -iE '\b(follow-?up|separate|another|later|future) (pr|pull request|ticket|issue|effort|star)|\b(ticket|pr|pull request|issue)\b[^.?!]* (for )?later|\b(a|the|for|in|into|to|until|next|later) v2\b|fold (it|that|them|this) in,? or |(left|kept) (it|them|that|this) out of (this|the) (pr|pull request)|(in|into|gets?|needs?) (its|their) own (pr|pull request)|(still want|should i (take|do|fix|build)|want me to (take|do|fix|build))[^.?!]*(#[0-9]+|(issue|ticket) #?[0-9]+)' \
   | grep -viE 'waits on|as you (said|asked)')
 [ -n "$offers" ] || exit 0
