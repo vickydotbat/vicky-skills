@@ -92,4 +92,30 @@ describe('summit and place lines', () => {
 
     expect((await ui.find({ key: 'place' }))?.text ?? '').toContain('⎇ fix-band · main checkout')
   })
+
+  test('a move into a worktree changes the line to that worktree', async ($, on) => {
+    mock.clock(on, { now: 1_000_000 })
+    on('ui.render', { component: 'AbovePrompt' }, ($, e) => {
+      const { Box } = $.ui.resolve(e)
+      return <Box key="engine" />
+    })
+    let folder = '/r'
+    on('session.start', (_$, e) => ({ cwd: e.cwd }))
+    on('session.cwd', () => ({ value: folder }))
+    on('process.run', (_$: unknown, e: { argv: string[] }) => {
+      const inWorktree = e.argv.includes('/r/.claude/worktrees/w')
+      const stdout = e.argv.includes('rev-parse')
+        ? (inWorktree ? '/r/.git/worktrees/w\n/r/.git\n' : '/r/.git\n/r/.git\n')
+        : (inWorktree ? 'w-branch\n' : 'main\n')
+      return { value: { exitCode: 0, stderr: '', stdout } }
+    })
+    on('tool.call', async () => ({ result: { stdout: '', stderr: '' } }) as never)
+    await $.session.start({ cwd: '/r' } as never)
+    const ui = await $.ui.mount(BAND)
+
+    folder = '/r/.claude/worktrees/w'
+    await $.tool.call({ tool: 'EnterWorktree', name: 'w' } as unknown as Call)
+
+    expect((await ui.find({ key: 'place' }))?.text ?? '').toContain('⎇ worktree: w-branch')
+  })
 })

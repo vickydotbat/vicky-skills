@@ -6,6 +6,6 @@ root="$(cd "$(dirname "$0")/.." && pwd)"
 plugin="$root/plugins/vicky-skills"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
-check "the place and summit sit above the Claude line, only a line-start summit counts, and the line names the current branch" \
-  'out=$(timeout 120 claude plugin test "$plugin" 2>&1) && [ "$(grep -c "^(pass) summit and place lines > " <<<"$out")" = 4 ] && grep -q "^ *0 fail" <<<"$out"'
+check "the place and summit sit above the Claude line, only a line-start summit counts, and the line names the current branch and worktree" \
+  'out=$(timeout 120 claude plugin test "$plugin" 2>&1) && [ "$(grep -c "^(pass) summit and place lines > " <<<"$out")" = 5 ] && grep -q "^ *0 fail" <<<"$out"'
 exit $fail

@@ -141,7 +141,7 @@ type Agent = {
  * started over on a reload, while the headline and history in `$.state` stay.
  */
 type Live = {
-  // The folder the session started in, read again for its branch after each command.
+  // The session's folder as last read, read again for its branch after each call.
   cwd?: string
   calls: Map<string, Call>
   agents: Map<string, Agent>
@@ -293,8 +293,10 @@ export const register: Register = on => {
       const result = await next(e)
       const told = summitOf(result)
       if (told !== null) await update($, summit, () => told)
-      // A command can switch the branch, so the checkout line is read again.
-      if (e.tool === 'Bash') await locate($, live.cwd)
+      // A call can switch the branch or move into a worktree, so the
+      // checkout line is read again from the session's current folder.
+      live.cwd = await currentFolder($, live.cwd)
+      await locate($, live.cwd)
 
       outcome = result.deny !== undefined ? 'denied' : result.isError ? 'error' : 'ok'
 
@@ -578,6 +580,16 @@ export const register: Register = on => {
       </Box>
     )
   })
+}
+
+/** The session's folder now, or the one last known when it cannot be read. */
+async function currentFolder($: EngineInterface, known: string | undefined): Promise<string | undefined> {
+  try {
+    const cwd: unknown = await $.session.cwd()
+    return typeof cwd === 'string' && cwd !== '' ? cwd : known
+  } catch {
+    return known
+  }
 }
 
 /**
