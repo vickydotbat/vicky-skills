@@ -217,6 +217,12 @@ jobs:
         run: tests/stale_copy_hint_approved_examples.test.sh
       - name: Stale plugin copy hint decisions
         run: tests/stale-copy-hint.test.sh
+      - name: do confirms a chat objective
+        run: tests/do_confirm_approved_examples.test.sh
+      - name: do confirm hint decisions
+        run: tests/do-confirm-hint.test.sh
+      - name: Every wait on the user is a gate
+        run: tests/gate_home_approved_examples.test.sh
       - name: Faster mutation runner
         run: tests/mutation_speed_approved_examples.test.sh
       - name: Mutation runner memory limit

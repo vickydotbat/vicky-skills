@@ -23,4 +23,4 @@ grep -qiE "going with|🚪 waiting on you" <<<"$said" && exit 0
 grep -qiE "my pick|i recommend|\bpick:" <<<"$said" || exit 0
 asks=$(printf '%s\n' "$said" | tr '\n' ' ' | sed 's/\([.?!]\) /\1\n/g' | grep -E '\?[[:space:]]*$|\?$')
 [ -n "$asks" ] || exit 0
-jq -n --arg q "$asks" '{decision:"block", reason:("You asked with a pick but nothing takes it if the user stays silent. When the pick is cheap to undo, take it now: write \"Going with <pick>\" and act on it. When it is costly to undo, gate it: open it with \"🚪 Waiting on you: <the one thing>\" and wait with watch.sh under the Monitor tool. The question:\n" + $q)}'
+jq -n --arg q "$asks" '{decision:"block", reason:("You asked with a pick but nothing takes it if the user stays silent. When the pick is cheap to undo, take it now: write \"Going with <pick>\" and act on it. When it is costly to undo, gate it: open it with \"🚪 Waiting on you: <the one thing>\" and wait at it as skills/GATES.md in this plugin says. The question:\n" + $q)}'
