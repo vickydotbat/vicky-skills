@@ -121,6 +121,21 @@ same "a command substitution in double quotes still runs" "$(one hub 'url="$(gh 
 same "a bracket in double quotes is text" "$(one hub 'echo "a(gh pr create --title N)"')" 0
 same "a dollar in double quotes is text" "$(one hub 'echo "$x gh pr create --title N"')" 0
 same "double-quoted text after a command substitution is text again" "$(one hub 'x="$(echo a) gh pr create --title N"')" 0
+# Quoted text the shell runs as a command, or quoting the masker can't
+# follow, is read as before, so a real forge command never slips through.
+same "an apostrophe in a comment doesn't hide the next line" "$(one hub "echo hi # it's
+gh pr create --title N --body x")" 2
+same "a backtick command inside double quotes still runs" "$(one hub 'echo "`gh pr create --title N --body x`"')" 2
+same "an escaped quote in dollar-quotes doesn't hide what follows" "$(one hub "echo \$'\\'' ; gh pr create --title N --body x")" 2
+same "a command handed to bash -c still runs" "$(one hub 'bash -c "gh pr create --title N --body x"')" 2
+same "a command handed to eval still runs" "$(one hub "eval 'gh pr create --title N --body x'")" 2
+same "an unclosed quote reads the command as it stands" "$(one hub 'echo "oops ; gh pr create --title N --body x')" 2
+same "dollar-quoted text with an escaped quote is text" "$(one hub "echo \$'it\\'s gh pr create --title N'")" 0
+same "an apostrophe in a comment opens no quote" "$(one hub "echo 'gh pr create --title N' # it's fine")" 0
+same "double-quoted text after a backtick command is text again" "$(one hub 'echo "`date` gh pr create --title N"')" 0
+same "a backtick command outside quotes is no quote" "$(one hub 'x=`date`; gh pr create --title N --body x')" 2
+same "a command after another inside backticks in double quotes still runs" "$(one hub 'echo "`x; gh pr create --title N --body x`"')" 2
+same "a backtick command ending before a quoted blank still runs" "$(one hub 'echo "`x; gh pr create --title N --body x` "')" 2
 same "a quoted pipe doesn't split the command" "$(one hub 'gh pr create --title "a|b" --body x')" 2
 same "a command after the quoted text still runs" "$(one hub "echo 'gh pr create' && gh pr create --title N --body x")" 2
 same "a merged pull request no longer counts" "$(OPEN="" one hub "gh pr create --title N --body x")" 0

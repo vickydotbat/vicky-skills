@@ -35,7 +35,10 @@ session_id=$(jq -r '.session_id // ""' <<<"$payload" 2>/dev/null)
 # Only the forge CLIs and git-spice send text to the forge. The command
 # without heredoc bodies decides what runs; the credit check reads it all.
 code=$(awk -f "$(dirname "$0")/heredoc-strip.awk" <<<"$command")
-quoted=$(awk -f "$(dirname "$0")/quote-mask.awk" <<<"$code")
+# Quoted text is masked, so a quoted forge command reads as text. When the
+# masker fails (an unclosed quote, or an awk without gawk) the command is read
+# as it stands.
+quoted=$(awk -f "$(dirname "$0")/quote-mask.awk" <<<"$code") && [ -n "$quoted" ] || quoted=$code
 grep -Eq '(^|[^[:alnum:]_-])(gh|tea|gs)([[:space:]]|$)' <<<"$code" || exit 0
 
 [ -z "$cwd" ] || cd "$cwd" 2>/dev/null || true
@@ -189,6 +192,10 @@ remember() {
 while IFS= read -r masked; do
   # Matched on the masked text, read for flags with the quoted text restored.
   segment=$(tr '\001\002\003\004\005' ' ;&|\n' <<<"$masked")
+  # Quoted text handed to a shell, eval, ssh or xargs runs, so it is read whole.
+  if grep -Eq '(^|[[:space:]/(])(bash|sh|zsh|dash|eval|ssh|xargs|su|run0)([[:space:]]|$)' <<<"$masked"; then
+    masked=$segment
+  fi
   kind="" base="" labels="" head=$current
   if grep -Eq '(^|[^[:alnum:]_-])gh[[:space:]]+pr[[:space:]]+create([[:space:]]|$)' <<<"$masked"; then
     kind=pr
