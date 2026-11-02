@@ -45,7 +45,7 @@ Run them in order for every workflow change. Diagnosing a run starts at step 7.
 
 ## Gate rules
 
-- A draft runs nothing past its first step ([CLEAN-GATE.md](CLEAN-GATE.md)).
+- A draft runs nothing past its first step ([CLEAN-GATE.md](CLEAN-GATE.md)). A run that stops at the draft gate is expected: triage it as no run yet, never as red.
 - A pull request's CI finishes in a few minutes and uses as little of the runner as the change needs. A timeout is a crash guard, never the bar.
 - A gate runs only what the change can reach. A docs-only or decision-record-only change runs the cheap checks and no build; a test row proves it. A path the gate does not recognise runs everything, loudly, so the map gets fixed.
 - A test proves one result in one place. Shared setup starts once per suite, and an expensive evaluation runs once and is shared.
