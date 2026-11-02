@@ -47,4 +47,10 @@ check "a repo with no tracker skips the counts" \
 # Then the agent deletes the old branch here and on the remote
 check "a moved effort leaves no branch behind" \
   'grep -q "Once every commit is there and no pull request is open from \$current, then delete \$current here and on the remote (git push origin --delete \$current)" "$plugin/scripts/pr-guard.sh"'
+# Engraved 2026-11-02: a build in another session wrote tests and code after
+# a chat "approval". Only the ticked red-pen page approves an example.
+do_skill="$plugin/skills/engineering/do/SKILL.md"
+examples="$plugin/skills/engineering/examples/SKILL.md"
+check "a chat reply approves no example" \
+  'grep -q "A chat reply is never an approval" "$do_skill" && grep -q "A chat reply is never an approval" "$examples" && grep -q "no test or code is written until the page comes back with each example ticked" "$do_skill"'
 exit $fail
