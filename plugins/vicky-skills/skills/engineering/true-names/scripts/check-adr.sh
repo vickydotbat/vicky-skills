@@ -27,10 +27,11 @@ for f in "$@"; do
     /^Because ./ { print "why"; next }
     { print "other" }
   ' "$f" | uniq -c | awk '{ printf "%s%s ", $2, ($1 > 1 ? "(x" $1 ")" : "") }')
+  limit=100
   case "$shape" in
-    "what category when brief para rationale para "|"what category when brief para rationale para superseded ") limit=100 ;;
+    "what category when brief para rationale para "|"what category when brief para rationale para superseded ") ;;
     "what category when why "|"what category when why superseded ") limit=55 ;;
-    *) echo "$f: needs what, category, when, then a Brief and a Rationale of one paragraph each, and nothing else; found: $shape"; fail=1; limit=100 ;;
+    *) echo "$f: needs what, category, when, then a Brief and a Rationale of one paragraph each, and nothing else; found: $shape"; fail=1 ;;
   esac
   grep -q '`' "$f" && { echo "$f: names code in backticks: that belongs in the code"; fail=1; }
   words=$(wc -w < "$f")

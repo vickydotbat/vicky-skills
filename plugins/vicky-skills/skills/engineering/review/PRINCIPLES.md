@@ -14,6 +14,7 @@ A broken rule is a **hard** finding.
 - **A test proves a result.** It names the behaviour it holds and the change that turns it red. A test whose only possible red is a refactor, a content edit or a library upgrade proves nothing: a read-back of its input, a pin on shipped content, a check of a signature, a second proof of a result another case owns, or a proof of library behaviour with no production code on the path.
 - **Mutation proves the tests.** Changed decision logic (rules, limits, parsers) gets a run of the mutation tool the repo's docs name. Each surviving mutant gets a test that kills it, the deletion of the code it lived in, or a comment saying why no input tells it apart. The pull request gives the killed and survived counts, or says the repo has no mutation tool.
 - **Approved examples are the contract.** A test marked `approved-spec` changes only after the human approves the new example text.
+- **No drift from a recorded why.** A decision record or a comment that gives a why holds a model that works. Before a change touches what one covers, read it. A diff that goes against the why, or deletes it, states its own new reason in the same diff: a new record that supersedes the old one, or the comment rewritten with the new why. A diff that does neither is drift, and the review flags it.
 - **A value that changes is read where it is kept.** Docs give a count, size or version by where to read it, never as a number that goes stale.
 
 ## Design moves
