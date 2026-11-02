@@ -277,6 +277,8 @@ jobs:
         run: tests/viewscreen_band_fit.test.sh
       - name: Summit examples, which include the band's
         run: tests/summit_approved_examples.test.sh
+      - name: Viewscreen summit and place lines
+        run: tests/viewscreen_summit_place.test.sh
       # The rule applies from the commit that added the check: an older
       # approved test was never asked to land red.
       - name: Red-first check

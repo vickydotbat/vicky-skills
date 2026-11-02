@@ -546,6 +546,9 @@ export const register: Register = on => {
           paddingX={1}
           width={columns}
         >
+          {/* The summit, then the checkout, sit above the Claude line. */}
+          {summitLine === '' ? [] : [<Box key="summit"><Text dimColor wrap="truncate-end">{printable(summitLine, MAX_LABEL_CHARS)}</Text></Box>]}
+          {placeLine === '' ? [] : [<Box key="place"><Text dimColor wrap="truncate-end">{`⎇ ${printable(placeLine, MAX_LABEL_CHARS)}`}</Text></Box>]}
           <Box key="activity" flexDirection="row">
             <Button
               key="toggle"
@@ -563,8 +566,6 @@ export const register: Register = on => {
               <Text dimColor>{elapsed}</Text>
             </Box>
           </Box>
-          {placeLine === '' ? [] : [<Box key="place"><Text dimColor wrap="truncate-end">{printable(placeLine, MAX_LABEL_CHARS)}</Text></Box>]}
-          {summitLine === '' ? [] : [<Box key="summit"><Text dimColor wrap="truncate-end">{printable(summitLine, MAX_LABEL_CHARS)}</Text></Box>]}
           {teamBox}
           {body}
         </Box>
@@ -614,10 +615,14 @@ async function placeOf($: EngineInterface, cwd: string | undefined): Promise<str
   }
 }
 
-/** The text after the last `summit: ` line in a tool's output, or null when it has none. */
+/**
+ * The text of the last line in a tool's output that starts with `summit: `,
+ * or null when it has none. Only a line start counts, so a search that prints
+ * this source or summit.sh never sets the band.
+ */
 function summitOf(result: unknown): string | null {
   const text = JSON.stringify(result ?? null)
-  const found = [...text.matchAll(/summit: ((?:[^"\\]|\\[^n])*)/g)].at(-1)
+  const found = [...text.matchAll(/(?:(?<!\\)"|\\n)summit: ((?:[^"\\]|\\[^n])*)/g)].at(-1)
   return found === undefined ? null : (JSON.parse(`"${found[1]}"`) as string)
 }
 
