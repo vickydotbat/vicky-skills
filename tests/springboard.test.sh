@@ -95,5 +95,9 @@ check "loose-ends strikes lines whose work closed" 'grep -q "Strike each \`.todo
 check "gamma-shift works each standing order whose wait is over" 'grep -q "one whose wait is over is built like a cleared ticket" "$gs"'
 check "gamma-shift files a bare line as a star before it builds" 'grep -q "A line that names no star or ticket becomes one first: file it as a star" "$gs"'
 check "gamma-shift asks before it charts a line too big for one star" 'grep -q "chart it with \`lay-course\`?" "$gs"'
+check "a repo with no tracker doc gets no tracker counts" 'reset; date -Iseconds > "$fx/repo/.git/springboard-last-session"; out=$(start); ! grep -q "List items" <<<"$out" && ! grep -q "summit" <<<"$out"'
+mkdir -p "$fx/repo/docs/agents"; : > "$fx/repo/docs/agents/issue-tracker.md"
+check "a repo with a tracker doc gets the tracker counts" 'reset; out=$(start); grep -q "List items created or changed since <time>" <<<"$out" && grep -q "summit" <<<"$out"'
+rm "$fx/repo/docs/agents/issue-tracker.md"
 check "a first session has no since line" 'reset; rm -f "$fx/repo/.git/springboard-last-session"; ! start | grep -q "Since then"'
 exit $fail

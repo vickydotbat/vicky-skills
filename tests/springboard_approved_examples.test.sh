@@ -15,6 +15,8 @@ chmod +x "$fx/bin/gh"
 export PATH="$fx/bin:$PATH" GH_PRS="$fx/prs.json" CLAUDE_PROJECT_DIR="$fx/repo"
 git -C "$fx/repo" init -q; git -C "$fx/repo" remote add origin https://github.com/someone/repo.git
 printf '.todo\n' > "$fx/repo/.gitignore"
+# The repo has a tracker, so the session-start counts run.
+mkdir -p "$fx/repo/docs/agents"; : > "$fx/repo/docs/agents/issue-tracker.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 pr() { # number draft check-state body

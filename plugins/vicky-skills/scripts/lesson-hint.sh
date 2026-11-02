@@ -8,7 +8,7 @@ command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every la
 prompt=$(jq -r '.prompt // ""')
 # A report from another agent arrives as a prompt too, and quotes the user's
 # lessons back. Only the user teaches one.
-grep -Eq '^[[:space:]]*(Another Claude session sent a message|<agent-message)' <<<"$prompt" && exit 0
+grep -Eq '^[[:space:]]*(Another Claude session sent a message|<agent-message|<cross-session-message)' <<<"$prompt" && exit 0
 grep -Eqi 'codif(y|ie)|lesson|for the future|from now on|make sure we know|prevent (this|that|it)' <<<"$prompt" || exit 0
 hint='The user is teaching a lesson. Run the engrave skill on it before your reply, and end the reply with its "📓 Engraved:" line.'
 jq -nc --arg h "$hint" '{hookSpecificOutput:{hookEventName:"UserPromptSubmit",additionalContext:$h}}'

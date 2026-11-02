@@ -15,6 +15,8 @@ printf '#!/usr/bin/env bash\necho "[]"\n' > "$fx/bin/gh"; chmod +x "$fx/bin/gh"
 export PATH="$fx/bin:$PATH" CLAUDE_PROJECT_DIR="$fx/repo" CLAUDE_PLUGIN_DATA="$fx/data"
 git -C "$fx/repo" init -q
 printf '.todo\n' > "$fx/repo/.gitignore"
+# The repo has a tracker, so the session-start counts run.
+mkdir -p "$fx/repo/docs/agents"; : > "$fx/repo/docs/agents/issue-tracker.md"
 stamp="$fx/repo/.git/springboard-last-session"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }

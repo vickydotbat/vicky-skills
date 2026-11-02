@@ -58,6 +58,8 @@ fi
 [ "$event" = SessionStart ] || exit 0
 first=$(grep -m1 '^N1 ' <<<"$lines")
 [ -n "$first" ] && echo "Open your first reply with this line alone, and give the rest of the .todo springboard block only when the user asks: next: $first"
+# The counts below are tracker queries. A repo with no tracker doc has none to run.
+[ -f docs/agents/issue-tracker.md ] || exit 0
 stamp="$gitdir/springboard-last-session"
 ops='the tracker'"'"'s "List items created or changed since <time>" and "List items closed since <time>" operations from docs/agents/issue-tracker.md'
 if [ -f "$stamp" ]; then
