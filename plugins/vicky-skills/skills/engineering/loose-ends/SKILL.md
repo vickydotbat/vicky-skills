@@ -15,7 +15,7 @@ New developers pick work from the tracker and trust what a ticket says. So an ef
 2. **Give each ticket a verdict**, one of four:
    - **Closes**: the diff does all of it. Add a `Closes <ticket>` line to the pull request body, one ticket per line.
    - **Narrowed**: the diff does part of it. Rewrite the ticket's body with `human-voice` to state only what remains.
-   - **Excluded**: nothing ships for it. Take it out of the pull request body and the commits to come, except a key already in the branch name or an earlier commit: that one stays as a `Refs <ticket>` line, which Q7 in `make-it-so` reads. Its ticket's state stays as it is.
+   - **Excluded**: nothing ships for it. Take it out of the pull request body and the commits to come, except a key already in the branch name or an earlier commit: that one stays as a `Refs <ticket>` line, which Q7 in `make-it-so` reads. Its ticket's state stays as it is. "Not here", "not now" or "not in this pull request" makes a ticket Excluded, never closed or declined: a ticket closes unbuilt only when the user's own words drop the work.
    - **Waits**: the rest can't be done now, because it waits on the user's decision, another person, a deploy or release, or a repo out of reach. Park it with the "Park a ticket" action in `docs/agents/issue-tracker.md`, with a `Waits on: <who or what>` line in its body, naming a ticket, pull request, tag or person `gamma-shift` can check. Narrow the body first when part of it ships.
 
    Small waiting work that one line covers goes in `.todo` with `standing-orders` in place of a ticket. Work with real impact always gets a ticket or a star. Strike each `.todo` line whose work is done or whose star or ticket has closed.
