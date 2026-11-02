@@ -8,9 +8,10 @@ payload=$(cat)
 cmd=$(jq -r '.tool_input.command // ""' <<<"$payload")
 # A heredoc body is text, unless the heredoc feeds a shell.
 cmd=$(awk -v code=1 -f "$(dirname "$0")/heredoc-strip.awk" <<<"$cmd")
-# A quoted string is text unless a shell runs it (bash -c, eval, watch.sh).
-grep -Eq '(^|[^[:alnum:]_])((bash|sh|zsh)[[:space:]]+-[a-z]*c|eval|watch\.sh)([[:space:]]|$)' <<<"$cmd" ||
-  cmd=$(sed -E "s/'[^']*'//g; s/\"([^\"\\]|\\.)*\"//g" <<<"$cmd")
+# A quoted string is text, unless a shell runs it (bash -c, eval, watch.sh):
+# those are unquoted first, so they stay as code.
+run='((bash|sh|zsh)[[:space:]]+-[a-z]*c|eval|watch\.sh)[[:space:]]+'
+cmd=$(sed -E "s/${run}'([^']*)'/\\1 \\3/g; s/${run}\"(([^\"\\]|\\.)*)\"/\\1 \\3/g; s/'[^']*'//g; s/\"([^\"\\]|\\.)*\"//g" <<<"$cmd")
 grep -Eq '(^|[^[:alnum:]_])sleep[[:space:]]' <<<"$cmd" || exit 0
 refuse() { echo "poll-pace: $1. Wait with \${CLAUDE_PLUGIN_ROOT}/scripts/watch.sh '<check>', run by the Monitor tool or as a background command: it checks every 30 seconds, at most 60 times." >&2; exit 2; }
 [ "$(jq -r '.tool_input.run_in_background // false' <<<"$payload")" = true ] || {

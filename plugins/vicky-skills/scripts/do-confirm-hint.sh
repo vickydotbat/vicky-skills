@@ -9,8 +9,9 @@ prompt=$(jq -r '.prompt // ""' 2>/dev/null)
 grep -q '<command-name>/\(vicky-skills:\)\?do</command-name>' <<<"$prompt" || exit 0
 args=$(sed -n '/<command-args>/,/<\/command-args>/p' <<<"$prompt" | sed 's/<\/\?command-args>//g')
 [ -n "${args//[[:space:]]/}" ] || exit 0
-# A ticket key (GAME-12), an issue number (#87), a ticket note named by its
-# timestamp, an issue or pull request link, or a chart.
-grep -qE '\b[A-Z][A-Z0-9]+-[0-9]+\b|(^|[[:space:]])#[0-9]+\b|\b[0-9]{14} [^/]*\.md\b|https?://[^[:space:]]*/(issues|pulls?)/[0-9]+|Star Chart' <<<"$args" && exit 0
+# A ticket key (GAME-12, never a standard such as UTF-8), an issue number
+# (#87), a ticket note named by its timestamp, an issue or pull request link,
+# or a chart.
+sed -E 's/\b(UTF|UCS|SHA|MD|ISO|RFC|AES|TLS|HTTP|IPV|PEP|ES|X)-[0-9]+\b//g' <<<"$args" | grep -qE '\b[A-Z][A-Z0-9]+-[0-9]+\b|(^|[[:space:]])#[0-9]+\b|\b[0-9]{14} [^/]*\.md\b|https?://[^[:space:]]*/(issues|pulls?)/[0-9]+|Star Chart' && exit 0
 hint='The objective of this /do is in the user'"'"'s own words, so do step 0 applies: your first message is a 🚪 Waiting on you: gate that says the objective back, and nothing is built until the user answers. Only that first question waits: every later choice that is cheap to undo takes its pick and says "Going with".'
 jq -nc --arg h "$hint" '{hookSpecificOutput:{hookEventName:"UserPromptSubmit",additionalContext:$h}}'

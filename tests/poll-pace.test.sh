@@ -24,5 +24,7 @@ expect 2 true "a long sleep inside a watch.sh check is refused" "watch.sh 'sleep
 expect 0 true "a long sleep quoted in a commit message passes" 'git commit -m "wait out a sleep 60 loop"'
 expect 2 true "a loop after a quoted word is still read" "echo 'go'; while true; do sleep 5; done"
 expect 0 true "a loop in a python heredoc is text" "$(printf "python3 - <<'PY'\nprint('while true; do sleep 5; done')\nPY")"
+expect 0 true "a quoted sleep beside an eval of something else passes" 'echo "sleep 60"; eval x'
+expect 2 true "a loop run by bash -c in double quotes is refused" 'bash -c "while true; do sleep 5; done"'
 expect 0 false "switched off, a 60-second sleep passes" 'sleep 60'
 exit $fail

@@ -16,7 +16,8 @@ check "a /do with no objective gets nothing" '[ -z "$(run "$(cmd do "")")" ] && 
 for a in "PLAT-3 next" "issue #12" "vicky-skills/20261102150016 do opens.md" "https://example.org/o/r/issues/4" "https://example.org/o/r/pull/9" "Star Chart - depot"; do
   check "a written-down objective gets nothing: $a" '[ -z "$(run "$(cmd do "$a")")" ]'
 done
-check "a word with a dash and digits is still an objective" 'hinted "$(cmd do "make utf-8 names safe")"'
+check "a standard with a dash and digits is still an objective" 'hinted "$(cmd do "make utf-8 names safe")" && hinted "$(cmd do "make UTF-8 names safe")" && hinted "$(cmd do "support SHA-256 and RFC-9110")"'
+check "a ticket key beside a standard is still a ticket" '[ -z "$(run "$(cmd do "UTF-8 fix for PLAT-3")")" ]'
 check "a file or a link in the objective is still an objective" 'hinted "$(cmd do "fix the typo in README.md, as https://example.org/docs says")"'
 check "a hash inside a word is still an objective" 'hinted "$(cmd do "rename C#7 notes")"'
 check "another command gets nothing" '[ -z "$(run "$(cmd vicky-skills:review "the branch")")" ] && [ -z "$(run "$(cmd dot "zip it")")" ]'
