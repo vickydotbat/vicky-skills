@@ -38,6 +38,10 @@ check "a gated ask goes through" 'passes'
 check "a pick with no question goes through" 'passes'
 { user "go"; text "Which file should I read?"; } > "$fx/t.jsonl"
 check "a question with no pick goes through" 'passes'
+{ user "go"; text 'The hook reads `my pick` and `Pick:` as picks. Should it read `I recommend` too?'; } > "$fx/t.jsonl"
+check "a pick quoted in backticks is no pick" 'passes'
+{ user "go"; text 'My pick is to drop `sleep`. Which one?'; } > "$fx/t.jsonl"
+check "a pick outside backticks still counts" '! passes'
 { user "go"; text "My pick is A. Which one?"; user "A"; text "Done."; } > "$fx/t.jsonl"
 check "a question before the user's last message is not read again" 'passes'
 check "the setting off lets it through" '{ user "go"; text "My pick is A. Which?"; } > "$fx/t.jsonl"; CLAUDE_PLUGIN_OPTION_GUARD_TAKE_PICK=false passes'

@@ -34,6 +34,14 @@ for r in "Want me to rename the variable?" "Should I fix the issue in the parser
   check "a sentence that offers no ticket goes through: $r" '[ -z "$(stop)" ]'
 done
 check "the steer points at open tickets and the summit" '{ user "go"; text "Should I take issue 12 next?"; } > "$fx/t.jsonl"; stop | jq -r .reason | grep -q "every open ticket here that waits on no one" && stop | jq -r .reason | grep -q "summit"'
+for r in "Sorting waits until v2." "That is next v2 work." "Leave it for the later v2." "It can go into v2."; do
+  { user "go"; text "$r"; } > "$fx/t.jsonl"
+  check "a v2 after its lead word is an offer: $r" 'blocked'
+done
+for r in "V2: the hook has no memory." "**V2.** Done." "We shipped v2 of the parser today." "The hook reads \`a follow-up PR\` as an offer."; do
+  { user "go"; text "$r"; } > "$fx/t.jsonl"
+  check "a label, a past v2 or quoted code is no offer: $r" '[ -z "$(stop)" ]'
+done
 { user "go"; text "All done."; } > "$fx/t.jsonl"
 check "a plain reply goes through" '[ -z "$(stop)" ]'
 check "a missing transcript goes through" '[ -z "$(jq -nc "{transcript_path:\"$fx/none\"}" | bash "$hook")" ]'

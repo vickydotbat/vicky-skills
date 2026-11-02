@@ -19,7 +19,7 @@ lesson-ledger.sh	157011bb3a30fb9f	df46cc90f76a4964	17/17
 local-path-guard.sh	262afb6fbdb2a8d7	d9a5183c82c2a066	29/29
 merged-branch-guard.sh	86e1037d0d39b0c8	6ddb2ef9a8b84e1a	43/43
 mutation-proof-guard.sh	6ffab5f0bf646579	e0d644b2fb0ebca8	22/22
-no-v1.sh	5ce019ffd4a12b28	ef44865a1738a74f	20/20
+no-v1.sh	397d88dac3f286e6	177c938d26833399	20/20
 plane-block-guard.sh	679f2b016852effb	a9f71c186df4c512	14/14
 poll-pace.sh	a8c6ac2ad146143c	d7adb2ad5e10d2be	26/26
 pr-guard.sh	2baad98ea289a954	ac19a988c6bd5842	103/103
@@ -35,7 +35,7 @@ stale-copy-hint.sh	4e663d08786adf6b	e4906875cc3efdb8	27/27
 step-guard.sh	91b9ada68f679e9b	9779fafd97b3a824	48/48
 step-hint.sh	cb169172a81fc295	8ed2c83e9b74beba	12/12
 summit.sh	d90baa3399bf1cce	6dfe538c73d6011d	55/55
-take-pick.sh	bbacf40bcc80bd2f	dbdd4e406cdcf410	28/28
+take-pick.sh	41027c2180e61fad	57cb7343f905c6d8	28/28
 tea-stdin.awk	ddfdfc5257c31b06	f83d8b22629ca909	70/70
 tea-stdin.sh	1f69ec430c059eec	f83d8b22629ca909	15/15
 ticket-drift.sh	1bc60db2e95d9227	40aca047727a9167	36/36
