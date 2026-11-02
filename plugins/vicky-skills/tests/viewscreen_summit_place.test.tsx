@@ -63,9 +63,33 @@ describe('summit and place lines', () => {
     await $.tool.call({ tool: 'Bash', command: 'bash scripts/summit.sh show' } as Call)
 
     const text = (await ui.find({ key: 'frame' }))?.text ?? ''
-    expect(text).toContain('⎇ main checkout')
+    expect(text).toContain('⎇ ')
+    expect(text).toContain('· main checkout')
     expect(text.indexOf(LINE)).toBeGreaterThanOrEqual(0)
     expect(text.indexOf(LINE)).toBeLessThan(text.indexOf('main checkout'))
     expect(text.indexOf('main checkout')).toBeLessThan(text.indexOf('Claude:'))
+  })
+
+  test('the main checkout names its branch, and a command that switches it updates the line', async ($, on) => {
+    mock.clock(on, { now: 1_000_000 })
+    on('ui.render', { component: 'AbovePrompt' }, ($, e) => {
+      const { Box } = $.ui.resolve(e)
+      return <Box key="engine" />
+    })
+    let branch = 'main'
+    on('session.start', (_$, e) => ({ cwd: e.cwd }))
+    on('process.run', (_$: unknown, e: { argv: string[] }) => ({
+      value: { exitCode: 0, stderr: '', stdout: e.argv.includes('rev-parse') ? '/r/.git\n/r/.git\n' : `${branch}\n` },
+    }))
+    on('tool.call', async () => ({ result: { stdout: '', stderr: '' } }) as never)
+    await $.session.start({ cwd: '/r' } as never)
+    const ui = await $.ui.mount(BAND)
+
+    expect((await ui.find({ key: 'place' }))?.text ?? '').toContain('⎇ main · main checkout')
+
+    branch = 'fix-band'
+    await $.tool.call({ tool: 'Bash', command: 'git switch -c fix-band' } as Call)
+
+    expect((await ui.find({ key: 'place' }))?.text ?? '').toContain('⎇ fix-band · main checkout')
   })
 })

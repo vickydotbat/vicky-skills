@@ -75,7 +75,7 @@ const team = atom(
 // The summit line summit.sh last printed this session, or '' before any count.
 const summit = atom({ plugin: 'vicky-skills', key: 'summit' } as const, '')
 
-// Where the agent works: a linked worktree's branch, "main checkout" in the
+// Where the agent works: a linked worktree's branch, or the branch and "main checkout" in the
 // main one, or '' outside a git repo.
 const place = atom({ plugin: 'vicky-skills', key: 'place' } as const, '')
 
@@ -141,6 +141,8 @@ type Agent = {
  * started over on a reload, while the headline and history in `$.state` stay.
  */
 type Live = {
+  // The folder the session started in, read again for its branch after each command.
+  cwd?: string
   calls: Map<string, Call>
   agents: Map<string, Agent>
   agentNames: Map<string, string>
@@ -205,7 +207,8 @@ export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     const result = await next(e)
 
-    await locate($, e.cwd)
+    live.cwd = e.cwd
+    await locate($, live.cwd)
     await publish($, live)
 
     return result
@@ -290,6 +293,8 @@ export const register: Register = on => {
       const result = await next(e)
       const told = summitOf(result)
       if (told !== null) await update($, summit, () => told)
+      // A command can switch the branch, so the checkout line is read again.
+      if (e.tool === 'Bash') await locate($, live.cwd)
 
       outcome = result.deny !== undefined ? 'denied' : result.isError ? 'error' : 'ok'
 
@@ -577,7 +582,7 @@ export const register: Register = on => {
 
 /**
  * Reads where the agent works and publishes it: the branch of a linked
- * worktree, "main checkout" in the main one, nothing outside a git repo.
+ * worktree, the branch and "main checkout" in the main one, nothing outside a git repo.
  */
 async function locate($: EngineInterface, cwd: string | undefined): Promise<void> {
   const where = await placeOf($, cwd)
@@ -602,14 +607,11 @@ async function placeOf($: EngineInterface, cwd: string | undefined): Promise<str
       return ''
     }
 
-    if (gitDir === commonDir) {
-      return 'main checkout'
-    }
-
     const branch = await $.process.run(['git', '-C', cwd, 'branch', '--show-current'], { timeoutMs: 3000 })
     const name = branch.exitCode === 0 ? branch.stdout.trim() : ''
+    const shown = name === '' ? 'detached HEAD' : name
 
-    return `worktree: ${name === '' ? 'detached HEAD' : name}`
+    return gitDir === commonDir ? `${shown} · main checkout` : `worktree: ${shown}`
   } catch {
     return ''
   }
