@@ -80,6 +80,7 @@ TESTS = {
     "tea-stdin.sh": ["tea-stdin"],
     "heavy-run.awk": ["heavy-run-guard"],
     "heavy-run-guard.sh": ["heavy-run-guard"],
+    "gate-state-guard.sh": ["gate-state-guard"],
     "ticket-drift.sh": ["ticket_drift_approved_examples", "no-remote-quiet"],
     "mutation-proof-guard.sh": ["mutation-proof-guard", "goal_driven_approved_examples"],
     "plane-block-guard.sh": ["plane_block_approved_examples"],

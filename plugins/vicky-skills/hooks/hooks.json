@@ -142,6 +142,16 @@
             "timeout": 5
           }
         ]
+      },
+      {
+        "matcher": "SendUserMessage",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/gate-state-guard.sh\"",
+            "timeout": 15
+          }
+        ]
       }
     ],
     "PostToolUse": [

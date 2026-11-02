@@ -7,6 +7,7 @@ checkout-guard.sh	baae812fc4ccfc3e	a67bafddcd343753	67/67
 draft-lock.sh	d53aa4ec529bb6c1	db93b2b3098d9513	57/57
 gamma-shift.sh	bf7b0a15b596e9fc	9ab9d92b5be5767f	12/12
 gate-notify.sh	7ba893f680c5d672	40cccd5df4913e78	25/25
+gate-state-guard.sh	7e37c0f1a4c05600	1c4fc1b4c5b852f9	58/58
 git-hook-lib.sh	ab06098427e37ecf	7bad886fd58a886c	32/32
 heavy-run-guard.sh	151e0fd412605be0	777093b4bb56d8a5	19/19
 heavy-run.awk	8e6dafb1ed8ce4a5	777093b4bb56d8a5	86/86

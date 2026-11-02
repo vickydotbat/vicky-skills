@@ -125,6 +125,8 @@ jobs:
         run: tests/tea-stdin.test.sh
       - name: Heavy-run guard
         run: tests/heavy-run-guard.test.sh
+      - name: Gate-state guard
+        run: tests/gate-state-guard.test.sh
       - name: Local-path guard
         run: tests/local-path-guard.test.sh
       - name: Push-behind guard
