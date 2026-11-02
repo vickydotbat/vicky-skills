@@ -558,7 +558,7 @@ export const register: Register = on => {
           width={columns}
         >
           {/* The summit, then the checkout, sit above the Claude line. */}
-          {summitLine === '' ? [] : [<Box key="summit"><Text dimColor wrap="truncate-end">{printable(summitLine, MAX_LABEL_CHARS)}</Text></Box>]}
+          {summitLine === '' ? [] : [<Box key="summit"><Text dimColor wrap="truncate-end">{`⛰ ${printable(summitLine, MAX_LABEL_CHARS)}`}</Text></Box>]}
           {placeLine === '' ? [] : [<Box key="place"><Text dimColor wrap="truncate-end">{`⎇ ${printable(placeLine, MAX_LABEL_CHARS)}`}</Text></Box>]}
           <Box key="activity" flexDirection="row">
             <Button

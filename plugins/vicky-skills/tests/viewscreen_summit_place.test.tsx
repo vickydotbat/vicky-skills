@@ -45,7 +45,7 @@ describe('summit and place lines', () => {
 
     await $.tool.call({ tool: 'Bash', command: 'bash scripts/summit.sh show' } as Call)
 
-    expect((await ui.find({ key: 'summit' }))?.text ?? '').toContain(LINE)
+    expect((await ui.find({ key: 'summit' }))?.text ?? '').toContain(`⛰ ${LINE}`)
   })
 
   test('the summit, then the checkout marked ⎇, sit above the Claude line', async ($, on) => {
