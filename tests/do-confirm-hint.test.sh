@@ -13,10 +13,11 @@ check "a bare /do with an objective is hinted" 'hinted "$(cmd do "zip every down
 check "an objective over several lines is hinted" 'hinted "$(cmd do "zip every download
 and gzip single files")"'
 check "a /do with no objective gets nothing" '[ -z "$(run "$(cmd do "")")" ] && [ -z "$(run "$(cmd do "   ")")" ]'
-for a in "PLAT-3 next" "issue #12" "see notes.md" "https://example.org/issues/4" "Star Chart - depot"; do
+for a in "PLAT-3 next" "issue #12" "vicky-skills/20261102150016 do opens.md" "https://example.org/o/r/issues/4" "https://example.org/o/r/pull/9" "Star Chart - depot"; do
   check "a written-down objective gets nothing: $a" '[ -z "$(run "$(cmd do "$a")")" ]'
 done
 check "a word with a dash and digits is still an objective" 'hinted "$(cmd do "make utf-8 names safe")"'
+check "a file or a link in the objective is still an objective" 'hinted "$(cmd do "fix the typo in README.md, as https://example.org/docs says")"'
 check "a hash inside a word is still an objective" 'hinted "$(cmd do "rename C#7 notes")"'
 check "another command gets nothing" '[ -z "$(run "$(cmd vicky-skills:review "the branch")")" ] && [ -z "$(run "$(cmd dot "zip it")")" ]'
 check "plain chat gets nothing" '[ -z "$(run "please do zip every download")" ]'

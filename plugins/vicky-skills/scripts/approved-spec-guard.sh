@@ -94,7 +94,7 @@ if [ -z "$target" ]; then
     [ -f "$word" ] && [ "$(wc -c < "$word")" -lt 1000000 ] || continue
     # Only a name that matches a file, at its path or tracked under that name, can be written: a scratch fixture's can't.
     while IFS= read -r named; do
-      [ -f "$named" ] || git ls-files | grep -qiE "(^|/)$(basename -- "$named" | sed 's/[.]/[.]/g')$" || continue
+      [ -f "$named" ] || grep -qiE "(^|/)$(basename -- "$named" | sed 's/[.]/[.]/g')$" <<<"${tracked:=$(git ls-files)}" || continue
       refuse "$word names an approved-examples file, and"
     done < <(runs_only <"$word" | grep -oiE '[^[:space:];&|()<>"'"'"'=]*approved_?examples(\.test)?\.[a-z]+')
   done < <(tr ';&|()\n' '\n' <<<"$command" | awk '{

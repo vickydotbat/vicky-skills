@@ -34,7 +34,7 @@ for r in "Want me to rename the variable?" "Should I fix the issue in the parser
   check "a sentence that offers no ticket goes through: $r" '[ -z "$(stop)" ]'
 done
 check "the steer points at open tickets and the summit" '{ user "go"; text "Should I take issue 12 next?"; } > "$fx/t.jsonl"; stop | jq -r .reason | grep -q "every open ticket here that waits on no one" && stop | jq -r .reason | grep -q "summit"'
-for r in "Sorting waits until v2." "That is next v2 work." "Leave it for the later v2." "It can go into v2."; do
+for r in "Sorting waits until v2." "That is next v2 work." "Leave it for the later v2." "It can go into v2." "Defer it to v2." "Push it to v2."; do
   { user "go"; text "$r"; } > "$fx/t.jsonl"
   check "a v2 after its lead word is an offer: $r" 'blocked'
 done

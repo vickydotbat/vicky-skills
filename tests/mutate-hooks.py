@@ -93,6 +93,7 @@ TESTS = {
     "springboard.sh": ["springboard", "springboard_approved_examples", "summit_approved_examples"],
     "summit.sh": ["summit", "summit_approved_examples"],
     "no-v1.sh": ["no-v1", "no_v1_approved_examples"],
+    "stop-reply.sh": ["take-pick", "no-v1", "no_v1_approved_examples"],
     "take-pick.sh": ["take-pick", "do_confirm_approved_examples", "gate_home_approved_examples", "no_v1_approved_examples"],
     "adr-scope-hint.sh": ["adr-scope-hint"],
     "step-guard.sh": ["step-guard", "mutation_step_approved_examples", "step_guard_approved_examples", "step_guard_gitea_approved_examples"],
