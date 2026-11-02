@@ -69,6 +69,7 @@ TESTS = {
     "gate-notify.sh": ["gate-notify"],
     "git-hook-lib.sh": GIT_GUARDS,
     "heredoc-strip.awk": GIT_GUARDS + ["pr-guard", "issue-guard", "poll-pace", "poll_pace_heredoc_approved_examples", "heavy-run-guard"],
+    "quote-mask.awk": ["pr-guard"],
     "issue-guard.sh": ["issue-guard"],
     "local-path-guard.sh": ["local-path-guard"],
     "pr-guard.sh": ["pr-guard", "pr_guard_ai_credit_approved_examples", "pr_guard_one_pr_approved_examples"],

@@ -109,6 +109,20 @@ one() { # <repo> <command> [event] [stdout] [extra env...]
 same() { if [ "$2" = "$3" ]; then echo "ok   $1"; else echo "FAIL $1: exit $2, want $3"; fail=1; fi; }
 same "GitHub asks gh for the session's open pull requests" "$(one hub "gh pr create --title N --body x")" 2
 same "Gitea asks tea, and counts only the user's own" "$(one gitea "tea pr create --title N --description x")" 2
+# A forge command quoted as text is data, not a command; one run by a
+# command substitution inside double quotes still runs.
+same "a forge command inside single quotes is text" "$(one hub "sed -i 's/x/gh pr create --title N/' f.sh")" 0
+same "a forge command inside double quotes is text" "$(one hub 'echo "gh pr create --title N"')" 0
+same "quoted text spanning lines is text" "$(one hub "printf 'one
+gh pr create --title N
+two' > f.txt")" 0
+same "an escaped quote doesn't end the text" "$(one hub 'echo "a \" gh pr create --title N"')" 0
+same "a command substitution in double quotes still runs" "$(one hub 'url="$(gh pr create --title N --body x)"')" 2
+same "a bracket in double quotes is text" "$(one hub 'echo "a(gh pr create --title N)"')" 0
+same "a dollar in double quotes is text" "$(one hub 'echo "$x gh pr create --title N"')" 0
+same "double-quoted text after a command substitution is text again" "$(one hub 'x="$(echo a) gh pr create --title N"')" 0
+same "a quoted pipe doesn't split the command" "$(one hub 'gh pr create --title "a|b" --body x')" 2
+same "a command after the quoted text still runs" "$(one hub "echo 'gh pr create' && gh pr create --title N --body x")" 2
 same "a merged pull request no longer counts" "$(OPEN="" one hub "gh pr create --title N --body x")" 0
 same "a quoted base names the open branch" "$(one big "gh pr create --body x --base \"feat/one\" --label stacked")" 0
 same "a label list holding stacked counts" "$(one big "gh pr create --body x --base feat/one --label docs,stacked")" 0

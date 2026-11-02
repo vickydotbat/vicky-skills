@@ -35,6 +35,7 @@ session_id=$(jq -r '.session_id // ""' <<<"$payload" 2>/dev/null)
 # Only the forge CLIs and git-spice send text to the forge. The command
 # without heredoc bodies decides what runs; the credit check reads it all.
 code=$(awk -f "$(dirname "$0")/heredoc-strip.awk" <<<"$command")
+quoted=$(awk -f "$(dirname "$0")/quote-mask.awk" <<<"$code")
 grep -Eq '(^|[^[:alnum:]_-])(gh|tea|gs)([[:space:]]|$)' <<<"$code" || exit 0
 
 [ -z "$cwd" ] || cd "$cwd" 2>/dev/null || true
@@ -185,21 +186,23 @@ remember() {
   printf '%s %s\n' "$repo" "$head" >>"$record"
 }
 
-while IFS= read -r segment; do
+while IFS= read -r masked; do
+  # Matched on the masked text, read for flags with the quoted text restored.
+  segment=$(tr '\001\002\003\004\005' ' ;&|\n' <<<"$masked")
   kind="" base="" labels="" head=$current
-  if grep -Eq '(^|[^[:alnum:]_-])gh[[:space:]]+pr[[:space:]]+create([[:space:]]|$)' <<<"$segment"; then
+  if grep -Eq '(^|[^[:alnum:]_-])gh[[:space:]]+pr[[:space:]]+create([[:space:]]|$)' <<<"$masked"; then
     kind=pr
     base=$(flag_value "$segment" --base -B)
     labels=$(flag_value "$segment" --label -l)
     head=$(flag_value "$segment" --head -H)
-  elif grep -Eq '(^|[^[:alnum:]_-])tea[[:space:]]+(pulls|pull|pr)[[:space:]]+(create|c)([[:space:]]|$)' <<<"$segment"; then
+  elif grep -Eq '(^|[^[:alnum:]_-])tea[[:space:]]+(pulls|pull|pr)[[:space:]]+(create|c)([[:space:]]|$)' <<<"$masked"; then
     kind=pr
     base=$(flag_value "$segment" --base -b)
     labels=$(flag_value "$segment" --labels -L)
     head=$(flag_value "$segment" --head)
-  elif grep -Eq '(^|[^[:alnum:]_-])gh[[:space:]]+stack[[:space:]]+submit([[:space:]]|$)' <<<"$segment"; then
+  elif grep -Eq '(^|[^[:alnum:]_-])gh[[:space:]]+stack[[:space:]]+submit([[:space:]]|$)' <<<"$masked"; then
     kind=gh-stack
-  elif grep -Eq '(^|[^[:alnum:]_-])gs[[:space:]]+((stack|s|upstack|us|branch|b)[[:space:]]+(submit|s)|ss|uss|bs)([[:space:]]|$)' <<<"$segment"; then
+  elif grep -Eq '(^|[^[:alnum:]_-])gs[[:space:]]+((stack|s|upstack|us|branch|b)[[:space:]]+(submit|s)|ss|uss|bs)([[:space:]]|$)' <<<"$masked"; then
     kind=gs
     labels=$(flag_value "$segment" --label -l)
   fi
@@ -209,6 +212,6 @@ while IFS= read -r segment; do
   else
     check "$segment" "$kind" "$base" "$labels"
   fi
-done < <(tr ';&|\n' '\n' <<<"$code")
+done < <(tr ';&|\n' '\n' <<<"$quoted")
 
 exit 0 # mutant-ok delete: the loop above leaves status 0
