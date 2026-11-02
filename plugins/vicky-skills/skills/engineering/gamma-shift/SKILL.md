@@ -1,6 +1,6 @@
 ---
 name: gamma-shift
-description: Work through the tickets waiting on the user. Each one whose wait is over gets built to a draft pull request, the rest are listed, and the user's open decisions come back as one round of questions. Use when the user says "gamma shift", "follow-ups" or "what's waiting on me", and when the session-start hook asks for a gamma-shift count or run.
+description: Work through the tickets waiting on the user. Use when the user says "gamma shift", "follow-ups" or "what's waiting on me", and when the session-start hook asks for a gamma-shift count or run.
 ---
 
 # Gamma shift

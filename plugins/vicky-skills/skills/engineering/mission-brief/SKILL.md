@@ -1,6 +1,6 @@
 ---
 name: mission-brief
-description: "File tickets, issues or a star chart from what the conversation settled: a spec, cut into slices with Given / When / Then examples, with the examples approved by the user before anything is filed. Use whenever the user asks to file, open or write up tickets or issues, to turn a plan or conversation into tickets, or to convert or import tickets made by another tool or planner. No interview: it writes down what is already settled."
+description: "File tickets, issues or a star chart from what the conversation settled. Use whenever the user asks to file, open or write up tickets or issues, to turn a plan or conversation into tickets, or to convert or import tickets made by another tool or planner. No interview: it writes down what is already settled."
 ---
 
 # Mission brief

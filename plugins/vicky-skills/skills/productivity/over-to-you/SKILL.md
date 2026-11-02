@@ -1,6 +1,6 @@
 ---
 name: over-to-you
-description: Hand the live checks only a person can do to the human, as a short checklist opened as a page in their browser with room for notes, then read their verdicts back. Use when a change needs a real client, a look, a feel, real hardware or an outside account to prove, or the user asks to test something themselves.
+description: Hand the live checks only a person can do to the human, as a checklist page in their browser. Use when a change needs a real client, a look, a feel, real hardware or an outside account to prove, or the user asks to test something themselves.
 ---
 
 # Over to you

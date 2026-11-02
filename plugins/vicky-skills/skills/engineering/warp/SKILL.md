@@ -1,6 +1,6 @@
 ---
 name: warp
-description: Warp through a star chart in a single run, whatever it takes: every star it can reach, or the stars the user names. It clears every anomaly, away team, probe and task on their course, then builds each star to green CI. Use when the user says "warp", "engage", "clear the chart" or "get <ticket> done whatever it takes", or when `lay-course` engages warp.
+description: Warp through a star chart in a single run, whatever it takes: every star it can reach, or the stars the user names. Use when the user says "warp", "engage", "clear the chart" or "get <ticket> done whatever it takes", or when `lay-course` engages warp.
 ---
 
 # Warp

@@ -1,6 +1,6 @@
 ---
 name: interrogation
-description: Question the user, round by round, with questions only, until a plan, decision or idea has no open branch left and its answers are written as examples. Use when the user says "grill me" or "interrogate me", wants to work out what they want in their own words, or an anomaly needs the human's answers. When the user wants ideas argued back at them, use `council-of-elrond` instead.
+description: Question the user, round by round, until a plan, decision or idea has no open branch left. Use when the user says "grill me" or "interrogate me", wants to work out what they want in their own words, or an anomaly needs the human's answers. When the user wants ideas argued back at them, use `council-of-elrond` instead.
 ---
 
 # Interrogation

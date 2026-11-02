@@ -1,6 +1,6 @@
 ---
 name: do
-description: Build something behaviour-first, from a sentence in chat, a ticket or a whole star chart. The user approves Given / When / Then examples, each becomes a red test, the code turns them green, and mutation proves the tests catch bugs. Use when the user asks for a change, hands over a ticket, or hands over a star chart to build.
+description: Build something behaviour-first, from a sentence in chat, a ticket or a whole star chart. Use when the user asks for a change, hands over a ticket, or hands over a star chart to build.
 ---
 
 # Do

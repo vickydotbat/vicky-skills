@@ -1,6 +1,6 @@
 ---
 name: history-monks
-description: Rebase a branch onto a main that moved, following the intent of what landed instead of mechanically picking sides — main owns the form, the branch owns its behaviour. Use when the user says "rebase on main", "rebase neatly", "previous commits are authoritative" or "work with the recent PRs", and before pushing a branch that main has moved past.
+description: Rebase a branch onto a main that moved, following the intent of what landed. Use when the user says "rebase on main", "rebase neatly", "previous commits are authoritative" or "work with the recent PRs", and before pushing a branch that main has moved past.
 ---
 
 # History monks
