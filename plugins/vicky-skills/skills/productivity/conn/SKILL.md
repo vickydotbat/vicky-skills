@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 > _You have the conn. The log lives in the tickets; the handoff only points at it._
 
-A **handoff** is a short file a fresh agent reads first, after the user clears the context. The tickets and pull request bodies hold where the work stands, so the handoff holds only the goal, the links and what this session was in the middle of. It is a lead, never a fact: the next session checks each line before it builds on it.
+A **handoff** is a short comment a fresh agent reads first, after the user clears the context. The tickets and pull request bodies hold where the work stands, so the handoff holds only the goal, the links and what this session was in the middle of. It is a lead, never a fact: the next session checks each line before it builds on it.
 
 ## Steps
 
@@ -18,6 +18,6 @@ A **handoff** is a short file a fresh agent reads first, after the user clears t
 3. **Point, don't copy.** Link each ticket, pull request, decision record, commit and file the work rests on. Restate nothing those already hold: no done, next or waits-on lines. Done when every item the work rests on has a link.
 4. **Name the mid-work**: what this session was in the middle of that no record holds yet, such as uncommitted edits, a half-run check or a theory being tested. Beside each line, write the command that shows it, or `unchecked`. Done when each line has its command or `unchecked`.
 5. **Name the skills** the next session should call. Done when each skill is named with its reason in a few words.
-6. **Save it** in the system's temp folder (`$TMPDIR`, else `/tmp`), never in the repo, and give the user its path. Leave out every secret and every personal detail. Done when the path is in your reply.
+6. **Post it.** Open it with a `**Handoff**` line, so `sup` finds it. It names no path outside the repo: commit scratch work it needs, or name it by what it holds. Leave out every secret and every personal detail. Run `loose-lips` on it before you post. Post it as a comment on the effort's open pull request or ticket, with the "Comment" action in `docs/agents/issue-tracker.md`. With no tracker, write it as a note in the project's vault folder, where the user's agent instructions keep that work. Done when the comment's link is in your reply, or the note's path is in your reply when there is no tracker, with the line the user types after the clear to pick it up: `/sup`.
 
-Done when a stranger could start from the file and the links alone.
+Done when a stranger could start from the handoff and the links alone.

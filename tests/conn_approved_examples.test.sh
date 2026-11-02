@@ -31,7 +31,7 @@ check "/conn posts only repo-relative paths, after loose-lips" \
 # When you ask sup in a fresh session
 # Then sup names the handoff and checks each of its lines before it reports one
 check "sup finds the handoff and checks it" \
-  'sup="$plugin/skills/productivity/sup/SKILL.md"; grep -q "\*\*Handoff\*\*" "$sup" && grep -qi "check each of its lines before you report one" "$sup" && grep -q "^\*\*Handoff\*\*" "$conn"'
+  'sup="$plugin/skills/productivity/sup/SKILL.md"; grep -q "\*\*Handoff\*\*" "$sup" && grep -qi "check each of its lines before you report one" "$sup" && grep -q "Open it with a \`\*\*Handoff\*\*\` line" "$conn"'
 
 # Given the plugin after the rename
 # When you read any skill, hook, test or the README
