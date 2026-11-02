@@ -293,10 +293,14 @@ export const register: Register = on => {
       const result = await next(e)
       const told = summitOf(result)
       if (told !== null) await update($, summit, () => told)
-      // A call can switch the branch or move into a worktree, so the
-      // checkout line is read again from the session's current folder.
-      live.cwd = await currentFolder($, live.cwd)
-      await locate($, live.cwd)
+      // A command can switch the branch, and a call can move the session
+      // into a worktree: then the checkout line is read again. Any other
+      // call skips git, so it never waits on it.
+      const folder = await currentFolder($, live.cwd)
+      if (folder !== live.cwd || e.tool === 'Bash') {
+        live.cwd = folder
+        await locate($, live.cwd)
+      }
 
       outcome = result.deny !== undefined ? 'denied' : result.isError ? 'error' : 'ok'
 
