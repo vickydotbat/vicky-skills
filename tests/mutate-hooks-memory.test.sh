@@ -6,10 +6,12 @@
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
 log=$(mktemp); trap 'rm -f "$log"' EXIT
-out=$( (ulimit -v 2097152; HOG_LOG="$log" timeout 120 python3 - "$root/tests/mutate-hooks.py" <<'PY'
+out=$( (ulimit -d 1048576; HOG_LOG="$log" timeout 120 python3 - "$root/tests/mutate-hooks.py" <<'PY'
 import importlib.util, os, shutil, sys
 spec = importlib.util.spec_from_file_location("mutate_hooks", sys.argv[1])
 mh = importlib.util.module_from_spec(spec); spec.loader.exec_module(mh)
+# A lower limit than a pass uses, so the check stays small.
+mh.MUTANT_MEMORY = 256 * 2**20
 worker = mh.Worker()
 try:
     with open(os.path.join(worker.root, "tests", "hog.test.sh"), "w") as f:
@@ -22,7 +24,7 @@ finally:
 PY
 ) 2>&1)
 grown=$(cat "$log")
-if [ "$out" = killed ] && [ "${grown:-0}" -lt $((512 * 1024 * 1024)) ]; then
+if [ "$out" = killed ] && [ "${grown:-0}" -lt $((256 * 1024 * 1024)) ]; then
   echo "ok   a memory hog dies at the limit, at $grown bytes"
 else
   echo "FAIL a memory hog grew to ${grown:-?} bytes: $out"; exit 1

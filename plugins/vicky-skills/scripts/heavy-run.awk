@@ -47,7 +47,7 @@ function words(s, W, P,   L, n, i, c, j, w, inw) {
 }
 
 # A script the repo declares self-capping, run directly or by a shell or python.
-function declared(W, k, n,   path) {
+function declared(W, k,   path) {
   path = W[k]
   if (path ~ /^((ba|z|da)?sh|python[0-9.]*)$/) path = W[k + 1]
   sub(/^\.\//, "", path)
@@ -88,10 +88,10 @@ function classify(seg,   W, P, n, k, h, cap, v) {
   if (h == "nix" && W[k + 1] ~ /^(develop|shell)$/) {
     for (v = k + 2; v <= n && W[v] !~ /^(-c|--command)$/; v++) ;
     if (v >= n) return "other"
-    if (classify(substr(seg, P[v + 1])) ~ /^(read|capped)$/ || declared(W, v + 1, n)) return "other"
+    if (classify(substr(seg, P[v + 1])) ~ /^(read|capped)$/ || declared(W, v + 1)) return "other"
     return "heavy"
   }
-  if (h ~ /^(identify|ffprobe|echo|printf|true|which|command|type|ls|cat|head|tail|env|printenv|pwd|git|test)$/) return "read"
+  if (h ~ /^(identify|ffprobe|echo|printf|true|which|ls|cat|head|tail|printenv|pwd|git|test)$/) return "read"
   return "other"
 }
 
