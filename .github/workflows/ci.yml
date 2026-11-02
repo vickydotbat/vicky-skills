@@ -193,6 +193,8 @@ jobs:
         run: tests/step_guard_gitea_approved_examples.test.sh
       - name: Warp reaches do, do reaches sentinels
         run: tests/mutation_step_approved_examples.test.sh
+      - name: Metrics after mutation, presence before QA
+        run: tests/metrics_step_approved_examples.test.sh
       - name: Mutation proof guard
         run: tests/mutation-proof-guard.test.sh
       - name: Plane block guard
