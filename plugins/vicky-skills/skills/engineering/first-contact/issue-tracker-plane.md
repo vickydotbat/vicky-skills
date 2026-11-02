@@ -39,7 +39,7 @@ A waiting ticket can't go on until the thing its `Waits on:` line names is done.
 - **List items created or changed since <time>**: `plane since <PROJECT> <time>` when the repo's CLI has it: one line per item, newest first, marked `new` or `edited`. `<time>` is a bare date or ISO 8601 with an offset. Otherwise the CLI's list command filtered on each item's created and updated times. Show at most five, then a count of the rest.
 - **List items closed since <time>**: the CLI's list command, keeping each item whose completed time is at or after `<time>`. Give the count.
 - **Park a ticket**: assign it to the user, move it to the not-started state, and add a `Waits on: <who or what>` line to the body.
-- **Claim a waiting ticket**: move it to In Progress, before any other write.
+- **Claim a waiting ticket**: move it to In Progress and delete its `Waits on:` line, before any other write.
 
 ## Ticket drift
 

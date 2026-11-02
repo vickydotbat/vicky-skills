@@ -24,7 +24,7 @@ Read the repo's `TESTING_STANDARDS.md` first: it wins over this skill's defaults
 
 ## Tests that make a pass fast
 
-When a pass runs slow, hold its tests to "Tests that make a pass fast" in [SPEED.md](SPEED.md).
+Before you write a test a pass will run, and whenever a pass runs slow or hangs, hold its tests to "Tests that make a pass fast" in [SPEED.md](SPEED.md).
 
 ## Steps
 
