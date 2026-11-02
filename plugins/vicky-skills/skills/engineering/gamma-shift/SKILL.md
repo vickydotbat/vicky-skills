@@ -7,7 +7,7 @@ description: Work through the tickets waiting on the user. Use when the user say
 
 > _You have the bridge, Number One. Build what's cleared, stop at a draft, and leave the rest on the captain's desk._
 
-A **waiting ticket** is an open ticket with a `Waits on: <who or what>` line in its body, and it waits on the user when that line names them, in its tracker's not-started state where it has one. `loose-ends` parks a ticket this way, and the tracker's "Waiting work" section says how its tracker marks one when an effort can't finish it. A gamma shift checks each waiting ticket's wait and builds every one whose wait is over.
+A **waiting ticket** is an open ticket with a `Waits on: <who or what>` line in its body, and it waits on the user when that line names them. The tracker's "Park a ticket" action marks one. `loose-ends` parks a ticket this way, and the tracker's "Waiting work" section says how its tracker marks one when an effort can't finish it. A gamma shift checks each waiting ticket's wait and builds every one whose wait is over.
 
 The run mode comes from its caller: `remind` from the session-start hook, `engage` from the hook or a typed run. The plugin setting is `${user_config.gamma_shift}`.
 
@@ -27,7 +27,7 @@ The run mode comes from its caller: `remind` from the session-start hook, `engag
 5. **Ask the decisions in one round.** For each ticket that asks: the question, two options at most, your pick and why, in one message. Write each answer into its ticket as a comment and drop the `Waits on:` line. A ticket whose answer clears it goes to step 4. Done when the user has answered or the round is sent.
 6. **Report** in the form below. Done when the report is sent.
 
-**State at every stop.** At every stop, write the pull request body's Status section, as `ship-it` says: a draft opened, a slice parked, a gate reached, the run ended. A ticket whose slice is parked: move its ticket back to the not-started state with a `Waits on:` line, as "Waiting work" in `docs/agents/issue-tracker.md` says.
+**State at every stop.** At every stop, write the pull request body's Status section, as `ship-it` says: a draft opened, a slice parked, a gate reached, the run ended. A ticket whose slice is parked: park its ticket with the tracker's "Park a ticket" action, with a `Waits on:` line, as "Waiting work" in `docs/agents/issue-tracker.md` says.
 
 ## Subagent brief
 

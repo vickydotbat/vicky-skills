@@ -84,8 +84,11 @@ printf '# A question for you\n\n## Q1: Which?\n- (x) One\n- ( ) Two\n' >"$scratc
 cp "$scratch/q.md" "$scratch/q.before"
 (cd "$repo" && VISUAL="python3 -I $page_py --timeout 1" BROWSER="$scratch/browser" DISPLAY=:99 timeout 20 bash "$open_draft" "$scratch/q.md" >"$scratch/q.log" 2>&1)
 status=$?
-check "a page nobody answers: the page stops, the file stays as it was, and the agent asks me the same questions in chat instead of taking its pick" \
-  '[ "$status" = 2 ] && grep -qF "no answer within" "$scratch/q.log" && cmp -s "$scratch/q.md" "$scratch/q.before" && grep -qi "ask the same questions in chat" "$skills/productivity/interactive-page/SKILL.md"'
+# Given a page that asks me a question with options
+# When nobody answers before the page stops
+# Then the file stays as it was, and the agent takes its pick and records it in the pull request's Check these, asking in chat only for a pick that is costly to undo
+check "a page nobody answers: the page stops, the file stays as it was, and the agent takes its pick and records it" \
+  '[ "$status" = 2 ] && grep -qF "no answer within" "$scratch/q.log" && cmp -s "$scratch/q.md" "$scratch/q.before" && grep -qi "take your picks and record each in the pull request.s Check these" "$skills/productivity/interactive-page/SKILL.md" && grep -qi "ask in chat only for a pick that is costly to undo" "$skills/productivity/interactive-page/SKILL.md"'
 
 check "one skill opens every page: it opens through interactive-page, and red-pen and lay-course have no page scripts of their own" \
   '[ -f "$open_draft" ] && [ ! -e "$skills/productivity/red-pen/scripts" ] && [ ! -e "$skills/engineering/lay-course/scripts/answer-page.py" ] && ! grep -rq "answer-page\|red-pen/scripts" "$root/plugins" && grep -q "open-page.sh" "$skills/engineering/lay-course/STAR-CHART.md"'

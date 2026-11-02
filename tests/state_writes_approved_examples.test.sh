@@ -28,9 +28,9 @@ check "work beginning moves the ticket to started" \
 
 # Given a ticket in progress whose slice the build parks
 # When do, gamma-shift or warp parks it
-# Then the ticket shows the not-started state and a Waits on line naming what it waits on
+# Then the ticket is parked with the tracker's Park a ticket action, with a Waits on line naming what it waits on
 check "a parked slice moves its ticket back" \
-  '(for s in do gamma-shift warp; do grep -q "move its ticket back to the not-started state with a \`Waits on:\` line" "$skills/$s/SKILL.md" || exit 1; done)'
+  '(for s in do gamma-shift warp; do grep -q "park its ticket with the tracker.s \"Park a ticket\" action, with a \`Waits on:\` line" "$skills/$s/SKILL.md" || exit 1; done)'
 
 # Given a ticket the branch names that still shows not-started while its pull request is open
 # When loose-ends runs

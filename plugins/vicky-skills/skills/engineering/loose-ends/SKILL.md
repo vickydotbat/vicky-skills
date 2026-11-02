@@ -16,7 +16,7 @@ New developers pick work from the tracker and trust what a ticket says. So an ef
    - **Closes**: the diff does all of it. Add a `Closes <ticket>` line to the pull request body, one ticket per line.
    - **Narrowed**: the diff does part of it. Rewrite the ticket's body with `human-voice` to state only what remains.
    - **Excluded**: nothing ships for it. Take it out of the pull request body and the commits to come, except a key already in the branch name or an earlier commit: that one stays as a `Refs <ticket>` line, which Q7 in `make-it-so` reads. Its ticket's state stays as it is.
-   - **Waits**: the rest can't be done now, because it waits on the user's decision, another person, a deploy or release, or a repo out of reach. Park it as "Waiting work" in `docs/agents/issue-tracker.md` says: assign it to the user, move it to the not-started state where the tracker has one, and add a `Waits on: <who or what>` line to its body, naming a ticket, pull request, tag or person `gamma-shift` can check. Narrow the body first when part of it ships.
+   - **Waits**: the rest can't be done now, because it waits on the user's decision, another person, a deploy or release, or a repo out of reach. Park it with the "Park a ticket" action in `docs/agents/issue-tracker.md`, with a `Waits on: <who or what>` line in its body, naming a ticket, pull request, tag or person `gamma-shift` can check. Narrow the body first when part of it ships.
 
    Small waiting work that one line covers goes in `.todo` with `standing-orders` in place of a ticket. Work with real impact always gets a ticket or a star. Strike each `.todo` line whose work is done or whose star or ticket has closed.
 
@@ -27,6 +27,6 @@ New developers pick work from the tracker and trust what a ticket says. So an ef
 4. **Engrave the snags**, once, before you call the effort done. List each snag the effort hit: a red check, a crash, a retry, or a correction from the user. Run `engrave` on each one. Done when the report names each snag with the law built for it, or says why it needs none.
 5. **After the merge**, close by hand any ticket still open that the pull request named, with a comment naming the pull request. Done when the tracker shows each one closed.
 
-A ticket whose state lags the work moves now: one the pull request names moves to the started state while the pull request is open, a parked one to the not-started state, and the report names each move.
+A ticket whose state lags the work moves now: one the pull request names moves to the started state while the pull request is open, a parked one through the tracker's "Park a ticket" action, and the report names each move.
 
 Repeat step 3 after every push.
