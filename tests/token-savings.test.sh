@@ -52,5 +52,5 @@ check "a moved effort leaves no branch behind" \
 do_skill="$plugin/skills/engineering/do/SKILL.md"
 examples="$plugin/skills/engineering/examples/SKILL.md"
 check "a chat reply approves no example" \
-  'grep -q "A chat reply is never an approval" "$do_skill" && grep -q "A chat reply is never an approval" "$examples" && grep -q "no test or code is written until the page comes back with each example ticked" "$do_skill"'
+  'grep -q "A chat reply is never an approval" "$do_skill" && grep -q "A chat reply is never an approval" "$examples" && grep -q "no test or code is written until the page comes back with each example ticked" "$do_skill" && grep -q "This adds no approvals: a pick the agent may take on its own needs none" "$plugin/skills/productivity/red-pen/SKILL.md"'
 exit $fail
