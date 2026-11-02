@@ -13,7 +13,7 @@ has() { grep -qF -- "$2" "$1" 2>/dev/null; }
 # When the agent checks it by eye
 # Then no browser window opens on your screen
 check "no window on your screen" \
-  'has "$skill" "Use the headless server" && has "$skill" "never fall back to the windowed one" && grep -q "\"./skills/engineering/by-eye\"" "$plugin/.claude-plugin/plugin.json"'
+  'has "$skill" "Use the headless server" && has "$skill" "never fall back to the windowed one" && has "$skill" "stop before you start anything"'
 
 # Given a page that only shows after you sign in
 # When the agent checks it by eye
@@ -31,13 +31,13 @@ check "light, dark, narrow and keyboard" \
 # When you read its report
 # Then each screenshot is attached, and kept in the repo's ignored .playwright-mcp folder
 check "you see what it saw" \
-  'has "$skill" "saved in the repo'"'"'s ignored \`.playwright-mcp\` folder" && has "$skill" "attach them to the report"'
+  'has "$skill" "saved in the repo'"'"'s ignored \`.playwright-mcp\` folder" && has "$skill" "Add \`.playwright-mcp/\` to the repo'"'"'s \`.gitignore\` first" && has "$skill" "attach them to the report"'
 
 # Given the agent started the dev site for a check
 # When the check ends
 # Then the dev site is stopped, and it ran under a memory cap the whole time
 check "the dev site stops after" \
-  'has "$skill" "under a memory cap" && has "$skill" "MemoryMax=" && has "$skill" "Stop the dev site"'
+  'has "$skill" "under a memory cap" && has "$skill" "MemoryMax=" && has "$skill" "Stop the dev site** by the id you saved. Done when its address no longer answers"'
 
 # Given a look only a person can judge, such as whether a page feels right
 # When a build reaches it
