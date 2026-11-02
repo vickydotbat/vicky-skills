@@ -11,6 +11,6 @@ Start a **background agent** for the reading, so the session keeps working. Its 
 
 1. **Read primary sources**: official docs, source code, specs, first-party APIs. Follow each claim back to the source that owns it, and quote it with its version or date.
 2. **Post the findings as a comment** on the ticket the question belongs to. With no ticket, file one titled "Research: <question>", post the findings there and close it. Write them with `human-voice`. Findings stay off branches and out of repo files.
-3. **Lead with the answer**, then the evidence, one claim per line with its source.
+3. **Lead with the answer**, then the evidence, one claim per line with its source. A claim no primary source settles is posted as `unverified`, with the sources tried.
 
 Done when the ticket holds the findings and every claim has a source.

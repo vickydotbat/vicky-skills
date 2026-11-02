@@ -12,9 +12,6 @@ their sentence patterns, their judgement about what a reader needs. A draft
 can be correct, pass the lint and still be wrong. If they would not have
 written it, it is not done.
 
-The user's own writing outranks every rule in this skill. When a rule and
-their writing disagree, follow their writing.
-
 ## Registers
 
 The audience picks the register. It decides how much explaining and how much
@@ -26,8 +23,7 @@ personality the piece gets.
 | Everyone else: reference docs, player guides, runbooks, PR and ticket bodies, commit messages, code comments, emails | Plain | The `dungeon-master` style's sentences. Lead with the state or the action, and end on what the reader does next. One idea per sentence, twenty words at most, active voice, simple tenses. Steps start with the verb, and "must" marks a hard rule. Paths, commands and identifiers stay exact. No history, no asides, no jokes. An explainer gives the old rule, the new one, then why. |
 | Whoever asked for a "lazy reply" or "lazy comment", and only then | Lazy | Chat typing: no capitals, and the full stop at a line's end often left off. Grammar, apostrophes and spelling stay correct, code names stay exact in backticks, and the content is as exact as Plain. |
 
-A register the user names wins over the table. A document that declares its
-own voice keeps it.
+A register the user names wins over the table.
 
 ## Behaviour is three lines
 
@@ -158,8 +154,6 @@ against every one.
 - In the showcase register, let the flow break where the writer's thinking
   does: an aside, a second thought, a short line left alone. Plain stays
   free of asides.
-- Give one reason when it motivates the reader's action, as a fact in its own
-  sentence.
 
 **The piece**
 
@@ -168,8 +162,7 @@ against every one.
 - Keep events in the order they happened, false starts included.
 - Let the part the author cares about run long, and the rest stay short.
 - Save the punchline or metaphor for the one place it lands.
-- An explainer gives the old rule, the new rule, then why. A plain reference
-  page gives short facts and instructions.
+- A plain reference page gives short facts and instructions.
 
 **Format**
 
@@ -182,8 +175,8 @@ against every one.
 
 ## Three rules that outrank the guiderails
 
-**The user's voice wins, then the house style.** Their writing beats the
-guiderails. A document's own conventions (heading case, callout style, a
+**The user's voice wins, then the house style.** Their writing beats every
+rule in this skill. A document's own conventions (heading case, callout style, a
 declared voice) beat your defaults.
 
 **Content beats voice.** A sentence with a version number, a command or a

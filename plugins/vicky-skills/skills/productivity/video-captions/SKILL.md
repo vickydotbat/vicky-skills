@@ -19,5 +19,5 @@ A video page gives you its title and little else. Its captions give you every wo
    ```bash
    grep -vE '^(WEBVTT|Kind:|Language:|[0-9:.]+ --> |\s*$)' <file>.vtt | sed 's/<[^>]*>//g' | awk '!seen[$0]++' | tr '\n' ' ' | fold -s -w 200 > transcript.txt
    ```
-   Done when `transcript.txt` reads as sentences.
+   Done when `test -s transcript.txt` succeeds and its lines read as sentences, with no caption timings.
 4. **Read the transcript whole** before you answer. Automatic captions misspell names, so check a name against another source before you quote it. Done when your answer quotes the transcript.
