@@ -80,6 +80,7 @@ TESTS = {
     "springboard.sh": ["springboard", "springboard_approved_examples", "summit_approved_examples"],
     "summit.sh": ["summit", "summit_approved_examples"],
     "no-v1.sh": ["no-v1", "no_v1_approved_examples"],
+    "take-pick.sh": ["take-pick"],
     "step-guard.sh": ["step-guard", "mutation_step_approved_examples", "step_guard_approved_examples", "step_guard_gitea_approved_examples"],
     "step-hint.sh": ["step_guard_approved_examples", "mutation_step_approved_examples", "step-hint"],
     "scratch-guard.sh": ["scratch-guard"],

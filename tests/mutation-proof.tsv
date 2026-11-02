@@ -30,6 +30,7 @@ stale-copy-hint.sh	4e663d08786adf6b	b95b5e5f5ca98005	27/27
 step-guard.sh	91b9ada68f679e9b	c6c5ea3efe61b3d3	48/48
 step-hint.sh	cb169172a81fc295	2ac9dbe9b73941f5	12/12
 summit.sh	d90baa3399bf1cce	4e2fd0294c6237f9	55/55
+take-pick.sh	0d29e4fa7024d160	ed06cbf5e0c07af4	28/28
 tea-stdin.awk	ddfdfc5257c31b06	3950130321bf8149	70/70
 tea-stdin.sh	1f69ec430c059eec	3950130321bf8149	15/15
 ticket-drift.sh	eb07b2b78671d7b0	26cbf8050212f9ee	32/32

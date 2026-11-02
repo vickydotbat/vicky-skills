@@ -248,6 +248,12 @@
       "description": "Keep a .todo springboard: a hook lists at most five actions only you can take and opens each session on the first, and agents jot short .todo lines for later work without asking. Off: no .todo block, no jotted lines.",
       "default": true
     },
+    "guard_take_pick": {
+      "type": "boolean",
+      "title": "Take the pick",
+      "description": "When the agent ends its turn asking a question it already has a pick for, with no gate behind it, it is sent back once to take the pick and say so, or to gate the question with a watch.",
+      "default": false
+    },
     "guard_no_v1": {
       "type": "boolean",
       "title": "Never a V1",
