@@ -28,6 +28,10 @@ Every file stays free of local paths, hostnames and any project's infrastructure
 5. Every numbered step under a `## Steps` heading ends in "Done when", and the file has a `# ` title. Done when `tests/skill-steps.test.sh` passes.
 6. A skill the agent can start asks the user to type a typed-only skill and never starts it itself. Done when `tests/skill-links.test.sh` passes.
 
+## Where a rule lives
+
+- A rule for agents lives in this repo, as a hook, a test or a skill line. The user's own global agent file changes only where it contradicts a rule here, and the pull request names that line.
+
 ## Add or change a hook
 
 - Back each rule with the strongest of these that fits: a hook that refuses or asks; a test or CI step that proves it; a hint a hook injects at the moment the rule applies (when a skill starts, or before the tool call it governs). A skill line comes last, and names what backs it.
