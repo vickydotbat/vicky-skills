@@ -58,7 +58,7 @@ MUTANT_MEMORY = 2**30
 GIT_GUARDS = ["push-behind-guard", "merged-branch-guard", "local-path-guard", "checkout_guard_approved_examples", "red_first_approved_examples"]
 TESTS = {
     "after-push.sh": ["after-push"],
-    "approved-spec-guard.sh": ["approved-spec-guard", "approved_tests_yes_approved_examples", "guard_reads_approved_examples", "guard_new_file_approved_examples", "guard_steers_approved_examples", "approved_spec_guard_cd_approved_examples", "guard_outside_checkout_approved_examples", "guard-locks", "guard_locks_wording_approved_examples", "guard-wording", "guard_cd_home_approved_examples", "guard_runner_approved_examples", "approved-spec-runs"],
+    "approved-spec-guard.sh": ["approved-spec-guard", "approved_tests_yes_approved_examples", "guard_reads_approved_examples", "guard_new_file_approved_examples", "guard_steers_approved_examples", "approved_spec_guard_cd_approved_examples", "guard_outside_checkout_approved_examples", "guard-locks", "guard_locks_wording_approved_examples", "guard-wording", "guard_cd_home_approved_examples", "guard_runner_approved_examples", "approved-spec-runs", "approved-spec-runs-any", "approved_spec_fixture_names_approved_examples"],
     "stale-copy-hint.sh": ["stale_copy_hint_approved_examples", "stale-copy-hint"],
     "do-confirm-hint.sh": ["do_confirm_approved_examples", "do-confirm-hint"],
     "approved-spec.sh": ["approved-spec-guard", "approved-spec-tags", "approved_spec_prose_approved_examples", "guard_reads_approved_examples", "guard-locks", "open-draft", "guard_steers_approved_examples", "guard_outside_checkout_approved_examples"],
@@ -83,9 +83,9 @@ TESTS = {
     "heavy-run-guard.sh": ["heavy-run-guard"],
     "gate-state-guard.sh": ["gate-state-guard"],
     "ticket-drift.sh": ["ticket_drift_approved_examples", "no-remote-quiet"],
-    "mutation-proof-guard.sh": ["mutation-proof-guard", "goal_driven_approved_examples"],
+    "mutation-proof-guard.sh": ["mutation-proof-guard", "goal_driven_approved_examples", "mutation_proof_red_first_approved_examples"],
     "plane-block-guard.sh": ["plane_block_approved_examples"],
-    "poll-pace.sh": ["poll-pace", "watch_approved_examples", "poll_pace_heredoc_approved_examples"],
+    "poll-pace.sh": ["poll-pace", "watch_approved_examples", "poll_pace_heredoc_approved_examples", "poll_pace_quoted_approved_examples"],
     "watch.sh": ["watch", "watch_approved_examples"],
     "worktree-place.sh": ["worktree-place", "worktree_place_approved_examples", "worktree_cleanup_approved_examples"],
     "lesson-ledger.sh": ["lesson-ledger", "lesson_ledger_approved_examples"],

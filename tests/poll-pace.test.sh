@@ -18,5 +18,11 @@ expect 2 true "a 60-second poll is refused" 'for i in $(seq 1 60); do sleep 60; 
 expect 2 true "a loop of 61 rounds is refused" 'for i in $(seq 1 61); do sleep 30; done' true
 expect 2 true "a brace loop of 61 rounds is refused" 'for i in {1..61}; do sleep 5; done' true
 expect 0 true "a long seq with no sleep is not a poll" 'seq 1 500 | wc -l'
+expect 2 true "a loop run by eval is refused" "eval 'while true; do sleep 5; done'"
+expect 2 true "a loop run by zsh -c is refused" "zsh -c 'while true; do sleep 5; done'"
+expect 2 true "a long sleep inside a watch.sh check is refused" "watch.sh 'sleep 31; true'"
+expect 0 true "a long sleep quoted in a commit message passes" 'git commit -m "wait out a sleep 60 loop"'
+expect 2 true "a loop after a quoted word is still read" "echo 'go'; while true; do sleep 5; done"
+expect 0 true "a loop in a python heredoc is text" "$(printf "python3 - <<'PY'\nprint('while true; do sleep 5; done')\nPY")"
 expect 0 false "switched off, a 60-second sleep passes" 'sleep 60'
 exit $fail

@@ -16,6 +16,22 @@ doc="$top/docs/agents/testing.md"
 check=$(sed -n 's/^Mutation proof check: //p' "$doc" 2>/dev/null | head -1)
 [ -n "$check" ] || exit 0 # mutant-ok delete: an empty check runs as bash -c "", which passes, so nothing is refused the same way
 refresh=$(sed -n 's/^Mutation proof refresh: //p' "$doc" | head -1)
+# The files this commit takes: those staged now, those a `git add` in the same
+# command stages, and every change for `commit -a` or `add -A`. A commit of
+# approved tests alone is red-first's own step, and the proof can't be
+# recorded while they fail, so it comes with the code commit instead.
+taken=$(cd "$top" && {
+  git diff --cached --name-only
+  grep -Eq 'commit[^;&|]*[[:space:]](-[a-zA-Z]*a[a-zA-Z]*|--all)([[:space:]]|$)' <<<"$code" && git diff --name-only
+  grep -oE 'git[[:space:]]+add([[:space:]]+[^;&|[:space:]]+)+' <<<"$code" | while read -r -a words; do
+    for w in "${words[@]:2}"; do
+      case "$w" in -A | --all | . | -u | --update) git status --porcelain | cut -c4- ;; -*) ;; *) echo "$w" ;; esac
+    done
+  done
+})
+if [ -n "$taken" ] && [ "$(grep -ciE '(^|/)[^/]*approved_?examples[^/]*$' <<<"$taken")" = "$(wc -l <<<"$taken")" ]; then
+  exit 0
+fi
 # The check runs from the repo root, and must answer fast: it compares, never mutates.
 if ! out=$(cd "$top" && timeout 60 bash -c "$check" 2>&1); then
   refuse "$GUARD: the mutation proof is out of date:" "$out" \

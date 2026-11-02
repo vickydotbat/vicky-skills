@@ -11,6 +11,8 @@ check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 commit() { jq -n --arg c "$1" --arg d "$repo" '{tool_name: "Bash", tool_input: {command: $c}, cwd: $d}' |
   CLAUDE_PLUGIN_OPTION_GUARD_MUTATION_PROOF=true bash "$guard" >/dev/null 2>&1; }
 echo 'exit 1' > "$repo/tests/hook_approved_examples.test.sh"
+echo 'exit 1' > "$repo/scripts/hook.sh"
+git -C "$repo" add scripts/hook.sh && git -C "$repo" -c user.name=t -c user.email=t@example.invalid commit -qm base
 echo 'exit 0' > "$repo/scripts/hook.sh"
 
 # Given approved examples for a hook, written and run red before its code

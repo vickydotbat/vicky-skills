@@ -223,6 +223,14 @@ jobs:
         run: tests/do-confirm-hint.test.sh
       - name: Every wait on the user is a gate
         run: tests/gate_home_approved_examples.test.sh
+      - name: Red approved tests commit on their own
+        run: tests/mutation_proof_red_first_approved_examples.test.sh
+      - name: A quoted loop is text to poll-pace
+        run: tests/poll_pace_quoted_approved_examples.test.sh
+      - name: A fixture named like an approved test is not one
+        run: tests/approved_spec_fixture_names_approved_examples.test.sh
+      - name: Running a test with approved examples is never an edit
+        run: tests/approved-spec-runs-any.test.sh
       - name: Faster mutation runner
         run: tests/mutation_speed_approved_examples.test.sh
       - name: Mutation runner memory limit

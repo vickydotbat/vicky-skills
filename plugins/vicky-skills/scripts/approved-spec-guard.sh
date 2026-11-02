@@ -92,7 +92,11 @@ if [ -z "$target" ]; then
   # tests by bare name only runs them, as the mutation run does.
   while IFS= read -r word; do
     [ -f "$word" ] && [ "$(wc -c < "$word")" -lt 1000000 ] || continue
-    runs_only <"$word" | grep -qiE 'approved_?examples(\.test)?\.[a-z]+' && refuse "$word names an approved-examples file, and"
+    # Only a name that matches a file, at its path or tracked under that name, can be written: a scratch fixture's can't.
+    while IFS= read -r named; do
+      [ -f "$named" ] || git ls-files | grep -qiE "(^|/)$(basename -- "$named" | sed 's/[.]/[.]/g')$" || continue
+      refuse "$word names an approved-examples file, and"
+    done < <(runs_only <"$word" | grep -oiE '[^[:space:];&|()<>"'"'"'=]*approved_?examples(\.test)?\.[a-z]+')
   done < <(tr ';&|()\n' '\n' <<<"$command" | awk '{
     flag = 0
     for (i = 1; i <= NF; i++) { # mutant-ok: from 0, field 0 is the whole segment, never a file name, so it adds no candidate

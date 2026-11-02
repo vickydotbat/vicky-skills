@@ -21,6 +21,7 @@ for script in $(jq -r '.hooks[][].hooks[].command' "$plugin/hooks/hooks.json" | 
     after-push.sh) name="After push" ;;
     approved-spec-guard.sh) name="Approved examples guard" ;;
     stale-copy-hint.sh) name="Stale copy" ;;
+    do-confirm-hint.sh) name="Confirm the objective" ;;
     todo-reminder.sh) name="Todo reminder" ;;
     *) name="" ;;
   esac
