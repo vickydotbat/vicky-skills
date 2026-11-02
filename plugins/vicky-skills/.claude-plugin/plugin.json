@@ -265,6 +265,12 @@
       "title": "Never a V1",
       "description": "An effort ships complete. When the agent ends its turn offering found work as a follow-up pull request, a later ticket or a v2, or asking whether to fold it in, it is sent back once to fold the work in. Work that waits on someone, and a later version the user named, go through.",
       "default": false
+    },
+    "adr_scope_hint": {
+      "type": "boolean",
+      "title": "Remind agents what a decision record holds",
+      "description": "When an agent writes or edits a decision record (adr/NNNN-*.md), add a reminder that a record holds a broad architecture rule, and that one feature's reason goes in a comment at its code.",
+      "default": true
     }
   }
 }

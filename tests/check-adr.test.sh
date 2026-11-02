@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
-# true-names checks a decision record for what, category, when and why, an
-# optional Superseded line, and nothing else, in at most 55 words.
-# A record with the lines in order passes. A missing, repeated or extra
-# line, the wrong order, a category off the list, a code name or a 56th word
-# fails it.
+# true-names checks a decision record: what, category, when, then a Brief and a
+# Rationale section of one paragraph each, in at most 100 words; or the older
+# four-line shape with a Because line, in at most 55. Both take an optional
+# Superseded line and nothing else. A missing, repeated or extra line or
+# section, the wrong order, a mix of the two shapes, a category off the list,
+# a code name or a word past the limit fails it.
 set -u
 script="$(dirname "$0")/../plugins/vicky-skills/skills/engineering/true-names/scripts/check-adr.sh"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
@@ -119,5 +120,103 @@ grep -q 'found: what category when why other(x3)' <<<"$out" || { echo "FAIL the 
 grep -q 'cached per emitter' <<<"$out" && { echo "FAIL the report repeats the record's text"; fail=1; }
 bash "$script" "$dir/missing.md" >/dev/null && { echo "FAIL passed: a missing record"; fail=1; }
 bash "$script" >/dev/null 2>&1; [ $? -eq 2 ] || { echo "FAIL no usage error without a record"; fail=1; }
-[ $fail -eq 0 ] && echo "ok   check-adr passes what, category, when, why and Superseded in 55 words, and fails anything else"
+brief='## Brief
+
+Sound occlusion reuses the raycasts the physics engine already casts each frame.'
+rationale='## Rationale
+
+The engine casts rays every frame anyway. Baked occlusion would mean a rebuild
+for every map, and a stale bake goes unnoticed until a player hears it.'
+pass "what, category, when, Brief and Rationale" "$what
+
+$cat
+
+$when
+
+$brief
+
+$rationale"
+pass "a Rationale that starts with Because" "$what
+$cat
+$when
+$brief
+## Rationale
+Because the engine casts rays every frame anyway."
+pass "a Brief and Rationale record superseded" "$what
+$cat
+$when
+$brief
+$rationale
+
+Superseded by other-repo ADR-0009."
+refuse "no Brief" "$what
+$cat
+$when
+$rationale"
+refuse "no Rationale" "$what
+$cat
+$when
+$brief"
+refuse "Rationale before Brief" "$what
+$cat
+$when
+$rationale
+$brief"
+refuse "an empty Brief" "$what
+$cat
+$when
+## Brief
+$rationale"
+refuse "two paragraphs in the Brief" "$what
+$cat
+$when
+$brief
+
+A second paragraph.
+$rationale"
+refuse "two paragraphs in the Rationale" "$what
+$cat
+$when
+$brief
+$rationale
+
+A second paragraph."
+refuse "Because mixed with Brief and Rationale" "$what
+$cat
+$when
+$why
+$brief
+$rationale"
+refuse "Because after the sections" "$what
+$cat
+$when
+$brief
+$rationale
+
+$why"
+refuse "a third section" "$what
+$cat
+$when
+$brief
+$rationale
+## Context
+More text."
+refuse "a backticked code name in the Brief" "$what
+$cat
+$when
+${brief/raycasts/\`Physics.Raycast\`}
+$rationale"
+pass "100 words" "$what
+$cat
+$when
+$brief
+## Rationale
+Because$(pad 71)."
+refuse "101 words" "$what
+$cat
+$when
+$brief
+## Rationale
+Because$(pad 72)."
+[ $fail -eq 0 ] && echo "ok   check-adr passes both shapes within their word limits, and fails anything else"
 exit $fail
