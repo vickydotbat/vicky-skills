@@ -25,11 +25,11 @@ check "a tool result does not end the reply" 'blocked'
 check "a fold-in-or question is stopped" 'blocked'
 { user "go"; text "The next ticket on the chart is GAME-7, and I closed GAME-6."; } > "$fx/t.jsonl"
 check "naming the next ticket on a chart is no offer" '[ -z "$(stop)" ]'
-for r in "That's a different hook, so I left it out of this PR." "I kept them out of the pull request." "Still want #74 fixed next, in its own PR? My pick is yes." "Each one can go in their own pull request." "Should I take issue 12 next?" "Want me to fix ticket 5 too?" "Should I build #9?"; do
+for r in "Those can be follow-up tickets." "That's a different hook, so I left it out of this PR." "I kept them out of the pull request." "Still want #74 fixed next, in its own PR? My pick is yes." "Each one can go in their own pull request." "Should I take issue 12 next?" "Want me to fix ticket 5 too?" "Should I build #9?"; do
   { user "go"; text "$r"; } > "$fx/t.jsonl"
   check "an open ticket kept out or offered is stopped: $r" 'blocked'
 done
-for r in "Want me to rename the variable?" "Should I fix the issue in the parser?" "Still want the ticket link?" "It follows its own PR template."; do
+for r in "Surprises are logged, so later charts name them as risks." "The approach is fine for later." "Want me to rename the variable?" "Should I fix the issue in the parser?" "Still want the ticket link?" "It follows its own PR template."; do
   { user "go"; text "$r"; } > "$fx/t.jsonl"
   check "a sentence that offers no ticket goes through: $r" '[ -z "$(stop)" ]'
 done
@@ -38,7 +38,7 @@ for r in "Sorting waits until v2." "That is next v2 work." "Leave it for the lat
   { user "go"; text "$r"; } > "$fx/t.jsonl"
   check "a v2 after its lead word is an offer: $r" 'blocked'
 done
-for r in "V2: the hook has no memory." "**V2.** Done." "We shipped v2 of the parser today." "The hook reads \`a follow-up PR\` as an offer."; do
+for r in "Plurals like \"follow-up tickets\" still get caught." "It matched “a pull request for later” too." "V2: the hook has no memory." "**V2.** Done." "We shipped v2 of the parser today." "The hook reads \`a follow-up PR\` as an offer."; do
   { user "go"; text "$r"; } > "$fx/t.jsonl"
   check "a label, a past v2 or quoted code is no offer: $r" '[ -z "$(stop)" ]'
 done
