@@ -9,11 +9,29 @@ conn="$plugin/skills/productivity/conn/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 
-# Given a session in the middle of an effort
+# Given a session in the middle of an effort with an open pull request or ticket
 # When you type /conn
-# Then the handoff is written and its path is in the reply, as /you-have-the-conn did before
-check "/conn writes the handoff" \
-  'grep -q "^name: conn$" "$conn" && grep -q "disable-model-invocation: true" "$conn" && grep -q "\"./skills/productivity/conn\"" "$plugin/.claude-plugin/plugin.json" && grep -q "Done when the path is in your reply" "$conn"'
+# Then the handoff is a comment on that pull request or ticket, and its link is in the reply
+check "/conn comments the handoff on the pull request or ticket" \
+  'grep -q "^name: conn$" "$conn" && grep -q "disable-model-invocation: true" "$conn" && grep -q "\"./skills/productivity/conn\"" "$plugin/.claude-plugin/plugin.json" && grep -q "Post it as a comment on the effort'"'"'s open pull request or ticket" "$conn" && grep -q "the comment'"'"'s link is in your reply" "$conn" && ! grep -q "temp folder" "$conn"'
+
+# Given work on a project with no tracker, such as your machine config
+# When you type /conn
+# Then the handoff is a note in that project's vault folder, and its path is in the reply
+check "/conn writes a vault note where there is no tracker" \
+  'grep -q "With no tracker, write it as a note in the project'"'"'s vault folder" "$conn" && grep -q "the note'"'"'s path is in your reply" "$conn"'
+
+# Given a session whose notes sit in its scratch folder
+# When /conn posts the handoff
+# Then the comment names no path outside the repo, and loose-lips checked it first
+check "/conn posts only repo-relative paths, after loose-lips" \
+  'grep -q "names no path outside the repo" "$conn" && grep -q "Run \`loose-lips\` on it before you post" "$conn"'
+
+# Given a handoff comment on the effort's pull request or ticket
+# When you ask sup in a fresh session
+# Then sup names the handoff and checks each of its lines before it reports one
+check "sup finds the handoff and checks it" \
+  'sup="$plugin/skills/productivity/sup/SKILL.md"; grep -q "\*\*Handoff\*\*" "$sup" && grep -qi "check each of its lines before you report one" "$sup" && grep -q "^\*\*Handoff\*\*" "$conn"'
 
 # Given the plugin after the rename
 # When you read any skill, hook, test or the README
