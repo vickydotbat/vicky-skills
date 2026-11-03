@@ -22,7 +22,7 @@ local-path-guard.sh	262afb6fbdb2a8d7	8ddcf8981e6a878b	29/29
 merge-point.sh	a19dbe9167831b34	99e4ba40eadd2a76	2/2
 merged-branch-guard.sh	993cf2936afdaf69	fc0a2dcd7913a3a0	43/43
 mutation-proof-guard.sh	6ffab5f0bf646579	9ec5b89345c14133	24/24
-no-v1.sh	2ed14d35f0cf6512	6b4a05484895a5e0	29/29
+no-v1.sh	1a7cb16f8078ee5c	819205a36f41efc9	29/29
 plane-block-guard.sh	e73db5047568c280	80be2c862a31f85d	14/14
 plugin-data.sh	b183a483ba56dfc4	26714f51fc4eaca6	3/3
 poll-pace.sh	c024e91e30210e5a	a4779f50429ca889	28/28
@@ -40,7 +40,7 @@ stale-blame.sh	4084eb0a4362e5b2	132996127b0e8779	14/14
 stale-copy-hint.sh	4e663d08786adf6b	b5706ded17a325ea	27/27
 step-guard.sh	91b9ada68f679e9b	ffd53476e8fe53e2	48/48
 step-hint.sh	183b8f5cb6fd0c63	a0f0dfce7bff8fef	13/13
-stop-reply.sh	99b9252e2c6a5ea3	d1ad6e4ab2616808	21/21
+stop-reply.sh	99b9252e2c6a5ea3	3be1066721fbe776	21/21
 summit.sh	a7326a54e5ec3ae0	6f7066718f33e734	53/53
 take-pick.sh	6963c779f575e40a	40f0ebb19fcc4c93	23/23
 tea-stdin.awk	ddfdfc5257c31b06	fc5e7dff11bf953a	70/70

@@ -67,8 +67,8 @@ jobs:
         run: tests/skill-steps.test.sh
       - name: Sitting lessons
         run: tests/sitting-lessons.test.sh
-      - name: No-v1 Ideas line examples
-        run: tests/no_v1_ideas_approved_examples.test.sh
+      - name: No-v1 ticket-offer examples
+        run: tests/no_v1_ticket_offer_approved_examples.test.sh
       - name: Approved-spec steer for a new test
         run: tests/approved-spec-new-test.test.sh
       - name: Draw chart

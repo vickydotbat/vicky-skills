@@ -10,7 +10,8 @@
 # quotes, double or single, is a mention, dropped like code. A reply after
 # the user asked for a separate pull request goes through. A sentence that
 # names a wait (Waits on, waits on) or quotes the user (as you said) goes
-# through. A reply that ends on a Next list naming no wait is sent back to
+# through. An offer to file or open a ticket for found work is stopped too.
+# A reply that ends on a Next list naming no wait is sent back to
 # start that list. It steers once per turn: with stop_hook_active set, the
 # reply goes through, so a misjudged one never loops. The steer sends a new
 # behaviour no approved example names to the repo's Ideas place: an "Ideas:"
@@ -28,7 +29,7 @@ grep -E '"skill": ?"(vicky-skills:)?(do|warp)"|<command-name>/(vicky-skills:)?(d
 # A pull request of its own the user asked for is no deferral.
 grep -qiE '\b(separate|different|own|new|another) (pr|pull request)\b' <<<"$asked" && exit 0
 offers=$(prose | sed -E 's/"[^"]*"//g; s/“[^”]*”//g; s/‘[^’]*’//g; s/(^|[[:space:](])'"'"'[^'"'"']*'"'"'([[:space:].,;:!?)]|$)/\1\2/g' | tr '\n' ' ' | sed 's/\([.?!]\) /\1\n/g' \
-  | grep -iE '\b(follow-?up|separate|another|later|future) (pr|pull request|ticket|issue|effort|star)|\b(ticket|pr|pull request|issue)\b[^.?!]* (for )?later|\b(a|the|for|in|into|to|until|next|later) v2\b|fold (it|that|them|this) in,? or |(left|kept) (it|them|that|this) out of (this|the) (pr|pull request)|(in|into|gets?|needs?) (its|their) own (pr|pull request)|(still want|should i (take|do|fix|build)|want me to (take|do|fix|build))[^.?!]*(#[0-9]+|(issue|ticket) #?[0-9]+)' \
+  | grep -iE '\b(follow-?up|separate|another|later|future) (prs?|pull requests?|tickets?|issues?|efforts?|stars?)\b|\b(file|open)s?( it| that| this| them)?( as)? (a |an |its own |a new |a separate )(ticket|issue)\b|\b(ticket|pr|pull request|issue)\b[^.?!]* (for )?later|\b(a|the|for|in|into|to|until|next|later) v2\b|fold (it|that|them|this) in,? or |(left|kept) (it|them|that|this) out of (this|the) (pr|pull request)|(in|into|gets?|needs?) (its|their) own (pr|pull request)|(still want|should i (take|do|fix|build)|want me to (take|do|fix|build))[^.?!]*(#[0-9]+|(issue|ticket) #?[0-9]+)' \
   | grep -viE 'waits on|as you (said|asked)')
 if [ -z "$offers" ]; then
   # A Next list that waits on no one is work to start, not to report. A Next
