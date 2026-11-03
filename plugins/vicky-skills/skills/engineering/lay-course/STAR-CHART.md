@@ -19,7 +19,7 @@ The reference `lay-course` and `warp` both read: the words, the chart body, the 
 | **black hole** | A part of the work that eats effort without end, which the course steers around. Unlike a nebula, it is plain to see. It is never a ticket: the chart names it under Black holes, with its way around, such as a timebox or a path that skips it. |
 | **asteroid belt** | A question found during a build that the target can't ship without. `warp` builds around it and asks once, at the end of the course. |
 | **neutral zone** | Tickets closed because they're past the mission. |
-| **frontier** | The chart's open, unblocked, unassigned children. |
+| **frontier** | The chart's open, unblocked, unassigned children, less any star an open line under Knowns sits in front of: a known unknown whose ticket is open, or a `Confirm:` line the user hasn't answered. |
 | **course** | The open blockers from the frontier to each target star, and the targets, in the order they must close. A target on the frontier is its own whole course. |
 | **orbit** | The tickets loosely linked to a chart or a ticket, which it touches but doesn't own and doesn't wait on: "in its orbit". The tracker holds them as related links. |
 
@@ -50,7 +50,27 @@ Title: `Star Chart: <the effort>`. Label: `starchart:chart`.
 
 ## Sensor log
 
-- <a fact the work rests on> (<file, spec line or ticket it comes from>)
+- <a fact the work rests on>, behind <star links, or "every star">: "<the quoted line>" (<file, spec line or ticket it comes from, and its version>)
+
+## Knowns
+
+### Known knowns
+
+The Sensor log above.
+
+### Known unknowns
+
+- <an open question>, behind <star links>: [<anomaly or away team title>](<link>), blocking those stars
+
+### Unknown knowns
+
+- <a fact likely on record, or held by the user, that nobody wrote down>, behind <star links>: [<away team title>](<link>), or "Confirm: <one line for the user>"
+
+### Unknown unknowns
+
+- Riskiest star: [<star title>](<link>), covered by <a timebox or a probe>
+- Seen before: <a kind of surprise an earlier chart logged>, checked by <how>
+- Surfaced: <the surprise>, while building [<star title>](<link>), cost <what it cost>
 
 ## Decisions
 
@@ -72,6 +92,17 @@ Title: `Star Chart: <the effort>`. Label: `starchart:chart`.
 A chart with no black hole seen yet keeps the section, with the one line "None seen yet."
 
 A ticket in the chart's orbit is a related link on the tracker, never a section.
+
+## Sorting the knowns
+
+Every chart sorts what its stars rest on into the four boxes of the Rumsfeld matrix, and each box routes its items to an action. A line in a box names the stars it sits behind.
+
+- **Known knowns**: facts with a source. Each goes in the Sensor log with its source line quoted, so the box only points there. A fact every star rests on says "behind every star".
+- **Known unknowns**: open questions you can state. Each is an anomaly or an away team ticket that blocks the stars behind it. A question too loose to ticket stays under Nebulae until it sharpens.
+- **Unknown knowns**: facts that likely sit in a record or in the user's head but were never written down, such as a rule the user always applies or how the work crosses an existing feature. Each gets an away team to find the record, or a `Confirm:` line the user answers in one word, before any star rests on it. Take the `Confirm:` line when no record is likely. Once the user confirms, the fact moves to the Sensor log, quoting the user, and its star loses that unknown at the next redraw.
+- **Unknown unknowns**: these can't be listed. Name the riskiest star and the timebox or probe that covers it. Then search the tracker's earlier charts for their `Surfaced:` lines, and name each kind of surprise seen before on a `Seen before:` line, with the check that covers it here. `loose-ends` adds a `Surfaced:` line for each asteroid belt a build hit.
+
+A box is never left empty without saying why: a box with nothing in it holds one line with the reason, such as "None: the spec answers every question."
 
 ## Tickets
 
@@ -127,14 +158,16 @@ Every chart shows how its tickets connect, drawn from the tracker, never by hand
    ```json
    [{"key": "KEY-1", "kind": "anomaly", "title": "<title>", "open": true,
      "assigned": false, "blocked_by": ["KEY-2"], "related": ["KEY-9"]},
+    {"key": "KEY-3", "kind": "star", "title": "<title>", "open": true,
+     "known": 3, "unknown": 1},
     {"black_hole": "<the black hole>", "threatens": ["KEY-1"]}]
    ```
 
-   `kind` is the `starchart:` kind, or `star`. `blocked_by` holds only open blockers, on this chart or another. `related` holds tickets the chart doesn't own. Each line under Black holes gets a `black_hole` object, with the tickets its line threatens. Done when every child of the chart and every black hole has one object.
+   `kind` is the `starchart:` kind, or `star`. `blocked_by` holds only open blockers, on this chart or another. `related` holds tickets the chart doesn't own. A star's `known` counts the Sensor log lines behind it, and its `unknown` counts the open lines under Known unknowns and Unknown knowns that name it. Count both afresh at every redraw. A known unknown counts here and blocks through `blocked_by` too; a `Confirm:` line has no ticket, so only its count keeps the star off the frontier. Each line under Black holes gets a `black_hole` object, with the tickets its line threatens. Done when every child of the chart and every black hole has one object.
 3. **Draw it** with `python3 <this skill's folder>/scripts/draw-chart.py <scratch>/tickets.json`. During a warp, add `--course <KEY>,<KEY>` for the course and its targets. Done when it prints a Mermaid flowchart.
 4. **Put it under `## Chart`.** When the tracker file says the tracker draws Mermaid, paste the printed block. When it says it can't, add `--png <scratch>/chart.png`, attach the image the way the tracker file says, and show it in the body the way it says. Done when the chart's page shows the drawing.
 
-The drawing shows the course ahead, so closed tickets stay out of it. It marks the frontier with a thick border and the course in yellow, and draws each black hole as a dark circle beside the open tickets it threatens. A ticket with no line to another stacks in a column of its kind.
+The drawing shows the course ahead, so closed tickets stay out of it. It marks the frontier with a thick border and the course in yellow, keeps a star with an unknown left off the frontier, shows each star's counts as `(<n> known, <n> unknown)`, and draws each black hole as a dark circle beside the open tickets it threatens. A ticket with no line to another stacks in a column of its kind.
 
 ## Answer pages
 

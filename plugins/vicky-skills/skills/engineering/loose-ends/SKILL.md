@@ -24,8 +24,9 @@ New developers pick work from the tracker and trust what a ticket says. So an ef
 
    A comment settles nothing. Done when every ticket on the list has a verdict in the tracker or the body.
 3. **Make the body true.** Read the pull request body against `git diff <base>...HEAD` sentence by sentence. Rewrite a superseded sentence in place with `human-voice`, never under an "update" heading. Done when every sentence matches the diff.
-4. **Engrave the snags**, once, before you call the effort done. List each snag the effort hit: a red check, a crash, a retry, or a correction from the user. Run `engrave` on each one. Done when the report names each snag with the law built for it, or says why it needs none.
-5. **After the merge**, close by hand any ticket still open that the pull request named, with a comment naming the pull request. Done when the tracker shows each one closed.
+4. **Log the surprises.** For each asteroid belt the effort found, an unknown unknown that became known, add a `Surfaced:` line to the Unknown unknowns box of its star chart's Knowns, as [STAR-CHART.md](../lay-course/STAR-CHART.md)'s chart body shows: the surprise, the star it was found building, and what it cost, such as a parked slice, a retry or an hour. Done when each asteroid belt has its line, or the effort has no chart.
+5. **Engrave the snags**, once, before you call the effort done. List each snag the effort hit: a red check, a crash, a retry, or a correction from the user. Run `engrave` on each one. Done when the report names each snag with the law built for it, or says why it needs none.
+6. **After the merge**, close by hand any ticket still open that the pull request named, with a comment naming the pull request. Done when the tracker shows each one closed.
 
 A ticket whose state lags the work moves now: one the pull request names moves to the started state while the pull request is open, a parked one through the tracker's "Park a ticket" action, and the report names each move.
 
