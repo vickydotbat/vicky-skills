@@ -205,6 +205,10 @@ jobs:
         run: tests/drawing_board_approved_examples.test.sh
       - name: drawing-board reads stretches and rules, and the page serves only draw.io's folder
         run: tests/drawing-board.test.sh
+      - name: Preview media from the chat
+        run: tests/preview-media.test.sh
+      - name: do-first-guard holds code edits until do starts
+        run: tests/do-first-guard.test.sh
       - name: Red-first decisions
         run: tests/red-first.test.sh
       - name: Step guard decisions
