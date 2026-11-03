@@ -191,6 +191,8 @@ jobs:
         run: tests/hook-exits.test.sh
       - name: Checkout guard decisions
         run: tests/checkout-guard.test.sh
+      - name: Checkout guard keeps a rebase in progress on its branch
+        run: tests/checkout_guard_rebase_approved_examples.test.sh
       - name: Draft lock
         run: tests/draft-lock.test.sh
       - name: Draft-lock lets reads and scratch writes run
