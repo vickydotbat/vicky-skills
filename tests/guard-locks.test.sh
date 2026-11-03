@@ -19,6 +19,7 @@ done
 # A copy in a fresh checkout has no grant to open it.
 git init -q "$dir"
 cp "$guard" "$dir/approved-spec-guard.sh"
+git -C "$dir" add -A && git -C "$dir" -c user.name=t -c user.email=t@example.invalid commit -qm fixtures
 check "given an edit to the approved-spec guard script, when no grant exists for it, the guard refuses it" \
   deny "$(jq -n --arg f "$dir/approved-spec-guard.sh" '{tool_name: "Edit", tool_input: {file_path: $f}}' | decide)"
 exit $fail

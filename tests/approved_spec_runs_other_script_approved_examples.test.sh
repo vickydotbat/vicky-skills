@@ -12,7 +12,7 @@ git init -q "$top"
 mkdir -p "$top/plugins/vicky-skills/scripts" "$top/tests"
 cp "$src/$guard" "$src/plugins/vicky-skills/scripts/approved-spec.sh" "$top/plugins/vicky-skills/scripts/"
 printf 'print("ok")\n' > "$top/tests/mutate-hooks.py"
-git -C "$top" add -A
+git -C "$top" add -A && git -C "$top" -c user.name=t -c user.email=t@example.invalid commit -qm fixtures
 fail=0
 run() { jq -n --arg c "$1" --arg d "$top" '{tool_name: "Bash", tool_input: {command: $c}, cwd: $d}' | bash "$top/$guard" | jq -rs '.[0].hookSpecificOutput.permissionDecision // "allow"'; }
 check() { if [ "$2" = "$3" ]; then echo "ok   $1"; else echo "FAIL $1: got '$3', want '$2'"; fail=1; fi; }

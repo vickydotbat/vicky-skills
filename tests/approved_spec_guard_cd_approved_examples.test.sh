@@ -13,6 +13,7 @@ test=tests/charm_approved_examples.test.sh
 mkdir -p "$dir/tree/tests" "$dir/granted/tests" "$dir/session/tests" "$dir/empty"
 for d in tree granted session; do printf 'echo ok\n' > "$dir/$d/$test"; done
 for d in tree granted session; do git init -q "$dir/$d"; done
+for d in tree granted session; do git -C "$dir/$d" add -A && git -C "$dir/$d" -c user.name=t -c user.email=t@example.invalid commit -qm fixtures; done
 echo "$test" > "$(git -C "$dir/granted" rev-parse --absolute-git-dir)/approved-spec-grants"
 fail=0
 run() { jq -n --arg c "$2" --arg d "$dir/$1" '{tool_name: "Bash", tool_input: {command: $c}, cwd: $d}' | bash "$guard" | jq -r '.hookSpecificOutput.permissionDecision // empty'; }

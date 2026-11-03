@@ -15,6 +15,8 @@ granted() {
   grants="$(git -C "$top" rev-parse --absolute-git-dir)/approved-spec-grants"
   grep -qsxF "$(realpath -m -- "$1" | sed "s|^$top/||")" "$grants"
 }
+# A new test its repo has never committed, with no wording lines yet, holds nothing approved.
+fresh() { [ -z "$(wording <"$1")" ] && ! git -C "$(dirname -- "$1")" cat-file -e "HEAD:./$(basename -- "$1")" 2>/dev/null; }
 # refuse <file> [what the edit changed]
 refuse() {
   jq -n --arg f "$1" --arg why "${2:-}" '{hookSpecificOutput: {
@@ -40,7 +42,7 @@ changed_wording() { diff <(wording <"$1") <(after_edit "$1" | wording) | grep -m
 
 if [ "$(jq -r '.tool_name // empty' <<<"$payload")" != Bash ]; then
   file=$(jq -r '.tool_input.file_path // empty' <<<"$payload")
-  [ -n "$file" ] && approved "$file" && ! granted "$file" || exit 0
+  [ -n "$file" ] && approved "$file" && ! granted "$file" && ! fresh "$file" || exit 0
   # A file with no wording lines holds its examples elsewhere, so every line of it stays locked.
   [ -n "$(wording <"$file")" ] || refuse "$file" " It has no Given, When or Then comment lines, so every line of it is locked. To unlock its harness for good, copy its approved examples from its ticket into it as Given, When and Then comments above their tests, and take that edit through red-pen once."
   # An edit whose result can't be read ahead leaves no wording lines, so it reads as changing them.
@@ -79,7 +81,7 @@ command=$(awk '
 words=$(tr -s " \t\n;&|()<>'\"=," '\n' <<<"$command")
 target="" # mutant-ok delete: an unset target reads as empty, the same as this
 while IFS= read -r word; do
-  [ -n "$word" ] && approved "$word" && { target=$word; break; }
+  [ -n "$word" ] && approved "$word" && ! fresh "$word" && { target=$word; break; }
 done <<<"$words"
 if [ -z "$target" ]; then
   # A script the command runs may name the file itself, and write it. Each

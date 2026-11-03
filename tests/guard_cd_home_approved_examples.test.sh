@@ -10,6 +10,7 @@ test=tests/charm_approved_examples.test.sh
 mkdir -p "$dir/home/tree/tests" "$dir/session"
 printf 'echo ok\n' > "$dir/home/tree/$test"
 git init -q "$dir/home/tree"
+git -C "$dir/home/tree" add -A && git -C "$dir/home/tree" -c user.name=t -c user.email=t@example.invalid commit -qm fixtures
 fail=0
 run() { jq -n --arg c "$1" --arg d "$dir/session" '{tool_name: "Bash", tool_input: {command: $c}, cwd: $d}' | HOME="$dir/home" bash "$guard" | jq -r '.hookSpecificOutput.permissionDecision // empty'; }
 check() { if [ "$2" = "$3" ]; then echo "ok   $1"; else echo "FAIL $1: got '$3', want '$2'"; fail=1; fi; }
