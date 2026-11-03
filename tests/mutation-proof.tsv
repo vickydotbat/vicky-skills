@@ -2,7 +2,7 @@ adr-scope-hint.sh	25667e321a3247e7	798d69388fc44018	7/7
 after-push.sh	32da92d9aa874a5f	41d87b1f53c3ed1b	16/16
 approved-spec-guard.sh	8b4fdd8eb883058b	eac941d6d8306e07	103/103
 approved-spec.sh	1de73515ee00e8b1	2e2bbdcd020fc803	8/8
-auto-tidy.sh	37372c9b2b9a5907	c64b78291c686979	15/15
+auto-tidy.sh	32d447d18b0f0d19	5f4375dfeefa9a01	59/59
 checkout-guard.sh	8b0f6cd0e8d78b08	48faf93ba7212f94	97/97
 do-confirm-hint.sh	b0c1b33c616e5669	a0fd6e967675e276	15/15
 do-first-guard.sh	0e11e5805b2b2604	4df8a3490d6a93ef	35/35
@@ -21,7 +21,7 @@ lesson-ledger.sh	4c88dc2d0aebcfe6	0e4bcf0a16a39809	18/18
 local-path-guard.sh	262afb6fbdb2a8d7	8ddcf8981e6a878b	29/29
 merged-branch-guard.sh	86e1037d0d39b0c8	fc0a2dcd7913a3a0	43/43
 mutation-proof-guard.sh	6ffab5f0bf646579	9ec5b89345c14133	24/24
-no-v1.sh	3e35d6f6b818d161	1408203212886bd1	28/28
+no-v1.sh	e046903a93d3b225	b1692158e2c4ef5b	29/29
 plane-block-guard.sh	e73db5047568c280	ceec7242938349d5	14/14
 plugin-data.sh	b183a483ba56dfc4	26714f51fc4eaca6	3/3
 poll-pace.sh	c024e91e30210e5a	d73b76489c0217b8	28/28
@@ -38,8 +38,8 @@ springboard.sh	2b1a555e07899495	aa25977872a3c406	53/53
 stale-blame.sh	4084eb0a4362e5b2	132996127b0e8779	14/14
 stale-copy-hint.sh	4e663d08786adf6b	b5706ded17a325ea	27/27
 step-guard.sh	91b9ada68f679e9b	ffd53476e8fe53e2	48/48
-step-hint.sh	cb169172a81fc295	313fb3e7365ec51b	12/12
-stop-reply.sh	99b9252e2c6a5ea3	91904f9609bf078e	21/21
+step-hint.sh	183b8f5cb6fd0c63	a0f0dfce7bff8fef	13/13
+stop-reply.sh	99b9252e2c6a5ea3	d1ad6e4ab2616808	21/21
 summit.sh	a7326a54e5ec3ae0	6f7066718f33e734	53/53
 take-pick.sh	6963c779f575e40a	40f0ebb19fcc4c93	23/23
 tea-stdin.awk	ddfdfc5257c31b06	fc5e7dff11bf953a	70/70

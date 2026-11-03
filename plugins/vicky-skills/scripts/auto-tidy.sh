@@ -4,11 +4,75 @@
 # branch's upstream is gone. A merge done in the browser leaves its branch
 # behind, and the next session in the repo is the first to see it. Off by
 # default. The deleting stays in the skill, which reads each pull request's state.
+#
+# It also hands the clone back. When the session starts in the repo's first
+# working tree and that clone stands on a branch whose pull request merged
+# (gh says MERGED, or the upstream is gone), a clean clone moves to its local
+# main, fast-forwarded to origin's. Commits made after the merge go to a fresh
+# branch, <branch>-after-merge, from origin's main instead. Uncommitted
+# changes, a branch with no merge point, or a local main origin lacks commits
+# for, keep the clone where it is and the agent is told why. A branch with an
+# open pull request is a test stage: the clone stays and the session works in
+# a worktree.
 set -u
 case "${CLAUDE_PLUGIN_OPTION_AUTO_TIDY:-}" in true|1) ;; *) exit 0 ;; esac
 cd "${CLAUDE_PROJECT_DIR:-.}" 2>/dev/null || exit 0
 git rev-parse --is-inside-work-tree >/dev/null 2>&1 || exit 0 # mutant-ok delete: outside a repository every git call below fails and nothing is gone
 GIT_TERMINAL_PROMPT=0 timeout 15 git fetch --prune --quiet origin >/dev/null 2>&1
+
+clone() {
+  # Only the first working tree is the clone: a worktree is some session's own.
+  [ "$(git rev-parse --git-dir)" = "$(git rev-parse --git-common-dir)" ] || return 0
+  local current default state trees point after dirty # mutant-ok delete: a local declaration: no caller reads these names
+  current=$(git symbolic-ref --short -q HEAD) || return 0
+  default=$(git symbolic-ref -q --short refs/remotes/origin/HEAD 2>/dev/null)
+  default=${default:-origin/main}
+  [ "$current" = "${default#origin/}" ] && return 0 # mutant-ok delete: a default branch never has a merged pull request of its own, so the checks below return the same way
+  state=$(timeout 5 gh pr view "$current" --json state -q .state 2>/dev/null)
+  if [ "$state" = OPEN ]; then
+    echo "auto_tidy: the clone is on '$current', which has an open pull request, so it is a test stage. Leave the clone there and do this session's work in a worktree of its own."
+    return 0 # mutant-ok delete: an open pull request's branch is still on origin, so the merged check below returns the same way
+  fi
+  [ "$state" = MERGED ] || [ "$(git for-each-ref --format='%(upstream:track)' "refs/heads/$current")" = "[gone]" ] || return 0
+  dirty=$(git status --porcelain | cut -c4- | tr '\n' ' ')
+  if [ -n "$dirty" ]; then
+    echo "auto_tidy: '$current' merged, but the clone holds uncommitted changes, so it stays put: ${dirty% }. In your first reply, name these files and ask the user what to do with them."
+    return 0
+  fi
+  # The merge point: the newest branch commit whose tree origin's main holds.
+  # A squash merge copies the branch's last tree.
+  trees=$(git log --format=%T "$(git merge-base HEAD "$default")..$default" 2>/dev/null)
+  point=""
+  while read -r sha tree; do
+    if grep -Fxq "$tree" <<<"$trees"; then point=$sha; break; fi
+  done < <(git log --format='%H %T' "$default..HEAD" 2>/dev/null)
+  if [ -n "$(git rev-list "$default..HEAD")" ] && [ -z "$point" ]; then
+    echo "auto_tidy: '$current' looks merged, but none of its commits match origin's main, so the clone stays put. Compare it with its pull request before moving anything."
+    return 0
+  fi
+  after=""
+  [ -n "$point" ] && after=$(git rev-list --reverse "$point..HEAD")
+  if [ -n "$after" ]; then
+    local fresh="$current-after-merge"
+    if git switch -q -c "$fresh" "$default" 2>/dev/null && git cherry-pick "$point..$current" >/dev/null 2>&1; then
+      echo "auto_tidy: '$current' merged, and the commits made after the merge now sit on '$fresh', a fresh branch from $default. Name that branch in one line in your first reply."
+    else
+      git cherry-pick --abort >/dev/null 2>&1
+      git switch -q "$current" 2>/dev/null && git branch -q -D "$fresh" 2>/dev/null
+      echo "auto_tidy: '$current' merged and has commits made after the merge, which did not apply cleanly to $default. The clone stays put: run marie-kondo to carry them over."
+    fi
+    return 0
+  fi
+  local main=${default#origin/}
+  if git rev-parse -q --verify "refs/heads/$main" >/dev/null && ! git merge-base --is-ancestor "$main" "$default"; then
+    echo "auto_tidy: '$current' merged, but the local $main has commits $default lacks, so the clone stays put. Ask the user about them in your first reply."
+    return 0
+  fi
+  git switch -q "$main" 2>/dev/null && git merge -q --ff-only "$default" >/dev/null 2>&1 || return 0
+  echo "auto_tidy: the clone was on '$current', whose pull request merged, so it now stands on $main at $default. Say so in one line in your first reply."
+}
+clone
+
 gone=$(git for-each-ref --format='%(refname:short) %(upstream:track)' refs/heads \
   | awk '$2 == "[gone]" { printf "%s ", $1 }')
 [ -n "$gone" ] || exit 0

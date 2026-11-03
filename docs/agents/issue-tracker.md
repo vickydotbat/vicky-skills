@@ -29,6 +29,12 @@ blocked_by: ["[[<blocker note title>]]"]
 - **Chart**: a Mermaid block under `## Chart` in the chart note. Obsidian draws it.
 - **Claim**: set `status: claimed` and save, before any other work.
 
+## Ideas
+
+Ideas: a note in the inbox folder of the user's vault, named as the user's own agent instructions say
+
+A new behaviour that no approved example names is an idea, never a ticket or a build. The `no-v1` steer sends it to the place on the `Ideas:` line. A repo without the line keeps its ideas in an Ideas section of the pull request body.
+
 ## Waiting work
 
 A waiting ticket can't go on until the thing its `Waits on:` line names is done. It waits on you when that line names you: your decision, answer or merge. Every agent acts as your account, so the assignee can't tell your move from an agent's. `loose-ends` parks one, and `gamma-shift` works through them.

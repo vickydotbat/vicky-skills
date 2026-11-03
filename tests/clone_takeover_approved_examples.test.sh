@@ -6,6 +6,8 @@ set -u
 hook="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/scripts/auto-tidy.sh"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 export GIT_CONFIG_GLOBAL=/dev/null
+# The hook commits when it carries commits over, so the run needs an identity.
+export GIT_AUTHOR_NAME=t GIT_AUTHOR_EMAIL=t@example.invalid GIT_COMMITTER_NAME=t GIT_COMMITTER_EMAIL=t@example.invalid
 g() { git -c user.name=t -c user.email=t@example.invalid "$@"; }
 mkdir "$dir/bin"
 # The fake gh answers `gh pr view <branch> --json state -q .state` with the

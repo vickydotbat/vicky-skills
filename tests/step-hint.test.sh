@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # step-hint sends new player-facing text to red-pen when do, over-to-you or
-# make-it-so starts, and stays quiet for other skills and when switched off.
+# make-it-so starts, keeps a council in its seats until Frodo speaks, and stays quiet for other skills and when switched off.
 set -u
 hook="$(dirname "$0")/../plugins/vicky-skills/scripts/step-hint.sh"
 fail=0
@@ -12,6 +12,18 @@ has "over-to-you opens the draft file before the sitting" over-to-you "before th
 has "over-to-you puts the branch in the clone itself" over-to-you "switch the clone to it"
 has "make-it-so checks player text went through the draft file" vicky-skills:make-it-so "red-pen draft file"
 has "do keeps its proof hint" do "ends with its proof"
+has "a council keeps every line in the seats until Frodo speaks" vicky-skills:council-of-elrond "every line the user sees comes from a seat"
+has "after Frodo, the council writes plain prose" council-of-elrond "write plain prose from then on"
+# E13, a plain regression test: no familiar_kind setting exists yet, so the
+# imp pass could not differ by kind before it was built.
+# Given any familiar kind set, or no familiar at all
+# When do builds
+# Then the imp pass runs the same, and only the voice of its report changes
+plain=$(hint do)
+for kind in owl imp raven; do
+  same=$(jq -nc '{tool_input:{skill:"do"}}' | CLAUDE_PLUGIN_OPTION_FAMILIAR_KIND=$kind CLAUDE_PLUGIN_OPTION_STEP_GUARD=true bash "$hook" | jq -r '.hookSpecificOutput.additionalContext')
+  [ "$same" = "$plain" ] && echo "ok   E13 the imp pass is the same for the $kind" || { echo "FAIL E13 the imp pass differs for the $kind"; fail=1; }
+done
 for s in vicky-skills:sup review; do
   [ -z "$(hint "$s")" ] && echo "ok   no hint for $s" || { echo "FAIL hint for $s"; fail=1; }
 done
