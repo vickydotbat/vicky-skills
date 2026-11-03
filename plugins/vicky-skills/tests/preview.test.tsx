@@ -33,6 +33,33 @@ describe('preview pane', () => {
     expect(ran.some(argv => argv[0] === 'ffmpeg')).toBe(false)
   })
 
+  test('a message naming a missing file opens no pane', async ($, on) => {
+    const opened: string[] = []
+    mock.clock(on)
+    on('command.register', () => ({ value: { command: 'preview' } }))
+    on('ui.open', (_: any, e: any) => { opened.push(e.id); return { value: { isPlaced: true } } })
+    on('session.start', (_: any, e: any) => ({ cwd: e.cwd }))
+    on('fs.exists', () => ({ value: false }))
+    on('process.run', () => ({ value: { exitCode: 0, stdout: '', stderr: '' } }))
+    on('prompt.submit', (_: any, e: any) => e)
+    await $.session.start({ cwd: '/work', surface: 'terminal', isInteractive: true })
+    await $.prompt.submit({ text: 'where is gone.png' } as any)
+    expect(opened).toEqual([])
+  })
+
+  test('a reply with no media sets no status line', async ($, on) => {
+    const lines: (string | undefined)[] = []
+    mock.clock(on)
+    on('command.register', () => ({ value: { command: 'preview' } }))
+    on('session.start', (_: any, e: any) => ({ cwd: e.cwd }))
+    on('process.run', () => ({ value: { exitCode: 0, stdout: '', stderr: '' } }))
+    on('ui.status', (_: any, e: any) => { lines.push(e.text); return { value: undefined } })
+    on('turn.complete', (_: any, e: any) => e)
+    await $.session.start({ cwd: '/work', surface: 'terminal', isInteractive: true })
+    await $.turn.complete({ text: 'All done, nothing to look at.' } as any)
+    expect(lines.some(l => String(l).includes('file://'))).toBe(false)
+  })
+
   test('a JPEG goes through ffmpeg into a PNG the pane can draw', async ($, on) => {
     const ran: string[][] = []
     engine(on, ran, 0)

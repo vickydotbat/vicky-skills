@@ -424,7 +424,7 @@ export const register: Register = (on, options) => {
 
       return next(e)
     }
-    previewCompleted($, (e as { text?: string }).text)
+    await previewCompleted($, (e as { text?: string }).text)
 
     if (live.turnStartMs === null) {
       return next(e)
