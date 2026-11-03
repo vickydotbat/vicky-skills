@@ -67,6 +67,12 @@ jobs:
         run: tests/star_chart_words_approved_examples.test.sh
       - name: Black hole drawing
         run: tests/black_hole_drawing_approved_examples.test.sh
+      - name: Rumsfeld knowns
+        run: tests/rumsfeld_knowns_approved_examples.test.sh
+      - name: Rumsfeld readiness
+        run: tests/rumsfeld_readiness_approved_examples.test.sh
+      - name: Rumsfeld surprises
+        run: tests/rumsfeld_surprises_approved_examples.test.sh
       - name: Tells lint
         run: tests/lint_tells_approved_examples.test.sh
       - name: Lint moves
