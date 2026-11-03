@@ -32,7 +32,7 @@ git rev-parse --git-dir >/dev/null 2>&1 || exit 0 # mutant-ok delete: outside a 
 # message that mentions `git push` is text, not a command.
 # shellcheck disable=SC2034 # read by the guard that sources this
 code=$(awk -f "$(dirname "${BASH_SOURCE[0]}")/heredoc-strip.awk" <<<"$command" | sed -zE "s/'[^']*'//g; s/\"([^\"\\\\]|\\\\.)*\"//g")
-refuse() { printf "%s\n" "$@" >&2; exit 2; }
+refuse() { printf "%s\n" "$@" "Nothing in this command ran, not even its other steps: rerun the ones that need no change on their own." >&2; exit 2; }
 # The remote's default branch as "<remote>/<name>": its recorded HEAD, else a
 # main or master it has. Empty when none is known.
 default_ref_of() {

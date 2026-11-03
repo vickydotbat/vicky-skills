@@ -39,6 +39,7 @@ while IFS= read -r segment; do
   done
   if [ -n "$forced" ] && [ -n "$variable" ]; then
     echo "rm-steer: refused. $variable is built from a shell variable, so Claude Code's removal check would stop to ask the user. Spell the full path out in the rm command: print the variable first if you need its value, then run rm with that literal path." >&2
+    echo "Nothing in this command ran, not even its other steps: rerun the ones that need no change on their own." >&2 # mutant-ok delete: advice for the agent; the refusal works without it
     exit 2
   fi
 done < <(tr ';&|()\n' '\n\n\n\n\n\n' <<<"$code")

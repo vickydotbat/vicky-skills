@@ -52,7 +52,7 @@ fi
 refuse() {
   printf 'pr-guard: refused. %s\n' "$1" >&2
   shift # mutant-ok delete: the first line of a refusal would print twice, and nothing reads the wording
-  for line in "$@"; do printf '%s\n' "$line" >&2; done
+  for line in "$@" "Nothing in this command ran, not even its other steps: rerun the ones that need no change on their own."; do printf '%s\n' "$line" >&2; done
   exit 2
 }
 

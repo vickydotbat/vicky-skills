@@ -40,4 +40,5 @@ bad=$(grep -oE "$pattern" <<<"$text" | grep -vE "^/tmp/[^/]+/$agent(/|\$)" | sor
   echo "Every sibling subagent writes there under the same obvious names, and a collision is silent." # mutant-ok: the reason, for a person; the refusal works without it
   echo "Use your own folder instead: $dir"
 } >&2
+echo "Nothing in this command ran, not even its other steps: rerun the ones that need no change on their own." >&2 # mutant-ok delete: advice for the agent; the refusal works without it
 exit 2
