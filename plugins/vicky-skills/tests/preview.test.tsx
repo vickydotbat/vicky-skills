@@ -33,6 +33,14 @@ describe('preview pane', () => {
     expect(ran.some(argv => argv[0] === 'ffmpeg')).toBe(false)
   })
 
+  test('a JPEG goes through ffmpeg into a PNG the pane can draw', async ($, on) => {
+    const ran: string[][] = []
+    engine(on, ran, 0)
+    await $.session.start({ cwd: '/work', surface: 'terminal', isInteractive: true })
+    await $.command.run({ command: 'preview', args: 'shot.jpg' })
+    expect(ran.some(argv => argv[0] === 'ffmpeg' && argv.includes('/work/shot.jpg') && !argv.includes('-ss'))).toBe(true)
+  })
+
   for (const [xdgExit, opensMac] of [[0, false], [1, true]] as const) {
     test(`Open tries the macOS opener only when xdg-open fails (xdg-open exit ${xdgExit})`, async ($, on) => {
       const ran: string[][] = []
