@@ -14,7 +14,7 @@ gate-state-guard.sh	7e37c0f1a4c05600	f749f5a5be295418	58/58
 git-hook-lib.sh	ab06098427e37ecf	a602f2c80770a824	32/32
 heavy-run-guard.sh	151e0fd412605be0	42387d9503a22aa5	19/19
 heavy-run.awk	8e6dafb1ed8ce4a5	42387d9503a22aa5	86/86
-heredoc-strip.awk	6fa4caa108d2e5b7	2f5165f4ec67dd2b	6/6
+heredoc-strip.awk	6fa4caa108d2e5b7	893404bee08f5fbb	6/6
 issue-guard.sh	70b80cdfa628e1dd	9a50d57449e77aef	21/21
 lesson-hint.sh	0676042cac15d671	e0a77c2071efc0d9	11/11
 lesson-ledger.sh	4c88dc2d0aebcfe6	d2ba70af1a7b0549	18/18
@@ -27,7 +27,7 @@ plugin-data.sh	b183a483ba56dfc4	4e9e25c6ada3ffea	3/3
 poll-pace.sh	9f2fb9c2c967bff7	d3200b1fa2b05464	26/26
 pr-guard.sh	8dbe3df81bc20d72	6449b07372428681	113/113
 push-behind-guard.sh	1e8f867bbe25ccbe	71d33fd4c06832e8	52/52
-quote-mask.awk	b04578521f7edc95	eb758970d44e27cc	52/52
+quote-mask.awk	b04578521f7edc95	246386b8dd7cb9e8	52/52
 red-first-check.sh	e585449df8cf7aee	6b913c0293da9994	20/20
 red-first-guard.sh	264573899e8d8f0f	96c3575c63446d29	27/27
 rm-steer.sh	6f406b61f83e66c9	21a4ffe3bb010079	28/28
