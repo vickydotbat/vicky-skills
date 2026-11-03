@@ -36,6 +36,7 @@
     "./skills/engineering/warp",
     "./skills/productivity/cerebro",
     "./skills/productivity/council-of-elrond",
+    "./skills/productivity/familiar",
     "./skills/productivity/codex-image-gen",
     "./skills/productivity/human-voice",
     "./skills/productivity/drawing-board",
@@ -167,6 +168,12 @@
       "title": "Tidy merged branches at session start",
       "description": "When a local branch's upstream is gone, ask the agent to run marie-kondo before its first reply. When the clone stands on a merged branch, hand it back to main.",
       "default": false
+    },
+    "familiar_kind": {
+      "type": "string",
+      "title": "Familiar: its kind",
+      "description": "The voice /familiar speaks in: owl (the default), imp, quasit, raven, pseudodragon, cat or spider. Every kind does the same work.",
+      "default": "owl"
     },
     "deepen_every_days": {
       "type": "string",

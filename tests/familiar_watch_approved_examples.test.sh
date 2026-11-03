@@ -2,7 +2,7 @@
 # Approved examples for S1 and E14, E15 and E26: the familiar's watch script
 # follows a session transcript and prints one line per event it acts on.
 set -u
-watch="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/scripts/familiar-watch.sh"
+watch="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/productivity/familiar/scripts/familiar-watch.sh"
 fx=$(mktemp -d); trap 'rm -rf "$fx"' EXIT
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }

@@ -58,6 +58,7 @@ MUTANT_MEMORY = 2**30
 GIT_GUARDS = ["push-behind-guard", "merged-branch-guard", "local-path-guard", "checkout_guard_approved_examples", "red_first_approved_examples"]
 TESTS = {
     "after-push.sh": ["after-push"],
+    "familiar-voice.sh": ["familiar_approved_examples", "familiar"],
     "auto-tidy.sh": ["auto-tidy", "auto-tidy-clone", "clone_takeover_approved_examples"],
     "approved-spec-guard.sh": ["approved-spec-guard", "approved_tests_yes_approved_examples", "guard_reads_approved_examples", "guard_new_file_approved_examples", "guard_steers_approved_examples", "approved_spec_guard_cd_approved_examples", "guard_outside_checkout_approved_examples", "guard-locks", "guard_locks_wording_approved_examples", "guard-wording", "guard_cd_home_approved_examples", "guard_runner_approved_examples", "approved-spec-runs", "approved-spec-runs-any", "approved_spec_fixture_names_approved_examples", "approved_spec_quoted_pipe_approved_examples", "approved_spec_runs_other_script_approved_examples", "approved-spec-quoted", "guard_fresh_test_approved_examples"],
     "stale-copy-hint.sh": ["stale_copy_hint_approved_examples", "stale-copy-hint"],

@@ -16,7 +16,7 @@ mkdir -p "$fx/projects/-repo-a" "$fx/projects/-repo-b"
 live() { jq -nc --arg c "$2" '{type:"user",cwd:$c,message:{content:"hi"}}' > "$fx/projects/$1.jsonl"; }
 live -repo-a/aaa /repo/a; live -repo-a/bbb /repo/a; live -repo-b/ccc /repo/b; live -repo-b/self /repo/b
 live -repo-b/done /repo/b; jq -nc '{type:"cost-state"}' >> "$fx/projects/-repo-b/done.jsonl"
-sessions() { CLAUDE_CODE_SESSION_ID=self FAMILIAR_PROJECTS_DIR="$fx/projects" bash "$root/scripts/familiar-sessions.sh"; }
+sessions() { CLAUDE_CODE_SESSION_ID=self FAMILIAR_PROJECTS_DIR="$fx/projects" bash "$root/skills/productivity/familiar/scripts/familiar-sessions.sh"; }
 # The voice hook, given what the user typed and the transcript so far.
 voice() { printf '%s\n' "$2" > "$fx/t.jsonl"
   jq -nc --arg p "$1" --arg t "$fx/t.jsonl" '{prompt:$p,transcript_path:$t}' | env ${KIND:+CLAUDE_PLUGIN_OPTION_FAMILIAR_KIND=$KIND} bash "$root/scripts/familiar-voice.sh" | jq -r '.hookSpecificOutput.additionalContext // empty'; }
