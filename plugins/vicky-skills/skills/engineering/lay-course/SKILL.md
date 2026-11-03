@@ -28,7 +28,7 @@ The user brings a loose idea. When they bring the result of a council or an inte
    - **One session of work**: one star, written and filed by `examples` through its Record step. Its one sentence states the mission. Go on to step 7.
 
    Done when the user has taken one or named another.
-5. **Create the chart** with Mission, Prime directive, Sensor log, Black holes and Nebulae filled in. Create the anomalies, away teams, probes, tasks and stars you can state now as its children, each star through [STAR-CHART.md](STAR-CHART.md)'s "Filing a star". Wire blocking in a second pass, once every ticket has a key. Draw the chart. Done when the chart shows every child and every blocker, and every landing a star names quotes the repo's rule or the user's pick.
+5. **Create the chart** with Mission, Prime directive, Sensor log, Knowns, Black holes and Nebulae filled in, the Knowns sorted as [STAR-CHART.md](STAR-CHART.md)'s "Sorting the knowns" says. Create the anomalies, away teams, probes, tasks and stars you can state now as its children, each star through [STAR-CHART.md](STAR-CHART.md)'s "Filing a star". Wire blocking in a second pass, once every ticket has a key. Draw the chart. Done when the chart shows every child and every blocker, and every landing a star names quotes the repo's rule or the user's pick.
 6. **Dispatch one `away-team` subagent per away team ticket.** Done when each one is running.
 7. **Engage or stop.** Ask: "Warp through the chart now, or stop here?" For one star, ask "Warp to <star> now, or stop here?" On "warp", run `warp` on the chart or the star. Done when `warp` is running or the user has said stop.
 

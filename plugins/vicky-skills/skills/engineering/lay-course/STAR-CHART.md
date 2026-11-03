@@ -50,7 +50,25 @@ Title: `Star Chart: <the effort>`. Label: `starchart:chart`.
 
 ## Sensor log
 
-- <a fact the work rests on> (<file, spec line or ticket it comes from>)
+- <a fact the work rests on>, behind <star links, or "every star">: "<the quoted line>" (<file, spec line or ticket it comes from, and its version>)
+
+## Knowns
+
+### Known knowns
+
+The Sensor log above.
+
+### Known unknowns
+
+- <an open question>, behind <star links>: [<anomaly or away team title>](<link>), blocking those stars
+
+### Unknown knowns
+
+- <a fact likely on record, or held by the user, that nobody wrote down>, behind <star links>: [<away team title>](<link>), or "Confirm: <one line for the user>"
+
+### Unknown unknowns
+
+- Riskiest star: [<star title>](<link>), covered by <a timebox or a probe>
 
 ## Decisions
 
@@ -70,6 +88,17 @@ Title: `Star Chart: <the effort>`. Label: `starchart:chart`.
 ```
 
 A chart with no black hole seen yet keeps the section, with the one line "None seen yet."
+
+## Sorting the knowns
+
+Every chart sorts what its stars rest on into the four boxes of the Rumsfeld matrix, and each box routes its items to an action. A line in a box names the stars it sits behind.
+
+- **Known knowns**: facts with a source. Each goes in the Sensor log with its source line quoted, so the box only points there.
+- **Known unknowns**: open questions you can state. Each is an anomaly or an away team ticket that blocks the stars behind it.
+- **Unknown knowns**: facts that likely sit in a record or in the user's head but were never written down, such as a rule the user always applies or how the work crosses an existing feature. Each gets an away team to find the record, or a `Confirm:` line the user answers in one word, before any star rests on it. Take the `Confirm:` line when no record is likely. Once the user confirms, the fact moves to the Sensor log, quoting the user.
+- **Unknown unknowns**: these can't be listed. Name the riskiest star and the timebox or probe that covers it.
+
+A box is never left empty without saying why: a box with nothing in it holds one line with the reason, such as "None: the spec answers every question."
 
 A ticket in the chart's orbit is a related link on the tracker, never a section.
 
