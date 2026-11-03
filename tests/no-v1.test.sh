@@ -64,7 +64,7 @@ check "bad input goes through and exits 0" 'echo "not json" | bash "$hook"; [ $?
 check "the setting at 1 is on" '{ user "go"; text "A follow-up PR can do it."; } > "$fx/t.jsonl"; CLAUDE_PLUGIN_OPTION_GUARD_NO_V1=1 stop | grep -q block'
 # Found work folds into an effort only while one is built: a session where do
 # or warp never started is planning, and its replies go through.
-{ user "file the tickets"; text "Next up is GAME-2513, the only one that isn't waiting on another ticket."; } > "$fx/t.jsonl"
+{ user "file the tickets"; text "Next up is GAME-8, the only one that isn't waiting on another ticket."; } > "$fx/t.jsonl"
 check "a planning session's reply goes through" 'out=$(PLANNING=1 stop); [ $? = 0 ] && [ -z "$out" ]'
 { user "go"; text "Sorting could be a follow-up PR."; } > "$fx/t.jsonl"
 check "an offer in a session that never started do goes through" 'out=$(PLANNING=1 stop); [ $? = 0 ] && [ -z "$out" ]'
