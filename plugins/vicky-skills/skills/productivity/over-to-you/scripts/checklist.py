@@ -22,12 +22,15 @@ import json
 import os
 import sys
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path[:0] = [HERE, os.path.join(HERE, "..", "..", "interactive-page", "scripts")]
 from importlib import import_module
 
 lint = import_module("lint-checklist").lint
+LABELS = import_module("page").LABELS
 
-LEGEND = "Mark each item: [x] completed as expected, [~] completed with changes, [-] failed to complete, [ ] not tested at all."
+# The legend a person reads when the file opens in an editor; the page draws its own labels.
+LEGEND = "Mark each item: " + ", ".join(f"[{mark}] {label}" for mark, label in LABELS.items()) + "."
 TAGS = ["BUG", "QUIRK", "FRICTION", "UGLY", "IDEA", "RULE", "WIP", "QUESTION"]
 LIMIT = 7
 
@@ -82,7 +85,7 @@ def render(spec):
 
 def main(argv):
     if len(argv) != 3:
-        print(__doc__.strip().split("\n")[2].strip(), file=sys.stderr)
+        print("usage: checklist.py <spec.json> <out.md>", file=sys.stderr)
         return 2
     with open(argv[1], encoding="utf-8") as f:
         text, problems = render(json.load(f))

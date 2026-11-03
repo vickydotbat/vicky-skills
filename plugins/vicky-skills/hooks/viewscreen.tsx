@@ -811,6 +811,7 @@ async function finish(
   live: Live,
   agentId: string,
   outcome: ActivityOutcome,
+  { isRecorded = true }: { isRecorded?: boolean } = {},
 ): Promise<void> {
   const agent = live.agents.get(agentId)
 
@@ -820,7 +821,7 @@ async function finish(
 
   live.agents.delete(agentId)
 
-  if (agent.isBackground) {
+  if (agent.isBackground && isRecorded) {
     await remember($, {
       kind: 'tool',
       label: `Agent: ${agent.name}`,
@@ -882,9 +883,7 @@ async function sweepListed($: EngineInterface, live: Live, listed: readonly Agen
     // The engine lists this session's agents only. One it doesn't list once
     // past its start belongs to no session this box shows: it goes unrecorded.
     if (status === undefined && nowMs - agent.startMs > UNLISTED_GRACE_MS) {
-      live.agents.delete(agentId)
-      keepTicking($, live)
-      await publish($, live)
+      await finish($, live, agentId, 'interrupted', { isRecorded: false })
       continue
     }
 
