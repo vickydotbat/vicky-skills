@@ -31,6 +31,12 @@ jobs:
           fetch-depth: 0
       - name: Plugin layout
         run: tests/plugin-layout.test.sh
+      - name: Familiar watch script
+        run: tests/familiar_watch_approved_examples.test.sh
+      - name: Familiar skill and voice
+        run: tests/familiar_approved_examples.test.sh
+      - name: Familiar scripts edge cases
+        run: tests/familiar.test.sh
       - name: Approved-spec guard
         run: tests/approved-spec-guard.test.sh
       - name: Approved-spec guard frees a new test
@@ -307,6 +313,8 @@ jobs:
         run: tests/mutation_speed_approved_examples.test.sh
       - name: Mutation runner memory limit
         run: tests/mutate-hooks-memory.test.sh
+      - name: Mutation test map names each script once
+        run: tests/mutate-hooks-map.test.sh
       - name: Worktree by default
         run: tests/worktree_default_approved_examples.test.sh
       - name: Over-to-you stocks the test
