@@ -11,9 +11,15 @@ box() { body | awk -v h="### $1" '$0 == h {on=1; next} /^##/ {on=0} on'; }
 # The loose-ends step that logs the surprises.
 step() { grep -E "^[0-9]+\. \*\*Log the surprises" loose-ends/SKILL.md; }
 
+# Given an asteroid belt found during a build, an unknown unknown that surfaced
+# When loose-ends closes the effort
+# Then it is logged on the chart as an unknown unknown that became known, with what it cost
 check "an asteroid belt found during a build is logged on the chart by loose-ends as an unknown unknown that became known, with what it cost" \
   'step | grep -q "asteroid belt" && step | grep -q "Surfaced:" && step | grep -q "cost" \
    && box "Unknown unknowns" | grep -q "^- Surfaced: .*cost"'
-check "a surprise of a kind seen before is named in a later chart'\''s unknown unknowns box as a risk to check" \
+# Given a surprise of a kind seen before
+# When a later chart sorts its knowns
+# Then that kind is named in the unknown unknowns box as a risk to check
+check "a surprise of a kind seen before is named in a later chart's unknown unknowns box as a risk to check" \
   'box "Unknown unknowns" | grep -q "^- Seen before: " && grep -q "earlier charts" "$chart" && grep -q "Surfaced:" "$chart"'
 exit $fail
