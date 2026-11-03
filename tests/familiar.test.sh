@@ -32,10 +32,18 @@ jq -nc '{type:"user",cwd:"/work/r",message:{content:"hi"}}' > "$fx/projects/-r/n
 cp "$fx/projects/-r/new.jsonl" "$fx/projects/-r/old.jsonl"; touch -d '2 days ago' "$fx/projects/-r/old.jsonl"
 cp "$fx/projects/-r/new.jsonl" "$fx/projects/-r/resumed.jsonl"
 { jq -nc '{type:"cost-state"}'; jq -nc '{type:"user",message:{content:"back"}}'; } >> "$fx/projects/-r/resumed.jsonl"
-out=$(FAMILIAR_PROJECTS_DIR="$fx/projects" CLAUDE_CODE_SESSION_ID=x bash "$tools/familiar-sessions.sh")
+out=$(FAMILIAR_SESSIONS_DIR="$fx/no-records" FAMILIAR_PROJECTS_DIR="$fx/projects" CLAUDE_CODE_SESSION_ID=x bash "$tools/familiar-sessions.sh")
 check "a session names its transcript and working folder" 'grep -qx "new $fx/projects/-r/new.jsonl /work/r" <<<"$out"'
 check "a session quiet for two days is not live" '! grep -q "^old " <<<"$out"'
 check "a session resumed after it ended is live again" 'grep -q "^resumed " <<<"$out"'
+# Claude Code keeps a record per running session, naming its process. Where
+# those records exist, a session whose process has ended is not live.
+mkdir -p "$fx/records"; sleep 300 & dead=$!; kill "$dead"; wait "$dead" 2>/dev/null
+jq -nc --argjson p $$ '{pid:$p, sessionId:"new"}' > "$fx/records/1.json"
+jq -nc --argjson p "$dead" '{pid:$p, sessionId:"resumed"}' > "$fx/records/2.json"
+out=$(FAMILIAR_SESSIONS_DIR="$fx/records" FAMILIAR_PROJECTS_DIR="$fx/projects" CLAUDE_CODE_SESSION_ID=x bash "$tools/familiar-sessions.sh")
+check "a session whose process runs is live" 'grep -q "^new " <<<"$out"'
+check "a session whose process ended is not live" '! grep -q "^resumed " <<<"$out"'
 
 { printf 'not json\n\n'
   jq -nc '{type:"user",timestamp:"2026-11-03T10:00:00Z",message:{content:"<system-reminder>x</system-reminder>"}}'
@@ -44,6 +52,8 @@ check "a session resumed after it ended is live again" 'grep -q "^resumed " <<<"
   jq -nc '{type:"user",timestamp:"2026-11-03T10:00:00Z",message:{content:[{type:"tool_result",content:"all fine"}]}}'
   jq -nc '{type:"user",timestamp:"2026-11-03T10:00:00Z",message:{content:[{type:"tool_result",is_error:true,content:"exit 1"}]}}'
   jq -nc '{type:"user",timestamp:"2026-11-03T10:00:00Z",message:{content:[{type:"tool_result",content:"hook error, but no error"}]}}'
+  jq -nc '{type:"user",timestamp:"2026-11-03T10:00:00Z",message:{content:[{type:"tool_result",is_error:true,content:"Exit code 1\nassert x, \"the request was refused\""}]}}'
+  jq -nc '{type:"user",timestamp:"2026-11-03T10:00:00Z",message:{content:"<bash-stdout>[main ed1259a] done</bash-stdout><bash-stderr></bash-stderr>"}}'
   jq -nc '{type:"assistant",timestamp:"2026-11-03T10:00:00Z",message:{content:[{type:"text",text:"thinking aloud"}]}}'
   jq -nc '{type:"user",timestamp:"2026-11-03T10:00:09Z",message:{content:"last words\nover two lines"}}'
   jq -nc '{type:"user",timestamp:"2026-11-03T10:00:10Z",message:{content:"<command-name>/conn</command-name>"}}'; } > "$fx/t.jsonl"
