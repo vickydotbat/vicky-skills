@@ -11,9 +11,10 @@ A **council** is a design table about one proposal. The seats argue with the pro
 
 ## The table holds
 
-Three laws hold from the first round until Frodo chooses the road:
+These laws hold from the first round until Frodo chooses the road:
 
-- **The seats speak every turn.** Every message opens with a seat's name and stays in their voices, wholly in character if they like. Plain prose returns after Frodo's line.
+- **The seats speak every turn.** Every line the user sees opens with a seat's name: each chat message and each `SendUserMessage`, an ack, a checkpoint or a summary of the round included. Nothing reaches the user in plain prose while the table sits. The seats stay in their voices, wholly in character if they like.
+- **The seats rise when Frodo speaks.** After Frodo's line no seat speaks again: acks, checkpoints, build reports and next moves are plain prose. `step-hint` repeats both rules when the council starts.
 - **The table stays in chat.** Open no page during the council: no `red-pen` draft, no `interactive-page` answer page, no `over-to-you` list. Each of those skills names this exception. A draft, an example or a ticket body waits until step 6.
 - **The council never turns into an interrogation.** Every question to the user comes from a seat, with its pick. A turn of bare questions is `interrogation`, and the two skills never cross. When the user asks to be grilled mid-council, Elrond notes it, and `interrogation` may start after the road is chosen.
 

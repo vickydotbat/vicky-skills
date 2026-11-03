@@ -58,11 +58,11 @@ MUTANT_MEMORY = 2**30
 GIT_GUARDS = ["push-behind-guard", "merged-branch-guard", "local-path-guard", "checkout_guard_approved_examples", "red_first_approved_examples"]
 TESTS = {
     "after-push.sh": ["after-push"],
+    "auto-tidy.sh": ["auto-tidy", "auto-tidy-clone", "clone_takeover_approved_examples"],
     "approved-spec-guard.sh": ["approved-spec-guard", "approved_tests_yes_approved_examples", "guard_reads_approved_examples", "guard_new_file_approved_examples", "guard_steers_approved_examples", "approved_spec_guard_cd_approved_examples", "guard_outside_checkout_approved_examples", "guard-locks", "guard_locks_wording_approved_examples", "guard-wording", "guard_cd_home_approved_examples", "guard_runner_approved_examples", "approved-spec-runs", "approved-spec-runs-any", "approved_spec_fixture_names_approved_examples", "approved_spec_quoted_pipe_approved_examples", "approved_spec_runs_other_script_approved_examples", "approved-spec-quoted", "guard_fresh_test_approved_examples"],
     "stale-copy-hint.sh": ["stale_copy_hint_approved_examples", "stale-copy-hint"],
     "do-confirm-hint.sh": ["do_confirm_approved_examples", "do-confirm-hint"],
     "approved-spec.sh": ["approved-spec-guard", "approved-spec-tags", "approved_spec_prose_approved_examples", "guard_reads_approved_examples", "guard-locks", "open-draft", "guard_steers_approved_examples", "guard_outside_checkout_approved_examples"],
-    "auto-tidy.sh": ["auto-tidy"],
     "checkout-guard.sh": ["checkout-guard", "checkout_guard_approved_examples", "worktree_default_approved_examples", "checkout_guard_rebase_approved_examples"],
     "draft-lock.sh": ["draft-lock", "red_first_approved_examples", "draft_lock_reads_approved_examples", "draft_lock_python_approved_examples", "draft-lock-writers", "refusal-note"],
     "gamma-shift.sh": ["gamma-shift"],
@@ -96,18 +96,19 @@ TESTS = {
     "springboard.sh": ["springboard", "springboard_approved_examples", "summit_approved_examples"],
     "summit.sh": ["summit", "summit_approved_examples"],
     "plugin-data.sh": ["summit", "lesson-ledger"],
-    "no-v1.sh": ["no-v1", "no_v1_approved_examples"],
+    "no-v1.sh": ["no-v1", "no_v1_approved_examples", "no_v1_ideas_approved_examples"],
     "stop-reply.sh": ["take-pick", "no-v1", "no_v1_approved_examples"],
     "take-pick.sh": ["take-pick", "do_confirm_approved_examples", "gate_home_approved_examples", "no_v1_approved_examples", "take_pick_chat_gate_approved_examples"],
     "stale-blame.sh": ["stale-blame"],
     "fetch-place-hint.sh": ["fetch-place-hint"],
     "adr-scope-hint.sh": ["adr-scope-hint"],
     "step-guard.sh": ["step-guard", "mutation_step_approved_examples", "step_guard_approved_examples", "step_guard_gitea_approved_examples"],
-    "step-hint.sh": ["step_guard_approved_examples", "mutation_step_approved_examples", "step-hint"],
+    "step-hint.sh": ["step_guard_approved_examples", "mutation_step_approved_examples", "step-hint", "do_imp_pass_approved_examples"],
     "scratch-guard.sh": ["scratch-guard", "refusal-note"],
     "rm-steer.sh": ["rm-steer", "rm_steer_approved_examples", "refusal-note"],
     "lesson-hint.sh": ["lesson-hint", "engrave_approved_examples"],
     "merged-branch-guard.sh": ["merged-branch-guard", "merged_branch_approved_examples"],
+    "merge-point.sh": ["merged-branch-guard", "merged_branch_approved_examples", "auto-tidy-clone", "clone_takeover_approved_examples"],
 }
 # The shared exit-code test reaches every hook and runs in a fraction of a second.
 TESTS = {name: ["hook-exits"] + tests for name, tests in TESTS.items()}

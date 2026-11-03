@@ -34,14 +34,9 @@ default_ref=$(default_ref_of "$remote")
 # Origin answered, so bring its default branch in: the merge is on it.
 [ "$reach" = 2 ] && GIT_TERMINAL_PROMPT=0 timeout 5 git fetch -q "$remote" "${default_ref#"$remote"/}" >/dev/null 2>&1
 
-# The merge point: the newest branch commit whose tree a default-branch commit
-# since the fork holds. A squash merge copies the branch's last tree.
-base=$(git merge-base HEAD "$default_ref" 2>/dev/null) # mutant-ok delete: the tree list then reaches back to the first commit and finds the same merge point, only slower
-trees=$(git log --format=%T "${base:+$base..}$default_ref" 2>/dev/null)
-point=""
-while read -r sha tree; do
-  if grep -Fxq "$tree" <<<"$trees"; then point=$sha; break; fi
-done < <(git log --format='%H %T' "$default_ref..HEAD" 2>/dev/null)
+# shellcheck source=merge-point.sh
+. "$(dirname "$0")/merge-point.sh"
+point=$(merge_point "$default_ref")
 
 [ -n "$point" ] && after=$(git log --reverse --format='  %h %s' "$point..HEAD")
 if [ -z "$(git rev-list "$default_ref..HEAD" 2>/dev/null)" ] || { [ -n "$point" ] && [ -z "$after" ]; }; then

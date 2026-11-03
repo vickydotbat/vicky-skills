@@ -57,6 +57,8 @@ jobs:
         run: tests/guard-locks.test.sh
       - name: Step hints
         run: tests/step-hint.test.sh
+      - name: Do runs its imp pass first
+        run: tests/do_imp_pass_approved_examples.test.sh
       - name: Scratch guard
         run: tests/scratch-guard.test.sh
       - name: Rm steer decisions
@@ -117,6 +119,8 @@ jobs:
         run: tests/over_to_you_lint_checklist.test.sh
       - name: Never a V1 hook
         run: tests/no-v1.test.sh
+      - name: Never a V1 sends new ideas to the Ideas place
+        run: tests/no_v1_ideas_approved_examples.test.sh
       - name: Take the pick hook
         run: tests/take-pick.test.sh
       - name: Take the pick, chat gates
@@ -189,6 +193,10 @@ jobs:
         run: tests/gamma-shift-runs.test.sh
       - name: Auto-tidy hook
         run: tests/auto-tidy.test.sh
+      - name: Auto-tidy hands a merged clone back to main
+        run: tests/clone_takeover_approved_examples.test.sh
+      - name: Auto-tidy clone takeover edge cases
+        run: tests/auto-tidy-clone.test.sh
       - name: Spark-joy hook
         run: tests/spark-joy.test.sh
       - name: Gate-notify hook

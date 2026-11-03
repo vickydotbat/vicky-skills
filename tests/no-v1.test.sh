@@ -99,4 +99,11 @@ check "a handoff's Next list goes through" 'out=$(stop); [ $? = 0 ] && [ -z "$ou
 check "a sentence that only mentions next goes through" 'out=$(stop); [ $? = 0 ] && [ -z "$out" ]'
 { user "go"; text "Fixed it."; } > "$fx/t.jsonl"
 check "a Next list in a planning session goes through" '{ user "plan it"; text "Next: fix S1."; } > "$fx/t.jsonl"; out=$(PLANNING=1 stop); [ $? = 0 ] && [ -z "$out" ]'
+# E9, a plain regression test: a report with no offer already went through
+# before the Ideas line was built, so it could not go red first.
+# Given an agent that wrote a new idea in the Ideas place
+# When its reply says which idea it noted and where
+# Then the reply goes through untouched
+{ user "go"; text "Done. I noted one idea, a retry on a dropped connection, in the Ideas place: the vault inbox."; } > "$fx/t.jsonl"
+check "E9 a reported Ideas line goes through" 'out=$(stop); [ $? = 0 ] && [ -z "$out" ]'
 exit $fail

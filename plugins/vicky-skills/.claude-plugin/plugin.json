@@ -165,7 +165,7 @@
     "auto_tidy": {
       "type": "boolean",
       "title": "Tidy merged branches at session start",
-      "description": "When a local branch's upstream is gone, ask the agent to run marie-kondo before its first reply.",
+      "description": "When a local branch's upstream is gone, ask the agent to run marie-kondo before its first reply. When the clone stands on a merged branch, hand it back to main.",
       "default": false
     },
     "deepen_every_days": {
