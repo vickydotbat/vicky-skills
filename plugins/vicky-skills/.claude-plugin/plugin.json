@@ -38,6 +38,7 @@
     "./skills/productivity/council-of-elrond",
     "./skills/productivity/codex-image-gen",
     "./skills/productivity/human-voice",
+    "./skills/productivity/drawing-board",
     "./skills/productivity/interactive-page",
     "./skills/productivity/interrogation",
     "./skills/productivity/is-this-a-meme",
@@ -222,7 +223,7 @@
     "step_guard": {
       "type": "boolean",
       "title": "No skipped do steps",
-      "description": "Refuse to mark a do or warp build's pull request ready when do, sentinels or review never ran and the body gives no reason, and remind the agent at do's and warp's start what each step needs.",
+      "description": "Refuse an edit to production code until the session has started do, refuse to mark a do or warp build's pull request ready when do, sentinels or review never ran and the body gives no reason, and remind the agent at do's and warp's start what each step needs.",
       "default": false
     },
     "guard_poll_pace": {
@@ -277,6 +278,12 @@
       "type": "boolean",
       "title": "Remind agents what a decision record holds",
       "description": "When an agent writes or edits a decision record (adr/NNNN-*.md), add a reminder that a record holds a broad architecture rule, and that one feature's reason goes in a comment at its code.",
+      "default": true
+    },
+    "guard_windowed_browser": {
+      "type": "boolean",
+      "title": "No browser windows for local pages",
+      "description": "Refuse the windowed Playwright browser for a page on this machine, so a by-eye check uses the headless server instead of opening a window on your desktop.",
       "default": true
     }
   }

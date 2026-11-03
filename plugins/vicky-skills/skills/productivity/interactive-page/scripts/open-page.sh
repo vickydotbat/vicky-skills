@@ -10,5 +10,6 @@
 here=$(cd "$(dirname "$0")" && pwd)
 if { [ -n "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ] || [ "$(uname)" = Darwin ]; } && [[ $here != *" "* ]]; then
   export VISUAL="python3 -I $here/page.py"
+  export DRAFT_PAGE=1
 fi
 exec bash "$here/open-draft.sh" "$@"

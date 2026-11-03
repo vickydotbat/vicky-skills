@@ -39,6 +39,12 @@ jobs:
         run: tests/approved-spec-tags.test.sh
       - name: Approved-spec guard leaves a doc that shows the mark editable
         run: tests/approved_spec_prose_approved_examples.test.sh
+      - name: Approved-spec guard reads quoted text as text
+        run: tests/approved_spec_quoted_pipe_approved_examples.test.sh
+      - name: Approved-spec guard keeps a quoted redirect target a write
+        run: tests/approved-spec-quoted.test.sh
+      - name: Approved-spec guard lets a script run by path read the guard
+        run: tests/approved_spec_runs_other_script_approved_examples.test.sh
       - name: Approved-spec guard follows a leading cd
         run: tests/approved_spec_guard_cd_approved_examples.test.sh
       - name: Approved-spec guard follows a leading cd ~/
@@ -155,6 +161,10 @@ jobs:
         run: tests/poll_pace_heredoc_approved_examples.test.sh
       - name: Gamma-shift hook
         run: tests/gamma-shift.test.sh
+      - name: Gamma shift builds one batch a session
+        run: tests/gamma_shift_batch_approved_examples.test.sh
+      - name: Gamma shift keeps one pull request per run
+        run: tests/gamma-shift-runs.test.sh
       - name: Auto-tidy hook
         run: tests/auto-tidy.test.sh
       - name: Spark-joy hook
@@ -185,6 +195,24 @@ jobs:
         run: tests/draft-lock.test.sh
       - name: Draft-lock lets reads and scratch writes run
         run: tests/draft_lock_reads_approved_examples.test.sh
+      - name: Draft-lock lets read-only python3 run and names where the draft is open
+        run: tests/draft_lock_python_approved_examples.test.sh
+      - name: Draft-lock refuses interpreter code that writes in any common way
+        run: tests/draft-lock-writers.test.sh
+      - name: open-draft marks a draft opened as a page
+        run: tests/open-draft-page.test.sh
+      - name: drawing-board fetches draw.io only at its pinned hash
+        run: tests/fetch-drawio.test.sh
+      - name: drawing-board sketches and the page's drawing section
+        run: tests/drawing_board_approved_examples.test.sh
+      - name: drawing-board reads stretches and rules, and the page serves only draw.io's folder
+        run: tests/drawing-board.test.sh
+      - name: do-first-guard holds code edits until do starts
+        run: tests/do-first-guard.test.sh
+      - name: Warp hands every star to do
+        run: tests/warp-do.test.sh
+      - name: Windowed browser guard
+        run: tests/windowed-browser-guard.test.sh
       - name: Red-first decisions
         run: tests/red-first.test.sh
       - name: Step guard decisions
@@ -311,6 +339,8 @@ jobs:
         run: tests/viewscreen_approved_examples.test.sh
       - name: Viewscreen band fit and place
         run: tests/viewscreen_band_fit.test.sh
+      - name: Preview media from the chat, in the mod test kit installed above
+        run: tests/preview-media.test.sh
       - name: Summit examples, which include the band's
         run: tests/summit_approved_examples.test.sh
       - name: Viewscreen summit and place lines

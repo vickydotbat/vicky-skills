@@ -25,6 +25,7 @@ byte for byte as it was. The page listens on this machine only. With no
 answer before the timeout (four hours by default) it exits 2 and the file
 stays as it was.
 """
+import base64
 import html
 import http.server
 import os
@@ -66,6 +67,20 @@ CHOICE = re.compile(r"^- \(( |x)\) (.*)$")
 BOX = re.compile(r"^- \[( |x)\] (.+)$")
 # A chart is an SVG file in the same folder as the page file.
 CHART = re.compile(r"^!\[[^\]]*\]\(([^/\\()\s]+\.svg)\)$")
+# A drawing section: draw.io XML in a ```drawio block, drawn with the draw.io
+# web app that drawing-board fetches to DRAWIO_HOME. Embed mode with stealth
+# on makes no request past this machine.
+DRAWIO = "/drawio/index.html?embed=1&proto=json&spin=1&stealth=1&offline=1&noExitBtn=1&noSaveBtn=1&saveAndExit=0"
+DRAWING_JS = """const frames={};let left=0;
+function send(n,msg){document.getElementById("dio"+n).contentWindow.postMessage(JSON.stringify(msg),location.origin)}
+addEventListener("message",ev=>{if(ev.origin!==location.origin)return;let m;try{m=JSON.parse(ev.data)}catch(_){return}
+const n=Object.keys(frames).find(k=>document.getElementById("dio"+k).contentWindow===ev.source);if(n===undefined)return;
+const xml=document.getElementsByName("drawing_xml."+n)[0],png=document.getElementsByName("drawing_png."+n)[0];
+if(m.event==="init")send(n,{action:"load",xml:xml.value,autosave:1});
+else if(m.event==="autosave"){xml.value=m.xml;fetch("/drawing/"+n,{method:"POST",body:new URLSearchParams({xml:m.xml})})}
+else if(m.event==="export"){png.value=m.data;if(--left===0)document.forms[0].submit()}});
+function done(ev){const ns=Object.keys(frames);if(!ns.length||left<0)return true;ev.preventDefault();left=ns.length;
+ns.forEach(n=>send(n,{action:"export",format:"png",xml:document.getElementsByName("drawing_xml."+n)[0].value}));return false}"""
 
 
 INLINE = re.compile(r"`([^`]+)`|\*\*([^*]+)\*\*|(?<![\w*])\*([^*\s][^*]*)\*(?![\w*])|(?<!\w)_([^_\s][^_]*)_(?!\w)")
@@ -99,6 +114,15 @@ def legend(parts):
     return {}
 
 
+def fence_end(lines, start):
+    """The index of the line that closes the fenced block opened at `start`,
+    or len(lines) when the block runs to the end."""
+    end = start + 1
+    while end < len(lines) and lines[end] != "```":
+        end += 1
+    return end
+
+
 def parse(text, folder):
     """The file as parts: ("line", s), ("block", [lines]), ("approve", ticked),
     ("box", ticked, label), ("chart", line, svg), ("check", prefix, mark, rest),
@@ -107,6 +131,14 @@ def parse(text, folder):
     parts, lines, i, question = [], text.split("\n"), 0, -1
     while i < len(lines):
         line = lines[i]
+        if line == "```drawio":
+            end = fence_end(lines, i)
+            parts.append(("line", line))
+            parts.append(("drawing", lines[i + 1:end]))
+            if end < len(lines):
+                parts.append(("line", "```"))
+            i = end + 1
+            continue
         if line == "```text":
             end = i + 1
             while end < len(lines) and lines[end] != "```":
@@ -153,7 +185,9 @@ def page(name, parts):
     e = html.escape
     labels = legend(parts)
     out = [f"<!doctype html><meta charset=utf-8><title>{e(name)}</title><style>{STYLE}</style><script>{ZOOM}</script>",
-           '<form method=post action="/done">']
+           '<form method=post action="/done" onsubmit="return done(event)">', f"<script>{DRAWING_JS}</script>"]
+    home = os.environ.get("DRAWIO_HOME", "")
+    canvas = bool(home) and os.path.isfile(os.path.join(home, "index.html"))
     card = quick = False
     quick_at = 0
     header = [part[1] for part in parts if part[0] == "line" and part[1].startswith(HEADER)]
@@ -191,12 +225,22 @@ def page(name, parts):
             elif line.strip() == "":
                 if card:
                     close()
-            elif line not in ("```text", "```"):
+            elif line not in ("```text", "```drawio", "```"):
                 close()
                 out.append(f"<p class=text>{inline(line)}</p>")
         elif kind == "block":
             body = "\n".join(part[1])
             out.append(f'<textarea name="text.{n}" rows="{max(3, len(part[1]) + 1)}">{e(body)}</textarea>')
+        elif kind == "drawing":
+            body = e("\n".join(part[1]))
+            if canvas:
+                out.append(f'<script>frames[{n}]=1</script><iframe id="dio{n}" src="{DRAWIO}" '
+                           f'style="width:100%;height:80vh;border:1px solid #8886"></iframe>'
+                           f'<input type=hidden name="drawing_xml.{n}" value="{body}">'
+                           f'<input type=hidden name="drawing_png.{n}" value="">')
+            else:
+                # Without the draw.io app the drawing is its XML, edited as text.
+                out.append(f'<textarea name="drawing_xml.{n}" rows="8">{body}</textarea>')
         elif kind == "approve":
             ticked = " checked" if part[1] else ""
             out.append(f'<label><input type=checkbox name="approve.{n}"{ticked}> approve</label>')
@@ -245,11 +289,19 @@ def answered(parts, form):
     def line(key, default):
         return got(key, default).replace("\n", " ").strip()
 
-    out = []
+    out, picture = [], None
     for part, n in numbered(parts):
         kind = part[0]
         if kind in ("line", "chart"):
             out.append(part[1])
+            # A drawing's PNG is named on the line after its closing fence.
+            if picture and part[1] == "```":
+                out.append(picture)
+                picture = None
+        elif kind == "drawing":
+            out.extend(got(f"drawing_xml.{n}", "\n".join(part[1])).rstrip("\n").split("\n"))
+            name = got(f"drawing_png_file.{n}", "")
+            picture = f"![drawing {n}]({name})" if name else None
         elif kind == "block":
             text = got(f"text.{n}", "\n".join(part[1])).rstrip("\n")
             # Text the user left alone keeps its lines exactly, an empty
@@ -315,11 +367,15 @@ def use_desktop_env():
         os.environ["BROWSER"] = browser
 
 
-def serve_form(text, path, on_post, timeout):
+def serve_form(text, path, on_post, timeout, on_drawing=None):
     """Serve the page `text` on this machine only and wait for one POST to
     `path`. `on_post` takes the posted body, URL-encoded, and returns nothing.
-    Returns False when no answer came before the timeout."""
+    `on_drawing` takes a drawing's number and its XML each time it changes.
+    Files under /drawio/ come from DRAWIO_HOME. Returns False when no answer
+    came before the timeout."""
     done = threading.Event()
+    # Read before use_desktop_env swaps the environment for the desktop's.
+    home = os.environ.get("DRAWIO_HOME", "")
     origin = ""
 
     def foreign(headers):
@@ -340,10 +396,31 @@ def serve_form(text, path, on_post, timeout):
             self.wfile.write(body)
 
         def do_GET(self):
+            if home and self.path.startswith("/drawio/"):
+                rel = urllib.parse.unquote(self.path[len("/drawio/"):].split("?", 1)[0]) or "index.html"
+                file = os.path.realpath(os.path.join(home, rel))
+                if not file.startswith(os.path.realpath(home) + os.sep) or not os.path.isfile(file):
+                    self.reply(404, b"Not found.")
+                    return
+                kind = {".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml",
+                        ".png": "image/png", ".json": "application/json"}.get(os.path.splitext(file)[1], "application/octet-stream")
+                with open(file, "rb") as handle:
+                    body = handle.read()
+                self.send_response(200)
+                self.send_header("Content-Type", kind)
+                self.end_headers()
+                self.wfile.write(body)
+                return
             self.reply(200, text)
 
         def do_POST(self):
             size = int(self.headers.get("Content-Length") or 0)
+            live = re.fullmatch(r"/drawing/(\d+)", self.path)
+            if live and on_drawing and 0 <= size <= LIMIT and not done.is_set() and not foreign(self.headers):
+                form = urllib.parse.parse_qs(self.rfile.read(size).decode())
+                on_drawing(int(live.group(1)), form.get("xml", [""])[0])
+                self.reply(200, b"Kept.")
+                return
             if self.path != path or not 0 <= size <= LIMIT or done.is_set() or foreign(self.headers):
                 self.reply(400, b"Not taken.")
                 return
@@ -370,13 +447,40 @@ def serve(path, timeout):
         original = handle.read()
     parts = parse(original, os.path.dirname(os.path.abspath(path)))
 
+    latest = {}
+
+    def keep_drawing(n, xml):
+        # Each change lands in the file at once: only that drawing's block is replaced.
+        latest[n] = xml
+        with open(path) as handle:
+            lines = handle.read().split("\n")
+        starts = [i for i, line in enumerate(lines) if line == "```drawio"]
+        if n < len(starts):
+            lines[starts[n] + 1:fence_end(lines, starts[n])] = xml.rstrip("\n").split("\n")
+        with open(path, "w") as handle:
+            handle.write("\n".join(lines))
+
     def write_back(body):
-        new = answered(parts, urllib.parse.parse_qs(body, keep_blank_values=True))
-        if new != original:
+        form = urllib.parse.parse_qs(body, keep_blank_values=True)
+        for n, xml in latest.items():
+            form.setdefault(f"drawing_xml.{n}", [xml])
+        stem = os.path.splitext(os.path.basename(path))[0]
+        for key in [k for k in form if k.startswith("drawing_png.")]:
+            data = form[key][0]
+            if data.startswith("data:image/png;base64,"):
+                n = key.split(".", 1)[1]
+                name = f"{stem}.drawing-{n}.png"
+                with open(os.path.join(os.path.dirname(os.path.abspath(path)), name), "wb") as handle:
+                    handle.write(base64.b64decode(data.split(",", 1)[1]))
+                form[f"drawing_png_file.{n}"] = [name]
+        new = answered(parts, form)
+        with open(path) as handle:
+            now = handle.read()
+        if new != now:
             with open(path, "w") as handle:
                 handle.write(new)
 
-    if not serve_form(page(path, parts).encode(), "/done", write_back, timeout):
+    if not serve_form(page(path, parts).encode(), "/done", write_back, timeout, keep_drawing):
         print(f"page: no answer within {timeout} seconds", file=sys.stderr)
         sys.exit(2)
 

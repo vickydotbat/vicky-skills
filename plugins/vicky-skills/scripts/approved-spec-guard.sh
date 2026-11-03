@@ -118,9 +118,23 @@ writes+='(^|[[:space:];&|(])(rm|mv|cp|install|ln|truncate|dd)[[:space:]]|'
 writes+='git[[:space:]]+([^|;&]*[[:space:]])?(checkout|restore|apply|reset|stash|mv|rm|am|cherry-pick)([[:space:]]|$)'
 harness="" # mutant-ok delete: an unset harness reads as empty, the same as this
 [ -n "$(wording <"$target")" ] && harness=" A shell command can't be read ahead, so make a harness edit, one that keeps every Given, When and Then line, with the Edit tool, which lets it through."
-grep -qE "$writes" <<<"$command" && ! granted "$target" && refuse "$target" "$harness"
-# An interpreter running code of its own (-c, a heredoc, another script) that
-# names the file may write it. Running the file itself only reads it.
+# Text in single quotes (a grep or awk pattern) is never a write form, unless
+# it names the file, as a quoted redirect target does.
+unquoted=$command
+while [[ $unquoted =~ \'([^\']*)\' ]]; do
+  quoted=${BASH_REMATCH[0]}
+  [[ ${BASH_REMATCH[1]} == *"$name"* ]] && keep=${quoted//\'/$'\x01'} || keep=$'\x01\x01'
+  unquoted=${unquoted/"$quoted"/$keep}
+done
+grep -qE "$writes" <<<"$unquoted" && ! granted "$target" && refuse "$target" "$harness"
+# An interpreter running code of its own (-c, a heredoc) that names the file
+# may write it, and so may a script whose text names it. Running the file
+# itself only reads it.
 first=$(grep -oE '(^|[[:space:];&|(])(python3?|node|ruby|perl|php|awk)[[:space:]]+[^[:space:]|;&]+' <<<"$command" | head -1 | awk '{print $NF}')
-[ -n "$first" ] && [ "$(basename -- "$first")" != "$name" ] && ! granted "$target" && refuse "$target"
+# A script run by path writes the file only when its own text names it.
+# shortcut: code it imports or sources is not read; upgrade when a refusal
+# misses a write made that way.
+if [ -n "$first" ] && [ "$(basename -- "$first")" != "$name" ] && ! granted "$target"; then
+  [ -f "$first" ] && ! grep -qF -- "$name" "$first" || refuse "$target"
+fi
 exit 0 # mutant-ok delete: the line above leaves status 0, so the script ends the same way

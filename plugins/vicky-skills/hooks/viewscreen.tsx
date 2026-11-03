@@ -36,6 +36,7 @@ import type {
 } from '../types'
 import { activityOf, partialArgsOf } from './viewscreen-activity'
 import { clip, durationOf, oneLine, plural, printable, sizeOf, thoughtOf, wordsAdded } from './viewscreen-text'
+import { previewCompleted, previewStarted, registerPreview } from './preview'
 
 const IDLE: ActivityNow = {
   phase: 'idle',
@@ -179,6 +180,8 @@ type Live = {
  * @param on the engine's registrar
  */
 export const register: Register = on => {
+  // One hooks module per plugin, so the preview pane registers from here.
+  registerPreview(on)
   const live: Live = {
     calls: new Map(),
     agents: new Map(),
@@ -208,6 +211,7 @@ export const register: Register = on => {
     const result = await next(e)
 
     live.cwd = e.cwd
+    await previewStarted($, e.cwd)
     await locate($, live.cwd)
     await publish($, live)
 
@@ -420,6 +424,7 @@ export const register: Register = on => {
 
       return next(e)
     }
+    await previewCompleted($, (e as { text?: string }).text)
 
     if (live.turnStartMs === null) {
       return next(e)

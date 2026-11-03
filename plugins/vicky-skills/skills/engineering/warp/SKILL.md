@@ -7,7 +7,7 @@ description: Warp through a star chart in a single run, whatever it takes: every
 
 > _Engage, and never drop out of warp: every obstacle is cleared, gone around or waited out, and the run ends at the last star with CI green._
 
-A **warp** clears a whole star chart in one run, or the stars the user names. Each star it means to build is a **target**. It clears the targets' **course**, which is every open blocker from the frontier to each target, then builds the targets. A target is **in reach** when nothing on its course waits on another person, or on an account or deploy the user can't give this run. Out of reach, it stays open and the landing report names it. The words and ticket forms are in [STAR-CHART.md](../lay-course/STAR-CHART.md), and the tracker's commands in `docs/agents/issue-tracker.md`, "Star chart operations".
+A **warp** clears a whole star chart in one run, or the stars the user names: it achieves `do` on every star of the course, whatever it takes. Each star it means to build is a **target**. It clears the targets' **course**, which is every open blocker from the frontier to each target, then builds the targets. A target is **in reach** when nothing on its course waits on another person, or on an account or deploy the user can't give this run. Out of reach, it stays open and the landing report names it. The words and ticket forms are in [STAR-CHART.md](../lay-course/STAR-CHART.md), and the tracker's commands in `docs/agents/issue-tracker.md`, "Star chart operations".
 
 A warp is one effort: every star it builds goes on one branch and one pull request. **A warp never drops out.** Everything on the course that needs the user is taken with them in **pre-flight**, before engaging. A question that turns up mid-flight gets a seam or a stop at an asteroid belt ("Mid-flight questions" below). Every other approval and refusal on the way is an **obstacle**, and "Punch through" says what to do with each.
 
@@ -30,7 +30,7 @@ A warp is one effort: every star it builds goes on one branch and one pull reque
    - **Probe**: make it and show it. The user's reaction is its answer.
    - **Task**: do it. A task that needs another person, an account or a deploy is an obstacle.
    - **Anomaly** or **probe**: answered in pre-flight. One left for mid-flight is a mid-flight question.
-   - **Star**, a target included: start the `do` skill on it from its approved examples, on the warp's branch, so its `sentinels` pass runs, and close it once its tests pass.
+   - **Star**, a target included: start the `do` skill on it with the Skill tool, one `do` run per star, on the warp's branch. `do` is the build: a warp never writes a star's code itself, and `do-first-guard` refuses code edits until `do` has started. Its steps 1 and 2 find the examples approved and the red tests committed by pre-flight, and it goes on at step 3, so its `sentinels` pass and `review` run. Close the star once `do` ends.
 
    Done when every ticket on the course is closed.
 6. **Finish the build.** Run `review` over the whole branch, then `make-it-so`. A warp through several stars passes `make-it-so`'s size item with the body line "A warp through <n> stars, one pull request per effort." Done when the pull request's required checks are green.

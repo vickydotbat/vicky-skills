@@ -46,6 +46,14 @@ done
 check "a plain reply goes through" '[ -z "$(stop)" ]'
 check "a missing transcript goes through" '[ -z "$(jq -nc "{transcript_path:\"$fx/none\"}" | bash "$hook")" ]'
 check "a plain reply exits 0" '{ user "go"; text "All done."; } > "$fx/t.jsonl"; stop >/dev/null; [ $? = 0 ]'
+{ user "maybe not here, but in a different PR, depot PRs only get the assets CI"; text "It goes in its own PR, off fresh main."; } > "$fx/t.jsonl"
+check "a pull request of its own the user asked for goes through" 'out=$(stop); [ $? = 0 ] && [ -z "$out" ]'
+{ user "go"; text "I told them to trigger only on deferral words like 'later' or 'follow-up PR'."; } > "$fx/t.jsonl"
+check "words in single quotes are a mention" '[ -z "$(stop)" ]'
+{ user "go"; text "I'd say it's best left as a follow-up PR, isn't it."; } > "$fx/t.jsonl"
+check "apostrophes in words keep the offer in view" 'blocked'
+{ user "go"; tool=$(jq -nc '{type:"user",message:{content:[{type:"text",text:"make a separate PR for it"}]}}'); echo "$tool"; text "It goes in its own PR."; } > "$fx/t.jsonl"
+check "the ask is read from a message of text blocks too" '[ -z "$(stop)" ]'
 check "a missing transcript exits 0" 'jq -nc "{transcript_path:\"$fx/none\"}" | bash "$hook"; [ $? = 0 ]'
 check "bad input goes through and exits 0" 'echo "not json" | bash "$hook"; [ $? = 0 ]'
 check "the setting at 1 is on" '{ user "go"; text "A follow-up PR can do it."; } > "$fx/t.jsonl"; CLAUDE_PLUGIN_OPTION_GUARD_NO_V1=1 stop | grep -q block'

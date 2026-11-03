@@ -7,6 +7,8 @@ Read these before exploring the code, when they exist:
 
 ADR format: <`true-names`, or the repo-relative path of this repo's own record template>
 
+Sketches: <the repo-relative folder for drawing-board sketches, or delete this line to keep each sketch beside the code it designs>
+
 Todo file: on
 
 The `.todo` file at the root holds small items, one per line, too small for a ticket. Delete an item's line once it is done.
