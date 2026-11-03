@@ -136,4 +136,19 @@ hook W PreToolUse "git commit --allow-empty -m x"
 if ls "$data/checkouts/V"* >/dev/null 2>&1; then echo "FAIL a handed-off session whose process ended leaves no files"; fail=1; else echo "ok   a handed-off session whose process ended leaves no files"; fi
 prompt L "/conn"; hook L SessionEnd ""
 if [ -e "$data/checkouts/L.handoff" ]; then echo "FAIL SessionEnd deletes the handoff mark"; fail=1; else echo "ok   SessionEnd deletes the handoff mark"; fi
+# A trunk repo (AGENTS.md says "Trunk: on") takes every commit on main, so two
+# sessions committing there is the way of working. A switch still moves files.
+rm -rf "$data"; git -C "$repo" switch -q -c main
+printf 'Trunk: on\n' > "$repo/AGENTS.md"
+hook T PostToolUse "git commit -m x"
+expect "in a trunk repo, another session's commit on main runs" 0 U "git commit --allow-empty -m x"
+expect "in a trunk repo, another session's switch is still refused" 2 U "git switch fix-x"
+rm -f "$repo/AGENTS.md"
+expect "with no trunk line, another session's commit on main is refused" 2 U "git commit --allow-empty -m x"
+git -C "$repo" switch -q warp-b
+# The refusal names the session that holds the checkout, so the agent can check it.
+rm -rf "$data"; hook HOLDER1 PostToolUse "git commit -m x"
+msg=$(jq -n --arg d "$repo" '{session_id: "Y", hook_event_name: "PreToolUse", tool_name: "Bash", tool_input: {command: "git commit -m y"}, cwd: $d}' |
+  CLAUDE_PLUGIN_OPTION_GUARD_CHECKOUT=true CLAUDE_PLUGIN_DATA="$data" bash "$guard" 2>&1 >/dev/null)
+if grep -q 'session HOLDER1' <<<"$msg"; then echo "ok   the refusal names the holding session"; else echo "FAIL the refusal names the holding session: $msg"; fail=1; fi
 exit $fail

@@ -31,17 +31,7 @@ say() { local first=$1; shift; refuse "git-guard: refused. $first" "$@"; }
 top=$(git rev-parse --show-toplevel)
 
 trunk=0
-if grep -qsx 'Trunk:[[:space:]]*on' "$top/AGENTS.md" "$top/CLAUDE.md" "$top"/docs/agents/*.md; then
-  trunk=1
-else
-  origin=$(git remote get-url origin 2>/dev/null) || origin=""
-  origin=${origin%/}; origin=${origin%.git}
-  # owner/repo ends the origin URL, after a / or the : of an ssh address.
-  repos=${CLAUDE_PLUGIN_OPTION_GIT_GUARD_TRUNK_REPOS:-}
-  for repo in ${repos//,/ }; do
-    [ -n "$origin" ] && [[ $origin == *[/:]"$repo" ]] && trunk=1
-  done
-fi
+is_trunk "$top" && trunk=1
 
 # --- Rule 1: no new branch on top of unmerged work -------------------------
 if grep -Eq 'git[[:space:]].*((checkout|switch)[[:space:]](.*[[:space:]])?-([bBcC]|-create)|worktree[[:space:]]+add[[:space:]](.*[[:space:]])?-[bB])([[:space:]]|$)' <<<"$code"; then

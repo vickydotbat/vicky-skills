@@ -13,6 +13,8 @@ Read the repo's `TESTING_STANDARDS.md` first: it wins over this skill's defaults
 
 A **trunk repo** takes every change straight on main: its `CLAUDE.md` or `AGENTS.md` says to commit to `main` and open no branch or pull request. Read the agent file of the repo you will change, even when the session started in another one. In a trunk repo, every step below commits on `main` after `git pull --rebase` and pushes there, with no branch, draft or pull request, and an integration branch is `main` itself.
 
+Before every push, run `git fetch` and rebase the branch onto the remote's default branch with `history-monks`: `push-behind-guard` refuses a push from behind it.
+
 ## Build one change
 
 0. **Confirm the objective**, only when the user typed the objective in chat: no ticket, chart or warp names it. Your first message is a gate, as [GATES.md](../../GATES.md) says: say the objective back in one line, with the reason you read behind it, and build nothing until the user answers. A wrong objective is the guess that costs most to undo, so this gate carries no pick and, unanswered, ends parked. Only this first question waits: every later choice that is cheap to undo takes its pick and says "Going with". Done when the user has confirmed or corrected the objective, or the work is parked with a `Waits on:` line.
