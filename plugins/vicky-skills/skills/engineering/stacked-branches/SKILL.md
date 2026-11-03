@@ -20,6 +20,7 @@ The forge picks the tool:
 - **Gitea**: `git-spice` (`gs`). `gs branch create <name>` from the branch it
   depends on, then `gs stack submit -l stacked`. After any branch merges: `gs repo sync`,
   `gs stack restack`, `gs stack submit`.
+- **Any other forge**: plain branches. Branch each one from the one it depends on, open its pull request against that branch, and after a merge rebase the next one onto the new base with `git rebase --onto <new base> <old base> <branch>`.
 
 Both tools record each branch's base, so a squash merge upstream replays only
 the unmerged work.

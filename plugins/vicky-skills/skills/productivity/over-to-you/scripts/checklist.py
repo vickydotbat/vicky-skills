@@ -5,7 +5,7 @@
 
 The spec:
 
-    {"name": "Vicky", "brief": ["what this sitting is for", "..."],
+    {"name": "<user>", "brief": ["what this sitting is for", "..."],
      "open": "what to open, where, on which branch",
      "sitting": [1, 2],                      # optional: sitting 1 of 2
      "signed_off": "nothing yet", "proven_by": "`health.sh` answers ok",

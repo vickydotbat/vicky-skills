@@ -35,6 +35,8 @@ jobs:
         run: tests/familiar_watch_approved_examples.test.sh
       - name: Familiar skill and voice
         run: tests/familiar_approved_examples.test.sh
+      - name: Familiar catches new sessions
+        run: tests/familiar_catchup_approved_examples.test.sh
       - name: Familiar scripts edge cases
         run: tests/familiar.test.sh
       - name: Approved-spec guard

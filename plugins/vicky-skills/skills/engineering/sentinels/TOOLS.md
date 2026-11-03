@@ -6,8 +6,8 @@ Use these when the repo names no tool. Run each one without a global install. Be
 | --- | --- | --- |
 | .NET | Stryker.NET | `dotnet tool install dotnet-stryker` into the repo's tool manifest, then `dotnet stryker` from the test project. `--mutate "<glob>"` limits files, `--since:<ref>` limits a run to a diff, and `--concurrency <n>` sets the workers. |
 | JavaScript, TypeScript | StrykerJS | `npx stryker run` |
-| Python | mutmut | `nix shell nixpkgs#mutmut -c mutmut run` |
-| Rust | cargo-mutants | `nix shell nixpkgs#cargo-mutants -c cargo mutants` |
+| Python | mutmut | `mutmut run`, through `uvx` or `nix shell nixpkgs#mutmut -c` when it isn't installed |
+| Rust | cargo-mutants | `cargo mutants`, after `cargo install cargo-mutants` or through `nix shell nixpkgs#cargo-mutants -c` |
 | Go | gremlins | `go run github.com/go-gremlins/gremlins/cmd/gremlins@latest unleash` |
 | Java | PIT | the `pitest-maven` or Gradle plugin the build already supports |
 

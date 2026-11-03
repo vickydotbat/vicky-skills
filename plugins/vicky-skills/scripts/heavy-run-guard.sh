@@ -11,6 +11,8 @@ set -u
 case "${CLAUDE_PLUGIN_OPTION_GUARD_HEAVY_RUN:-}" in true | 1) ;; *) exit 0 ;; esac
 command -v jq >/dev/null || { echo "heavy-run-guard: jq is missing, guard is off" >&2; exit 0; } # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
 command -v gawk >/dev/null || { echo "heavy-run-guard: gawk is missing, guard is off" >&2; exit 0; } # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
+# The cap it steers to is systemd-run's, so a system without systemd has none to offer.
+command -v systemd-run >/dev/null || exit 0
 here="$(dirname "$0")"
 payload=$(cat)
 cmd=$(jq -r '.tool_input.command // ""' <<<"$payload" 2>/dev/null)

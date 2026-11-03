@@ -11,7 +11,7 @@ A **catch-up** answers four questions, plus the lessons engraved, for someone wh
 
 ## Steps
 
-1. **Read the record, not your memory.** Check the branch, the commits, open pull requests and the tickets the work touched, now, because other sessions change them. Look for a handoff too: the newest comment that opens with `**Handoff**` on this branch's open pull request or ticket, or the newest such note in the project's vault folder. Name it, and check each of its lines before you report one: a handoff is a lead, not a fact. Done when each claim you will make has a fresh command behind it.
+1. **Read the record, not your memory.** Check the branch, the commits, open pull requests and the tickets the work touched, now, because other sessions change them. Look for a handoff too: the newest comment that opens with `**Handoff**` on this branch's open pull request or ticket, or the newest such note where the user's own agent instructions keep that project's notes. Name it, and check each of its lines before you report one: a handoff is a lead, not a fact. Done when each claim you will make has a fresh command behind it.
 2. **Write the parts**, one line per item, with a short code on each so the user can answer by code:
 
    ```markdown
