@@ -15,6 +15,7 @@ rule same-size=KIND says every box of that kind is the same size.
 import base64
 import os
 import re
+import shutil
 import struct
 import subprocess
 import sys
@@ -22,8 +23,10 @@ import xml.etree.ElementTree as ET
 
 
 def size(text):
-    w, h = text.lower().split("x")
-    return int(w), int(h)
+    m = re.fullmatch(r"(\d+)x(\d+)", text.lower())
+    if not m:
+        sys.exit(f"board: {text} is no size: write it as WxH, such as 1920x1080")
+    return int(m.group(1)), int(m.group(2))
 
 
 def png_size(path):
@@ -168,9 +171,11 @@ def save(args):
     it = iter(args[1:])
     for flag in it:
         if flag == "--name":
-            name = next(it)
+            name = next(it, None)
         elif flag == "--code":
-            code = next(it)
+            code = next(it, None)
+    if name and ("/" in name or name in (".", "..")):
+        sys.exit(f"board: the name {name} must be a plain name, with no folder in it")
     if not name or not code:
         sys.exit(__doc__.strip().splitlines()[5])
     top = subprocess.run(["git", "rev-parse", "--show-toplevel"], capture_output=True,
@@ -178,8 +183,7 @@ def save(args):
     folder = sketches_folder(top) or os.path.dirname(os.path.relpath(os.path.abspath(code), top))
     rel = os.path.normpath(os.path.join(folder, name + ".drawio"))
     os.makedirs(os.path.join(top, os.path.dirname(rel)), exist_ok=True)
-    with open(sketch) as src, open(os.path.join(top, rel), "w") as dst:
-        dst.write(src.read())
+    shutil.copyfile(sketch, os.path.join(top, rel))
     print(rel)
 
 

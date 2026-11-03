@@ -132,6 +132,8 @@ grep -qE "$writes" <<<"$unquoted" && ! granted "$target" && refuse "$target" "$h
 # itself only reads it.
 first=$(grep -oE '(^|[[:space:];&|(])(python3?|node|ruby|perl|php|awk)[[:space:]]+[^[:space:]|;&]+' <<<"$command" | head -1 | awk '{print $NF}')
 # A script run by path writes the file only when its own text names it.
+# shortcut: code it imports or sources is not read; upgrade when a refusal
+# misses a write made that way.
 if [ -n "$first" ] && [ "$(basename -- "$first")" != "$name" ] && ! granted "$target"; then
   [ -f "$first" ] && ! grep -qF -- "$name" "$first" || refuse "$target"
 fi

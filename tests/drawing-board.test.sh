@@ -44,6 +44,9 @@ setgeo "$dir/r.drawio" chest width 32 "$dir/r2.drawio"
 check "a rule names only the odd cell" 'b report "$dir/r.drawio" "$dir/r2.drawio" | grep -q "odd: chest$"'
 check "a box of another kind keeps the rule whole" '! b report "$dir/r.drawio" "$dir/r.drawio" | grep -q "rule broken"'
 
+check "a bad size says what it wants" '! python3 -I "$board" new --screen big --window "hub=600x400" -o "$dir/x.drawio" 2>&1 | grep -q Traceback && python3 -I "$board" new --screen big --window "hub=600x400" -o "$dir/x.drawio" 2>&1 | grep -q "WxH"'
+git init -q "$dir/repo"; mkdir -p "$dir/repo/ui"; : > "$dir/repo/ui/hub.nss"
+check "a name with a folder in it is refused" '! (cd "$dir/repo" && python3 -I "$board" save "$dir/a.drawio" --name ../escape --code ui/hub.nss) 2>/dev/null && [ ! -e "$dir/escape.drawio" ]'
 mkdir -p "$dir/drawio"; printf '<title>draw.io</title>\n' > "$dir/drawio/index.html"; printf 'secret\n' > "$dir/secret.txt"
 { printf '# Sketch\n\n```drawio\n'; cat "$dir/a.drawio"; printf '\n```\n'; } > "$dir/page.md"
 DRAWIO_HOME="$dir/drawio" python3 -I "$pagepy" "$dir/page.md" --timeout 60 2> "$dir/page.err" & pids+=($!)

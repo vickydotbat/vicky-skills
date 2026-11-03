@@ -8,9 +8,10 @@ import type { PreviewShown } from '../types'
 
 const PANE = 'preview'
 const shown = atom({ plugin: 'vicky-skills', key: 'preview' } as const, null as PreviewShown | null, { shape: 'preview-1' })
-const IMAGE = /\.(png|jpe?g|gif|webp|bmp)$/i
-const VIDEO = /\.(mp4|mov|webm|mkv|avi|m4v)$/i
-const MEDIA = /(?:^|[\s"'`(])((?:~|\.{0,2})?\/?[\w./~-]+\.(?:png|jpe?g|gif|webp|bmp|mp4|mov|webm|mkv|avi|m4v))(?=$|[\s"'`),.;:!?])/gim
+const IMAGES = 'png|jpe?g|gif|webp|bmp'
+const VIDEOS = 'mp4|mov|webm|mkv|avi|m4v'
+const VIDEO = new RegExp(`\\.(${VIDEOS})$`, 'i')
+const MEDIA = new RegExp(`(?:^|[\\s"'\`(])((?:~|\\.{0,2})?\\/?[\\w./~-]+\\.(?:${IMAGES}|${VIDEOS}))(?=$|[\\s"'\`),.;:!?])`, 'gim')
 
 // The engine takes one unmatched hook per event from a plugin, so
 // viewscreen.tsx calls these two from its own session.start and turn.complete.
@@ -24,31 +25,30 @@ export async function previewStarted($: any, at: string | undefined) {
   await $.command.register({ name: 'preview', description: 'Show an image or a video frame in a pane beside the chat' }).catch(() => undefined)
 }
 
-// Shows the newest media path a reply named: in the pane when the file is
-// there, and as a link on the status line either way.
+// The status line links the newest media a reply names, there or not.
 export async function previewCompleted($: any, text: string | undefined) {
   const newest = lastMedia(text)
   if (!newest) return
   $.ui.status(`▶ file://${newest}`)
-  if (await $.fs.exists(newest)) await show($, newest)
+  await show($, newest)
 }
 
-// The last image or video path a text names, made absolute.
 function lastMedia(text: string | undefined) {
   const found = [...String(text ?? '').matchAll(MEDIA)].map(m => m[1]).at(-1)
   return found ? absolute(found) : undefined
 }
 
-// Puts a path in the pane and opens it: a picture, a video's frame, or a
-// note that the file isn't there.
-async function show($: any, path: string): Promise<PreviewShown> {
-  let next: PreviewShown
+// A missing file only reaches the pane when /preview asked for it by name.
+async function show($: any, path: string, isAsked = false): Promise<PreviewShown | null> {
   if (!(await $.fs.exists(path))) {
-    next = { path, kind: 'missing', png: null }
-  } else {
-    const isVideo = VIDEO.test(path)
-    next = { path, kind: isVideo ? 'video' : 'image', png: await picture($, path, isVideo) }
+    if (!isAsked) return null
+    return put($, { path, kind: 'missing', png: null })
   }
+  const isVideo = VIDEO.test(path)
+  return put($, { path, kind: isVideo ? 'video' : 'image', png: await picture($, path, isVideo) })
+}
+
+async function put($: any, next: PreviewShown) {
   await update($, shown, () => next)
   await $.ui.open({ id: PANE, title: 'Preview' })
   return next
@@ -58,7 +58,7 @@ export const registerPreview: Register = on => {
   on('command.run', { command: 'preview' }, async ($, e) => {
     const path = absolute(String(e.args ?? '').trim())
     if (!path || path.endsWith('/')) return { text: 'Usage: /preview <path to an image or video>' }
-    const next = await show($, path)
+    const next = (await show($, path, true))!
     return { text: next.kind === 'missing' ? `${path} isn't there.` : `Previewing ${path}.` }
   })
 
@@ -68,11 +68,10 @@ export const registerPreview: Register = on => {
     const pasted = (e.attachments ?? []).filter(a => a.type === 'image' && a.id).at(-1)
     const media = pasted?.id ? await $.prompt.media({ id: pasted.id }).catch(() => undefined) : undefined
     if (media?.base64 && media.mediaType === 'image/png') {
-      await update($, shown, () => ({ path: pasted?.filename ?? 'pasted image', kind: 'image', png: media.base64 }))
-      await $.ui.open({ id: PANE, title: 'Preview' })
+      await put($, { path: pasted?.filename ?? 'pasted image', kind: 'image', png: media.base64 })
     } else {
       const named = lastMedia(e.text)
-      if (named && (await $.fs.exists(named))) await show($, named)
+      if (named) await show($, named)
     }
     return next(e)
   })

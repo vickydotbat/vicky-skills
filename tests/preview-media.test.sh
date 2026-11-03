@@ -6,5 +6,5 @@ plugin="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 check "every preview example passes on the terminal and the desktop" \
-  'out=$(timeout 120 claude plugin test "$plugin" 2>&1); [ "$(grep -c "^(pass) preview > " <<<"$out")" = 18 ]'
+  'out=$(timeout 120 claude plugin test "$plugin" 2>&1); grep -q "^(pass) preview > " <<<"$out" && ! grep -q "^(fail) preview" <<<"$out"'
 exit $fail

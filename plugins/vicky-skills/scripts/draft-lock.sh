@@ -21,7 +21,7 @@ if [ "$tool" = Bash ]; then
   # An interpreter's own code that holds no write call (open for writing, a
   # write, remove, rename, a shell-out) only reads, so it runs like a script.
   code_re="(python3?|node|ruby|perl)[[:space:]]+-[a-zA-Z]*[ce][[:space:]]+('[^']*'|\"[^\"]*\")"
-  writer='open\([^)]*,[^)]*[wax+]|\.write|remove|unlink|rename|rmtree|mkdir|shutil|subprocess|system\(|spawn|exec|fs\.|File\.|>'
+  writer='open\([^)]*,[^)]*[wax+]|\.write|write_text|write_bytes|remove|unlink|rename|replace\(|chmod|chown|touch|rmtree|mkdir|copy|move|shutil|subprocess|system\(|spawn|exec|fs\.|File\.|>'
   if ! grep -oE "$code_re" <<<"$command" | grep -qE "$writer"; then
     command=$(sed -E "s/$code_re/\1 code.py/g" <<<"$command")
   fi

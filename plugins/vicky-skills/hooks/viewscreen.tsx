@@ -179,9 +179,9 @@ type Live = {
  *
  * @param on the engine's registrar
  */
-export const register: Register = (on, options) => {
+export const register: Register = on => {
   // One hooks module per plugin, so the preview pane registers from here.
-  registerPreview(on, options)
+  registerPreview(on)
   const live: Live = {
     calls: new Map(),
     agents: new Map(),

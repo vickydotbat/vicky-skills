@@ -114,6 +114,15 @@ def legend(parts):
     return {}
 
 
+def fence_end(lines, start):
+    """The index of the line that closes the fenced block opened at `start`,
+    or len(lines) when the block runs to the end."""
+    end = start + 1
+    while end < len(lines) and lines[end] != "```":
+        end += 1
+    return end
+
+
 def parse(text, folder):
     """The file as parts: ("line", s), ("block", [lines]), ("approve", ticked),
     ("box", ticked, label), ("chart", line, svg), ("check", prefix, mark, rest),
@@ -123,9 +132,7 @@ def parse(text, folder):
     while i < len(lines):
         line = lines[i]
         if line == "```drawio":
-            end = i + 1
-            while end < len(lines) and lines[end] != "```":
-                end += 1
+            end = fence_end(lines, i)
             parts.append(("line", line))
             parts.append(("drawing", lines[i + 1:end]))
             if end < len(lines):
@@ -447,18 +454,9 @@ def serve(path, timeout):
         latest[n] = xml
         with open(path) as handle:
             lines = handle.read().split("\n")
-        seen, i = -1, 0
-        while i < len(lines):
-            if lines[i] == "```drawio":
-                seen += 1
-                end = i + 1
-                while end < len(lines) and lines[end] != "```":
-                    end += 1
-                if seen == n:
-                    lines[i + 1:end] = xml.rstrip("\n").split("\n")
-                    break
-                i = end
-            i += 1
+        starts = [i for i, line in enumerate(lines) if line == "```drawio"]
+        if n < len(starts):
+            lines[starts[n] + 1:fence_end(lines, starts[n])] = xml.rstrip("\n").split("\n")
         with open(path, "w") as handle:
             handle.write("\n".join(lines))
 
