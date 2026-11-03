@@ -20,8 +20,11 @@ check "given the lesson hint is on, when my message holds none of those phrases,
 check "given the lesson hint is off, when my message says codify that, then the agent gets no lesson hint" \
   '[ -x "$hint" ] && [ -z "$(say false "Codify that")" ]'
 
-check "given the agent made a mistake that I caught, when it engraves the lesson, then it builds a check or a hook where one can hold the rule, and a skill line only where neither can, saying why" \
-  'grep -q "a check or a hook where one can hold the rule, and a skill line only where neither can, with the reason" "$s"'
+check "given the agent made a mistake that I caught for the first time, when it engraves the lesson, then it writes one line in the skill or agent file the lesson belongs to" \
+  'grep -q "A first-time snag becomes one line in the skill or agent file it belongs to" "$s"'
+
+check "given the ledger already holds the snag, or I ask for the rule to be enforced, when the agent engraves the lesson, then it builds a check or a hook where one can hold the rule, and a skill line only where neither can, saying why" \
+  'grep -q "lesson-ledger.sh since" "$s" && grep -q "a rule the user asks to enforce, are promoted the first time" "$s" && grep -q "a check or a hook where one can hold the rule, and a skill line only where neither can, with the reason" "$s"'
 
 check "given the agent works in a project's repo, I can push to the plugin's repo, and the lesson is about a skill or hook from the plugin, when it engraves the lesson, then the change lands in the plugin's repo, handed to an idle session there or built on a fresh branch in a worktree, without asking me first" \
   'grep -q "the plugin'"'"'s repo" "$s" && grep -q "only when the user can push to it" "$s" && grep -q "an idle session" "$s" && grep -q "a fresh branch from its main in a worktree, without asking" "$s"'

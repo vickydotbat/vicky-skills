@@ -78,7 +78,11 @@ const n=Object.keys(frames).find(k=>document.getElementById("dio"+k).contentWind
 const xml=document.getElementsByName("drawing_xml."+n)[0],png=document.getElementsByName("drawing_png."+n)[0];
 if(m.event==="init")send(n,{action:"load",xml:xml.value,autosave:1});
 else if(m.event==="autosave"){xml.value=m.xml;fetch("/drawing/"+n,{method:"POST",body:new URLSearchParams({xml:m.xml})})}
-else if(m.event==="export"){png.value=m.data;if(--left===0)document.forms[0].submit()}});
+else if(m.event==="export"){png.value=m.data;if(--left===0)finish()}});
+// draw.io asks to confirm leaving while its drawing reads as modified, so a
+// user who pressed Done would think it never landed: clear the flag and drop
+// each frame before the form goes.
+function finish(){Object.keys(frames).forEach(n=>{send(n,{action:"status",modified:false});document.getElementById("dio"+n).remove()});document.forms[0].submit()}
 function done(ev){const ns=Object.keys(frames);if(!ns.length||left<0)return true;ev.preventDefault();left=ns.length;
 ns.forEach(n=>send(n,{action:"export",format:"png",xml:document.getElementsByName("drawing_xml."+n)[0].value}));return false}"""
 
@@ -425,7 +429,7 @@ def serve_form(text, path, on_post, timeout, on_drawing=None):
                 self.reply(400, b"Not taken.")
                 return
             on_post(self.rfile.read(size).decode())
-            self.reply(200, b"<!doctype html><meta charset=utf-8><p>Sent. Back to chat.</p>")
+            self.reply(200, b"<!doctype html><meta charset=utf-8><p>Sent. You can close this tab.</p>")
             done.set()
 
     # Bound to loopback: the page answers this machine only.

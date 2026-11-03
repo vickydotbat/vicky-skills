@@ -8,6 +8,8 @@ fail=0
 expect() { if [ "$2" = "$3" ]; then echo "ok   $1"; else echo "FAIL $1: want '$2', got '$3'"; fail=1; fi; }
 code() { CLAUDE_PLUGIN_DATA="$dir/data" bash "$ledger" "$@" >/dev/null 2>&1; echo $?; }
 expect "no data folder set is an error" 2 "$(CLAUDE_PLUGIN_DATA= bash "$ledger" since 2026 >/dev/null 2>&1; echo $?)"
+inst="$dir/plugins/cache/mkt/plug/1.0/scripts"; mkdir -p "$inst"; cp "$ledger" "$(dirname "$ledger")/plugin-data.sh" "$inst/"
+expect "an installed copy with no data folder set finds its own" "lesson-x (plugin)" "$(CLAUDE_PLUGIN_DATA= bash "$inst/lesson-ledger.sh" add plugin lesson-x && CLAUDE_PLUGIN_DATA= bash "$inst/lesson-ledger.sh" since 2000 && [ -f "$dir/plugins/data/plug-mkt/lessons.tsv" ])"
 expect "add without a snag is a usage error" 2 "$(code add plugin)"
 expect "since without a time is a usage error" 2 "$(code since)"
 expect "an unknown verb is a usage error" 2 "$(code list)"
