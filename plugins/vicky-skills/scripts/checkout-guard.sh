@@ -133,11 +133,13 @@ if [ -n "$switch$writes" ]; then
     when=${line##*	}; theirs=$(cut -f2 <<<"$line")
     case "$when" in ''|*[!0-9]*) continue ;; esac
     [ $((now - when)) -lt 43200 ] || continue
+    # A trunk repo takes every commit on main, from any session.
+    [ -z "$switch" ] && [ "$theirs" = main ] && [ "$branch" = main ] && is_trunk "$top" && continue
     if [ -z "$switch" ]; then
       ours=$(first "$mine"); came=$(first "$other")
       [ -n "$ours" ] && [ -n "$came" ] && [ "$ours" -lt "$came" ] && continue # mutant-ok: with no first time of our own the comparison fails the same way, only louder
     fi
-    refuse "$GUARD: another session works this checkout on branch $theirs (its last git command was $(( (now - when) / 60 )) minutes ago). ${switch:+Switching would move its files.}${writes:+Writing history here would land on its branch.}" \
+    refuse "$GUARD: another session (session ${other##*/}) works this checkout on branch $theirs (its last git command was $(( (now - when) / 60 )) minutes ago). ${switch:+Switching would move its files.}${writes:+Writing history here would land on its branch.}" \
       "Work on a branch of your own in its own worktree: git worktree add -b <branch> .claude/worktrees/<branch> origin/main. When your work belongs on $theirs, ask the user to hand that session off with /conn first."
   done
 fi

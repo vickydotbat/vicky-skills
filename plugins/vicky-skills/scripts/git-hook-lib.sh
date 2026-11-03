@@ -33,6 +33,22 @@ git rev-parse --git-dir >/dev/null 2>&1 || exit 0 # mutant-ok delete: outside a 
 # shellcheck disable=SC2034 # read by the guard that sources this
 code=$(awk -f "$(dirname "${BASH_SOURCE[0]}")/heredoc-strip.awk" <<<"$command" | sed -zE "s/'[^']*'//g; s/\"([^\"\\\\]|\\\\.)*\"//g")
 refuse() { printf "%s\n" "$@" "Nothing in this command ran, not even its other steps: rerun the ones that need no change on their own." >&2; exit 2; }
+# is_trunk <top>: 0 when the repository takes every change on main. Its
+# AGENTS.md, CLAUDE.md or a docs/agents/*.md holds the line "Trunk: on", or
+# the git_guard_trunk_repos setting names it (owner/repo, comma-separated).
+is_trunk() {
+  local origin repo repos # mutant-ok delete: the names only stay local, and no caller reads them
+  grep -qsx 'Trunk:[[:space:]]*on' "$1/AGENTS.md" "$1/CLAUDE.md" "$1"/docs/agents/*.md && return 0
+  origin=$(git -C "$1" remote get-url origin 2>/dev/null) || return 1
+  origin=${origin%/}; origin=${origin%.git}
+  # owner/repo ends the origin URL, after a / or the : of an ssh address.
+  repos=${CLAUDE_PLUGIN_OPTION_GIT_GUARD_TRUNK_REPOS:-}
+  for repo in ${repos//,/ }; do
+    [[ $origin == *[/:]"$repo" ]] && return 0
+  done
+  return 1
+}
+
 # The remote's default branch as "<remote>/<name>": its recorded HEAD, else a
 # main or master it has. Empty when none is known.
 default_ref_of() {
