@@ -7,6 +7,7 @@ git init -q "$dir"
 printf '[Category("approved-spec")]\n' > "$dir/spec.cs"
 printf 'plain test\n' > "$dir/plain.cs"
 printf 'plain test\n' > "$dir/CharmApprovedExamples.cs"
+git -C "$dir" add -A && git -C "$dir" -c user.name=t -c user.email=t@example.invalid commit -qm fixtures
 fail=0
 run() { printf '{"tool_input":{"file_path":"%s"}}' "$1" | "$guard"; }
 check() { if [ "$2" = "$3" ]; then echo "ok   $1"; else echo "FAIL $1: got '$3'"; fail=1; fi; }

@@ -88,6 +88,7 @@ speaks "a branch whose upstream is gone" auto-tidy.sh '{}' CLAUDE_PLUGIN_OPTION_
 # The guard counts approved tests only inside a git checkout.
 git init -q "$dir/plain"
 mkdir -p "$dir/plain/tests"; printf 'x\n' > "$dir/plain/tests/a_approved_examples.test.sh"
+git -C "$dir/plain" add -A && git -C "$dir/plain" -c user.name=t -c user.email=t@example.invalid commit -qm fixtures
 head -c 1100000 /dev/zero | tr '\0' 'x' > "$dir/plain/big.py"; printf '\nopen("tests/a_approved_examples.test.sh", "w")\n' >> "$dir/plain/big.py"
 quiet "reading an approved test" approved-spec-guard.sh "$(bash_in 'cat tests/a_approved_examples.test.sh' "$dir/plain")"
 quiet "a script over 1 MB is not read" approved-spec-guard.sh "$(bash_in 'python3 big.py' "$dir/plain")"

@@ -11,6 +11,7 @@ git init -q "$dir"
 mkdir -p "$dir/tests"; printf 'echo ok\n' > "$dir/tests/charm_approved_examples.test.sh"
 printf 'open("tests/charm_approved_examples.test.sh", "w").write("")\n' > "$dir/fix.py"
 printf 'print("hello")\n' > "$dir/other.py"
+git -C "$dir" add -A && git -C "$dir" -c user.name=t -c user.email=t@example.invalid commit -qm fixtures
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 # The guard's decision on a Bash command run in $dir: "ask", or "" for none.

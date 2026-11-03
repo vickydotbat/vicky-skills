@@ -33,6 +33,8 @@ jobs:
         run: tests/plugin-layout.test.sh
       - name: Approved-spec guard
         run: tests/approved-spec-guard.test.sh
+      - name: Approved-spec guard frees a new test
+        run: tests/guard_fresh_test_approved_examples.test.sh
       - name: Approved-spec guard reads a run as a read
         run: tests/approved-spec-runs.test.sh
       - name: Approved-spec guard keeps real test tags locked

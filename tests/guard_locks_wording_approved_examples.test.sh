@@ -43,6 +43,7 @@ check "G2 an edit that changes, adds or removes a Given, When or Then line is re
 
 old="$dir/repo/tests/sleep_approved_examples.test.sh"
 printf 'echo ok\n' >"$old"
+git -C "$dir/repo" add -A && git -C "$dir/repo" -c user.name=t -c user.email=t@example.invalid commit -qm fixtures
 unwritten=$(jq -n --arg f "$old" '{tool_name: "Edit", tool_input: {file_path: $f, old_string: "ok", new_string: "fine"}}' | bash "$guard")
 
 # Given an approved test file with no Given, When or Then comment lines in it

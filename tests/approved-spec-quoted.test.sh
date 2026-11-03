@@ -6,6 +6,7 @@ guard="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/scripts/approved-s
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 git init -q "$dir"
 printf 'plain test\n' > "$dir/CharmApprovedExamples.cs"
+git -C "$dir" add -A && git -C "$dir" -c user.name=t -c user.email=t@example.invalid commit -qm fixtures
 fail=0
 run() { jq -n --arg c "$1" --arg d "$dir" '{tool_name: "Bash", tool_input: {command: $c}, cwd: $d}' | bash "$guard" | jq -rs '.[0].hookSpecificOutput.permissionDecision // "allow"'; }
 check() { if [ "$2" = "$3" ]; then echo "ok   $1"; else echo "FAIL $1: got '$3', want '$2'"; fail=1; fi; }

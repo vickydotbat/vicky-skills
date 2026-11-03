@@ -12,6 +12,7 @@ dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 git init -q "$dir/repo"; mkdir -p "$dir/repo/tests"
 printf 'echo ok\n' > "$dir/repo/tests/charm_approved_examples.test.sh"
 printf 'echo ok\n' > "$dir/repo/tests/sleep_approved_examples.test.sh"
+git -C "$dir/repo" add -A && git -C "$dir/repo" -c user.name=t -c user.email=t@example.invalid commit -qm fixtures
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 edit() { jq -n --arg f "$dir/repo/$1" '{tool_name: "Edit", tool_input: {file_path: $f}}' | bash "$guard"; }

@@ -6,7 +6,8 @@ dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 git init -q "$dir"
 mark=approved-spec
 fail=0
-run() { printf '{"tool_input":{"file_path":"%s"}}' "$1" | "$guard" | jq -r '.hookSpecificOutput.permissionDecision // empty'; }
+# Each fixture is committed before the guard sees it, as a test in a repo is.
+run() { { git -C "$dir" add -A && git -C "$dir" -c user.name=t -c user.email=t@example.invalid commit -qm fixtures; } >/dev/null 2>&1; printf '{"tool_input":{"file_path":"%s"}}' "$1" | "$guard" | jq -r '.hookSpecificOutput.permissionDecision // empty'; }
 check() { if [ "$2" = "$3" ]; then echo "ok   $1"; else echo "FAIL $1: got '$3'"; fail=1; fi; }
 
 # Given a C# test file tagged with the Category attribute approved-spec,
@@ -42,7 +43,8 @@ printf '[Category("unit", "%s")]\n' "$mark" > "$dir/Two.cs"
 check "a tag with the mark as its second argument is refused" deny "$(run "$dir/Two.cs")"
 
 # A tagged test outside every git checkout is no contract.
-out=$(mktemp -d); printf '[Category("%s")]\n' "$mark" > "$out/Loose.cs"
+# Its wording lines keep it from reading as a new test, which goes through anyway.
+out=$(mktemp -d); printf '// Given a loose test\n[Category("%s")]\n' "$mark" > "$out/Loose.cs"
 check "a tagged test outside every checkout stays editable" "" "$(run "$out/Loose.cs")"
 rm -rf "$out"
 
