@@ -2,7 +2,12 @@
 # PreToolUse, PostToolUse (Bash) and SessionEnd hook: keeps two sessions from
 # sharing one checkout. Each session's last git command in a checkout is kept
 # in the plugin's data folder as "<checkout>\t<branch>\t<epoch>", one file per
-# session, deleted when the session ends. A branch switch is refused while
+# session, deleted when the session ends. Beside it, "<session>.pid" holds the
+# session's process id and start time, so the record of a session that closed
+# without SessionEnd (its terminal closed) is dropped once that process is
+# gone. A prompt that starts the conn skill writes "<session>.handoff": that
+# session handed the work on, so its record stops counting until the user's
+# next prompt to it. A branch switch is refused while
 # another session used the checkout in the last 12 hours, and a session whose
 # checkout moved to another branch since its last git command is told once. A
 # git command that writes history there (commit, rebase, reset, merge,
@@ -19,7 +24,15 @@ session=$(jq -r '.session_id // empty' <<<"$payload" | tr -cd 'A-Za-z0-9_-')
 records="$CLAUDE_PLUGIN_DATA/checkouts"
 mine="$records/$session"
 event=$(jq -r '.hook_event_name // empty' <<<"$payload")
-if [ "$event" = SessionEnd ]; then rm -f "$mine"; exit 0; fi
+if [ "$event" = SessionEnd ]; then rm -f "$mine" "$mine.pid" "$mine.handoff"; exit 0; fi
+if [ "$event" = UserPromptSubmit ]; then
+  if jq -r '.prompt // empty' <<<"$payload" | head -1 | grep -Eq '^[[:space:]]*/([A-Za-z0-9_-]+:)?conn([[:space:]]|$)'; then
+    mkdir -p "$records" && : > "$mine.handoff"
+  else
+    rm -f "$mine.handoff"
+  fi
+  exit 0 # mutant-ok delete: a prompt carries no command, so the checks below pass it the same way
+fi
 # shellcheck source=git-hook-lib.sh
 . "$(dirname "$0")/git-hook-lib.sh" <<<"$payload"
 
@@ -31,9 +44,33 @@ rebasing=$(cat "$gitdir/rebase-merge/head-name" "$gitdir/rebase-apply/head-name"
 branch=${rebasing#refs/heads/}
 [ -n "$branch" ] || branch=$(git symbolic-ref --short -q HEAD || git rev-parse --short HEAD)
 now=$(date +%s)
+started() { # pid -> the process's start time, from /proc
+  sed 's/.*) //' "/proc/$1/stat" 2>/dev/null | awk '{print $20}'
+}
+# The session's process: the nearest ancestor named claude. Without /proc
+# there is none, and the record stands for its 12 hours as before.
+owner() {
+  local p=${CHECKOUT_GUARD_OWNER_PID:-} _
+  if [ -z "$p" ]; then
+    p=$PPID
+    for _ in 1 2 3 4 5 6; do
+      case "$(cat "/proc/$p/comm" 2>/dev/null)" in *claude*) break ;; esac
+      p=$(sed 's/.*) //' "/proc/$p/stat" 2>/dev/null | awk '{print $2}')
+    done
+    case "$(cat "/proc/$p/comm" 2>/dev/null)" in *claude*) ;; *) return 1 ;; esac
+  fi
+  start=$(started "$p"); [ -n "$start" ] || return 1
+  printf '%s %s\n' "$p" "$start"
+}
+gone() { # record -> 0 when its session's process has ended
+  local pid start # mutant-ok delete: the names only stay local, and no caller reads them
+  read -r pid start 2>/dev/null < "$1.pid" || return 1 # mutant-ok delete: with no process record both start times read empty, so the record stands either way
+  [ "$(started "$pid")" != "$start" ]
+}
 remember() {
   mkdir -p "$records" || return
   { grep -v "^$top	" "$mine" 2>/dev/null; printf '%s\t%s\t%s\n' "$top" "$branch" "$now"; } > "$mine.new" && mv "$mine.new" "$mine"
+  [ -e "$mine.pid" ] || { owner > "$mine.pid" || rm -f "$mine.pid"; }
 }
 if [ "$event" = PostToolUse ]; then remember; exit 0; fi
 
@@ -80,6 +117,9 @@ writes=$(awk '{
 if [ -n "$switch$writes" ]; then
   for other in "$records"/*; do
     [ -f "$other" ] && [ "$other" != "$mine" ] || continue
+    case "$other" in *.pid|*.new|*.handoff) continue ;; esac
+    [ -e "$other.handoff" ] && continue
+    if gone "$other"; then rm -f "$other" "$other.pid"; continue; fi
     line=$(awk -F '\t' -v t="$top" '$1 == t' "$other")
     when=${line##*	}; theirs=$(cut -f2 <<<"$line")
     case "$when" in ''|*[!0-9]*) continue ;; esac
