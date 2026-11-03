@@ -13,9 +13,9 @@ const PANE = {
 const PIXEL = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='
 
 // The engine stand-in: `files` exist, ffmpeg writes a PNG, and every command is recorded.
-function engine(on: any, files: string[], ran: string[][]) {
+function engine(on: any, files: string[], ran: string[][], opened: string[] = []) {
   on('command.register', () => ({ value: { command: 'preview' } }))
-  on('ui.open', () => ({ value: { isPlaced: true } }))
+  on('ui.open', (_: any, e: any) => { opened.push(e.id); return { value: { isPlaced: true } } })
   mock.clock(on)
   on('session.start', (_: any, e: any) => ({ cwd: e.cwd }))
   on('fs.exists', (_: any, e: any) => ({ value: files.includes(e.path) || e.path.endsWith('.frame.png') }))
@@ -98,6 +98,74 @@ describe('preview', () => { for (const surface of ['terminal', 'desktop'] as con
     expect((await ui.find({ type: 'Text', text: /isn't there/ }))?.text).toContain('gone.png')
     expect(await ui.find({ type: 'Button' })).toBeUndefined()
     expect(ran.some(argv => /open$/.test(argv[0]) || argv[0] === 'ffmpeg')).toBe(false)
+    await ui.unmount()
+  })
+
+  // Given Claude's reply names an image or video path that exists
+  // When the reply ends
+  // Then the pane opens and shows it, with no /preview typed
+  test(`a reply's media opens the pane by itself (${surface})`, async ($, on) => {
+    const ran: string[][] = []
+    const opened: string[] = []
+    engine(on, ['/work/chart.png'], ran, opened)
+    on('turn.complete', (_: any, e: any) => e)
+    await $.session.start({ cwd: '/work', surface, isInteractive: true })
+    await $.turn.complete({ text: 'The chart is at /work/chart.png.' } as any)
+    expect(opened).toContain('preview')
+    const ui = await $.ui.mount({ ...PANE, surface })
+    expect((await ui.find({ type: 'Text', text: /chart\.png/ }))?.text).toContain('chart.png')
+    await ui.unmount()
+  })
+
+  // Given Claude's reply names a path that doesn't exist
+  // When the reply ends
+  // Then the pane stays as it was
+  test(`a reply naming a missing file leaves the pane alone (${surface})`, async ($, on) => {
+    const ran: string[][] = []
+    const opened: string[] = []
+    engine(on, ['/work/a.png'], ran, opened)
+    on('turn.complete', (_: any, e: any) => e)
+    await $.session.start({ cwd: '/work', surface, isInteractive: true })
+    await $.command.run({ command: 'preview', args: '/work/a.png' })
+    const before = opened.length
+    await $.turn.complete({ text: 'It would be at /work/nothing.png.' } as any)
+    expect(opened.length).toBe(before)
+    const ui = await $.ui.mount({ ...PANE, surface })
+    expect((await ui.find({ type: 'Text', text: /a\.png/ }))?.text).toContain('a.png')
+    await ui.unmount()
+  })
+
+  // Given you paste an image into your message, or name an image or video path in it
+  // When you send it
+  // Then the pane opens and shows it
+  test(`your message's media opens the pane (${surface})`, async ($, on) => {
+    const ran: string[][] = []
+    const opened: string[] = []
+    engine(on, ['/work/clip.mp4'], ran, opened)
+    on('prompt.submit', (_: any, e: any) => e)
+    await $.session.start({ cwd: '/work', surface, isInteractive: true })
+    await $.prompt.submit({ text: 'look at clip.mp4 please' } as any)
+    expect(opened).toContain('preview')
+    const ui = await $.ui.mount({ ...PANE, surface })
+    expect((await ui.find({ type: 'Text', text: /clip\.mp4/ }))?.text).toContain('clip.mp4')
+    await ui.unmount()
+  })
+
+  // Given one message names two images
+  // When it is sent or the reply ends
+  // Then the pane shows the last one named, and /preview still shows any other
+  test(`the last one named wins (${surface})`, async ($, on) => {
+    const ran: string[][] = []
+    engine(on, ['/work/one.png', '/work/two.png'], ran)
+    on('turn.complete', (_: any, e: any) => e)
+    await $.session.start({ cwd: '/work', surface, isInteractive: true })
+    await $.turn.complete({ text: 'See /work/one.png and /work/two.png.' } as any)
+    let ui = await $.ui.mount({ ...PANE, surface })
+    expect((await ui.find({ type: 'Text', text: /\.png/ }))?.text).toContain('two.png')
+    await ui.unmount()
+    await $.command.run({ command: 'preview', args: '/work/one.png' })
+    ui = await $.ui.mount({ ...PANE, surface })
+    expect((await ui.find({ type: 'Text', text: /\.png/ }))?.text).toContain('one.png')
     await ui.unmount()
   })
 } })
