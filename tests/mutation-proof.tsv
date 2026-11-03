@@ -6,7 +6,7 @@ auto-tidy.sh	37372c9b2b9a5907	e84113a4077b0aa1	15/15
 checkout-guard.sh	40435c62024d814f	f258b25d0b5fd035	70/70
 do-confirm-hint.sh	b0c1b33c616e5669	ccf0fcd3963b0eac	15/15
 do-first-guard.sh	0e11e5805b2b2604	15d674b674140172	35/35
-draft-lock.sh	6b39fcf2a8e08989	29c9ef4cf6704a09	65/65
+draft-lock.sh	d77c7ea6963c7d5f	29c9ef4cf6704a09	65/65
 gamma-shift.sh	bf7b0a15b596e9fc	45973d88a7f1f2c1	12/12
 gate-notify.sh	7ba893f680c5d672	c84026178c20f7ce	25/25
 gate-state-guard.sh	7e37c0f1a4c05600	f749f5a5be295418	58/58
@@ -33,7 +33,7 @@ scratch-guard.sh	5d86e5061c016d17	54f32f553237e07b	31/31
 skill-ledger.sh	4f6f1ba436f648ca	c89809c6ec401b06	22/22
 spark-joy.sh	e88c476e7a612966	22239642393c844c	29/29
 springboard.sh	2b1a555e07899495	ddfaa4e309cf6372	53/53
-stale-blame.sh	66d867741027006d	bfe79f2288ed979a	14/14
+stale-blame.sh	815872305ae38c3a	b565928a056fcd37	14/14
 stale-copy-hint.sh	4e663d08786adf6b	e4906875cc3efdb8	27/27
 step-guard.sh	91b9ada68f679e9b	9779fafd97b3a824	48/48
 step-hint.sh	cb169172a81fc295	8ed2c83e9b74beba	12/12

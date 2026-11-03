@@ -46,6 +46,10 @@ for p in "I suspect you are running an outdated build." "The haks on your machin
   { user "go"; text "$p"; } > "$fx/t.jsonl"
   check "each blame form counts: $p" 'blocked'
 done
+for p in "Your browser cache is probably stale." "Reinstall your dependencies, they look outdated." "Your container image is behind."; do
+  { user "go"; text "$p"; } > "$fx/t.jsonl"
+  check "each copy outside games counts: $p" 'blocked'
+done
 # Given a reply with proof, or one that blames nothing of the user's
 # When the agent stops
 # Then it goes through

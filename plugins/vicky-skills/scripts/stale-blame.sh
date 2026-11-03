@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Stop hook (guard_stale_blame, on by default): an agent that can't find a bug
-# tends to blame the user's copy ("your hak is stale", "restart your client"),
+# tends to blame the user's copy ("your build is stale", "restart your client"),
 # and the user's builds are nearly always current. When the agent's last reply
-# names the user's copy (your hak, client, build, cache, install, files) in the
+# names the user's copy (your build, client, cache, package, plugin, asset pack) in the
 # same sentence as a stale word or an update-it fix, and quotes no hash or
 # logged version, the stop is blocked once with a steer: keep tracing the code,
 # or quote the failing run's hash or version beside the expected one. A file's
@@ -12,7 +12,7 @@ set -u
 case "${CLAUDE_PLUGIN_OPTION_GUARD_STALE_BLAME:-true}" in false|0) exit 0 ;; esac
 # shellcheck source=stop-reply.sh
 . "$(dirname "$0")/stop-reply.sh"
-copy='(you(.re|[[:space:]]+are)[[:space:]]+running|on[[:space:]]+your[[:space:]]+(machine|end|side)|\bthe[[:space:]]+client\b|\byou(.ve|[[:space:]]+have)?[[:space:]]+(re-?)?(update|pull|pulled|download|reload|restart|relaunch|clear)|the[[:space:]]+[a-z-]+[[:space:]]+you[[:space:]]+(have|run|ran|are[[:space:]]+on)|you[[:space:]]+(were|are)[[:space:]]+on|your([[:space:]]+[a-z-]+){0,2}[[:space:]]+(hak|haks|client|build|builds|cache|install|copy|files?|game|checkout|module|assets?|artefacts?|artifacts?))\b'
+copy='(you(.re|[[:space:]]+are)[[:space:]]+running|on[[:space:]]+your[[:space:]]+(machine|end|side)|\bthe[[:space:]]+client\b|\byou(.ve|[[:space:]]+have)?[[:space:]]+(re-?)?(update|pull|pulled|download|reload|restart|relaunch|clear)|the[[:space:]]+[a-z-]+[[:space:]]+you[[:space:]]+(have|run|ran|are[[:space:]]+on)|you[[:space:]]+(were|are)[[:space:]]+on|your([[:space:]]+[a-z-]+){0,2}[[:space:]]+(haks?|clients?|builds?|cache|install|copy|files?|game|checkout|modules?|assets?|artefacts?|artifacts?|packages?|dependencies|binary|binaries|image|container|app|extensions?|plugins?|browser|environment))\b'
 blame='\b(stale|old|older|outdated|out[ -]of[ -]date|update|updated|redownload|re-download|reinstall|restart|refresh|rebuild|clear|reload|reloading|latest|previous|newer|behind|pull|pulled|re-pull|re-pulling|relaunch|new|caching|newest|refreshed)\b'
 blamed=$(prose | tr '\n' ' ' | sed 's/\([.?!]\) /\1\n/g' | grep -iE "$copy" | grep -iE "$blame" | grep -viE "\b(not|no|nothing|never|nor)\b")
 [ -n "$blamed" ] || exit 0
