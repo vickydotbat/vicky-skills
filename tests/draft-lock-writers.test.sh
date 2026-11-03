@@ -24,4 +24,6 @@ check "a variable set to a relative path is refused" 2 "$(run 'S=sub; ls > $S/ou
 check "a variable the command never sets is refused" 2 "$(run 'ls > $S/out.txt')"
 check "a longer name that starts with the variable's is refused" 2 "$(run 'S=/tmp/scratch-x; ls > $SX/out.txt')"
 check "a variable set to the checkout itself is refused" 2 "$(run "S=$dir/repo; ls > \$S/out.txt")"
+check "a variable set twice is refused" 2 "$(run 'S=/tmp/scratch-x; S=sub; ls > $S/out.txt')"
+check "a variable whose path climbs with .. is refused" 2 "$(run "S=/tmp/../$dir/repo; ls > \$S/out.txt")"
 exit $fail

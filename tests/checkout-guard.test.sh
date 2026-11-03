@@ -109,6 +109,11 @@ prompt L "please run conn now"
 expect "a prompt that only mentions conn keeps the claim" 2 M "git commit --allow-empty -m x"
 prompt L "/connect the dots"
 expect "a command that only starts with conn keeps the claim" 2 M "git commit --allow-empty -m x"
+rm -rf "$data"; sleep 300 & ended=$!
+OWNER=$ended hook V PostToolUse "git status"; prompt V "/conn"
+kill "$ended"; wait "$ended" 2>/dev/null
+hook W PreToolUse "git commit --allow-empty -m x"
+if ls "$data/checkouts/V"* >/dev/null 2>&1; then echo "FAIL a handed-off session whose process ended leaves no files"; fail=1; else echo "ok   a handed-off session whose process ended leaves no files"; fi
 prompt L "/conn"; hook L SessionEnd ""
 if [ -e "$data/checkouts/L.handoff" ]; then echo "FAIL SessionEnd deletes the handoff mark"; fail=1; else echo "ok   SessionEnd deletes the handoff mark"; fi
 exit $fail

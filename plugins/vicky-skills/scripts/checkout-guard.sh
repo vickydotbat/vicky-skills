@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# PreToolUse, PostToolUse (Bash) and SessionEnd hook: keeps two sessions from
+# PreToolUse, PostToolUse (Bash), UserPromptSubmit and SessionEnd hook: keeps two sessions from
 # sharing one checkout. Each session's last git command in a checkout is kept
 # in the plugin's data folder as "<checkout>\t<branch>\t<epoch>", one file per
 # session, deleted when the session ends. Beside it, "<session>.pid" holds the
@@ -26,7 +26,7 @@ session=$(jq -r '.session_id // empty' <<<"$payload" | tr -cd 'A-Za-z0-9_-')
 records="$CLAUDE_PLUGIN_DATA/checkouts"
 mine="$records/$session"
 event=$(jq -r '.hook_event_name // empty' <<<"$payload")
-if [ "$event" = SessionEnd ]; then rm -f "$mine" "$mine.pid" "$mine.handoff" "$mine.first"; exit 0; fi
+if [ "$event" = SessionEnd ]; then rm -f "$mine" "$mine".*; exit 0; fi
 if [ "$event" = UserPromptSubmit ]; then
   if jq -r '.prompt // empty' <<<"$payload" | head -1 | grep -Eq '^[[:space:]]*/([A-Za-z0-9_-]+:)?conn([[:space:]]|$)'; then
     mkdir -p "$records" && : > "$mine.handoff"
@@ -46,18 +46,19 @@ rebasing=$(cat "$gitdir/rebase-merge/head-name" "$gitdir/rebase-apply/head-name"
 branch=${rebasing#refs/heads/}
 [ -n "$branch" ] || branch=$(git symbolic-ref --short -q HEAD || git rev-parse --short HEAD)
 now=$(date +%s)
-started() { # pid -> the process's start time, from /proc
-  sed 's/.*) //' "/proc/$1/stat" 2>/dev/null | awk '{print $20}'
+procstat() { # pid field -> that field of /proc/<pid>/stat, counted after the name
+  sed 's/.*) //' "/proc/$1/stat" 2>/dev/null | awk -v n="$2" '{print $n}'
 }
+started() { procstat "$1" 20; }
 # The session's process: the nearest ancestor named claude. Without /proc
 # there is none, and the record stands for its 12 hours as before.
 owner() {
-  local p=${CHECKOUT_GUARD_OWNER_PID:-} _
+  local p=${CHECKOUT_GUARD_OWNER_PID:-} _ start
   if [ -z "$p" ]; then
     p=$PPID
     for _ in 1 2 3 4 5 6; do
       case "$(cat "/proc/$p/comm" 2>/dev/null)" in *claude*) break ;; esac
-      p=$(sed 's/.*) //' "/proc/$p/stat" 2>/dev/null | awk '{print $2}')
+      p=$(procstat "$p" 2)
     done
     case "$(cat "/proc/$p/comm" 2>/dev/null)" in *claude*) ;; *) return 1 ;; esac
   fi
@@ -124,8 +125,8 @@ if [ -n "$switch$writes" ]; then
   for other in "$records"/*; do
     [ -f "$other" ] && [ "$other" != "$mine" ] || continue
     case "$other" in *.pid|*.new|*.handoff|*.first) continue ;; esac
+    if gone "$other"; then rm -f "$other" "$other".*; continue; fi
     [ -e "$other.handoff" ] && continue
-    if gone "$other"; then rm -f "$other" "$other.pid" "$other.first"; continue; fi
     line=$(awk -F '\t' -v t="$top" '$1 == t' "$other")
     when=${line##*	}; theirs=$(cut -f2 <<<"$line")
     case "$when" in ''|*[!0-9]*) continue ;; esac
