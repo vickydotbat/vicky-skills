@@ -17,9 +17,9 @@ check "/conn comments the handoff on the pull request or ticket" \
 
 # Given work on a project with no tracker, such as your machine config
 # When you type /conn
-# Then the handoff is a note in that project's vault folder, and its path is in the reply
-check "/conn writes a vault note where there is no tracker" \
-  'grep -q "With no tracker, write it as a note in the project'"'"'s vault folder" "$conn" && grep -q "the note'"'"'s path is in your reply" "$conn"'
+# Then the handoff is a note where your own agent instructions keep that project's notes, and its path is in the reply
+check "/conn writes a note where your own instructions keep notes, when there is no tracker" \
+  'grep -q "With no tracker, write it as a note where the user'"'"'s own agent instructions keep that project'"'"'s notes" "$conn" && grep -q "the note'"'"'s path is in your reply" "$conn"'
 
 # Given a session whose notes sit in its scratch folder
 # When /conn posts the handoff

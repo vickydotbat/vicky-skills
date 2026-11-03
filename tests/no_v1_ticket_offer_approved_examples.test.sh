@@ -18,10 +18,10 @@ stop() { jq -nc --arg t "$fx/t.jsonl" '{hook_event_name:"Stop",stop_hook_active:
 
 # Given an agent that found a new behaviour no approved example names
 # When its reply offers to file that behaviour as a ticket of its own
-# Then the reply is stopped, and the agent writes the idea as one line under Ideas in the pull request body instead
+# Then the reply is stopped, and the agent writes the idea as one line in the Ideas place, which is the pull request body's Ideas section when neither the repo nor your own instructions name one
 ok=1
 for r in "The export works. Exporting to JSON would be nice too, so I can file that as a ticket of its own." "Done. I'll open a new ticket for exporting to JSON." "Shipped. Should I file a ticket for a JSON export?"; do
-  reply "$r"; stop | jq -e '.decision == "block" and (.reason | test("one line in the Ideas place, an Ideas section in the pull request body"))' >/dev/null 2>&1 || { ok=0; echo "     not stopped: $r"; }
+  reply "$r"; stop | jq -e '.decision == "block" and (.reason | test("one line in the Ideas place your own agent instructions name, else in an Ideas section of the pull request body"))' >/dev/null 2>&1 || { ok=0; echo "     not stopped: $r"; }
 done
 check "a new behaviour becomes an Ideas line, not a ticket" '[ $ok = 1 ]'
 exit $fail
