@@ -6,6 +6,7 @@
 # counts for nothing. Writes outside the checkout run. A Bash command is a
 # write when it holds a write form (sed -i, a redirect, tee, cp, mv, rm, an
 # interpreter's own code) aimed at a path inside the checkout.
+# It also refuses open-draft.sh run directly, since open-page.sh is the opener.
 # Off unless the plugin option guard_draft_lock is true.
 case "${CLAUDE_PLUGIN_OPTION_GUARD_DRAFT_LOCK:-}" in true|1) ;; *) exit 0 ;; esac
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
@@ -16,6 +17,12 @@ cwd=$(jq -r '.cwd // empty' <<<"$payload")
 tool=$(jq -r '.tool_name // empty' <<<"$payload")
 if [ "$tool" = Bash ]; then
   command=$(jq -r '.tool_input.command // empty' <<<"$payload")
+  # open-draft.sh run as a command opens the editor even on a desktop. The
+  # page is open-page.sh, which runs it and falls back to the editor itself.
+  if grep -qE '(^|[[:space:];&|(/])open-draft\.sh([[:space:]]|$)' <<<"$command" && ! grep -qE '(^|[[:space:];&|(])(grep|cat|sed|head|tail|less|git|rg)[[:space:]][^;&|]*open-draft\.sh' <<<"$command"; then
+    echo "draft-lock: open-draft.sh opens the draft in the user's editor, which is only the fallback. Open it with open-page.sh <file> from the same folder, run in the background: it shows the page in the browser and falls back to the editor by itself when there is no display. Nothing in this command ran, not even its other steps: rerun the ones that need no change on their own." >&2
+    exit 2
+  fi
   # A variable the command sets to an absolute path stands for that path:
   # S=/tmp/x; ls > $S/out writes to /tmp/x/out. Any other variable stays as
   # written, so its redirect counts as one into the checkout.

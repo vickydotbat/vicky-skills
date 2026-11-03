@@ -33,4 +33,12 @@ expect "a copy between two folders outside the checkout runs" 0 "" "$(bash_in "c
 expect "a copy into the checkout is still refused" 2 "$repo waits" "$(bash_in "cp $dir/a $repo/scripts/c.sh")"
 expect "a git write that names an outside path is still refused" 2 "$repo waits" "$(bash_in "git commit -F $dir/msg")"
 expect "a git write naming an outside path that holds rm, cp or sed is still refused" 2 "$repo waits" "$(bash_in "git commit -F /tmp/x-rm-cp-sed/msg")"
+# open-draft.sh run by hand opens the editor even on a desktop: the page is
+# open-page.sh, which falls back to the editor itself (debt log D37).
+expect "open-draft.sh run directly is refused and steered to open-page.sh" 2 "open-page.sh" "$(bash_in 'bash plugins/x/skills/productivity/interactive-page/scripts/open-draft.sh /tmp/s/drafts.md')"
+expect "open-draft.sh run by its path is refused too" 2 "open-page.sh" "$(bash_in 'cd /tmp && ./open-draft.sh drafts.md')"
+expect "open-page.sh runs" 0 "" "$(bash_in 'bash plugins/x/skills/productivity/interactive-page/scripts/open-page.sh /tmp/s/drafts.md')"
+expect "a read of open-draft.sh runs" 0 "" "$(bash_in 'grep -n lock plugins/x/scripts/open-draft.sh')"
+git init -q "$dir/plain"
+expect "open-draft.sh is refused with no draft open as well" 2 "open-page.sh" "$(jq -n --arg d "$dir/plain" '{tool_name: "Bash", tool_input: {command: "bash x/open-draft.sh /tmp/s/drafts.md"}, cwd: $d}')"
 exit $fail
