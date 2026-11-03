@@ -50,7 +50,7 @@ if [ "$tool" = Bash ]; then
   if grep -qE "$other" <<<"$command"; then
     dirs=$(tr -s " \t\n;&|()<>'\"=," '\n' <<<"$command" | grep '^/' || true)
     # A git write or an interpreter's code lands in the checkout whatever it names.
-    grep -qE '>|tee|cp|mv|rm|sed|touch|mkdir' <<<"$command" || dirs=""
+    grep -qE '>|(^|[[:space:];&|(])(tee|cp|mv|rm|sed|touch|mkdir)([[:space:]]|$)' <<<"$command" || dirs=""
   else
     dirs=$(grep -oE '(>>?|tee([[:space:]]+-a)?)[[:space:]]*[^[:space:]|;&<>]+' <<<"$command" | sed -E 's/^(>>?|tee([[:space:]]+-a)?)[[:space:]]*//' | tr -d "'\"")
     # A relative target lands in the checkout.

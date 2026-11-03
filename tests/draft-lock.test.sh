@@ -32,4 +32,5 @@ expect "a refused edit names the file" 2 "$repo/scripts/c.sh waits" "$(jq -n --a
 expect "a copy between two folders outside the checkout runs" 0 "" "$(bash_in "cp $dir/a $dir/b")"
 expect "a copy into the checkout is still refused" 2 "$repo waits" "$(bash_in "cp $dir/a $repo/scripts/c.sh")"
 expect "a git write that names an outside path is still refused" 2 "$repo waits" "$(bash_in "git commit -F $dir/msg")"
+expect "a git write naming an outside path that holds rm, cp or sed is still refused" 2 "$repo waits" "$(bash_in "git commit -F /tmp/x-rm-cp-sed/msg")"
 exit $fail
