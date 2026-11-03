@@ -4,12 +4,11 @@
 #
 #   bash tests/git-guard.test.sh
 #
-# Ported with the guard from the NixOS config, where it ran against the installed hook.
 # Covers branch switches, which pass anywhere, plus rules 1, 2 and 4.
 set -euo pipefail
 
 hook="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/scripts/git-guard.sh"
-export CLAUDE_PLUGIN_OPTION_GUARD_GIT=true CLAUDE_PLUGIN_OPTION_GIT_GUARD_TRUNK_REPOS=vickydotbat/nixos,nwncxee/cx.wiki
+export CLAUDE_PLUGIN_OPTION_GUARD_GIT=true CLAUDE_PLUGIN_OPTION_GIT_GUARD_TRUNK_REPOS=o/trunk,o/proj.wiki
 [[ -f "$hook" ]] || { echo "git-guard-test: no hook at $hook" >&2; exit 1; }
 
 scratch=$(mktemp -d)
@@ -88,7 +87,7 @@ expect 0 "$main" 'git commit -m msg'
 # A trunk repository takes pushes to main, also when the command reaches it
 # through a leading cd and goes on to a second repository.
 git init -q -b main "$scratch/trunk"
-git -C "$scratch/trunk" remote add origin git@github.com:vickydotbat/nixos.git
+git -C "$scratch/trunk" remote add origin git@github.com:o/trunk.git
 trunk="$scratch/trunk"
 expect 0 "$trunk" 'git push origin main'
 expect 0 "$scratch" "cd $trunk && git push -q origin main"
@@ -112,10 +111,10 @@ expect 2 "$main" "git push -q origin main; cd $trunk && git status"
 # A GitHub wiki keeps one branch, so its push to master passes; the code
 # repository whose name it extends is still refused.
 git init -q -b master "$scratch/wiki"
-git -C "$scratch/wiki" remote add origin git@github.com:nwncxee/cx.wiki.git
+git -C "$scratch/wiki" remote add origin git@github.com:o/proj.wiki.git
 expect 0 "$scratch/wiki" 'git push origin master'
 git init -q -b master "$scratch/code"
-git -C "$scratch/code" remote add origin git@github.com:nwncxee/cx.git
+git -C "$scratch/code" remote add origin git@github.com:o/proj.git
 expect 2 "$scratch/code" 'git push origin master'
 
 # A bare push, or a push of HEAD, from main lands on main.
@@ -137,6 +136,19 @@ git -C "$scratch/both" switch -q -c done
 git -C "$scratch/both" -c user.email=t@t -c user.name=t -c commit.gpgsign=false commit -q --allow-empty -m two
 git -C "$scratch/both" switch -q main && git -C "$scratch/both" merge -q --ff-only done && git -C "$scratch/both" switch -q done
 expect 0 "$scratch/both" 'git switch -c next'
+
+# A trunk entry names the whole owner/repo at the end of the origin URL.
+git init -q -b main "$scratch/near"
+git -C "$scratch/near" remote add origin https://github.com/xo/trunkish.git
+expect 2 "$scratch/near" 'git push origin main'
+# With the trunk setting unset, the guard still runs.
+(unset CLAUDE_PLUGIN_OPTION_GIT_GUARD_TRUNK_REPOS; expect 2 "$scratch/code" 'git push origin master') || failed=1
+# A message file passed with --file is read too.
+printf 'x\n\nCo-Authored-By: A <a@example.com>\n' >"$scratch/credit.txt"
+expect 2 "$scratch/code" "git commit --file=$scratch/credit.txt"
+# Bad input lets the command run.
+got=$(printf 'not json' | bash "$hook" >/dev/null 2>&1 && echo 0 || echo $?)
+[[ $got == 0 ]] || { echo "FAIL want 0, got $got: bad input"; failed=1; }
 
 if [[ $failed -eq 0 ]]; then echo "git-guard-test: all cases pass"; fi
 exit "$failed"

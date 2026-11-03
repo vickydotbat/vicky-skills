@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# approved-spec: the git-guard examples Vicky approved on 2026-11-03, when the
-# guard moved from her NixOS config into the plugin. Each check runs the hook
-# the way Claude Code does, against a fixture repo on an unmerged branch.
+# approved-spec: the git-guard examples Vicky approved on 2026-11-03. Each
+# check runs the hook the way Claude Code does, against a fixture repo on an
+# unmerged branch.
 set -u
 hook="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/scripts/git-guard.sh"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT

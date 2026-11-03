@@ -34,8 +34,11 @@ if grep -qsx 'Trunk:[[:space:]]*on' "$top/AGENTS.md" "$top/CLAUDE.md" "$top"/doc
   trunk=1
 else
   origin=$(git remote get-url origin 2>/dev/null) || origin=""
-  for repo in ${CLAUDE_PLUGIN_OPTION_GIT_GUARD_TRUNK_REPOS//,/ }; do
-    [ -n "$origin" ] && [[ $origin == *"$repo"* ]] && trunk=1
+  origin=${origin%/}; origin=${origin%.git}
+  # owner/repo ends the origin URL, after a / or the : of an ssh address.
+  repos=${CLAUDE_PLUGIN_OPTION_GIT_GUARD_TRUNK_REPOS:-}
+  for repo in ${repos//,/ }; do
+    [ -n "$origin" ] && [[ $origin == *[/:]"$repo" ]] && trunk=1
   done
 fi
 
