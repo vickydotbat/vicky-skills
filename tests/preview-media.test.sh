@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # The preview examples run in Claude Code's mod test kit, from
-# plugins/vicky-skills/hooks/preview_approved_examples.test.tsx.
+# the preview test file beside the mod in plugins/vicky-skills/hooks.
 set -u
 plugin="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills"
 fail=0

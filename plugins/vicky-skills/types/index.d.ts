@@ -71,6 +71,16 @@ export type ActivityEntry = {
   outcome: ActivityOutcome
 }
 
+/**
+ * What the preview pane shows: an image or a video's still frame as PNG
+ * bytes in base64, or a path that isn't there.
+ */
+export type PreviewShown = {
+  path: string
+  kind: 'image' | 'video' | 'missing'
+  png: string | null
+}
+
 declare module 'claude-code' {
   interface PluginState {
     'vicky-skills': {
@@ -79,6 +89,7 @@ declare module 'claude-code' {
       agents: readonly ActivityAgent[]
       isExpanded: boolean
       summit: string
+      preview: PreviewShown | null
     }
   }
 }
