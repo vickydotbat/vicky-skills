@@ -4,6 +4,7 @@
 # transcript changed in the last day and does not end on the cost-state line
 # Claude Code writes when a session exits. The familiar's own session
 # ($CLAUDE_CODE_SESSION_ID) is left out.
+# The mutation tool covers plugins/vicky-skills/scripts only: mutate this script by hand, with sentinels.
 set -u
 dir=${FAMILIAR_PROJECTS_DIR:-$HOME/.claude/projects}
 find "$dir" -mindepth 2 -maxdepth 2 -name '*.jsonl' -mmin -1440 2>/dev/null | sort | while IFS= read -r f; do

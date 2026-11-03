@@ -5,6 +5,7 @@
 # session exits.
 # Usage: familiar-watch.sh <transcript> [<session tag>]
 # It starts at the end of the file; FAMILIAR_WATCH_FROM_START=1 reads it whole.
+# The mutation tool covers plugins/vicky-skills/scripts only: mutate this script by hand, with sentinels.
 set -u
 file=${1:?usage: familiar-watch.sh <transcript> [<session tag>]}
 tag=${2:-}

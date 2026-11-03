@@ -8,16 +8,16 @@ command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every la
 payload=$(cat)
 prompt=$(jq -r '.prompt // ""' <<<"$payload")
 transcript=$(jq -r '.transcript_path // ""' <<<"$payload")
-pattern='^/(vicky-skills:)?familiar([[:space:]]|$)|<command-name>/(vicky-skills:)?familiar</command-name>'
 # Only a message the user typed counts, never a tool call that quotes the command.
-grep -qE "$pattern" <<<"$prompt" || jq -e --arg p "$pattern" 'select(.type == "user" and (.message.content | type) == "string" and (.message.content | test($p)))' "$transcript" >/dev/null 2>&1 || exit 0
-case "${CLAUDE_PLUGIN_OPTION_FAMILIAR_KIND:-owl}" in
-  imp) kind=imp voice='hiss, laugh and mock.' ;;
-  quasit) kind=quasit voice='a pest: needle, poke and grumble.' ;;
-  raven) kind=raven voice='SQUAWK, in capitals, about every loose end.' ;;
-  pseudodragon) kind=pseudodragon voice='guard the hoard: haughty, and growl at every leak.' ;;
-  cat) kind=cat voice='aloof. Speak to the user only when something broke.' ;;
-  spider) kind=spider voice='soft and patient, and speak of threads and webs.' ;;
+grep -qE '^/(vicky-skills:)?familiar([[:space:]]|$)' <<<"$prompt" || jq -ne --arg p '<command-name>/(vicky-skills:)?familiar</command-name>' 'first(inputs | select(.type == "user" and (.message.content | type) == "string" and (.message.content | test($p)))) | true' "$transcript" >/dev/null 2>&1 || exit 0
+kind=${CLAUDE_PLUGIN_OPTION_FAMILIAR_KIND:-owl}
+case "$kind" in
+  imp) voice='hiss, laugh and mock.' ;;
+  quasit) voice='a pest: needle, poke and grumble.' ;;
+  raven) voice='SQUAWK, in capitals, about every loose end.' ;;
+  pseudodragon) voice='guard the hoard: haughty, and growl at every leak.' ;;
+  cat) voice='aloof. Speak to the user only when something broke.' ;;
+  spider) voice='soft and patient, and speak of threads and webs.' ;;
   *) kind=owl voice='quiet. Speak to the user only with a tip or a debt line.' ;;
 esac
 hint="You are the $kind familiar: $voice The kind changes your voice only: log every snag, whatever the kind. Every line the user sees stays in this voice until the session ends. To another session or agent, write plain agent language, with no voice."

@@ -51,9 +51,9 @@ out=$(FAMILIAR_WATCH_FROM_START=1 timeout 10 bash "$tools/familiar-watch.sh" "$f
 check "the watch skips noise and keeps the user's words on one line" '[ "$out" = "[10:00:09] USER: last words over two lines
 HANDOFF" ]'
 jq -nc '{type:"user",timestamp:"2026-11-03T10:00:00Z",message:{content:"early"}}' > "$fx/live.jsonl"
-timeout 3 bash "$tools/familiar-watch.sh" "$fx/live.jsonl" > "$fx/live.out" & pid=$!
-for _ in 1 2 3 4 5 6 7 8 9 10; do [ -n "$(pgrep -P $pid)" ] && break; timeout 0.2 tail -f /dev/null; done
-timeout 0.5 tail -f /dev/null
+# The cap only stops a hung watch; the loop below waits for its tail to start.
+timeout 20 bash "$tools/familiar-watch.sh" "$fx/live.jsonl" > "$fx/live.out" & pid=$!
+for _ in $(seq 1 100); do pgrep -f "tail -n 0 -F $fx/live.jsonl" >/dev/null && break; timeout 0.1 tail -f /dev/null; done
 jq -nc '{type:"user",timestamp:"2026-11-03T10:00:01Z",message:{content:"late"}}' >> "$fx/live.jsonl"
 jq -nc '{type:"cost-state"}' >> "$fx/live.jsonl"
 wait $pid; code=$?
@@ -61,4 +61,19 @@ check "a live watch starts at the end, follows new lines and stops itself" '[ $c
 HANDOFF" ]'
 check "a stopped watch leaves no tail running" '! pgrep -f "tail -n 0 -F $fx/live.jsonl" >/dev/null'
 check "the watch needs a transcript" '! bash "$tools/familiar-watch.sh" 2>/dev/null'
+
+# S2's approved examples, held by the skill's words. They are plain regression
+# tests: the skill text was written before these tests, so they could not go red first.
+skill="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/productivity/familiar/SKILL.md"
+has() { grep -qF -- "$1" "$skill"; }
+# Given the watch is armed / When an event shows a misread, a gate left unopened, a check the user did by hand, or a missing tool / Then the note gains one coded line: the time, what happened, the fix, and where the fix lands
+check "S2 a snag is one coded line" 'has "adds one coded line to that session'"'"'s note: the time, what happened, the fix, and where the fix lands"'
+# Given the watch is armed / When an event shows work going as asked / Then the note gains nothing and the user gets no message
+check "S2 work going as asked adds nothing" 'has "A line that shows work going as asked adds nothing and sends the user nothing"'
+# Given the watch is armed / When the agent checks something in the watched repo / Then it only reads: it runs no git command that writes and edits no file in that checkout
+check "S2 a watched checkout is read only" 'has "In a watched checkout, only read: run no git command that writes, and edit no file there"'
+# Given the watch is armed / When the watch expires with the session still live / Then the agent arms it again in the same turn
+check "S2 an expired watch is armed again in the same turn" 'has "and again for each session still live, in the same turn"'
+# Given the note holds open lines / When the watch prints HANDOFF / Then each open line is built in the repo it belongs to, sent to that repo's session, or filed with a Waits on line, and the report lists every code with its outcome
+check "S2 a handoff works every open line and reports each code" 'has "Build each open line in the repo it belongs to, send it to that repo'"'"'s session with \`SendMessage\`, or file it with a \`Waits on:\` line. Then report every code and its outcome"'
 exit $fail
