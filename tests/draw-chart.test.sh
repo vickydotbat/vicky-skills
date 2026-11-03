@@ -3,7 +3,8 @@
 # hand. A blocker draws an edge, an open blocker elsewhere is a node of its
 # own, a ticket with no edge stacks in its kind's column, a closed ticket is
 # left out, and the frontier and the course get their classes. A star's premise
-# counts show in its label, a missing count as 0.
+# counts show in its label, a missing count as 0, and an unknown keeps it off
+# the frontier.
 set -u
 script="$(dirname "$0")/../plugins/vicky-skills/skills/engineering/lay-course/scripts/draw-chart.py"
 tickets=$(mktemp); trap 'rm -f "$tickets"' EXIT
@@ -33,5 +34,6 @@ echo '[{"key": "K-7", "kind": "star", "title": "Half", "open": true, "unknown": 
 out=$(python3 "$script" "$tickets")
 expect "K-7 star: Half (0 known, 2 unknown)"
 expect "K-8 star: Other (1 known, 0 unknown)"
+expect "  class T2 frontier"
 [ $fail -eq 0 ] && echo "ok   draw-chart builds edges, columns and classes from the tickets"
 exit $fail

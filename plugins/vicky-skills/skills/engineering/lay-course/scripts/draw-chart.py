@@ -10,10 +10,9 @@ Usage: draw-chart.py <tickets.json> [--course KEY,KEY] [--png <chart.png or char
 
 `kind` is the starchart label's kind, or "star". `blocked_by` names the
 open blockers only, on this chart or another. `related` names tickets the
-chart doesn't own. A star may also carry `"known": <n>, "unknown": <n>`, its
-premises counted from the Sensor log and the Knowns section; its label shows
-both, and one with an unknown left stays off the frontier. A black hole from the chart's Black holes section is an
-object of its own, {"black_hole": "...", "threatens": ["KEY-1"]}, drawn
+chart doesn't own. A star may carry `"known": <n>, "unknown": <n>`, shown in
+its label; an unknown above 0 keeps any ticket off the frontier. A black hole
+from the chart's Black holes section is an object of its own, {"black_hole": "...", "threatens": ["KEY-1"]}, drawn
 beside the open tickets it threatens and left out when none is open.
 
 Prints the Mermaid. With --png, also renders it with mermaid-cli, as PNG or
@@ -33,16 +32,18 @@ def label(text):
     return text.replace('"', "'").replace("[", "(").replace("]", ")")[:60]
 
 
+def premises(ticket):
+    if not {"known", "unknown"} & ticket.keys():
+        return ""
+    return f' ({ticket.get("known", 0)} known, {ticket.get("unknown", 0)} unknown)'
+
+
 def mermaid(tickets, course=()):
     holes = [t for t in tickets if "black_hole" in t]
     # The drawing shows the course ahead: closed tickets are the log, kept in the tracker.
     tickets = [t for t in tickets if "black_hole" not in t and t.get("open", True)]
     keys = {t["key"] for t in tickets}
     node = {t["key"]: f"T{n}" for n, t in enumerate(tickets, 1)}
-    def premises(t):
-        if "known" not in t and "unknown" not in t:
-            return ""
-        return f' ({t.get("known", 0)} known, {t.get("unknown", 0)} unknown)'
     lines = {t["key"]: f'{node[t["key"]]}["{t["key"]} {t.get("kind", "star").replace("-", " ")}: {label(t.get("title"))}{premises(t)}"]'
              for t in tickets}
     edges, others = [], {}
