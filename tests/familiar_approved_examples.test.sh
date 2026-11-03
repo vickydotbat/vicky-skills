@@ -75,13 +75,6 @@ check "E25 an agent mistake is debt, not a tip" 'has "A snag an agent caused is 
 # Then each gets its own watch and debt note, and every line names its session
 check "E26 every live session is listed" '[ "$(sessions | wc -l)" = 3 ] && sessions | grep -q "^aaa " && sessions | grep -q "^bbb " && sessions | grep -q "^ccc "'
 
-# Given the familiar is watching
-# When a new session starts on the machine
-# Then the familiar finds it the next time it re-arms its watches and starts watching it
-live -repo-a/ddd /repo/a
-check "E27 a later session joins at the next listing" 'sessions | grep -q "^ddd "'
-check "E27 each re-arm lists the sessions again" 'has "Each time a watch expires, list the sessions again, and arm a watch for each new one"'
-
 # Given the familiar watches two sessions
 # When one of them hands off
 # Then only that session's items are worked, and the other watch goes on

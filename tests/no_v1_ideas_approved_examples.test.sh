@@ -21,6 +21,10 @@ reason() { jq -nc --arg t "$fx/t.jsonl" '{stop_hook_active:false,transcript_path
 # When its reply offers that behaviour as a later ticket or a follow-up
 # Then the reply is stopped, and the agent writes the idea as one line in the Ideas place and says where it went
 check "E8 a new behaviour goes to the Ideas place the repo names" 'reason "$fx/named" | grep -q "one line in the Ideas place, the team wiki'"'"'s Ideas page, and say where it went"'
-check "E8 a repo with no Ideas line gets an Ideas section in the pull request body" 'reason "$fx/plain" | grep -q "one line in the Ideas place, an Ideas section in the pull request body, and say where it went"'
+
+# Given an agent building an effort finds a behaviour no approved example names
+# When its reply offers that behaviour as a later ticket or a follow-up
+# Then the steer sends it to the repo's Ideas: line when there is one, else to the Ideas place the user's own agent instructions name, else to an Ideas section in the pull request body
+check "Q2 a repo with no Ideas line leaves it to the user's own instructions, then the pull request body" 'reason "$fx/plain" | grep -qF "one line in the Ideas place your own agent instructions name, else in an Ideas section of the pull request body, and say where it went"'
 
 exit $fail
