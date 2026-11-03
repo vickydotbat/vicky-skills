@@ -5,13 +5,21 @@
 # "I recommend", "Pick:") and asks a question, the stop is blocked once with a
 # steer: take the pick now and say "Going with", or gate it with a
 # "🚪 Waiting on you" ask and a watch. A reply that already says "Going with"
-# or opens a gate goes through. It steers once per turn: with
+# or opens a gate goes through, unless the gate carries its pick and asks for
+# the answer in chat with no page link. It steers once per turn: with
 # stop_hook_active set, the reply goes through, so a misjudged one never loops.
 set -u
 case "${CLAUDE_PLUGIN_OPTION_GUARD_TAKE_PICK:-}" in true|1) ;; *) exit 0 ;; esac
 # shellcheck source=stop-reply.sh
 . "$(dirname "$0")/stop-reply.sh"
-grep -qiE "going with|🚪 waiting on you" <<<"$said" && exit 0
+grep -qi "going with" <<<"$said" && exit 0
+# A gate whose answer comes in chat waits unseen while the user works in
+# another window, so a gated pick asked in chat, with no page link, goes back.
+if grep -qi "🚪 waiting on you" <<<"$said"; then
+  grep -qiE "my pick|i recommend|\bpick:" <<<"$(prose)" && grep -qi "in chat" <<<"$said" && ! grep -qE "https?://" <<<"$said" || exit 0
+  jq -n '{decision:"block", reason:"You gated your own pick and asked for the answer in chat. The user watches the browser, not the chat, so this waits unseen. When the pick is cheap to undo, take it: write \"Going with <pick>\" and act on it. When only the user can answer, put the question on a page with the interactive-page skill and send its link."}'
+  exit 0
+fi
 grep -qiE "my pick|i recommend|\bpick:" <<<"$(prose)" || exit 0
 asks=$(printf '%s\n' "$said" | tr '\n' ' ' | sed 's/\([.?!]\) /\1\n/g' | grep -E '\?[[:space:]]*$|\?$')
 [ -n "$asks" ] || exit 0

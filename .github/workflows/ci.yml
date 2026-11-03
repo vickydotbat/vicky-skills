@@ -117,6 +117,8 @@ jobs:
         run: tests/no-v1.test.sh
       - name: Take the pick hook
         run: tests/take-pick.test.sh
+      - name: Take the pick, chat gates
+        run: tests/take_pick_chat_gate_approved_examples.test.sh
       - name: Stale-copy blame hook
         run: tests/stale-blame.test.sh
       - name: Refusals say nothing ran

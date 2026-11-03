@@ -39,9 +39,9 @@ stale-blame.sh	4084eb0a4362e5b2	7c9a7977af58fc4d	14/14
 stale-copy-hint.sh	4e663d08786adf6b	e4906875cc3efdb8	27/27
 step-guard.sh	91b9ada68f679e9b	9779fafd97b3a824	48/48
 step-hint.sh	cb169172a81fc295	8ed2c83e9b74beba	12/12
-stop-reply.sh	99b9252e2c6a5ea3	13b437d4f6edec2b	21/21
+stop-reply.sh	99b9252e2c6a5ea3	80f4845cbcae0eac	21/21
 summit.sh	a7326a54e5ec3ae0	5a3fb0d36b2a78e2	53/53
-take-pick.sh	541c758b7fb246d5	3196fcdc0f449a2f	15/15
+take-pick.sh	6963c779f575e40a	f32e702224d70ce0	23/23
 tea-stdin.awk	ddfdfc5257c31b06	c42cd9a509087fdd	70/70
 tea-stdin.sh	f87bda571fd8b318	e8f6a5280e53bbe8	15/15
 ticket-drift.sh	1bc60db2e95d9227	40aca047727a9167	36/36
