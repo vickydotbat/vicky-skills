@@ -7,7 +7,7 @@ description: Design how a window or screen looks with the user on a true-scale s
 
 > _Measure twice, build once: the sketch is the spec._
 
-A **sketch** is a draw.io drawing of one window at true scale, inside a frame the size of the user's screen. Each box has a label, a position, a size and properties such as `block="IconGrid"` and `cell="32"`. The approved sketch is the build's example: a repo's own test holds the build to it. Nothing generates code from it.
+A **sketch** is a draw.io drawing of one window at true scale, inside a frame the size of the user's screen. Each box has a label, a position, a size and properties such as `block="IconGrid"` and `cell="32"`. The approved sketch is the build's example: a repo's own test holds the build to it. Nothing generates code from it. <!-- kept 2026-11-03: the colour panel sketch was approved unchanged and the build worked first time -->
 
 The scripts are in this skill's `scripts/` folder. `board.py` makes, reads back and saves sketches. `fetch-drawio.sh` fetches the draw.io web app once, pinned and checked by hash, into the plugin's data folder.
 

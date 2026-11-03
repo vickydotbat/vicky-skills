@@ -78,6 +78,8 @@ When a skill you start opens with an epigraph (`> _..._` under its title), make 
 
 Offer two options at most, with a recommendation first. When the choice is cheap to undo and the user isn't still deciding, take the recommendation in the same reply and say so. Challenge a wrong assumption directly, with the reason.
 
+Before you move or delete files on an ask that names folders by role ("the backup", "the test folder"), state in one line what each folder holds afterwards, then act.
+
 A question to the user opens with what the thing does, in one plain line, before the options. Say how they answer: a word in chat, or the box to tick.
 
 ## Reporting
