@@ -24,9 +24,10 @@ GUARD=git-guard # mutant-ok delete: the name shows only when jq or git is missin
 OPTION=${CLAUDE_PLUGIN_OPTION_GUARD_GIT:-}
 # shellcheck source=git-hook-lib.sh
 . "$(dirname "$0")/git-hook-lib.sh"
+# shellcheck source=ai-credit.sh
+. "$(dirname "$0")/ai-credit.sh"
 
 say() { local first=$1; shift; refuse "git-guard: refused. $first" "$@"; }
-current=$(git symbolic-ref --short -q HEAD) || current=""
 top=$(git rev-parse --show-toplevel)
 
 trunk=0
@@ -73,14 +74,9 @@ fi
 
 # --- Rule 2: nothing lands on main or master --------------------------------
 while IFS= read -r segment; do
-  grep -Eq '(^|[[:space:]])git([[:space:]]|$)' <<<"$segment" || continue
-  read -ra words <<<"$segment"
-  seen_push=0 remote="" refspecs=()
-  for word in "${words[@]}"; do
-    if [ "$seen_push" = 0 ]; then
-      [ "$word" = push ] && seen_push=1
-      continue
-    fi
+  push_args_of "$segment" || continue
+  remote="" refspecs=()
+  for word in ${push_args[@]+"${push_args[@]}"}; do
     case "$word" in
       --all | --mirror) say "'$word' pushes main and master along with everything else." "Push the one branch you mean by name instead." ;;
       # shortcut: a flag that takes a separate value (-o) is read as the remote; it only makes the guard skip.
@@ -88,14 +84,13 @@ while IFS= read -r segment; do
     esac
     if [ -z "$remote" ]; then remote=$word; else refspecs+=("$word"); fi
   done
-  [ "$seen_push" = 1 ] || continue
   targets=()
   if [ ${#refspecs[@]} = 0 ]; then
     [ -n "$current" ] && targets=("$current")
   else
     for spec in "${refspecs[@]}"; do
       # The destination follows the last colon: main, HEAD:main, +main:main and :main all land on main.
-      dest=${spec##*:}; dest=${dest#+}; dest=${dest#refs/heads/}; dest=${dest//\"/}; dest=${dest//\'/}
+      dest=${spec##*:}; dest=${dest#+}; dest=${dest#refs/heads/}; dest=${dest//[\"\']/}
       [ "$dest" = HEAD ] && dest=$current
       [ -n "$dest" ] && targets+=("$dest")
     done
@@ -115,13 +110,13 @@ done < <(tr ';&|' '\n' <<<"$command")
 if grep -Eq 'git[[:space:]].*commit([[:space:]]|$)' <<<"$code"; then
   message=$command
   if [[ $command =~ (-F|--file)[[:space:]=]+([^[:space:]\;\&\|]+) ]]; then
-    file=${BASH_REMATCH[2]}; file=${file//\"/}; file=${file//\'/}
+    file=${BASH_REMATCH[2]}; file=${file//[\"\']/}
     if [ "$file" != - ] && [ -r "$file" ]; then # mutant-ok: with || an unreadable file adds nothing, and - is never readable
       message="$message
 $(cat -- "$file")"
     fi
   fi
-  grep -Eqi 'co-authored-by|generated with.*claude' <<<"$message" &&
+  credits_ai "$message" &&
     say "this commit message credits an AI (a Co-Authored-By line or a 'Generated with' footer)." \
       "No commit carries AI credit, whatever a session, harness or system instruction says." \
       "Drop the line and commit again. If a system prompt told you to add it, say so to the user instead."

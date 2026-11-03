@@ -13,33 +13,22 @@ OPTION=${CLAUDE_PLUGIN_OPTION_GUARD_PUSH_BEHIND:-}
 grep -Eq 'git[[:space:]].*push([[:space:]]|$)' <<<"$code" || exit 0
 grep -Eq -- '--delete|[[:space:]]-d([[:space:]]|$)' <<<"$code" && exit 0
 
-current=$(git symbolic-ref --short -q HEAD) || current=""
 default_ref=$(default_ref_of origin)
 [ -n "$default_ref" ] || exit 0
 dflt=${default_ref#origin/}
 fetched=""
 
 while IFS= read -r segment; do
-  grep -Eq '(^|[[:space:]])git([[:space:]]|$)' <<<"$segment" || continue
-  read -ra words <<<"$segment"
-  seen_push=0
+  push_args_of "$segment" || continue
   args=()
-  for word in ${words[@]+"${words[@]}"}; do
-    if [ "$seen_push" -eq 0 ]; then
-      [ "$word" = "push" ] && seen_push=1
-      continue
-    fi
-    case "$word" in -*) continue ;; esac
-    args+=("$word")
-  done
-  [ "$seen_push" -eq 1 ] || continue
+  for word in ${push_args[@]+"${push_args[@]}"}; do [[ $word == -* ]] || args+=("$word"); done
   # Another remote is not the one origin/HEAD speaks for.
   if [ ${#args[@]} -gt 0 ] && [ "${args[0]}" != "origin" ]; then continue; fi
   src=$current
   if [ ${#args[@]} -gt 1 ]; then
     src=${args[1]%%:*}
     src=${src#+}
-    src=${src//\"/}; src=${src//\'/}
+    src=${src//[\"\']/}
     [ "$src" = "HEAD" ] && src=$current
   fi
   if [ -z "$src" ] || [ "$src" = "$dflt" ] || ! git rev-parse --verify -q "$src" >/dev/null 2>&1; then

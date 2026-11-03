@@ -55,7 +55,7 @@ SURVIVORS = os.path.join(ROOT, "tests", ".mutation-survivors")
 # loops while it grows a string dies here, not at its timeout with the
 # machine's memory full.
 MUTANT_MEMORY = 2**30
-GIT_GUARDS = ["push-behind-guard", "merged-branch-guard", "local-path-guard", "checkout_guard_approved_examples", "red_first_approved_examples"]
+GIT_GUARDS = ["git-guard", "git_guard_approved_examples", "push-behind-guard", "merged-branch-guard", "local-path-guard", "checkout_guard_approved_examples", "red_first_approved_examples"]
 TESTS = {
     "after-push.sh": ["after-push"],
     "familiar-voice.sh": ["familiar_approved_examples", "familiar"],
@@ -72,6 +72,7 @@ TESTS = {
     "windowed-browser-guard.sh": ["windowed-browser-guard"],
     "gate-notify.sh": ["gate-notify"],
     "git-hook-lib.sh": GIT_GUARDS,
+    "ai-credit.sh": ["git-guard", "git_guard_approved_examples", "pr-guard", "pr_guard_ai_credit_approved_examples"],
     "heredoc-strip.awk": GIT_GUARDS + ["pr-guard", "issue-guard", "poll-pace", "poll_pace_heredoc_approved_examples", "heavy-run-guard"],
     "quote-mask.awk": ["pr-guard"],
     "issue-guard.sh": ["issue-guard", "refusal-note"],
