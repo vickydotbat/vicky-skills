@@ -14,7 +14,7 @@ gate-state-guard.sh	7e37c0f1a4c05600	f749f5a5be295418	58/58
 git-hook-lib.sh	f25de8ab0c937544	a602f2c80770a824	32/32
 heavy-run-guard.sh	4be27ef4b8a0515a	b5f00e44f10c17ae	19/19
 heavy-run.awk	8e6dafb1ed8ce4a5	10193be2e74e4fef	86/86
-heredoc-strip.awk	6fa4caa108d2e5b7	9ebbe999cb95fa28	6/6
+heredoc-strip.awk	6fa4caa108d2e5b7	8f1c320e76bd1fee	6/6
 issue-guard.sh	e8ffbfff391d14cc	6f490654bb2880c8	21/21
 lesson-hint.sh	0676042cac15d671	e0a77c2071efc0d9	11/11
 lesson-ledger.sh	4c88dc2d0aebcfe6	d2ba70af1a7b0549	18/18
@@ -24,7 +24,7 @@ mutation-proof-guard.sh	6ffab5f0bf646579	e0d644b2fb0ebca8	22/22
 no-v1.sh	3e35d6f6b818d161	e38df41f702febeb	28/28
 plane-block-guard.sh	e73db5047568c280	0edf6d31c1de0604	14/14
 plugin-data.sh	b183a483ba56dfc4	4e9e25c6ada3ffea	3/3
-poll-pace.sh	e9a3c1a74e8c79dd	ed8a16d00ca23482	26/26
+poll-pace.sh	c024e91e30210e5a	a0b17e870d220288	28/28
 pr-guard.sh	4b1e277b47d09d57	695c4590717bb83c	113/113
 push-behind-guard.sh	1e8f867bbe25ccbe	71d33fd4c06832e8	52/52
 quote-mask.awk	b04578521f7edc95	46fe534eb24a7a20	52/52
