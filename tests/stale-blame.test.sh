@@ -38,6 +38,14 @@ done
 check "a denied blame goes through" 'passes'
 { user "go"; text "The run loaded 3fa9c1, the release is 91bd07, so your hak is stale."; } > "$fx/t.jsonl"
 check "a six-character hash pair goes through" 'passes'
+for p in "Your haks might be behind." "Make sure you've pulled the new hak before retesting." "Probably a caching issue on your end." "The client is likely still on the old files." "Did you update?"; do
+  { user "go"; text "$p"; } > "$fx/t.jsonl"
+  check "each blame form counts: $p" 'blocked'
+done
+for p in "I suspect you are running an outdated build." "The haks on your machine haven't been refreshed."; do
+  { user "go"; text "$p"; } > "$fx/t.jsonl"
+  check "each blame form counts: $p" 'blocked'
+done
 # Given a reply with proof, or one that blames nothing of the user's
 # When the agent stops
 # Then it goes through

@@ -12,9 +12,9 @@ set -u
 case "${CLAUDE_PLUGIN_OPTION_GUARD_STALE_BLAME:-true}" in false|0) exit 0 ;; esac
 # shellcheck source=stop-reply.sh
 . "$(dirname "$0")/stop-reply.sh"
-copy='(the[[:space:]]+[a-z-]+[[:space:]]+you[[:space:]]+(have|run|ran|are[[:space:]]+on)|you[[:space:]]+(were|are)[[:space:]]+on|your([[:space:]]+[a-z-]+){0,2}[[:space:]]+(hak|haks|client|build|builds|cache|install|copy|files?|game|checkout|module|assets?|artefacts?|artifacts?))\b'
-blame='\b(stale|old|older|outdated|out[ -]of[ -]date|update|updated|redownload|re-download|reinstall|restart|refresh|rebuild|clear|reload|reloading|latest|previous|newer)\b'
-blamed=$(prose | tr '\n' ' ' | sed 's/\([.?!]\) /\1\n/g' | grep -iE "$copy" | grep -iE "$blame" | grep -viE "\b(not|no|nothing|never|nor)\b|n.t\b")
+copy='(you(.re|[[:space:]]+are)[[:space:]]+running|on[[:space:]]+your[[:space:]]+(machine|end|side)|\bthe[[:space:]]+client\b|\byou(.ve|[[:space:]]+have)?[[:space:]]+(re-?)?(update|pull|pulled|download|reload|restart|relaunch|clear)|the[[:space:]]+[a-z-]+[[:space:]]+you[[:space:]]+(have|run|ran|are[[:space:]]+on)|you[[:space:]]+(were|are)[[:space:]]+on|your([[:space:]]+[a-z-]+){0,2}[[:space:]]+(hak|haks|client|build|builds|cache|install|copy|files?|game|checkout|module|assets?|artefacts?|artifacts?))\b'
+blame='\b(stale|old|older|outdated|out[ -]of[ -]date|update|updated|redownload|re-download|reinstall|restart|refresh|rebuild|clear|reload|reloading|latest|previous|newer|behind|pull|pulled|re-pull|re-pulling|relaunch|new|caching|newest|refreshed)\b'
+blamed=$(prose | tr '\n' ' ' | sed 's/\([.?!]\) /\1\n/g' | grep -iE "$copy" | grep -iE "$blame" | grep -viE "\b(not|no|nothing|never|nor)\b")
 [ -n "$blamed" ] || exit 0
 # Proof: a hash (six or more hex characters, digits and letters both, so
 # a date or a clock time is none) or a logged version (the word version, then
