@@ -199,6 +199,10 @@ jobs:
         run: tests/draft_lock_python_approved_examples.test.sh
       - name: open-draft marks a draft opened as a page
         run: tests/open-draft-page.test.sh
+      - name: drawing-board fetches draw.io only at its pinned hash
+        run: tests/fetch-drawio.test.sh
+      - name: drawing-board sketches and the page's drawing section
+        run: tests/drawing_board_approved_examples.test.sh
       - name: Red-first decisions
         run: tests/red-first.test.sh
       - name: Step guard decisions
