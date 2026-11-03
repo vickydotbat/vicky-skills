@@ -72,6 +72,24 @@ OWNER=999999999 hook R PostToolUse "git status"
 if [ -e "$data/checkouts/R.pid" ]; then echo "FAIL a process with no start time writes no process record"; fail=1; else echo "ok   a process with no start time writes no process record"; fi
 expect "a record with no process record still refuses" 2 S "git commit --allow-empty -m x"
 
+# The session that came to a checkout first keeps committing there. A
+# newcomer that only reads blocks nothing, and its own write is refused.
+rm -rf "$data"
+hook T PostToolUse "git status"
+sed -i "s/\t[0-9]*\$/\t$(( $(date +%s) - 600 ))/" "$data/checkouts/T.first"
+hook U PostToolUse "git log -1"
+expect "the first session's commit runs past a newcomer that only read" 0 T "git commit --allow-empty -m x"
+expect "the newcomer's commit is refused" 2 U "git commit --allow-empty -m x"
+expect "the first session's branch switch is still refused" 2 T "git switch fix-x"
+expect "the newcomer's worktree on a branch of its own runs" 0 U "git worktree add -b inv-1 .claude/worktrees/inv-1 HEAD"
+hook U2 PostToolUse "git status"
+cp "$data/checkouts/U2.first" "$data/checkouts/U3.first"; cp "$data/checkouts/U2" "$data/checkouts/U3"
+expect "of two sessions that came in the same second, a commit is refused" 2 U2 "git commit --allow-empty -m x"
+rm -f "$data/checkouts/U.first" "$data/checkouts/U2.first" "$data/checkouts/U3.first"
+expect "a record from before first times were kept still refuses the first session" 2 T "git commit --allow-empty -m x"
+hook T SessionEnd ""
+if [ -e "$data/checkouts/T.first" ]; then echo "FAIL SessionEnd deletes the first-time record"; fail=1; else echo "ok   SessionEnd deletes the first-time record"; fi
+
 # A session that starts conn hands the checkout on until its user speaks again.
 prompt() { # session prompt; the hook exits 0 and prints nothing
   out=$(jq -n --arg s "$1" --arg p "$2" --arg d "$repo" '{session_id: $s, hook_event_name: "UserPromptSubmit", prompt: $p, cwd: $d}' |

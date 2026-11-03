@@ -7,7 +7,9 @@
 # without SessionEnd (its terminal closed) is dropped once that process is
 # gone. A prompt that starts the conn skill writes "<session>.handoff": that
 # session handed the work on, so its record stops counting until the user's
-# next prompt to it. A branch switch is refused while
+# next prompt to it. "<session>.first" keeps when the session first ran git in
+# each checkout: the session that came first keeps committing there, and a
+# newcomer is sent to a worktree of its own. A branch switch is refused while
 # another session used the checkout in the last 12 hours, and a session whose
 # checkout moved to another branch since its last git command is told once. A
 # git command that writes history there (commit, rebase, reset, merge,
@@ -24,7 +26,7 @@ session=$(jq -r '.session_id // empty' <<<"$payload" | tr -cd 'A-Za-z0-9_-')
 records="$CLAUDE_PLUGIN_DATA/checkouts"
 mine="$records/$session"
 event=$(jq -r '.hook_event_name // empty' <<<"$payload")
-if [ "$event" = SessionEnd ]; then rm -f "$mine" "$mine.pid" "$mine.handoff"; exit 0; fi
+if [ "$event" = SessionEnd ]; then rm -f "$mine" "$mine.pid" "$mine.handoff" "$mine.first"; exit 0; fi
 if [ "$event" = UserPromptSubmit ]; then
   if jq -r '.prompt // empty' <<<"$payload" | head -1 | grep -Eq '^[[:space:]]*/([A-Za-z0-9_-]+:)?conn([[:space:]]|$)'; then
     mkdir -p "$records" && : > "$mine.handoff"
@@ -71,6 +73,10 @@ remember() {
   mkdir -p "$records" || return
   { grep -v "^$top	" "$mine" 2>/dev/null; printf '%s\t%s\t%s\n' "$top" "$branch" "$now"; } > "$mine.new" && mv "$mine.new" "$mine"
   [ -e "$mine.pid" ] || { owner > "$mine.pid" || rm -f "$mine.pid"; }
+  [ -n "$(first "$mine")" ] || printf '%s\t%s\n' "$top" "$now" >> "$mine.first"
+}
+first() { # record -> when its session first ran git in this checkout
+  awk -F '\t' -v t="$top" '$1 == t {print $2; exit}' "$1.first" 2>/dev/null
 }
 if [ "$event" = PostToolUse ]; then remember; exit 0; fi
 
@@ -117,14 +123,18 @@ writes=$(awk '{
 if [ -n "$switch$writes" ]; then
   for other in "$records"/*; do
     [ -f "$other" ] && [ "$other" != "$mine" ] || continue
-    case "$other" in *.pid|*.new|*.handoff) continue ;; esac
+    case "$other" in *.pid|*.new|*.handoff|*.first) continue ;; esac
     [ -e "$other.handoff" ] && continue
-    if gone "$other"; then rm -f "$other" "$other.pid"; continue; fi
+    if gone "$other"; then rm -f "$other" "$other.pid" "$other.first"; continue; fi
     line=$(awk -F '\t' -v t="$top" '$1 == t' "$other")
     when=${line##*	}; theirs=$(cut -f2 <<<"$line")
     case "$when" in ''|*[!0-9]*) continue ;; esac
     [ $((now - when)) -lt 43200 ] || continue
+    if [ -z "$switch" ]; then
+      ours=$(first "$mine"); came=$(first "$other")
+      [ -n "$ours" ] && [ -n "$came" ] && [ "$ours" -lt "$came" ] && continue # mutant-ok: with no first time of our own the comparison fails the same way, only louder
+    fi
     refuse "$GUARD: another session works this checkout on branch $theirs (its last git command was $(( (now - when) / 60 )) minutes ago). ${switch:+Switching would move its files.}${writes:+Writing history here would land on its branch.}" \
-      "Use your own worktree instead: git worktree add .claude/worktrees/<branch> <branch>"
+      "Work on a branch of your own in its own worktree: git worktree add -b <branch> .claude/worktrees/<branch> origin/main. When your work belongs on $theirs, ask the user to hand that session off with /conn first."
   done
 fi
