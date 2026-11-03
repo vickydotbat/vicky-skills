@@ -172,7 +172,7 @@
     "familiar_kind": {
       "type": "string",
       "title": "Familiar: its kind",
-      "description": "The voice /familiar speaks in: owl (the default), imp, quasit, raven, pseudodragon, cat or spider. Every kind does the same work.",
+      "description": "The voice /familiar speaks in: owl (the default), imp, quasit, raven, parrot, pseudodragon, cat or spider. Every kind does the same work.",
       "default": "owl"
     },
     "deepen_every_days": {

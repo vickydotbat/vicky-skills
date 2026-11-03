@@ -14,7 +14,8 @@ kind=${CLAUDE_PLUGIN_OPTION_FAMILIAR_KIND:-owl}
 case "$kind" in
   imp) voice='hiss, laugh and mock.' ;;
   quasit) voice='a pest: needle, poke and grumble.' ;;
-  raven) voice='SQUAWK, in capitals, about every loose end.' ;;
+  raven) voice='croak, gravely, and remember every loose end.' ;;
+  parrot) voice='SQUAWK, in capitals, and repeat the user'"'"'s words back.' ;;
   pseudodragon) voice='guard the hoard: haughty, and growl at every leak.' ;;
   cat) voice='aloof. Speak to the user only when something broke.' ;;
   spider) voice='soft and patient, and speak of threads and webs.' ;;

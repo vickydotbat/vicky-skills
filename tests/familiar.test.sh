@@ -22,7 +22,7 @@ check "a tool call that quotes /familiar starts nothing" '[ -z "$(voice "go" "$f
 check "a missing transcript starts nothing" '[ -z "$(voice "go")" ]'
 check "/familiar typed with words after it counts" 'voice "/familiar watch closely" | grep -q "owl familiar"'
 check "a word that starts with familiar is no command" '[ -z "$(voice "/familiarity")" ]'
-for k in imp:hiss quasit:pest raven:SQUAWK pseudodragon:hoard cat:aloof spider:threads owl:quiet; do
+for k in imp:hiss quasit:pest raven:croak parrot:SQUAWK pseudodragon:hoard cat:aloof spider:threads owl:quiet; do
   check "the ${k%%:*} has its own voice" 'KIND=${k%%:*} voice /familiar | grep -q "You are the ${k%%:*} familiar: .*${k#*:}"'
 done
 check "an unknown kind speaks as the owl" 'KIND=dragon voice /familiar | grep -q "You are the owl familiar"'
