@@ -4,10 +4,16 @@
 # sketches; page.py serves a sketch as a drawing section and takes back the
 # messages draw.io's embed mode sends (autosave XML, an exported PNG).
 set -u
+# No test may reach the user's own editor or browser.
+export VISUAL=true EDITOR=true BROWSER=true
 root="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/productivity"
 board="$root/drawing-board/scripts/board.py"
 pagepy="$root/interactive-page/scripts/page.py"
 dir=$(mktemp -d)
+# page.py reads the desktop's environment through systemctl: this one names the fake browser.
+mkdir -p "$dir/desktop"
+printf '#!/usr/bin/env bash\necho "BROWSER=true"\n' > "$dir/desktop/systemctl"; chmod +x "$dir/desktop/systemctl"
+export PATH="$dir/desktop:$PATH"
 pids=()
 cleanup() { for p in "${pids[@]}"; do kill "$p" 2>/dev/null; done; rm -rf "$dir"; }
 trap cleanup EXIT

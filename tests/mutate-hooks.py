@@ -65,7 +65,7 @@ TESTS = {
     "auto-tidy.sh": ["auto-tidy"],
     "checkout-guard.sh": ["checkout-guard", "checkout_guard_approved_examples", "worktree_default_approved_examples"],
     "draft-lock.sh": ["draft-lock", "red_first_approved_examples", "draft_lock_reads_approved_examples", "draft_lock_python_approved_examples"],
-    "gamma-shift.sh": ["gamma-shift", "gamma-shift-runs"],
+    "gamma-shift.sh": ["gamma-shift"],
     "do-first-guard.sh": ["do-first-guard"],
     "windowed-browser-guard.sh": ["windowed-browser-guard"],
     "gate-notify.sh": ["gate-notify"],

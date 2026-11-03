@@ -3,10 +3,16 @@
 # the draft in the browser, and leaves it blank for an editor, so draft-lock
 # can say where the draft is open.
 set -u
+# No test may reach the user's own editor or browser.
+export VISUAL=true EDITOR=true BROWSER=true
 root="$(cd "$(dirname "$0")/.." && pwd)"
 open="$root/plugins/vicky-skills/skills/productivity/interactive-page/scripts/open-draft.sh"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 git init -q "$dir/repo"
+# page.py reads the desktop's environment through systemctl: this one names the fake browser.
+mkdir -p "$dir/desktop"
+printf '#!/usr/bin/env bash\necho "BROWSER=true"\n' > "$dir/desktop/systemctl"; chmod +x "$dir/desktop/systemctl"
+export PATH="$dir/desktop:$PATH"
 # The stand-in editor copies the lock while it is open, then exits.
 printf '#!/usr/bin/env bash\ncp "%s/repo/.git/red-pen-open" "%s/seen"\n' "$dir" "$dir" > "$dir/editor"; chmod +x "$dir/editor"
 printf '# Drafts\n' > "$dir/draft.md"
