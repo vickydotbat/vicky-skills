@@ -38,7 +38,7 @@ check "a session quiet for two days is not live" '! grep -q "^old " <<<"$out"'
 check "a session resumed after it ended is live again" 'grep -q "^resumed " <<<"$out"'
 # Claude Code keeps a record per running session, naming its process. Where
 # those records exist, a session whose process has ended is not live.
-mkdir -p "$fx/records"; sleep 300 & dead=$!; kill "$dead"; wait "$dead" 2>/dev/null
+mkdir -p "$fx/records"; dead=$(bash -c 'echo $$')
 jq -nc --argjson p $$ '{pid:$p, sessionId:"new"}' > "$fx/records/1.json"
 jq -nc --argjson p "$dead" '{pid:$p, sessionId:"resumed"}' > "$fx/records/2.json"
 out=$(FAMILIAR_SESSIONS_DIR="$fx/records" FAMILIAR_PROJECTS_DIR="$fx/projects" CLAUDE_CODE_SESSION_ID=x bash "$tools/familiar-sessions.sh")
