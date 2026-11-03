@@ -3,11 +3,15 @@
 # draft is open, an edit with no path, and what a refusal names.
 set -u
 # No test may reach the user's own editor.
-export VISUAL=true EDITOR=true
+export VISUAL=true EDITOR=true BROWSER=true
 root="$(cd "$(dirname "$0")/.." && pwd)"
 hook="$root/plugins/vicky-skills/scripts/draft-lock.sh"
 opener="$root/plugins/vicky-skills/skills/productivity/interactive-page/scripts/open-draft.sh"
-dir=$(mktemp -d); trap 'kill "$(head -1 "$lock" 2>/dev/null)" 2>/dev/null; rm -rf "$dir"' EXIT
+dir=$(mktemp -d); mkdir -p "$dir/desktop"
+# The fake desktop names the fake browser, so nothing reaches the user's own.
+printf '#!/usr/bin/env bash\necho "BROWSER=true"\n' > "$dir/desktop/systemctl"; chmod +x "$dir/desktop/systemctl"
+export PATH="$dir/desktop:$PATH"
+trap 'kill "$(head -1 "$lock" 2>/dev/null)" 2>/dev/null; rm -rf "$dir"' EXIT
 repo="$dir/repo"; git init -q "$repo"; mkdir -p "$repo/scripts"; printf 'x\n' > "$repo/scripts/c.sh"
 # The stand-in editor outlives the slowest run; the trap above stops it.
 printf '#!/bin/sh\nexec sleep 900\n' > "$dir/editor"; chmod +x "$dir/editor"
