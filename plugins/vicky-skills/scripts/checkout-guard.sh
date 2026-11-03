@@ -25,7 +25,11 @@ if [ "$event" = SessionEnd ]; then rm -f "$mine"; exit 0; fi
 
 # The library exited outside a repository, so this always finds one.
 top=$(git rev-parse --show-toplevel)
-branch=$(git symbolic-ref --short -q HEAD || git rev-parse --short HEAD)
+# A rebase in progress detaches HEAD but stays on the branch it rebases.
+gitdir=$(git rev-parse --absolute-git-dir)
+rebasing=$(cat "$gitdir/rebase-merge/head-name" "$gitdir/rebase-apply/head-name" 2>/dev/null | head -1)
+branch=${rebasing#refs/heads/}
+[ -n "$branch" ] || branch=$(git symbolic-ref --short -q HEAD || git rev-parse --short HEAD)
 now=$(date +%s)
 remember() {
   mkdir -p "$records" || return
