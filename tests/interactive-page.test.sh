@@ -218,6 +218,13 @@ html=$(render <"$scratch/cards.md")
 check "inline code, bold and italics draw as Markdown" 'grep -q "<code>the client</code>" <<<"$html" && grep -q "<strong>look</strong>" <<<"$html" && grep -q "<em>sheet</em>" <<<"$html" && ! grep -q "\`" <<<"$html"'
 check "an item is a card with its action, expected result and meta lines" 'grep -q "<div class=card><div class=act>1. Spawn <code>i_paper</code></div>" <<<"$html" && grep -q "<div class=exp>→ the <em>sheet</em> shows</div>" <<<"$html" && grep -q "<div class=meta>kit: <code>/runscript paper</code></div>" <<<"$html"'
 check "the legend becomes the mark labels and leaves the page body" 'grep -q "value=\"x\"> completed as expected</label>" <<<"$html" && ! grep -q "Mark each item" <<<"$html" && ! grep -qF "[x]" <<<"$html"'
+# The page owns the four labels: a hand-typed legend that drops one still
+# shows all four, and a checklist with no legend at all shows them too.
+html=$(sed 's/\[-\] failed to complete/[ ] failed to complete/' "$scratch/cards.md" | render)
+check "a legend typed wrong still labels every mark" 'grep -q "value=\"-\"> failed to complete</label>" <<<"$html" && grep -q "value=\" \"[^>]*> not tested at all</label>" <<<"$html" && ! grep -q "Mark each item" <<<"$html"'
+html=$(grep -v "^Mark each item" "$scratch/cards.md" | render)
+check "a checklist with no legend still labels every mark" 'grep -q "value=\"~\"> completed with changes</label>" <<<"$html" && ! grep -qF "[-]" <<<"$html"'
+html=$(render <"$scratch/cards.md")
 check "signed off and proven by fold into one collapsed header" '[ "$(grep -c "<summary>Signed off and proven by" <<<"$html")" = 1 ] && grep -q "<code>health.sh</code>" <<<"$html"'
 check "quick notes fold into a block that opens when a note is filled" 'grep -q "<details class=quick open><summary>Quick notes" <<<"$html" && grep -q "IDEA: <input type=text name=\"field.2\" value=\"later\">" <<<"$html"'
 blank=$(sed 's/^- IDEA: later$/- IDEA:/' "$scratch/cards.md" | render)

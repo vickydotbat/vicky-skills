@@ -38,6 +38,9 @@ import webbrowser
 
 LIMIT = 1024 * 1024
 MARKS = ["x", "~", "-", " "]
+# The page owns each mark's label, so a legend line typed by hand can never
+# drop or swap one.
+LABELS = {"x": "completed as expected", "~": "completed with changes", "-": "failed to complete", " ": "not tested at all"}
 STYLE = """:root{color-scheme:light dark}
 body{font-family:sans-serif;margin:1.5rem;max-width:60rem}
 textarea{width:100%;min-height:4rem;font-family:monospace}
@@ -88,7 +91,6 @@ ns.forEach(n=>send(n,{action:"export",format:"png",xml:document.getElementsByNam
 
 
 INLINE = re.compile(r"`([^`]+)`|\*\*([^*]+)\*\*|(?<![\w*])\*([^*\s][^*]*)\*(?![\w*])|(?<!\w)_([^_\s][^_]*)_(?!\w)")
-LEGEND = re.compile(r"\[(.)\] ([^,.\[]+)")
 HEADER = ("signed off:", "proven by:")
 META = re.compile(r"^\s+(person|kit):\s*(.*)$")
 
@@ -108,14 +110,6 @@ def inline(text):
         at = m.end()
     out.append(html.escape(text[at:]))
     return "".join(out)
-
-
-def legend(parts):
-    """The mark labels a "Mark each item: [x] ..., [~] ..." line gives, by mark."""
-    for part in parts:
-        if part[0] == "line" and part[1].startswith("Mark each item:"):
-            return {m: label.strip() for m, label in LEGEND.findall(part[1])}
-    return {}
 
 
 def fence_end(lines, start):
@@ -187,7 +181,6 @@ def numbered(parts):
 
 def page(name, parts):
     e = html.escape
-    labels = legend(parts)
     out = [f"<!doctype html><meta charset=utf-8><title>{e(name)}</title><style>{STYLE}</style><script>{ZOOM}</script>",
            '<form method=post action="/done" onsubmit="return done(event)">', f"<script>{DRAWING_JS}</script>"]
     home = os.environ.get("DRAWIO_HOME", "")
@@ -212,7 +205,7 @@ def page(name, parts):
                 close()
                 level = min(len(line) - len(line.lstrip("#")), 6)
                 out.append(f"<h{level}>{inline(line.lstrip('#').strip())}</h{level}>")
-            elif line.startswith("Mark each item:") and labels:
+            elif line.startswith("Mark each item:"):
                 continue
             elif line.startswith(HEADER):
                 # Signed off and proven by fold into one small header, where the first stands.
@@ -260,7 +253,7 @@ def page(name, parts):
             action, _, expect = part[3].partition("→")
             radios = "".join(
                 f'<label><input type=radio name="mark.{n}" value="{e(m)}"{" checked" if m == part[2] else ""}> '
-                f'{e(labels.get(m, f"[{m}]"))}</label>' for m in MARKS)
+                f'{e(LABELS[m])}</label>' for m in MARKS)
             out.append(f'<div class=card><div class=act>{e(part[1])}{inline(action.strip())}</div>')
             if expect.strip():
                 out.append(f"<div class=exp>→ {inline(expect.strip())}</div>")
