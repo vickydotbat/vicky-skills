@@ -16,6 +16,19 @@ cwd=$(jq -r '.cwd // empty' <<<"$payload")
 tool=$(jq -r '.tool_name // empty' <<<"$payload")
 if [ "$tool" = Bash ]; then
   command=$(jq -r '.tool_input.command // empty' <<<"$payload")
+  # A variable the command sets to an absolute path stands for that path:
+  # S=/tmp/x; ls > $S/out writes to /tmp/x/out. Any other variable stays as
+  # written, so its redirect counts as one into the checkout.
+  given=$command
+  while IFS='=' read -r name value; do
+    # A name set twice, or a path that climbs with .., could still land in
+    # the checkout, so its variable stays as written.
+    [ "$(grep -cE "(^|[[:space:];&|(])$name=" <<<"${given//[;&|]/$'\n'}")" = 1 ] || continue
+    case "$value" in *..*) continue ;; esac
+    # The value holds no & (the pattern below leaves it out), so only a
+    # backslash needs escaping for sed.
+    command=$(sed -E "s"$'\x01'"[\$][{]?$name[}]?([^A-Za-z0-9_]|\$)"$'\x01'"${value//\\/\\\\}\\1"$'\x01'"g" <<<"$command")
+  done < <(grep -oE "(^|[[:space:];&|(])[A-Za-z_][A-Za-z0-9_]*=['\"]?/[^[:space:];&|()'\"]*" <<<"$command" | sed -E "s/^[[:space:];&|(]//; s/['\"]//g")
   # A stream sent to another stream (2>&1) or to /dev/null writes no file.
   command=$(sed -E 's#[0-9&]*>>?[[:space:]]*(&[0-9-]|/dev/null)##g' <<<"$command")
   # An interpreter's own code that holds no write call (open for writing, a
