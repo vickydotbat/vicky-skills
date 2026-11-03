@@ -12,6 +12,7 @@ fetch-place-hint.sh	3573b2f17e94944d	0e74547181db6738	12/12
 gamma-shift.sh	bf7b0a15b596e9fc	b2eae1b03e7c8c60	12/12
 gate-notify.sh	7ba893f680c5d672	42870013382a35b5	25/25
 gate-state-guard.sh	a99c69b88e522075	79729f637a6f7947	58/58
+git-guard.sh	6e5330fcbfe0d733	147e8989b955e705	66/66
 git-hook-lib.sh	f25de8ab0c937544	6b260bda56f010b1	32/32
 heavy-run-guard.sh	dbdeec27de6f67ac	d458d47a51a3c609	23/23
 heavy-run.awk	29bae3f6c7302160	26909cd12624ae9c	90/90
