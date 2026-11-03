@@ -6,7 +6,9 @@
 # Usage: lesson-ledger.sh add <home> <snag>
 #        lesson-ledger.sh since <UTC time, such as 2026-10-31T12:00:00Z>
 set -u
-[ -n "${CLAUDE_PLUGIN_DATA:-}" ] || { echo "lesson-ledger: CLAUDE_PLUGIN_DATA is not set" >&2; exit 2; }
+# shellcheck source=plugin-data.sh
+. "$(dirname "$0")/plugin-data.sh"
+[ -n "${CLAUDE_PLUGIN_DATA:-}" ] || { echo "lesson-ledger: no plugin data folder: CLAUDE_PLUGIN_DATA is not set, and this copy is not an installed one" >&2; exit 2; }
 file="$CLAUDE_PLUGIN_DATA/lessons.tsv"
 case "${1:-}" in
   add)

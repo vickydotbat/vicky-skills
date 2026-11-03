@@ -95,6 +95,7 @@ TESTS = {
     "todo-reminder.sh": ["todo-reminder", "todo_reminder_approved_examples"],
     "springboard.sh": ["springboard", "springboard_approved_examples", "summit_approved_examples"],
     "summit.sh": ["summit", "summit_approved_examples"],
+    "plugin-data.sh": ["summit", "lesson-ledger"],
     "no-v1.sh": ["no-v1", "no_v1_approved_examples"],
     "stop-reply.sh": ["take-pick", "no-v1", "no_v1_approved_examples"],
     "take-pick.sh": ["take-pick", "do_confirm_approved_examples", "gate_home_approved_examples", "no_v1_approved_examples"],

@@ -16,12 +16,13 @@ heavy-run.awk	8e6dafb1ed8ce4a5	42387d9503a22aa5	86/86
 heredoc-strip.awk	6fa4caa108d2e5b7	2f5165f4ec67dd2b	6/6
 issue-guard.sh	70b80cdfa628e1dd	9a50d57449e77aef	21/21
 lesson-hint.sh	0676042cac15d671	d44dcc20b1dd93fc	11/11
-lesson-ledger.sh	157011bb3a30fb9f	df46cc90f76a4964	17/17
+lesson-ledger.sh	4c88dc2d0aebcfe6	d2ba70af1a7b0549	18/18
 local-path-guard.sh	262afb6fbdb2a8d7	d9a5183c82c2a066	29/29
 merged-branch-guard.sh	86e1037d0d39b0c8	6ddb2ef9a8b84e1a	43/43
 mutation-proof-guard.sh	6ffab5f0bf646579	e0d644b2fb0ebca8	22/22
 no-v1.sh	cb6b55c0dab99dab	2035bfa8aa53e23b	11/11
 plane-block-guard.sh	679f2b016852effb	a9f71c186df4c512	14/14
+plugin-data.sh	b183a483ba56dfc4	4e9e25c6ada3ffea	3/3
 poll-pace.sh	9f2fb9c2c967bff7	d3200b1fa2b05464	26/26
 pr-guard.sh	fbd0a59af70a0a7a	8f51b232cfe62792	110/110
 push-behind-guard.sh	1e8f867bbe25ccbe	71d33fd4c06832e8	52/52
@@ -38,7 +39,7 @@ stale-copy-hint.sh	4e663d08786adf6b	e4906875cc3efdb8	27/27
 step-guard.sh	91b9ada68f679e9b	9779fafd97b3a824	48/48
 step-hint.sh	cb169172a81fc295	8ed2c83e9b74beba	12/12
 stop-reply.sh	99b9252e2c6a5ea3	df940755671a938d	21/21
-summit.sh	d90baa3399bf1cce	ac9585ec099e4152	55/55
+summit.sh	a7326a54e5ec3ae0	5a3fb0d36b2a78e2	53/53
 take-pick.sh	541c758b7fb246d5	e5f19655a0bd6f27	15/15
 tea-stdin.awk	ddfdfc5257c31b06	f83d8b22629ca909	70/70
 tea-stdin.sh	1f69ec430c059eec	f83d8b22629ca909	15/15
