@@ -89,6 +89,7 @@ declare module 'claude-code' {
       agents: readonly ActivityAgent[]
       isExpanded: boolean
       summit: string
+      place: string
       preview: PreviewShown | null
     }
   }

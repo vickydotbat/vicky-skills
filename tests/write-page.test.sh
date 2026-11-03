@@ -2,9 +2,13 @@
 # write-page.py writes question pages and draft files from a spec, in the form
 # page.py reads, and refuses a spec it can't write in that form.
 set -u
+export VISUAL=true EDITOR=true BROWSER=true
 root="$(cd "$(dirname "$0")/.." && pwd)"
 scripts="$root/plugins/vicky-skills/skills/productivity/interactive-page/scripts"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
+# The writer opens nothing; a fake desktop still stands first on PATH, as for every page test.
+mkdir -p "$dir/desktop"; printf '#!/usr/bin/env bash\necho "BROWSER=true"\n' >"$dir/desktop/systemctl"; chmod +x "$dir/desktop/systemctl"
+export PATH="$dir/desktop:$PATH"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 write() { rm -f "$dir/out.md"; printf '%s' "$1" > "$dir/spec.json"; python3 -I "$scripts/write-page.py" "$dir/spec.json" "$dir/out.md"; }
