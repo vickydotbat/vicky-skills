@@ -21,7 +21,11 @@ done
 git -C "$scratch/hub" remote add origin https://github.com/o/r.git
 git -C "$scratch/off" remote add origin https://github.com/o/r.git
 git -C "$scratch/gitea" remote add origin https://forge.example/o/r.git
-mkdir -p "$scratch/off/docs/agents"
+# Each repo is one first-contact set up; the off repo switches the check off.
+for forge in hub gitea off; do
+  mkdir -p "$scratch/$forge/docs/agents"
+  printf '# Tickets\n\nPR template: on\n' >"$scratch/$forge/docs/agents/issue-tracker.md"
+done
 printf '# Tickets\n\nPR template: off\n' >"$scratch/off/docs/agents/issue-tracker.md"
 printf '## Status\n\n`Done:` x\n\n## Summary\n\nx\n\n## Proof\n\n- Tests: x\n\n## Risk\n\n- Undo: a revert\n' >"$scratch/full.md"
 printf '## Status\n\n`Done:` x\n\n## Proof\n\n- Tests: x\n' >"$scratch/thin.md"

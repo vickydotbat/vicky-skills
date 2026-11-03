@@ -14,8 +14,8 @@ The forge picks the tool:
 - **GitHub**: `gh stack`. Load the `gh-stack` skill first (it ships with the gh-stack extension, not this plugin), because bare
   `submit`, `init`, `add` and `view` block on a prompt. `gh stack init
   <branch>`, `gh stack add <name>`, then `gh stack submit --auto`, which
-  takes no label: add it to each new pull request with `gh pr edit <n>
-  --add-label stacked`. After a merge, `gh stack sync`. Merge with `gh stack merge <pr> --yes`, never
+  takes no label and no body: add the label to each new pull request with
+  `gh pr edit <n> --add-label stacked`, and write each new pull request's body with `ship-it`. After a merge, `gh stack sync`. Merge with `gh stack merge <pr> --yes`, never
   `gh pr merge`.
 - **Gitea**: `git-spice` (`gs`). `gs branch create <name>` from the branch it
   depends on, then `gs stack submit -l stacked`. After any branch merges: `gs repo sync`,

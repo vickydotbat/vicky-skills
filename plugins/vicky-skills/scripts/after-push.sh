@@ -21,4 +21,4 @@ if [[ "$command" =~ (^|[[:space:];\&|])(gh[[:space:]]+pr[[:space:]]+create[[:spa
   exit 0
 fi
 [[ "$command" =~ (^|[[:space:];\&|])git[[:space:]]+push([[:space:]]|$) ]] || exit 0
-say "You pushed. Before you report done: reread the open pull request body (gh pr view, or tea pr <n> --comments) against the diff from the base branch, and rewrite any sentence the push made untrue. Then give every work item the branch, commits or body names its verdict: a Closes line, a narrowed body, or the reference removed."
+say "You pushed. Before you report done: reread the open pull request body (gh pr view <n> --comments, or tea pr <n> --comments) against the diff from the base branch, and rewrite any sentence the push made untrue with the ship-it skill, keeping its sections. Then give every work item the branch, commits or body names its verdict: a Closes line, a narrowed body, or the reference removed."
