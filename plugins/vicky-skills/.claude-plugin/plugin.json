@@ -289,7 +289,7 @@
     "guard_stale_blame": {
       "type": "boolean",
       "title": "No stale-copy blame without proof",
-      "description": "When the agent ends its turn blaming your hak, client, build or cache as stale, or telling you to update or restart it, with no hash or logged version quoted, it is sent back once to keep tracing the code.",
+      "description": "When the agent ends its turn blaming your build, client, cache or package as stale, or telling you to update or restart it, with no hash or logged version quoted, it is sent back once to keep tracing the code.",
       "default": true
     }
   }

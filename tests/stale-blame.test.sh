@@ -24,6 +24,10 @@ check "a sent-back stop exits 0" 'stop >/dev/null; [ $? = 0 ]'
 check "the steer quotes the sentence" 'stop | jq -r .reason | grep -q "your stale hak"'
 check "the steer says to keep tracing the code" 'stop | jq -r .reason | grep -q "Keep tracing the bug in the code"'
 check "a second stop in the same turn goes through" 'passes true'
+for p in "Your new file passes every check." "Clear the cache in the script, not your build." "Your latest commit is on the branch."; do
+  { user "go"; text "$p"; } > "$fx/t.jsonl"
+  check "an ordinary sentence about the user's things goes through: $p" 'passes'
+done
 for p in "Your client is out of date." "Please redownload your build and try again." "Restart your client to pick it up." "Your haks are outdated."; do
   { user "go"; text "$p"; } > "$fx/t.jsonl"
   check "each blame form counts: $p" 'blocked'

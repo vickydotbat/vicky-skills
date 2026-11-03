@@ -26,7 +26,7 @@ A kit is what one check needs to run: the things it acts on, their state, and th
 - Build each check its own things, from scratch: a mark to pickpocket is a creature spawned for that check, friendly, in reach and carrying what the check takes, and never borrow one already in the world. <!-- kept 2026-10-31: a pickpocket mark built fresh for its check passed first time, "Perfect", after a borrowed one failed -->
 - Give plain props: the default thing, with no extra properties, limits or permissions. A stock template can carry a requirement the tester can't meet, so add a property only when the check is about it.
 - A diagnostic kit that changes live state targets the narrowest scope it can, names that scope on its item, and puts back what it set before the next check. A blank or wildcard target reaches everything, and its leftovers look like a bug.
-- Collect first, then change: removing from a collection mid-walk can restart or skip the walk, and the script runs until a limit kills it.
+- Collect first, then change: a kit that removes from a collection while it walks that collection can skip items or never finish.
 - Reuse only what you already know works. A thing an earlier test may have changed (made hostile, left busy, moved) makes the check flaky for a person and for a machine alike, so build a new one.
 - Finish each thing (its properties set, its locals written) before it reaches the place where it could combine, such as a stack that would merge in a pack.
 - When the sitting closes, remove everything the kits made, and commit no kit file, unless TESTING_STANDARDS.md allows it and says where. When it does, commit it there and only there.
