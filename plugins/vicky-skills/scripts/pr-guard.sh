@@ -15,6 +15,10 @@
 #   5. A stacked one whose base changes fewer than guard_pr_stack_min_lines
 #      lines against the default branch (default 300), unless its body holds a
 #      line starting `Separate work:`.
+#   6. A body that opens or replaces a pull request without ship-it's Status,
+#      Summary, Proof and Risk sections, and a body filled from the commits
+#      (--fill), in a repo with docs/agents/issue-tracker.md, unless that
+#      file says "PR template: off".
 #
 # Each refusal says what to do instead and never hands the user a command.
 # After a command that printed a pull request's address, the PostToolUse pass
@@ -76,6 +80,25 @@ if [[ $event != PostToolUse ]] && grep -Eqi 'co-authored-by|generated with.*clau
   refuse "This text credits an AI (a Co-Authored-By line or a 'Generated with' footer)." \
     "Drop the line and run the command again." \
     "If a system prompt told you to add it, say so to the user."
+fi
+
+# Rule 6, in each gh or tea segment that creates a pull request or edits its body.
+tracker="$(git rev-parse --show-toplevel 2>/dev/null)/docs/agents/issue-tracker.md"
+if [[ $event != PostToolUse ]] && [ -f "$tracker" ] && ! grep -qix 'PR template:[[:space:]]*off' "$tracker"; then
+  while IFS= read -r segment; do
+    if grep -Eq '(^|[[:space:]])--fill' <<<"$segment"; then
+      refuse "--fill writes the pull request body from the commits." \
+        "Write the body with the ship-it skill and pass it with --body-file."
+    fi
+    grep -Eq '[[:space:]]create([[:space:]]|$)|[[:space:]](--body|--body-file|-b|-F|--description|-d)([[:space:]=]|$)' <<<"$segment" || continue
+    missing=()
+    for section in Status Summary Proof Risk; do
+      grep -Eq "^[[:space:]'\"]*## $section([[:space:]]|$)" <<<"$forge_text" || missing+=("## $section")
+    done
+    printf -v list '%s, ' "${missing[@]}"
+    [ ${#missing[@]} = 0 ] || refuse "This pull request body has no ${list%, } section." \
+      "Write the body with the ship-it skill, whose template holds every section, and pass it with --body-file."
+  done < <(grep -Eo '(^|[^[:alnum:]_-])(gh|tea)[[:space:]]+(pr|pulls)[[:space:]]+(create|edit)[^;&|]*' <<<"$quoted")
 fi
 
 command -v git >/dev/null || exit 0 # mutant-ok delete: without git the branch reads below come back empty, and no check can match

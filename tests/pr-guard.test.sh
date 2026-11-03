@@ -200,4 +200,26 @@ grep -qF "$leave" <<<"$(told big "gh pr create --body x --base feat/one --label 
 git -C "$scratch/hub" switch -q --detach
 out=$(told hub "gh pr create --title N --body x"); grep -q "already has an open pull request" <<<"$out" && ! grep -q "delete" <<<"$out" && echo "ok   a detached head is told to delete nothing" || { echo "FAIL a detached head is told to delete nothing"; fail=1; }
 git -C "$scratch/hub" switch -q feat/next
+# The body check runs only where first-contact wrote docs/agents/issue-tracker.md.
+quiet() { [ -z "$(told hub "$2")" ] && echo "ok   $1" || { echo "FAIL $1"; fail=1; }; }
+quiet "a repo with no tracker file skips the body check" "gh pr edit 7 --body x"
+mkdir -p "$scratch/hub/docs/agents"; printf '# Tickets\n' >"$scratch/hub/docs/agents/issue-tracker.md"
+quiet "a heredoc body with every section passes" "gh pr edit 7 --body \"\$(cat <<'EOF'
+## Status
+x
+## Summary
+x
+## Proof
+x
+## Risk
+x
+EOF
+)\""
+quiet "a title edit on tea passes" "tea pr edit 7 -t New </dev/null"
+quiet "a review comment is no body" "gh pr comment 7 --body x"
+out=$(told hub "gh pr create --title T")
+grep -q "## Status, ## Summary, ## Proof, ## Risk" <<<"$out" && echo "ok   a create with no body names every section" || { echo "FAIL a create with no body names every section"; fail=1; }
+out=$(told hub "gh pr create --fill-first"); grep -q "fill" <<<"$out" && echo "ok   --fill-first is refused" || { echo "FAIL --fill-first is refused"; fail=1; }
+quiet "a body flag on another command in the chain is no body" "gh pr edit 7 --title x && gh pr comment 7 -b y"
+rm -rf "$scratch/hub/docs"
 exit $fail

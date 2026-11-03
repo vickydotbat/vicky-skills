@@ -1,5 +1,5 @@
 adr-scope-hint.sh	25667e321a3247e7	798d69388fc44018	7/7
-after-push.sh	32da92d9aa874a5f	41d87b1f53c3ed1b	16/16
+after-push.sh	7230a82e949dfde8	41d87b1f53c3ed1b	16/16
 approved-spec-guard.sh	d81a52b093dffa3b	eac941d6d8306e07	103/103
 approved-spec.sh	1de73515ee00e8b1	2e2bbdcd020fc803	8/8
 auto-tidy.sh	8d1a5176faea2f7b	b7dd295770ad8ffa	57/57
@@ -15,7 +15,7 @@ gate-state-guard.sh	7e37c0f1a4c05600	79729f637a6f7947	58/58
 git-hook-lib.sh	f25de8ab0c937544	6b260bda56f010b1	32/32
 heavy-run-guard.sh	9b6f2c161945be94	6fea21d12713966c	20/20
 heavy-run.awk	29bae3f6c7302160	ceb037d28adef66d	90/90
-heredoc-strip.awk	6fa4caa108d2e5b7	aa71e420b8ad65fd	6/6
+heredoc-strip.awk	6fa4caa108d2e5b7	672bb75a8d5fc880	6/6
 issue-guard.sh	e8ffbfff391d14cc	11d4066631be8c93	21/21
 lesson-hint.sh	0676042cac15d671	ef0a9f47870a0a65	11/11
 lesson-ledger.sh	4c88dc2d0aebcfe6	0e4bcf0a16a39809	18/18
@@ -27,9 +27,9 @@ no-v1.sh	1a7cb16f8078ee5c	819205a36f41efc9	29/29
 plane-block-guard.sh	e73db5047568c280	80be2c862a31f85d	14/14
 plugin-data.sh	b183a483ba56dfc4	26714f51fc4eaca6	3/3
 poll-pace.sh	c024e91e30210e5a	a4779f50429ca889	28/28
-pr-guard.sh	4b1e277b47d09d57	210fbaa6cf3d2c8f	113/113
+pr-guard.sh	3ab2c01c41ed94ca	bc081c3d572ef2ac	125/125
 push-behind-guard.sh	1e8f867bbe25ccbe	13b9a7acb515a0e4	52/52
-quote-mask.awk	b04578521f7edc95	26a201862550f35c	52/52
+quote-mask.awk	b04578521f7edc95	50eb273e0522c4d8	52/52
 red-first-check.sh	e585449df8cf7aee	f94ad9aefc4b0802	20/20
 red-first-guard.sh	264573899e8d8f0f	41004515139c8290	27/27
 rm-steer.sh	446e84a40f650cd3	bcfec59c13f3f047	28/28

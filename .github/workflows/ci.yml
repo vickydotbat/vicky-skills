@@ -77,6 +77,10 @@ jobs:
         run: tests/no_v1_ticket_offer_approved_examples.test.sh
       - name: Approved-spec steer for a new test
         run: tests/approved-spec-new-test.test.sh
+      - name: Pull request body examples
+        run: tests/pr_guard_body_approved_examples.test.sh
+      - name: Ship-it on every body path
+        run: tests/ship-it-everywhere.test.sh
       - name: Draw chart
         run: tests/draw-chart.test.sh
       - name: Star chart words

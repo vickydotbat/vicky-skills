@@ -36,3 +36,9 @@ A waiting ticket can't go on until the thing its `Waits on:` line names is done.
 Ticket drift: on
 
 Change `on` to `off` to stop the `ticket-drift` check in this repo.
+
+## Pull request bodies
+
+PR template: on
+
+Change `on` to `off` to stop `pr-guard` refusing a pull request body that lacks `ship-it`'s Status, Summary, Proof and Risk sections in this repo.
