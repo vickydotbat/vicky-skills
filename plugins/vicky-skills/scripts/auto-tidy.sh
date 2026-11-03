@@ -5,16 +5,12 @@
 # behind, and the next session in the repo is the first to see it. Off by
 # default. The deleting stays in the skill, which reads each pull request's state.
 #
-# It also hands the clone back. When the session starts in the repo's first
-# working tree and that clone stands on a branch whose pull request merged
-# (gh says MERGED, or the upstream is gone), a clean clone moves to its local
-# main, fast-forwarded to origin's. Commits made after the merge go to a fresh
-# branch, <branch>-after-merge, from origin's main instead. Uncommitted
-# changes, a branch with no merge point, or a local main origin lacks commits
-# for, keep the clone where it is and the agent is told why. A branch with an
-# open pull request is a test stage: the clone stays and the session works in
-# a worktree.
+# It also changes the checkout: a clone left on a merged branch goes back to
+# main, so the next effort starts fresh. Anything the move could lose keeps
+# the clone where it is.
 set -u
+# shellcheck source=merge-point.sh
+. "$(dirname "$0")/merge-point.sh"
 case "${CLAUDE_PLUGIN_OPTION_AUTO_TIDY:-}" in true|1) ;; *) exit 0 ;; esac
 cd "${CLAUDE_PROJECT_DIR:-.}" 2>/dev/null || exit 0
 git rev-parse --is-inside-work-tree >/dev/null 2>&1 || exit 0 # mutant-ok delete: outside a repository every git call below fails and nothing is gone
@@ -23,7 +19,7 @@ GIT_TERMINAL_PROMPT=0 timeout 15 git fetch --prune --quiet origin >/dev/null 2>&
 clone() {
   # Only the first working tree is the clone: a worktree is some session's own.
   [ "$(git rev-parse --git-dir)" = "$(git rev-parse --git-common-dir)" ] || return 0
-  local current default state trees point after dirty # mutant-ok delete: a local declaration: no caller reads these names
+  local current default state point after dirty fresh main # mutant-ok delete: a local declaration: no caller reads these names
   current=$(git symbolic-ref --short -q HEAD) || return 0
   default=$(git symbolic-ref -q --short refs/remotes/origin/HEAD 2>/dev/null)
   default=${default:-origin/main}
@@ -39,22 +35,17 @@ clone() {
     echo "auto_tidy: '$current' merged, but the clone holds uncommitted changes, so it stays put: ${dirty% }. In your first reply, name these files and ask the user what to do with them."
     return 0
   fi
-  # The merge point: the newest branch commit whose tree origin's main holds.
-  # A squash merge copies the branch's last tree.
-  trees=$(git log --format=%T "$(git merge-base HEAD "$default")..$default" 2>/dev/null)
-  point=""
-  while read -r sha tree; do
-    if grep -Fxq "$tree" <<<"$trees"; then point=$sha; break; fi
-  done < <(git log --format='%H %T' "$default..HEAD" 2>/dev/null)
-  if [ -n "$(git rev-list "$default..HEAD")" ] && [ -z "$point" ]; then
+  point=$(merge_point "$default")
+  if [ -z "$point" ] && [ -n "$(git rev-list -1 "$default..HEAD")" ]; then
     echo "auto_tidy: '$current' looks merged, but none of its commits match origin's main, so the clone stays put. Compare it with its pull request before moving anything."
     return 0
   fi
-  after=""
-  [ -n "$point" ] && after=$(git rev-list --reverse "$point..HEAD")
+  after=$(git rev-list -1 "${point:-HEAD}..HEAD")
   if [ -n "$after" ]; then
-    local fresh="$current-after-merge"
-    if git switch -q -c "$fresh" "$default" 2>/dev/null && git cherry-pick "$point..$current" >/dev/null 2>&1; then
+    fresh="$current-after-merge"
+    if git rev-parse -q --verify "refs/heads/$fresh" >/dev/null; then
+      echo "auto_tidy: '$current' merged and has commits made after the merge, but a branch '$fresh' already exists. The clone stays put: run marie-kondo to carry them over."
+    elif git switch -q -c "$fresh" "$default" 2>/dev/null && git cherry-pick "$point..$current" >/dev/null 2>&1; then
       echo "auto_tidy: '$current' merged, and the commits made after the merge now sit on '$fresh', a fresh branch from $default. Name that branch in one line in your first reply."
     else
       git cherry-pick --abort >/dev/null 2>&1
@@ -63,7 +54,7 @@ clone() {
     fi
     return 0
   fi
-  local main=${default#origin/}
+  main=${default#origin/}
   if git rev-parse -q --verify "refs/heads/$main" >/dev/null && ! git merge-base --is-ancestor "$main" "$default"; then
     echo "auto_tidy: '$current' merged, but the local $main has commits $default lacks, so the clone stays put. Ask the user about them in your first reply."
     return 0

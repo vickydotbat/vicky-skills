@@ -2,7 +2,7 @@ adr-scope-hint.sh	25667e321a3247e7	798d69388fc44018	7/7
 after-push.sh	32da92d9aa874a5f	41d87b1f53c3ed1b	16/16
 approved-spec-guard.sh	8b4fdd8eb883058b	eac941d6d8306e07	103/103
 approved-spec.sh	1de73515ee00e8b1	2e2bbdcd020fc803	8/8
-auto-tidy.sh	32d447d18b0f0d19	5f4375dfeefa9a01	59/59
+auto-tidy.sh	8d1a5176faea2f7b	b7dd295770ad8ffa	57/57
 checkout-guard.sh	8b0f6cd0e8d78b08	48faf93ba7212f94	97/97
 do-confirm-hint.sh	b0c1b33c616e5669	a0fd6e967675e276	15/15
 do-first-guard.sh	0e11e5805b2b2604	4df8a3490d6a93ef	35/35
@@ -19,9 +19,10 @@ issue-guard.sh	e8ffbfff391d14cc	94b810686aee4747	21/21
 lesson-hint.sh	0676042cac15d671	ef0a9f47870a0a65	11/11
 lesson-ledger.sh	4c88dc2d0aebcfe6	0e4bcf0a16a39809	18/18
 local-path-guard.sh	262afb6fbdb2a8d7	8ddcf8981e6a878b	29/29
-merged-branch-guard.sh	86e1037d0d39b0c8	fc0a2dcd7913a3a0	43/43
+merge-point.sh	a19dbe9167831b34	99e4ba40eadd2a76	2/2
+merged-branch-guard.sh	993cf2936afdaf69	fc0a2dcd7913a3a0	43/43
 mutation-proof-guard.sh	6ffab5f0bf646579	9ec5b89345c14133	24/24
-no-v1.sh	e046903a93d3b225	b1692158e2c4ef5b	29/29
+no-v1.sh	2ed14d35f0cf6512	6b4a05484895a5e0	29/29
 plane-block-guard.sh	e73db5047568c280	ceec7242938349d5	14/14
 plugin-data.sh	b183a483ba56dfc4	26714f51fc4eaca6	3/3
 poll-pace.sh	c024e91e30210e5a	d73b76489c0217b8	28/28

@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
-# The clone takeover's decisions beyond its approved examples. E6 and E7 are
-# plain regression tests, not approved-spec: auto-tidy never moved a branch
-# before, so a clone that stays could not go red first.
-# Also: a session in a worktree, gh missing, a clone on main, a branch with no
-# merge point, a local main that origin lacks commits for, and commits after
-# the merge that clash with main.
+# The clone takeover's decisions beyond E1 to E5. E6 and E7 held before the
+# build, so they are plain regression tests.
 set -u
 hook="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/scripts/auto-tidy.sh"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
@@ -19,13 +15,13 @@ cat "\$f"
 EOF
 chmod +x "$dir/bin/gh"
 # A PATH with git and the shell tools but no gh.
-for t in git bash timeout grep awk cut tr sed cat; do ln -s "$(command -v "$t")" "$dir/nogh/$t"; done
+for t in git bash timeout grep awk cut tr sed cat dirname; do ln -s "$(command -v "$t")" "$dir/nogh/$t"; done
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 run() { PATH="${BIN:-$dir/bin:$PATH}" CLAUDE_PLUGIN_OPTION_AUTO_TIDY="${OPT-true}" CLAUDE_PROJECT_DIR="${2:-$dir/repo}" bash "$hook" </dev/null; }
 commit() { echo "$2" > "$dir/repo/$1"; git -C "$dir/repo" add "$1"; git -C "$dir/repo" commit -q -m "$3"; }
 setup() {
-  rm -rf "$dir/origin.git" "$dir/repo" "$dir"/pr-* "$dir/wt"
+  rm -rf "$dir/origin.git" "$dir/away.git" "$dir/repo" "$dir"/pr-* "$dir/wt"
   git init -q --bare -b main "$dir/origin.git"
   git clone -q "$dir/origin.git" "$dir/repo" 2>/dev/null
   git -C "$dir/repo" commit -q --allow-empty -m base
@@ -96,5 +92,12 @@ git -C "$dir/repo" fetch -q origin; commit work.txt mine "after the merge"
 out=$(run)
 check "commits that clash with main keep the clone and leave no stray branch" '[ "$(on)" = feat ] && grep -q "did not apply cleanly" <<<"$out" \
   && ! git -C "$dir/repo" rev-parse -q --verify refs/heads/feat-after-merge >/dev/null && [ -z "$(git -C "$dir/repo" status --porcelain)" ]'
+
+setup; echo MERGED > "$dir/pr-feat"; git -C "$dir/repo" branch -q feat-after-merge main
+git -C "$dir/repo" switch -q feat-after-merge; commit keep.txt k "only here"; git -C "$dir/repo" switch -q feat
+commit more.txt more "after the merge"
+out=$(run)
+check "an existing after-merge branch is never touched" '[ "$(on)" = feat ] && grep -q "already exists" <<<"$out" \
+  && [ "$(git -C "$dir/repo" log -1 --format=%s feat-after-merge)" = "only here" ]'
 
 exit $fail

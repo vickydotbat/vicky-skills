@@ -108,6 +108,7 @@ TESTS = {
     "rm-steer.sh": ["rm-steer", "rm_steer_approved_examples", "refusal-note"],
     "lesson-hint.sh": ["lesson-hint", "engrave_approved_examples"],
     "merged-branch-guard.sh": ["merged-branch-guard", "merged_branch_approved_examples"],
+    "merge-point.sh": ["merged-branch-guard", "merged_branch_approved_examples", "auto-tidy-clone", "clone_takeover_approved_examples"],
 }
 # The shared exit-code test reaches every hook and runs in a fraction of a second.
 TESTS = {name: ["hook-exits"] + tests for name, tests in TESTS.items()}

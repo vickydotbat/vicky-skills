@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Approved examples for D4: a new behaviour no approved example names becomes
-# one line in the repo's Ideas place, never a ticket. A line in docs/agents
-# names the place; a repo with no line gets an Ideas section in the pull
-# request body.
+# one line in the repo's Ideas place, never a ticket. An "Ideas:" line in
+# docs/agents/issue-tracker.md names the place; a repo with no line gets an
+# Ideas section in the pull request body.
 set -u
 hook="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/scripts/no-v1.sh"
 fx=$(mktemp -d); trap 'rm -rf "$fx"' EXIT
@@ -10,7 +10,7 @@ export CLAUDE_PLUGIN_OPTION_GUARD_NO_V1=true
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 mkdir -p "$fx/named/docs/agents" "$fx/plain"
-printf '# Domain\n\nIdeas: the team wiki'"'"'s Ideas page\n' > "$fx/named/docs/agents/domain.md"
+printf '# Tickets\n\nIdeas: the team wiki'"'"'s Ideas page\n' > "$fx/named/docs/agents/issue-tracker.md"
 { jq -nc '{type:"assistant",message:{content:[{type:"tool_use",name:"Skill",input:{skill:"vicky-skills:do"}}]}}'
   jq -nc '{type:"user",message:{content:"go"}}'
   jq -nc --arg t "Done. A retry on a dropped connection could be a later ticket." '{type:"assistant",message:{content:[{type:"text",text:$t}]}}'
