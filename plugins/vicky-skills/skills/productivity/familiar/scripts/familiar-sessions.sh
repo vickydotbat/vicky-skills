@@ -22,7 +22,7 @@ list() {
 [ "${1:-}" = --new ] || { list; exit 0; }
 seen=$(list | cut -d' ' -f1)
 for _ in $(seq 1 "${FAMILIAR_SESSIONS_ROUNDS:-30}"); do
-  timeout "${FAMILIAR_SESSIONS_EVERY:-60}" tail -f /dev/null
+  sleep "${FAMILIAR_SESSIONS_EVERY:-60}"
   while IFS= read -r line; do
     id=${line%% *}
     grep -qxF "$id" <<<"$seen" && continue
