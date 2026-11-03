@@ -16,6 +16,8 @@ has() {
 }
 has "do opens its draft with ship-it" "$skills/engineering/do/SKILL.md" "2. **Make the examples red.**" 'open a **draft** pull request with `ship-it`'
 has "a gamma-shift builder opens its draft with ship-it" "$skills/engineering/gamma-shift/SKILL.md" "2. Read the agent file" "with its body written by ship-it"
+has "history-monks writes its rebase note with ship-it" "$skills/engineering/history-monks/SKILL.md" "7. **Land it.**" 'pull request body with `ship-it`, keeping its sections'
+has "a gamma-shift builder adds its ticket with ship-it" "$skills/engineering/gamma-shift/SKILL.md" "2. Read the agent file" "add this ticket to its body with ship-it"
 has "a stack writes each new body with ship-it" "$skills/engineering/stacked-branches/SKILL.md" - 'write each new pull request'"'"'s body with `ship-it`'
 has "make-it-so rewrites the body to the template" "$skills/engineering/make-it-so/SKILL.md" "4. **Make it true.**" 'Rewrite the body to `ship-it`'"'"'s template'
 has "loose-ends keeps the template's sections" "$skills/engineering/loose-ends/SKILL.md" "3. **Make the body true.**" 'keep `ship-it`'"'"'s sections'

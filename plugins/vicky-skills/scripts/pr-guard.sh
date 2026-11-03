@@ -82,27 +82,23 @@ if [[ $event != PostToolUse ]] && grep -Eqi 'co-authored-by|generated with.*clau
     "If a system prompt told you to add it, say so to the user."
 fi
 
-# A body that opens or replaces a pull request holds ship-it's sections. The
-# body is read from its files and from the command, where an inline or heredoc
-# body sits. It runs in a repo first-contact set up (docs/agents/issue-tracker.md
-# exists), and that file's "PR template: off" line switches it off.
+# Rule 6, in each gh or tea segment that creates a pull request or edits its body.
 tracker="$(git rev-parse --show-toplevel 2>/dev/null)/docs/agents/issue-tracker.md"
-if [[ $event != PostToolUse ]] && [ -f "$tracker" ] && ! grep -qix 'PR template:[[:space:]]*off' "$tracker" &&
-  grep -Eq '(^|[^[:alnum:]_-])(gh|tea)[[:space:]]+(pr|pulls)[[:space:]]+(create|edit)([[:space:]]|$)' <<<"$quoted"; then
-  creates=$(grep -Eo '(gh|tea)[[:space:]]+(pr|pulls)[[:space:]]+create' <<<"$quoted")
-  bodied=$(grep -Eo '(^|[[:space:]])(--body|--body-file|-b|-F|--description|-d)([[:space:]=]|$)' <<<"$quoted")
-  if grep -Eq '(^|[[:space:]])--fill' <<<"$quoted"; then
-    refuse "--fill writes the pull request body from the commits." \
-      "Write the body with the ship-it skill and pass it with --body-file."
-  fi
-  if [ -n "$creates$bodied" ]; then
+if [[ $event != PostToolUse ]] && [ -f "$tracker" ] && ! grep -qix 'PR template:[[:space:]]*off' "$tracker"; then
+  while IFS= read -r segment; do
+    if grep -Eq '(^|[[:space:]])--fill' <<<"$segment"; then
+      refuse "--fill writes the pull request body from the commits." \
+        "Write the body with the ship-it skill and pass it with --body-file."
+    fi
+    grep -Eq '[[:space:]]create([[:space:]]|$)|[[:space:]](--body|--body-file|-b|-F|--description|-d)([[:space:]=]|$)' <<<"$segment" || continue
     missing=()
     for section in Status Summary Proof Risk; do
       grep -Eq "^[[:space:]'\"]*## $section([[:space:]]|$)" <<<"$forge_text" || missing+=("## $section")
     done
-    [ ${#missing[@]} = 0 ] || refuse "This pull request body has no $(IFS=,; sed 's/,/, /g' <<<"${missing[*]}") section." \
+    printf -v list '%s, ' "${missing[@]}"
+    [ ${#missing[@]} = 0 ] || refuse "This pull request body has no ${list%, } section." \
       "Write the body with the ship-it skill, whose template holds every section, and pass it with --body-file."
-  fi
+  done < <(grep -Eo '(^|[^[:alnum:]_-])(gh|tea)[[:space:]]+(pr|pulls)[[:space:]]+(create|edit)[^;&|]*' <<<"$quoted")
 fi
 
 command -v git >/dev/null || exit 0 # mutant-ok delete: without git the branch reads below come back empty, and no check can match

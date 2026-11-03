@@ -219,5 +219,7 @@ quiet "a title edit on tea passes" "tea pr edit 7 -t New </dev/null"
 quiet "a review comment is no body" "gh pr comment 7 --body x"
 out=$(told hub "gh pr create --title T")
 grep -q "## Status, ## Summary, ## Proof, ## Risk" <<<"$out" && echo "ok   a create with no body names every section" || { echo "FAIL a create with no body names every section"; fail=1; }
+out=$(told hub "gh pr create --fill-first"); grep -q "fill" <<<"$out" && echo "ok   --fill-first is refused" || { echo "FAIL --fill-first is refused"; fail=1; }
+quiet "a body flag on another command in the chain is no body" "gh pr edit 7 --title x && gh pr comment 7 -b y"
 rm -rf "$scratch/hub/docs"
 exit $fail
