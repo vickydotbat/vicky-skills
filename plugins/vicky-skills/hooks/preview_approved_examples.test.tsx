@@ -64,7 +64,7 @@ describe('preview', () => { for (const surface of ['terminal', 'desktop'] as con
     engine(on, ['/work/run.mp4'], ran)
     await $.session.start({ cwd: '/work', surface, isInteractive: true })
     await $.command.run({ command: 'preview', args: '/work/run.mp4' })
-    expect(ran.some(argv => argv[0] === 'ffmpeg' && argv.includes('/work/run.mp4') && argv.includes('1'))).toBe(true)
+    expect(ran.some(argv => argv[0] === 'ffmpeg' && argv.includes('/work/run.mp4') && argv[argv.indexOf('-ss') + 1] === '1')).toBe(true)
     const ui = await $.ui.mount({ ...PANE, surface })
     if (surface === 'terminal') expect((await ui.find({ type: 'Image' }))?.props?.source?.png).toBe(PIXEL)
     await ui.press({ key: 'open' })
