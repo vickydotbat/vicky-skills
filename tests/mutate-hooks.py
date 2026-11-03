@@ -98,7 +98,7 @@ TESTS = {
     "plugin-data.sh": ["summit", "lesson-ledger"],
     "no-v1.sh": ["no-v1", "no_v1_approved_examples"],
     "stop-reply.sh": ["take-pick", "no-v1", "no_v1_approved_examples"],
-    "take-pick.sh": ["take-pick", "do_confirm_approved_examples", "gate_home_approved_examples", "no_v1_approved_examples"],
+    "take-pick.sh": ["take-pick", "do_confirm_approved_examples", "gate_home_approved_examples", "no_v1_approved_examples", "take_pick_chat_gate_approved_examples"],
     "stale-blame.sh": ["stale-blame"],
     "fetch-place-hint.sh": ["fetch-place-hint"],
     "adr-scope-hint.sh": ["adr-scope-hint"],
