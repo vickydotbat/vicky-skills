@@ -68,5 +68,5 @@ kill -0 "$pid" 2>/dev/null || exit 0
 # open-draft.sh writes "page" on the lock's third line when the draft opened in the browser.
 where="in the user's editor"
 [ "$(sed -n 3p "$lock")" = page ] && where="as a page in the user's browser"
-echo "draft-lock: a draft is open $where ($(sed -n 2p "$lock")), so $place waits until they close it. Work in your scratch folder meanwhile." >&2
+echo "draft-lock: a draft is open $where ($(sed -n 2p "$lock")), so $place waits until they close it. The lock holds this checkout only: work that touches no file the draft or sitting uses goes on in a worktree of its own (git worktree add), and the rest waits in your scratch folder." >&2
 exit 2
