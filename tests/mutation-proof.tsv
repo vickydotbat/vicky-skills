@@ -25,7 +25,7 @@ no-v1.sh	3e35d6f6b818d161	e38df41f702febeb	28/28
 plane-block-guard.sh	679f2b016852effb	a9f71c186df4c512	14/14
 plugin-data.sh	b183a483ba56dfc4	4e9e25c6ada3ffea	3/3
 poll-pace.sh	9f2fb9c2c967bff7	d3200b1fa2b05464	26/26
-pr-guard.sh	fbd0a59af70a0a7a	8f51b232cfe62792	110/110
+pr-guard.sh	8dbe3df81bc20d72	6449b07372428681	113/113
 push-behind-guard.sh	1e8f867bbe25ccbe	71d33fd4c06832e8	52/52
 quote-mask.awk	b04578521f7edc95	eb758970d44e27cc	52/52
 red-first-check.sh	e585449df8cf7aee	6b913c0293da9994	20/20

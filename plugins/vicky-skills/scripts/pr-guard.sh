@@ -42,6 +42,12 @@ quoted=$(awk -f "$(dirname "$0")/quote-mask.awk" <<<"$code") && [ -n "$quoted" ]
 grep -Eq '(^|[^[:alnum:]_-])(gh|tea|gs)([[:space:]]|$)' <<<"$code" || exit 0
 
 [ -z "$cwd" ] || cd "$cwd" 2>/dev/null || true
+# A leading `cd <dir>` aims the forge command at that repo, as git-hook-lib reads it.
+before=$(sed -E 's/(^|[^[:alnum:]_-])(gh|tea|gs)([[:space:]].*|$)//' <<<"$code")
+if [[ $before =~ (^|[[:space:]\;\&\|])cd[[:space:]]+([^[:space:]\;\&\|]+) ]]; then
+  target=${BASH_REMATCH[2]}; target=${target//\"/}; target=${target//\'/}
+  cd "${target/#\~\//$HOME/}" 2>/dev/null || true
+fi
 
 refuse() {
   printf 'pr-guard: refused. %s\n' "$1" >&2

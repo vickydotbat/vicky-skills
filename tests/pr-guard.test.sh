@@ -128,6 +128,10 @@ gh pr create --title N --body x")" 2
 same "a backtick command inside double quotes still runs" "$(one hub 'echo "`gh pr create --title N --body x`"')" 2
 same "an escaped quote in dollar-quotes doesn't hide what follows" "$(one hub "echo \$'\\'' ; gh pr create --title N --body x")" 2
 same "a command handed to bash -c still runs" "$(one hub 'bash -c "gh pr create --title N --body x"')" 2
+# A leading cd aims the command at another repo, where this session has no
+# open pull request.
+same "a pull request opened after cd into another repo is judged there" "$(one hub "cd $scratch/gitea && tea pr create --title N --description x")" 0
+same "a cd into the same repo is still judged there" "$(one hub "cd $scratch/hub && gh pr create --title N --body x")" 2
 same "a command handed to eval still runs" "$(one hub "eval 'gh pr create --title N --body x'")" 2
 same "an unclosed quote reads the command as it stands" "$(one hub 'echo "oops ; gh pr create --title N --body x')" 2
 same "dollar-quoted text with an escaped quote is text" "$(one hub "echo \$'it\\'s gh pr create --title N'")" 0
