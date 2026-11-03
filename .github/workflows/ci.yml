@@ -65,6 +65,8 @@ jobs:
         run: tests/rm-steer.test.sh
       - name: Skill steps
         run: tests/skill-steps.test.sh
+      - name: Sitting lessons
+        run: tests/sitting-lessons.test.sh
       - name: Draw chart
         run: tests/draw-chart.test.sh
       - name: Star chart words

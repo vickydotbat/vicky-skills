@@ -24,15 +24,24 @@ rows = [l.split("\t") for l in open(path).read().splitlines()]
 open(path, "w").write("".join(f"{a}\t{b}\t{int(time.time()) - ago}\n" for a, b, _ in rows))
 PY
 }
-hook A PostToolUse "git status"; age A 3600
+# Given session A committed in this checkout in the last 12 hours
+# When session B commits, rebases, resets, merges, cherry-picks, stashes or pulls there
+# Then it is refused and told to use its own worktree
+hook A PostToolUse "git commit -m a"; age A 3600
 refused=0
 for c in "git commit -m x" "git rebase origin/main" "git reset --keep HEAD~1" "git merge fix" "git cherry-pick abc" "git stash" "git pull --rebase"; do
   hook B PreToolUse "$c"; [ $code = 2 ] && grep -q "worktree" <<<"$err" && refused=$((refused + 1)) || echo "     not refused: $c"
 done
-check "with session A in this checkout in the last 12 hours, session B's commit, rebase, reset, merge, cherry-pick, stash or pull there is refused and told to use its own worktree" '[ $refused = 7 ]'
+check "with session A committed in this checkout in the last 12 hours, session B's commit, rebase, reset, merge, cherry-pick, stash or pull there is refused and told to use its own worktree" '[ $refused = 7 ]'
+# Given session A committed in this checkout an hour ago
+# When session B runs git status, git log or git diff there
+# Then it runs
 read_ok=0
 for c in "git status" "git log --oneline -3" "git diff"; do hook B PreToolUse "$c"; [ $code = 0 ] && read_ok=$((read_ok + 1)); done
-check "with session A in this checkout an hour ago, session B's git status, git log or git diff runs" '[ $read_ok = 3 ]'
-rm -rf "$data"; hook A PostToolUse "git status"; age A $((13 * 3600)); hook B PreToolUse "git commit -m x"
-check "with no other session in this checkout in the last 12 hours, session B's commit runs" '[ $code = 0 ]'
+check "with session A committed in this checkout an hour ago, session B's git status, git log or git diff runs" '[ $read_ok = 3 ]'
+# Given no other session committed or switched in this checkout in the last 12 hours
+# When session B commits there
+# Then it runs
+rm -rf "$data"; hook A PostToolUse "git commit -m a"; age A $((13 * 3600)); hook B PreToolUse "git commit -m x"
+check "with no other session committed or switched in this checkout in the last 12 hours, session B's commit runs" '[ $code = 0 ]'
 exit $fail

@@ -10,6 +10,8 @@ git init -q -b warp-b "$repo"
 git -C "$repo" -c user.name=t -c user.email=t@example.invalid commit -q --allow-empty -m one
 git -C "$repo" branch fix-x
 printf 'readme\n' > "$repo/README.md"
+git -C "$repo" config user.name t; git -C "$repo" config user.email t@example.invalid
+commit='git commit -q --allow-empty -m a'
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 # Runs the guard as session $1 for event $2 on command $3; leaves $code and $err.
@@ -28,31 +30,49 @@ open(path, "w").write("".join(f"{a}\t{b}\t{int(time.time()) - ago}\n" for a, b, 
 PY
 }
 
-ran A "git status"; age A 600
+# Given session A committed on warp-b ten minutes ago
+# When session B runs git switch, or git checkout to another branch, there
+# Then it is refused, names A's branch and says to use a worktree
+ran A "$commit"; age A 600
 hook B PreToolUse "git checkout fix-x"; c1=$code; hook B PreToolUse "git checkout -b new-one"; c2=$code
 hook B PreToolUse "git switch fix-x"
-check "with session A on warp-b ten minutes ago, session B's git switch or git checkout to another branch is refused, names A's branch and says to use a worktree" \
+check "with session A committed on warp-b ten minutes ago, session B's git switch or git checkout to another branch is refused, names A's branch and says to use a worktree" \
   '[ $code = 2 ] && [ $c1 = 2 ] && [ $c2 = 2 ] && grep -q "warp-b" <<<"$err" && grep -q "git worktree add" <<<"$err" && [ "$(git -C "$repo" branch --show-current)" = warp-b ]'
 
+# Given session A working the checkout
+# When session B runs git checkout main -- README.md, a file restore on the same branch
+# Then it runs
 hook B PreToolUse "git checkout warp-b -- README.md"
 check "with session A working the checkout, session B's git checkout main -- README.md, a file restore on the same branch, runs" '[ $code = 0 ]'
 
+# Given session A has ended, or its last commit or switch there was over 12 hours ago
+# When session B switches the branch
+# Then the switch runs
 hook A SessionEnd; hook B PreToolUse "git switch fix-x"; ended=$code
-ran A "git status"; age A $((13 * 3600)); hook B PreToolUse "git switch fix-x"; stale=$code
-check "once session A has ended, or its last git command there was over 12 hours ago, session B's branch switch runs" '[ $ended = 0 ] && [ $stale = 0 ]'
+ran A "$commit"; age A $((13 * 3600)); hook B PreToolUse "git switch fix-x"; stale=$code
+check "once session A has ended, or its last commit or switch there was over 12 hours ago, session B's branch switch runs" '[ $ended = 0 ] && [ $stale = 0 ]'
 
-rm -rf "$data"; ran A "git status"; git -C "$repo" switch -q fix-x
+# Given session A's checkout was switched from warp-b to fix-x since A's last commit or switch
+# When A runs its next git command there
+# Then it is refused once, names both branches and says to use a worktree for warp-b
+rm -rf "$data"; ran A "$commit"; git -C "$repo" switch -q fix-x
 hook A PreToolUse "git commit -m x"; first=$code; msg=$err
 hook A PreToolUse "git status"; second=$code
-check "when session A's checkout was switched from warp-b to fix-x since its last git command, A's next git command is refused once, names both branches and says to use a worktree for warp-b" \
+check "when session A's checkout was switched from warp-b to fix-x since A's last commit or switch, A's next git command is refused once, names both branches and says to use a worktree for warp-b" \
   '[ $first = 2 ] && grep -q "warp-b" <<<"$msg" && grep -q "fix-x" <<<"$msg" && grep -q "git worktree add <dir> warp-b" <<<"$msg" && [ $second = 0 ]'
 git -C "$repo" switch -q warp-b
 
-rm -rf "$data"; ON=false ran A "git status"; ON=false hook B PreToolUse "git switch fix-x"; off=$code
+# Given the checkout guard setting turned off
+# When session B switches the branch of a checkout session A works
+# Then it runs
+rm -rf "$data"; ON=false ran A "$commit"; ON=false hook B PreToolUse "git switch fix-x"; off=$code
 check "with the checkout guard setting turned off, session B's switch of that checkout's branch runs" \
   '[ $off = 0 ] && [ ! -e "$data/checkouts" ]'
 
-rm -rf "$data"; unset ON; ON= ran A "git status"; age A 600; ON= hook B PreToolUse "git switch fix-x"; fresh=$code
-check "on a fresh install with no checkout guard setting, session B's switch of a checkout session A used ten minutes ago is refused" \
+# Given a fresh install with no checkout guard setting
+# When session B switches the branch of a checkout session A committed in ten minutes ago
+# Then it is refused
+rm -rf "$data"; unset ON; ON= ran A "$commit"; age A 600; ON= hook B PreToolUse "git switch fix-x"; fresh=$code
+check "on a fresh install with no checkout guard setting, session B's switch of a checkout session A committed in ten minutes ago is refused" \
   '[ $fresh = 2 ] && jq -e ".userConfig.guard_checkout.default == true" "$root/plugins/vicky-skills/.claude-plugin/plugin.json" >/dev/null'
 exit $fail

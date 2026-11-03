@@ -28,7 +28,7 @@ check scratch-guard "$(AGENT=a1 said scratch-guard.sh 'ls; echo x > /tmp/s1/out'
 # git-hook-lib's refusal, through checkout-guard: session A works the repo, B commits.
 git -C "$dir/repo" -c user.name=t -c user.email=t@example.invalid commit -q --allow-empty -m one
 rm -f "$(git -C "$dir/repo" rev-parse --absolute-git-dir)/red-pen-open"
-jq -nc --arg d "$dir/repo" '{hook_event_name:"PostToolUse",tool_name:"Bash",cwd:$d,session_id:"A",tool_input:{command:"git status"}}' |
+jq -nc --arg d "$dir/repo" '{hook_event_name:"PostToolUse",tool_name:"Bash",cwd:$d,session_id:"A",tool_input:{command:"git commit -m one"}}' |
   CLAUDE_PLUGIN_DATA="$dir/data" CHECKOUT_GUARD_OWNER_PID=$$ bash "$s/checkout-guard.sh" >/dev/null 2>&1
 check "git-hook-lib (checkout-guard)" "$(CWD=$dir/repo SID=B said checkout-guard.sh 'git commit -m x' CLAUDE_PLUGIN_DATA="$dir/data")"
 exit $fail
