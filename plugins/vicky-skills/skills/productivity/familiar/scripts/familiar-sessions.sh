@@ -4,13 +4,29 @@
 # transcript changed in the last day and does not end on the cost-state line
 # Claude Code writes when a session exits. The familiar's own session
 # ($CLAUDE_CODE_SESSION_ID) is left out.
+# With --new it lists again every minute (FAMILIAR_SESSIONS_EVERY seconds)
+# and prints "NEW <line>" once for each session that was not live at its
+# start, for 30 rounds (FAMILIAR_SESSIONS_ROUNDS), so a Monitor re-arms it.
 # The mutation tool covers plugins/vicky-skills/scripts only: mutate this script by hand, with sentinels.
 set -u
 dir=${FAMILIAR_PROJECTS_DIR:-$HOME/.claude/projects}
-find "$dir" -mindepth 2 -maxdepth 2 -name '*.jsonl' -mmin -1440 2>/dev/null | sort | while IFS= read -r f; do
-  id=$(basename "$f" .jsonl)
-  [ "$id" = "${CLAUDE_CODE_SESSION_ID:-}" ] && continue
-  [ "$(tail -n 1 "$f" | jq -r '.type // empty' 2>/dev/null)" = cost-state ] && continue
-  cwd=$(grep -m1 '"cwd"' "$f" | jq -r '.cwd // empty' 2>/dev/null)
-  printf '%s %s %s\n' "$id" "$f" "$cwd"
+list() {
+  find "$dir" -mindepth 2 -maxdepth 2 -name '*.jsonl' -mmin -1440 2>/dev/null | sort | while IFS= read -r f; do
+    id=$(basename "$f" .jsonl)
+    [ "$id" = "${CLAUDE_CODE_SESSION_ID:-}" ] && continue
+    [ "$(tail -n 1 "$f" | jq -r '.type // empty' 2>/dev/null)" = cost-state ] && continue
+    cwd=$(grep -m1 '"cwd"' "$f" | jq -r '.cwd // empty' 2>/dev/null)
+    printf '%s %s %s\n' "$id" "$f" "$cwd"
+  done
+}
+[ "${1:-}" = --new ] || { list; exit 0; }
+seen=$(list | cut -d' ' -f1)
+for _ in $(seq 1 "${FAMILIAR_SESSIONS_ROUNDS:-30}"); do
+  timeout "${FAMILIAR_SESSIONS_EVERY:-60}" tail -f /dev/null
+  while IFS= read -r line; do
+    id=${line%% *}
+    grep -qxF "$id" <<<"$seen" && continue
+    seen+=$'\n'"$id"
+    printf 'NEW %s\n' "$line"
+  done < <(list)
 done

@@ -152,7 +152,7 @@ Every new star, and every anomaly, probe or task that holds build work, is filed
 
 Every chart shows how its tickets connect, drawn from the tracker, never by hand. Redraw after every change to the chart's children or blockers.
 
-1. **Use the tracker's draw command** when the tracker file's "Star chart operations" names one (`plane draw <chart>`). Done when the command reports the drawing.
+1. **Use the tracker's draw command** when the tracker file's "Star chart operations" names one (such as `<tracker cli> draw <chart>`). Done when the command reports the drawing.
 2. **Otherwise, list the tickets** in `<scratch>/tickets.json`, one object per child, read from the tracker this turn:
 
    ```json

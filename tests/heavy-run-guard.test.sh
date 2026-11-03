@@ -151,6 +151,11 @@ fixes 'cd art && FOO=1 magick a b | tail' "cd art && FOO=1 $cap timeout 300 magi
 fixes 'ls; ffmpeg -i a b; magick identify a' "ls; $cap timeout 300 ffmpeg -i a b; magick identify a"
 fixes 'dotnet test && dotnet build' "$cap timeout 300 dotnet test && $cap timeout 300 dotnet build"
 # The reason names the cap and why a timeout alone falls short.
+# A system without systemd has no cap to steer to, so the guard lets the run through.
+mkdir "$dir/nosystemd"
+for t in jq gawk bash dirname cat sed grep awk tr head; do ln -s "$(command -v "$t")" "$dir/nosystemd/$t"; done
+out=$(jq -n '{tool_input:{command:"magick a b"}}' | PATH="$dir/nosystemd" CLAUDE_PLUGIN_OPTION_GUARD_HEAVY_RUN=true bash "$hook" 2>&1); code=$?
+if [ $code = 0 ] && [ -z "$out" ]; then echo "ok   without systemd-run the guard stays out of the way"; else echo "FAIL without systemd-run: $code $out"; fail=1; fi
 why=$(jq -n '{tool_input:{command:"magick a b"}}' | CLAUDE_PLUGIN_OPTION_GUARD_HEAVY_RUN=true "$hook" 2>&1 | head -1)
 case "$why" in *MemoryMax*timeout*) echo "ok   the reason names the memory cap" ;; *) echo "FAIL reason: $why"; fail=1 ;; esac
 exit $fail

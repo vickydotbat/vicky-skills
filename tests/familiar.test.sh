@@ -62,6 +62,16 @@ HANDOFF" ]'
 check "a stopped watch leaves no tail running" '! pgrep -f "tail -n 0 -F $fx/live.jsonl" >/dev/null'
 check "the watch needs a transcript" '! bash "$tools/familiar-watch.sh" 2>/dev/null'
 
+mkdir -p "$fx/p2/-r"
+jq -nc '{type:"user",cwd:"/w",message:{content:"hi"}}' > "$fx/p2/-r/a.jsonl"
+FAMILIAR_PROJECTS_DIR="$fx/p2" CLAUDE_CODE_SESSION_ID=me FAMILIAR_SESSIONS_EVERY=0.2 FAMILIAR_SESSIONS_ROUNDS=10 timeout 10 bash "$tools/familiar-sessions.sh" --new > "$fx/n2.out" & npid=$!
+timeout 0.5 tail -f /dev/null
+jq -nc '{type:"user",cwd:"/w",message:{content:"hi"}}' > "$fx/p2/-r/me.jsonl"
+{ jq -nc '{type:"user",cwd:"/w",message:{content:"hi"}}'; jq -nc '{type:"cost-state"}'; } > "$fx/p2/-r/gone.jsonl"
+wait $npid; ncode=$?
+check "the new-session check stops itself after its rounds" '[ $ncode = 0 ]'
+check "the new-session check never announces the familiar itself or an ended session" '[ ! -s "$fx/n2.out" ]'
+
 # S2's approved examples, held by the skill's words. They are plain regression
 # tests: the skill text was written before these tests, so they could not go red first.
 skill="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/productivity/familiar/SKILL.md"
@@ -73,7 +83,7 @@ check "S2 work going as asked adds nothing" 'has "A line that shows work going a
 # Given the watch is armed / When the agent checks something in the watched repo / Then it only reads: it runs no git command that writes and edits no file in that checkout
 check "S2 a watched checkout is read only" 'has "In a watched checkout, only read: run no git command that writes, and edit no file there"'
 # Given the watch is armed / When the watch expires with the session still live / Then the agent arms it again in the same turn
-check "S2 an expired watch is armed again in the same turn" 'has "and again for each session still live, in the same turn"'
+check "S2 an expired watch is armed again in the same turn" 'has "Each time a watch or the new-session check expires, arm it again in the same turn"'
 # Given the note holds open lines / When the watch prints HANDOFF / Then each open line is built in the repo it belongs to, sent to that repo's session, or filed with a Waits on line, and the report lists every code with its outcome
 check "S2 a handoff works every open line and reports each code" 'has "Build each open line in the repo it belongs to, send it to that repo'"'"'s session with \`SendMessage\`, or file it with a \`Waits on:\` line. Then report every code and its outcome"'
 exit $fail

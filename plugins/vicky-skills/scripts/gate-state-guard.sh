@@ -2,7 +2,7 @@
 # PreToolUse hook (SendUserMessage): refuses a message whose first line is the
 # gate line, "🚪 Waiting on you: <what>", when a pull request that line names
 # has already merged or closed. A gate reported from memory once asked the
-# user to merge two pull requests she had already merged.
+# user to merge two pull requests they had already merged.
 # It reads #N, !N, repo#N, owner/repo#N, "repo !N", pulls/N and pull request
 # links. A repo name that doesn't resolve falls back to the checkout's repo.
 # It looks each one up with gh on GitHub and tea elsewhere, and lets the

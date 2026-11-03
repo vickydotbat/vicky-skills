@@ -15,7 +15,8 @@
 # start that list. It steers once per turn: with stop_hook_active set, the
 # reply goes through, so a misjudged one never loops. The steer sends a new
 # behaviour no approved example names to the repo's Ideas place: an "Ideas:"
-# line in docs/agents/issue-tracker.md, else an Ideas section in the pull request body.
+# line in docs/agents/issue-tracker.md, else the place the user's own agent
+# instructions name, else an Ideas section in the pull request body.
 set -u
 case "${CLAUDE_PLUGIN_OPTION_GUARD_NO_V1:-}" in true|1) ;; *) exit 0 ;; esac
 # shellcheck source=stop-reply.sh
@@ -44,6 +45,9 @@ if [ -z "$offers" ]; then
   jq -n --arg n "$next" '{decision:"block", reason:("Your reply ends on a Next list that waits on no one, so it is work to do now, not to report. Start its first item in this turn and keep going until each item is done or waits on the user, another person or a deploy. Review findings inside an effort are part of it: fix each one that waits on no one, then report. The line:\n" + $n)}'
   exit 0
 fi
-# The Ideas place: the "Ideas:" line in the repo's tracker file, else the pull request body.
+# The Ideas place: the "Ideas:" line in the repo's tracker file, else the one the
+# user's own agent instructions name, else the pull request body.
 ideas=$(sed -n 's/^Ideas: //p' "${CLAUDE_PROJECT_DIR:-.}/docs/agents/issue-tracker.md" 2>/dev/null | head -n 1)
-jq -n --arg o "$offers" --arg i "${ideas:-an Ideas section in the pull request body}" '{decision:"block", reason:("Never a V1: this effort ships complete. Fold this found work, and every open ticket here that waits on no one, into the current pull request now, then report what you folded in. Close open tickets before you open new ones: the summit is closing more than you open. Park only work that waits on the user'"'"'s decision, another person, a deploy or a repo out of reach, with a Waits on: line. A new behaviour no approved example names is no ticket and no build: write it as one line in the Ideas place, " + $i + ", and say where it went. The sentences:\n" + $o)}'
+where="the Ideas place, $ideas,"
+[ -n "$ideas" ] || where="the Ideas place your own agent instructions name, else in an Ideas section of the pull request body,"
+jq -n --arg o "$offers" --arg i "$where" '{decision:"block", reason:("Never a V1: this effort ships complete. Fold this found work, and every open ticket here that waits on no one, into the current pull request now, then report what you folded in. Close open tickets before you open new ones: the summit is closing more than you open. Park only work that waits on the user'"'"'s decision, another person, a deploy or a repo out of reach, with a Waits on: line. A new behaviour no approved example names is no ticket and no build: write it as one line in " + $i + " and say where it went. The sentences:\n" + $o)}'
