@@ -354,6 +354,29 @@ describe('viewscreen band', () => {
     expect(await ui.find({ key: 'agents' })).toBeUndefined()
   })
 
+  test('an agent the engine lists for no session of this box leaves it', async ($, on) => {
+    const { box, clock } = seat(on, [])
+    // The engine lists this session's agents only: one it never lists is another
+    // session's, or long gone, and the box drops it once it is past its start.
+    on('agent.list', () => ({
+      value: [{ id: 'apeer', description: 'Peer', name: 'peer', type: 'general-purpose', status: 'running' }],
+    }))
+
+    await mount($, box)
+    await $.tool.call({ tool: 'SendUserMessage', message: 'hi', agentId: 'aghost' } as Parameters<Engine['tool']['call']>[0])
+    await $.tool.call({ tool: 'Read', file_path: 'src/app.ts', agentId: 'apeer' } as Parameters<Engine['tool']['call']>[0])
+    await clock.advance(28_000)
+
+    // Within its grace an unlisted agent stands: the engine lists a new one late.
+    expect(await box.read()).toContain('2 agents working')
+
+    await clock.advance(60_000)
+
+    // The listed peer stays, alone now, so the headline names its action.
+    expect(await box.read()).not.toContain('2 agents working')
+    expect(await box.read()).toContain('Reading app.ts')
+  })
+
   test('a background agent is named from the Agent call that launched it', async ($, on) => {
     const { box, clock } = seat(on, [])
 

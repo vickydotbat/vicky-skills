@@ -55,6 +55,9 @@ const MAX_AGENT_NAME_CHARS = 40
 const MAX_AGENT_ROWS = 6
 const STREAM_THROTTLE_MS = 250
 const TICK_MS = 1000
+// How long an agent may go unlisted after its start: the engine lists a new
+// agent a moment after its first call.
+const UNLISTED_GRACE_MS = 30_000
 // Below this the band cannot hold its dot, name and a few letters of label.
 const MIN_BAND_COLUMNS = 30
 // What the frame, the toggle, the dot and "Claude: " take from the row.
@@ -808,6 +811,7 @@ async function finish(
   live: Live,
   agentId: string,
   outcome: ActivityOutcome,
+  { isRecorded = true }: { isRecorded?: boolean } = {},
 ): Promise<void> {
   const agent = live.agents.get(agentId)
 
@@ -817,7 +821,7 @@ async function finish(
 
   live.agents.delete(agentId)
 
-  if (agent.isBackground) {
+  if (agent.isBackground && isRecorded) {
     await remember($, {
       kind: 'tool',
       label: `Agent: ${agent.name}`,
@@ -832,7 +836,8 @@ async function finish(
 
 /**
  * Names agents first met by their calls, and lets go of agents the engine
- * lists as no longer running, in case their stop never reached the box.
+ * lists as no longer running, or doesn't list at all, in case their stop never
+ * reached the box.
  */
 async function sweep($: EngineInterface, live: Live): Promise<void> {
   if (live.agents.size === 0 || live.isSweeping) {
@@ -852,6 +857,7 @@ async function sweep($: EngineInterface, live: Live): Promise<void> {
 
 async function sweepListed($: EngineInterface, live: Live, listed: readonly AgentInfo[]): Promise<void> {
   const statuses = new Map(listed.map(info => [info.id, info.status]))
+  const nowMs = await $.clock.now()
   let isRenamed = false
 
   for (const [agentId, agent] of [...live.agents.entries()]) {
@@ -872,6 +878,13 @@ async function sweepListed($: EngineInterface, live: Live, listed: readonly Agen
         agent.name = name
         isRenamed = true
       }
+    }
+
+    // The engine lists this session's agents only. One it doesn't list once
+    // past its start belongs to no session this box shows: it goes unrecorded.
+    if (status === undefined && nowMs - agent.startMs > UNLISTED_GRACE_MS) {
+      await finish($, live, agentId, 'interrupted', { isRecorded: false })
+      continue
     }
 
     if (status !== undefined && status !== 'running') {

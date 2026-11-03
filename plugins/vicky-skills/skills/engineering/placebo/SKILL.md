@@ -19,6 +19,7 @@ Read the repo's `TESTING_STANDARDS.md` first, and every standards file its `AGEN
 - **Re-proof**: a result another case already owns.
 - **Library proof**: framework or SQL behaviour with no production code on the path.
 - **Engine proof**: a case whose red needs the platform underneath to break.
+- **Self-agreement**: two values from the same source compared with each other, such as a grid's config checked against the same config. Compare what the user sees with what their input does: the drawn box against where a click lands.
 - **Bare input**: the test hands the code an input in a form its live caller never sends, such as a name without the prefix the framework adds. Send it through the real caller, or through the same transform.
 - **One-way event**: a test of event-driven code sets a value and never models what the framework does back: the change event a value set by the code fires, or a late event from a control the code has since replaced.
 - **Source scan**: a test that greps source text. It belongs in the build: a banned-symbol list, a linter or an analyzer.

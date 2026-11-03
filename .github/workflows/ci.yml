@@ -113,6 +113,10 @@ jobs:
         run: tests/stale-blame.test.sh
       - name: Refusals say nothing ran
         run: tests/refusal-note.test.sh
+      - name: Page writer
+        run: tests/write-page.test.sh
+      - name: Over-to-you checklist writer
+        run: tests/over-to-you-checklist.test.sh
       - name: Fetch place hint hook
         run: tests/fetch-place-hint.test.sh
       - name: Brief mode memes
