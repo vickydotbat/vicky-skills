@@ -87,8 +87,12 @@ function classify(seg,   W, P, n, k, h, cap, v) {
   # image work only when that code imports an image or array library.
   # The caller passes the command before its heredocs were stripped as HEAVY_RAW.
 # shortcut: stdin code is looked for in the whole command, not just its heredoc.
-  if (h ~ /^python[0-9.]*$/ && W[k + 1] == "-c") return imports(W[k + 2]) ? "heavy" : "other"
-  if (h ~ /^python[0-9.]*$/ && (k == n || W[k + 1] == "-" || W[k + 1] ~ /^<</)) return imports(ALL) ? "heavy" : "other"
+  if (h ~ /^python[0-9.]*$/) {
+    # Single-letter flags such as -I or -u come before the code.
+    for (v = k + 1; v <= n && W[v] ~ /^-[A-Za-z]+$/ && W[v] !~ /c|m/; v++) ;
+    if (W[v] ~ /^-[A-Za-z]*c$/) return imports(W[v + 1]) ? "heavy" : "other"
+    if (v > n || W[v] == "-" || W[v] ~ /^<</) return imports(ALL) ? "heavy" : "other"
+  }
   if (h ~ /^python[0-9.]*$/ && tolower(seg) ~ /\.(png|jpe?g|webp|gif|bmp|tga|dds|tiff?|exr|mp4|mkv|webm)([^a-z0-9]|$)|image|icon|sprite|atlas|texture|render|upscale|montage|build/) return "heavy"
   if (h ~ /^(ba|z|da)?sh$/ && W[k + 1] ~ /^-[a-z]*c[a-z]*$/) return scan(W[k + 2], 0) ? "heavy" : "other"
   if (h == "nix" && W[k + 1] ~ /^(develop|shell)$/) {
