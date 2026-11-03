@@ -207,8 +207,6 @@ jobs:
         run: tests/drawing_board_approved_examples.test.sh
       - name: drawing-board reads stretches and rules, and the page serves only draw.io's folder
         run: tests/drawing-board.test.sh
-      - name: Preview media from the chat
-        run: tests/preview-media.test.sh
       - name: do-first-guard holds code edits until do starts
         run: tests/do-first-guard.test.sh
       - name: Warp hands every star to do
@@ -341,6 +339,8 @@ jobs:
         run: tests/viewscreen_approved_examples.test.sh
       - name: Viewscreen band fit and place
         run: tests/viewscreen_band_fit.test.sh
+      - name: Preview media from the chat, in the mod test kit installed above
+        run: tests/preview-media.test.sh
       - name: Summit examples, which include the band's
         run: tests/summit_approved_examples.test.sh
       - name: Viewscreen summit and place lines
