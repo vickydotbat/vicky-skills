@@ -98,6 +98,7 @@ TESTS = {
     "no-v1.sh": ["no-v1", "no_v1_approved_examples"],
     "stop-reply.sh": ["take-pick", "no-v1", "no_v1_approved_examples"],
     "take-pick.sh": ["take-pick", "do_confirm_approved_examples", "gate_home_approved_examples", "no_v1_approved_examples"],
+    "stale-blame.sh": ["stale-blame"],
     "adr-scope-hint.sh": ["adr-scope-hint"],
     "step-guard.sh": ["step-guard", "mutation_step_approved_examples", "step_guard_approved_examples", "step_guard_gitea_approved_examples"],
     "step-hint.sh": ["step_guard_approved_examples", "mutation_step_approved_examples", "step-hint"],

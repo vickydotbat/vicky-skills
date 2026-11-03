@@ -285,6 +285,12 @@
       "title": "No browser windows for local pages",
       "description": "Refuse the windowed Playwright browser for a page on this machine, so a by-eye check uses the headless server instead of opening a window on your desktop.",
       "default": true
+    },
+    "guard_stale_blame": {
+      "type": "boolean",
+      "title": "No stale-copy blame without proof",
+      "description": "When the agent ends its turn blaming your hak, client, build or cache as stale, or telling you to update or restart it, with no hash or logged version quoted, it is sent back once to keep tracing the code.",
+      "default": true
     }
   }
 }

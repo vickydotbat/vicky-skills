@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# The stale-blame hook: a reply that blames the user's copy as stale, or tells
+# them to update it, with no hash or logged version, is sent back once; a reply
+# with proof, one that blames nothing of theirs, the setting off, and bad input
+# go through.
+set -u
+hook="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/scripts/stale-blame.sh"
+fx=$(mktemp -d); trap 'rm -rf "$fx"' EXIT
+unset CLAUDE_PLUGIN_OPTION_GUARD_STALE_BLAME
+fail=0
+check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
+user() { jq -nc --arg t "$1" '{type:"user",message:{content:$t}}'; }
+text() { jq -nc --arg t "$1" '{type:"assistant",message:{content:[{type:"text",text:$t}]}}'; }
+sent() { jq -nc --arg t "$1" '{type:"assistant",message:{content:[{type:"tool_use",name:"SendUserMessage",input:{message:$t}}]}}'; }
+stop() { jq -nc --arg t "$fx/t.jsonl" --argjson a "${1:-false}" '{stop_hook_active:$a,transcript_path:$t}' | bash "$hook"; }
+passes() { local out; out=$(stop "$@"); [ $? = 0 ] && [ -z "$out" ]; }
+blocked() { stop | jq -e '.decision == "block"' >/dev/null 2>&1; }
+# Given a reply that blames the user's copy with no proof
+# When the agent stops
+# Then the stop is blocked once with a steer to keep tracing
+{ user "retest failed"; sent "The retest ran on your stale hak: it changed at 10:51 and the kit ran at 10:07."; } > "$fx/t.jsonl"
+check "a stale-copy blame with only times is sent back" 'blocked'
+check "a sent-back stop exits 0" 'stop >/dev/null; [ $? = 0 ]'
+check "the steer quotes the sentence" 'stop | jq -r .reason | grep -q "your stale hak"'
+check "the steer says to keep tracing the code" 'stop | jq -r .reason | grep -q "Keep tracing the bug in the code"'
+check "a second stop in the same turn goes through" 'passes true'
+for p in "Your client is out of date." "Please redownload your build and try again." "Restart your client to pick it up." "Your haks are outdated."; do
+  { user "go"; text "$p"; } > "$fx/t.jsonl"
+  check "each blame form counts: $p" 'blocked'
+done
+{ user "go"; text "Your hak dated 20261103 is old."; } > "$fx/t.jsonl"
+check "a date is no hash" 'blocked'
+for p in "Try reloading your client." "The hak you have is older than the fix." "Grab the latest build, you were on a previous version."; do
+  { user "go"; text "$p"; } > "$fx/t.jsonl"
+  check "each blame form counts: $p" 'blocked'
+done
+{ user "go"; text "The loop hit the instruction limit. Nothing here says your client is outdated."; } > "$fx/t.jsonl"
+check "a denied blame goes through" 'passes'
+{ user "go"; text "The run loaded 3fa9c1, the release is 91bd07, so your hak is stale."; } > "$fx/t.jsonl"
+check "a six-character hash pair goes through" 'passes'
+# Given a reply with proof, or one that blames nothing of the user's
+# When the agent stops
+# Then it goes through
+{ user "go"; sent "The failing run loaded hak 3fa9c21e, the release is 9b01d4ce, so your hak is stale."; } > "$fx/t.jsonl"
+check "a quoted hash pair goes through" 'passes'
+{ user "go"; sent "The server log shows version 1.4 loaded, the release is 1.6, so your client is old."; } > "$fx/t.jsonl"
+check "a logged version goes through" 'passes'
+{ user "go"; text "The cache in the build script was stale, so I fixed it."; } > "$fx/t.jsonl"
+check "a stale word with no copy of theirs goes through" 'passes'
+{ user "go"; text "Your build passed, and the fix is in."; } > "$fx/t.jsonl"
+check "their copy with no stale word goes through" 'passes'
+{ user "go"; text "Your hak is fine."; text "The old loop was the bug."; } > "$fx/t.jsonl"
+check "the copy and the stale word in different sentences go through" 'passes'
+{ user "go"; text 'The hook matches `your hak is stale`.'; } > "$fx/t.jsonl"
+check "a blame quoted in backticks is no blame" 'passes'
+{ user "go"; text "Your hak is stale."; user "no it is not"; text "Tracing the code."; } > "$fx/t.jsonl"
+check "a blame before the user's last message is not read again" 'passes'
+check "the setting off lets it through" '{ user "go"; text "Your hak is stale."; } > "$fx/t.jsonl"; CLAUDE_PLUGIN_OPTION_GUARD_STALE_BLAME=false passes'
+check "the setting 0 lets it through" '{ user "go"; text "Your hak is stale."; } > "$fx/t.jsonl"; CLAUDE_PLUGIN_OPTION_GUARD_STALE_BLAME=0 passes'
+check "the setting true still checks" '{ user "go"; text "Your hak is stale."; } > "$fx/t.jsonl"; CLAUDE_PLUGIN_OPTION_GUARD_STALE_BLAME=true blocked'
+check "a missing transcript goes through" 'out=$(jq -nc "{transcript_path:\"$fx/none\"}" | bash "$hook"); [ $? = 0 ] && [ -z "$out" ]'
+check "bad input goes through" 'out=$(echo "not json" | bash "$hook"); [ $? = 0 ] && [ -z "$out" ]'
+exit $fail

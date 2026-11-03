@@ -351,6 +351,11 @@
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/take-pick.sh\"",
             "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/stale-blame.sh\"",
+            "timeout": 10
           }
         ]
       }
