@@ -15,4 +15,13 @@ for code in 'import pathlib; pathlib.Path("a").write_text("x")' 'import os; os.r
   check "refused: $code" 2 "$(run "python3 -c '$code'")"
 done
 check "a read runs" 0 "$(run "python3 -c 'print(open(\"a\").read())'")"
+# A variable the command sets to an absolute path names where its redirect writes.
+check "a redirect into a folder the command names in a variable runs" 0 "$(run 'S=/tmp/scratch-x; ls > $S/out.txt')"
+check "a braced variable names its folder too" 0 "$(run 'S=/tmp/scratch-x; ls > ${S}/out.txt')"
+check "a loop's redirect into the variable's folder runs" 0 "$(run 'S=/tmp/scratch-x; for k in a b; do bin/show $k > $S/$k.txt 2>&1; done')"
+check "a variable set inside quotes names its folder" 0 "$(run "S='/tmp/scratch-x'; ls > \$S/out.txt")"
+check "a variable set to a relative path is refused" 2 "$(run 'S=sub; ls > $S/out.txt')"
+check "a variable the command never sets is refused" 2 "$(run 'ls > $S/out.txt')"
+check "a longer name that starts with the variable's is refused" 2 "$(run 'S=/tmp/scratch-x; ls > $SX/out.txt')"
+check "a variable set to the checkout itself is refused" 2 "$(run "S=$dir/repo; ls > \$S/out.txt")"
 exit $fail
