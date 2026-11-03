@@ -49,8 +49,7 @@ current=$(git symbolic-ref --short -q HEAD) || current=""
 # push_args_of <segment>: when the segment runs git push, fill push_args with
 # the words after `push`, flags included, and return 0. Return 1 otherwise.
 push_args_of() {
-  local word seen=0
-  local -a words # mutant-ok delete: a local declaration: no caller reads words
+  local word words seen=0 # mutant-ok delete: a local declaration: no caller reads these names
   push_args=()
   grep -Eq '(^|[[:space:]])git([[:space:]]|$)' <<<"$1" || return 1
   read -ra words <<<"$1"

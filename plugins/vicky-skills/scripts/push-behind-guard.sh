@@ -21,10 +21,7 @@ fetched=""
 while IFS= read -r segment; do
   push_args_of "$segment" || continue
   args=()
-  for word in ${push_args[@]+"${push_args[@]}"}; do
-    case "$word" in -*) continue ;; esac
-    args+=("$word")
-  done
+  for word in ${push_args[@]+"${push_args[@]}"}; do [[ $word == -* ]] || args+=("$word"); done
   # Another remote is not the one origin/HEAD speaks for.
   if [ ${#args[@]} -gt 0 ] && [ "${args[0]}" != "origin" ]; then continue; fi
   src=$current

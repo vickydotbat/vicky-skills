@@ -14,7 +14,7 @@ gamma-shift.sh	bf7b0a15b596e9fc	b2eae1b03e7c8c60	12/12
 gate-notify.sh	7ba893f680c5d672	42870013382a35b5	25/25
 gate-state-guard.sh	a99c69b88e522075	79729f637a6f7947	58/58
 git-guard.sh	f2a59ea07625e0be	147e8989b955e705	66/66
-git-hook-lib.sh	1e79a9dbdabf5606	11c14939ed1446f8	41/41
+git-hook-lib.sh	30676759d85d7890	11c14939ed1446f8	41/41
 heavy-run-guard.sh	dbdeec27de6f67ac	d458d47a51a3c609	23/23
 heavy-run.awk	29bae3f6c7302160	26909cd12624ae9c	90/90
 heredoc-strip.awk	6fa4caa108d2e5b7	d6e885d54406d9a7	6/6
@@ -30,7 +30,7 @@ plane-block-guard.sh	e73db5047568c280	80be2c862a31f85d	14/14
 plugin-data.sh	b183a483ba56dfc4	26714f51fc4eaca6	3/3
 poll-pace.sh	c024e91e30210e5a	a4779f50429ca889	28/28
 pr-guard.sh	ab2f4c0885d005f9	bc081c3d572ef2ac	125/125
-push-behind-guard.sh	563f2a982bbf8992	13b9a7acb515a0e4	52/52
+push-behind-guard.sh	f6103488c9c47198	13b9a7acb515a0e4	52/52
 quote-mask.awk	b04578521f7edc95	50eb273e0522c4d8	52/52
 red-first-check.sh	e585449df8cf7aee	f94ad9aefc4b0802	20/20
 red-first-guard.sh	264573899e8d8f0f	41004515139c8290	27/27
