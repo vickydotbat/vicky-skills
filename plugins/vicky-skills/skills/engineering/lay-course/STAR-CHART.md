@@ -19,7 +19,7 @@ The reference `lay-course` and `warp` both read: the words, the chart body, the 
 | **black hole** | A part of the work that eats effort without end, which the course steers around. Unlike a nebula, it is plain to see. It is never a ticket: the chart names it under Black holes, with its way around, such as a timebox or a path that skips it. |
 | **asteroid belt** | A question found during a build that the target can't ship without. `warp` builds around it and asks once, at the end of the course. |
 | **neutral zone** | Tickets closed because they're past the mission. |
-| **frontier** | The chart's open, unblocked, unassigned children. |
+| **frontier** | The chart's open, unblocked, unassigned children, less any star an open line under Knowns sits in front of: a known unknown whose ticket is open, or a `Confirm:` line the user hasn't answered. |
 | **course** | The open blockers from the frontier to each target star, and the targets, in the order they must close. A target on the frontier is its own whole course. |
 | **orbit** | The tickets loosely linked to a chart or a ticket, which it touches but doesn't own and doesn't wait on: "in its orbit". The tracker holds them as related links. |
 
@@ -156,14 +156,16 @@ Every chart shows how its tickets connect, drawn from the tracker, never by hand
    ```json
    [{"key": "KEY-1", "kind": "anomaly", "title": "<title>", "open": true,
      "assigned": false, "blocked_by": ["KEY-2"], "related": ["KEY-9"]},
+    {"key": "KEY-3", "kind": "star", "title": "<title>", "open": true,
+     "known": 3, "unknown": 1},
     {"black_hole": "<the black hole>", "threatens": ["KEY-1"]}]
    ```
 
-   `kind` is the `starchart:` kind, or `star`. `blocked_by` holds only open blockers, on this chart or another. `related` holds tickets the chart doesn't own. Each line under Black holes gets a `black_hole` object, with the tickets its line threatens. Done when every child of the chart and every black hole has one object.
+   `kind` is the `starchart:` kind, or `star`. `blocked_by` holds only open blockers, on this chart or another. `related` holds tickets the chart doesn't own. A star's `known` counts the Sensor log lines behind it, a line behind every star included, and its `unknown` counts the open lines under Known unknowns and Unknown knowns that name it. Each line under Black holes gets a `black_hole` object, with the tickets its line threatens. Done when every child of the chart and every black hole has one object.
 3. **Draw it** with `python3 <this skill's folder>/scripts/draw-chart.py <scratch>/tickets.json`. During a warp, add `--course <KEY>,<KEY>` for the course and its targets. Done when it prints a Mermaid flowchart.
 4. **Put it under `## Chart`.** When the tracker file says the tracker draws Mermaid, paste the printed block. When it says it can't, add `--png <scratch>/chart.png`, attach the image the way the tracker file says, and show it in the body the way it says. Done when the chart's page shows the drawing.
 
-The drawing shows the course ahead, so closed tickets stay out of it. It marks the frontier with a thick border and the course in yellow, and draws each black hole as a dark circle beside the open tickets it threatens. A ticket with no line to another stacks in a column of its kind.
+The drawing shows the course ahead, so closed tickets stay out of it. It marks the frontier with a thick border and the course in yellow, keeps a star with an unknown left off the frontier, shows each star's counts as `(<n> known, <n> unknown)`, and draws each black hole as a dark circle beside the open tickets it threatens. A ticket with no line to another stacks in a column of its kind.
 
 ## Answer pages
 

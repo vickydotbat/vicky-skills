@@ -10,7 +10,9 @@ Usage: draw-chart.py <tickets.json> [--course KEY,KEY] [--png <chart.png or char
 
 `kind` is the starchart label's kind, or "star". `blocked_by` names the
 open blockers only, on this chart or another. `related` names tickets the
-chart doesn't own. A black hole from the chart's Black holes section is an
+chart doesn't own. A star may also carry `"known": <n>, "unknown": <n>`, its
+premises counted from the Sensor log and the Knowns section; its label shows
+both, and one with an unknown left stays off the frontier. A black hole from the chart's Black holes section is an
 object of its own, {"black_hole": "...", "threatens": ["KEY-1"]}, drawn
 beside the open tickets it threatens and left out when none is open.
 
@@ -37,7 +39,11 @@ def mermaid(tickets, course=()):
     tickets = [t for t in tickets if "black_hole" not in t and t.get("open", True)]
     keys = {t["key"] for t in tickets}
     node = {t["key"]: f"T{n}" for n, t in enumerate(tickets, 1)}
-    lines = {t["key"]: f'{node[t["key"]]}["{t["key"]} {t.get("kind", "star").replace("-", " ")}: {label(t.get("title"))}"]'
+    def premises(t):
+        if "known" not in t and "unknown" not in t:
+            return ""
+        return f' ({t.get("known", 0)} known, {t.get("unknown", 0)} unknown)'
+    lines = {t["key"]: f'{node[t["key"]]}["{t["key"]} {t.get("kind", "star").replace("-", " ")}: {label(t.get("title"))}{premises(t)}"]'
              for t in tickets}
     edges, others = [], {}
     for t in tickets:
@@ -80,7 +86,7 @@ def mermaid(tickets, course=()):
     open_keys = {t["key"] for t in tickets if t.get("open", True)}
     blocking = open_keys | (set(node) - keys)
     ready = [t["key"] for t in tickets if t["key"] in open_keys and not t.get("assigned")
-             and not set(t.get("blocked_by") or []) & blocking]
+             and not t.get("unknown") and not set(t.get("blocked_by") or []) & blocking]
     marked = {"course": [k for k in course if k in node], "frontier": [k for k in ready if k not in course]}
     for name, members in marked.items():
         if members:

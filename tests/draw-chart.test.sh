@@ -2,7 +2,8 @@
 # lay-course draws a chart from its tickets, so no agent writes the Mermaid by
 # hand. A blocker draws an edge, an open blocker elsewhere is a node of its
 # own, a ticket with no edge stacks in its kind's column, a closed ticket is
-# left out, and the frontier and the course get their classes.
+# left out, and the frontier and the course get their classes. A star's premise
+# counts show in its label, a missing count as 0.
 set -u
 script="$(dirname "$0")/../plugins/vicky-skills/skills/engineering/lay-course/scripts/draw-chart.py"
 tickets=$(mktemp); trap 'rm -f "$tickets"' EXIT
@@ -26,5 +27,11 @@ expect "  class T4 course"
 expect "  class T1 frontier"
 grep -qF "K-3" <<<"$out" && { echo "FAIL a closed ticket is drawn"; fail=1; }
 grep -q "class .*T2.* frontier" <<<"$out" && { echo "FAIL a blocked ticket is on the frontier"; fail=1; }
+# A star with one premise count set shows the other as 0.
+echo '[{"key": "K-7", "kind": "star", "title": "Half", "open": true, "unknown": 2},
+ {"key": "K-8", "kind": "star", "title": "Other", "open": true, "known": 1}]' > "$tickets"
+out=$(python3 "$script" "$tickets")
+expect "K-7 star: Half (0 known, 2 unknown)"
+expect "K-8 star: Other (1 known, 0 unknown)"
 [ $fail -eq 0 ] && echo "ok   draw-chart builds edges, columns and classes from the tickets"
 exit $fail
