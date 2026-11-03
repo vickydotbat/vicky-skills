@@ -23,5 +23,5 @@ decl=$([ -n "$top" ] && sed -n 's/^Bounded scripts:[[:space:]]*//p' "$top"/docs/
 fixed=$(printf '%s' "$cmd" | gawk -v decl="$decl" -f "$here/heavy-run.awk")
 [ -n "$fixed" ] || exit 0
 echo "heavy-run-guard: a heavy run needs a memory cap (systemd-run with MemoryMax=), since a timeout alone lets it fill memory and freeze the desktop; run it like this:" >&2
-printf '%s\n' "$fixed" >&2
+printf '%s\n' "$fixed" "Nothing in this command ran, not even its other steps: rerun the ones that need no change on their own." >&2
 exit 2

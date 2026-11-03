@@ -13,7 +13,7 @@ cmd=$(awk -v code=1 -f "$(dirname "$0")/heredoc-strip.awk" <<<"$cmd")
 run='((bash|sh|zsh)[[:space:]]+-[a-z]*c|eval|watch\.sh)[[:space:]]+'
 cmd=$(sed -E "s/${run}'([^']*)'/\\1 \\3/g; s/${run}\"(([^\"\\]|\\.)*)\"/\\1 \\3/g; s/'[^']*'//g; s/\"([^\"\\]|\\.)*\"//g" <<<"$cmd")
 grep -Eq '(^|[^[:alnum:]_])sleep[[:space:]]' <<<"$cmd" || exit 0
-refuse() { echo "poll-pace: $1. Wait with \${CLAUDE_PLUGIN_ROOT}/scripts/watch.sh '<check>', run by the Monitor tool or as a background command: it checks every 30 seconds, at most 60 times." >&2; exit 2; }
+refuse() { echo "poll-pace: $1. Wait with \${CLAUDE_PLUGIN_ROOT}/scripts/watch.sh '<check>', run by the Monitor tool or as a background command: it checks every 30 seconds, at most 60 times. Nothing in this command ran, not even its other steps: rerun the ones that need no change on their own." >&2; exit 2; }
 [ "$(jq -r '.tool_input.run_in_background // false' <<<"$payload")" = true ] || {
   grep -Eq '(^|[^[:alnum:]_])(while|until|for)[[:space:]]' <<<"$cmd" && refuse "a foreground loop that sleeps and checks holds the session"
 }

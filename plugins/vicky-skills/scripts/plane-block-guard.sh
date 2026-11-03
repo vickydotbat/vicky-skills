@@ -12,5 +12,5 @@ command=$(jq -r '.tool_input.command // empty')
 item=${BASH_REMATCH[4]} blocker=${BASH_REMATCH[5]}
 grep -Eq '#[[:space:]]*hard:[[:space:]]*[^[:space:]]' <<<"$command" && exit 0
 echo "plane-block-guard: a blocked-by link is one only a person can remove, in Plane's web interface." >&2
-echo "Write \"Waits on: $blocker (<why>)\" in $item's body instead. Block only when $item calls code or needs an answer $blocker produces, and say so: end the command with \"# hard: <what of $blocker's work it needs>\"." >&2
+echo "Write \"Waits on: $blocker (<why>)\" in $item's body instead. Block only when $item calls code or needs an answer $blocker produces, and say so: end the command with \"# hard: <what of $blocker's work it needs>\". Nothing in this command ran, not even its other steps: rerun the ones that need no change on their own." >&2
 exit 2

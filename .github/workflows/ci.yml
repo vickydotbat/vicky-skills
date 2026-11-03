@@ -111,6 +111,8 @@ jobs:
         run: tests/take-pick.test.sh
       - name: Stale-copy blame hook
         run: tests/stale-blame.test.sh
+      - name: Refusals say nothing ran
+        run: tests/refusal-note.test.sh
       - name: Fetch place hint hook
         run: tests/fetch-place-hint.test.sh
       - name: Brief mode memes

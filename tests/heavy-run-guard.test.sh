@@ -130,7 +130,7 @@ check 0 'magick a b' false
 check 2 'magick a b' 1
 # A refusal ends with the command rewritten, the cap put in front of each heavy part.
 fixes() { # command want
-  got=$(jq -n --arg c "$1" '{tool_input:{command:$c}}' | CLAUDE_PLUGIN_OPTION_GUARD_HEAVY_RUN=true "$hook" 2>&1 >/dev/null | tail -n +2)
+  got=$(jq -n --arg c "$1" '{tool_input:{command:$c}}' | CLAUDE_PLUGIN_OPTION_GUARD_HEAVY_RUN=true "$hook" 2>&1 >/dev/null | sed -n 2p)
   if [ "$got" = "$2" ]; then echo "ok   $1 -> fix $2"; else echo "FAIL $1: fix got '$got', want '$2'"; fail=1; fi
 }
 fixes "timeout 200 nix develop path:. -c bash -c 'magick a b'" "$cap timeout 200 nix develop path:. -c bash -c 'magick a b'"

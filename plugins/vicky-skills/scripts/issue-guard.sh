@@ -17,7 +17,7 @@ command=$(awk -f "$(dirname "$0")/heredoc-strip.awk" <<<"$command" | sed -zE "s/
 grep -Eq '(^|[^[:alnum:]_-])(gh|tea)([[:space:]]|$)' <<<"$command" || exit 0 # mutant-ok delete: a fast path: the checks below find nothing to refuse in such a command
 
 refuse() {
-  echo "issue-guard: refused, $1 An issue is a thread: the body plus every comment. Re-run with --comments." >&2
+  echo "issue-guard: refused, $1 An issue is a thread: the body plus every comment. Re-run with --comments. Nothing in this command ran, not even its other steps: rerun the ones that need no change on their own." >&2
   exit 2
 }
 

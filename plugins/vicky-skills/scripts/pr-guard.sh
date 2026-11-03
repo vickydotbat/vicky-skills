@@ -42,11 +42,17 @@ quoted=$(awk -f "$(dirname "$0")/quote-mask.awk" <<<"$code") && [ -n "$quoted" ]
 grep -Eq '(^|[^[:alnum:]_-])(gh|tea|gs)([[:space:]]|$)' <<<"$code" || exit 0
 
 [ -z "$cwd" ] || cd "$cwd" 2>/dev/null || true
+# A leading `cd <dir>` aims the forge command at that repo, as git-hook-lib reads it.
+before=$(sed -E 's/(^|[^[:alnum:]_-])(gh|tea|gs)([[:space:]].*|$)//' <<<"$code")
+if [[ $before =~ (^|[[:space:]\;\&\|])cd[[:space:]]+([^[:space:]\;\&\|]+) ]]; then
+  target=${BASH_REMATCH[2]}; target=${target//\"/}; target=${target//\'/}
+  cd "${target/#\~\//$HOME/}" 2>/dev/null || true
+fi
 
 refuse() {
   printf 'pr-guard: refused. %s\n' "$1" >&2
   shift # mutant-ok delete: the first line of a refusal would print twice, and nothing reads the wording
-  for line in "$@"; do printf '%s\n' "$line" >&2; done
+  for line in "$@" "Nothing in this command ran, not even its other steps: rerun the ones that need no change on their own."; do printf '%s\n' "$line" >&2; done
   exit 2
 }
 
