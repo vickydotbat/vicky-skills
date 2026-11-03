@@ -11,7 +11,9 @@ fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 # A transcript whose last turn is a user request, then the agent's reply.
 reply() {
-  jq -nc '{type:"user",message:{role:"user",content:"build the export"}}' > "$fx/t.jsonl"
+  # The session is building: do started in it.
+  jq -nc '{type:"assistant",message:{role:"assistant",content:[{type:"tool_use",name:"Skill",input:{skill:"vicky-skills:do"}}]}}' > "$fx/t.jsonl"
+  jq -nc '{type:"user",message:{role:"user",content:"build the export"}}' >> "$fx/t.jsonl"
   jq -nc --arg r "$1" '{type:"assistant",message:{role:"assistant",content:[{type:"text",text:$r}]}}' >> "$fx/t.jsonl"
 }
 stop() { jq -nc --arg t "$fx/t.jsonl" '{hook_event_name:"Stop",stop_hook_active:false,transcript_path:$t}' | bash "$hook" 2>/dev/null; }

@@ -3,10 +3,10 @@ after-push.sh	32da92d9aa874a5f	fef483d3b469029f	16/16
 approved-spec-guard.sh	8f37a87b05a40a93	6c5e7dc8f5d6bc5b	101/101
 approved-spec.sh	1de73515ee00e8b1	4f2792e15c808c5a	8/8
 auto-tidy.sh	37372c9b2b9a5907	e84113a4077b0aa1	15/15
-checkout-guard.sh	cf22549d90ea3e64	7db8b27dfdabde13	96/96
+checkout-guard.sh	6c894ba0f0205eb5	5d9a4fd13816fc83	97/97
 do-confirm-hint.sh	b0c1b33c616e5669	ccf0fcd3963b0eac	15/15
 do-first-guard.sh	0e11e5805b2b2604	15d674b674140172	35/35
-draft-lock.sh	d77c7ea6963c7d5f	29c9ef4cf6704a09	65/65
+draft-lock.sh	ba86e68dcd97aa39	d60f81adab022edc	71/71
 gamma-shift.sh	bf7b0a15b596e9fc	45973d88a7f1f2c1	12/12
 gate-notify.sh	7ba893f680c5d672	c84026178c20f7ce	25/25
 gate-state-guard.sh	7e37c0f1a4c05600	f749f5a5be295418	58/58
@@ -20,7 +20,7 @@ lesson-ledger.sh	4c88dc2d0aebcfe6	d2ba70af1a7b0549	18/18
 local-path-guard.sh	262afb6fbdb2a8d7	d9a5183c82c2a066	29/29
 merged-branch-guard.sh	86e1037d0d39b0c8	6ddb2ef9a8b84e1a	43/43
 mutation-proof-guard.sh	6ffab5f0bf646579	e0d644b2fb0ebca8	22/22
-no-v1.sh	cb6b55c0dab99dab	2035bfa8aa53e23b	11/11
+no-v1.sh	7963266cba2d1205	f99b15fbdc6dcd63	26/26
 plane-block-guard.sh	679f2b016852effb	a9f71c186df4c512	14/14
 plugin-data.sh	b183a483ba56dfc4	4e9e25c6ada3ffea	3/3
 poll-pace.sh	9f2fb9c2c967bff7	d3200b1fa2b05464	26/26
@@ -38,9 +38,9 @@ stale-blame.sh	4084eb0a4362e5b2	7c9a7977af58fc4d	14/14
 stale-copy-hint.sh	4e663d08786adf6b	e4906875cc3efdb8	27/27
 step-guard.sh	91b9ada68f679e9b	9779fafd97b3a824	48/48
 step-hint.sh	cb169172a81fc295	8ed2c83e9b74beba	12/12
-stop-reply.sh	99b9252e2c6a5ea3	df940755671a938d	21/21
+stop-reply.sh	99b9252e2c6a5ea3	4854aedc078a4e77	21/21
 summit.sh	a7326a54e5ec3ae0	5a3fb0d36b2a78e2	53/53
-take-pick.sh	541c758b7fb246d5	e5f19655a0bd6f27	15/15
+take-pick.sh	541c758b7fb246d5	3196fcdc0f449a2f	15/15
 tea-stdin.awk	ddfdfc5257c31b06	f83d8b22629ca909	70/70
 tea-stdin.sh	1f69ec430c059eec	f83d8b22629ca909	15/15
 ticket-drift.sh	1bc60db2e95d9227	40aca047727a9167	36/36
