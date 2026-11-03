@@ -41,7 +41,7 @@ check 0 'tea pr list' false
 check 2 'tea pr list' 1
 # A refusal ends with the command rewritten, each tea call's stdin closed.
 fixes() { # command want
-  got=$(jq -n --arg c "$1" '{tool_input:{command:$c}}' | CLAUDE_PLUGIN_OPTION_GUARD_TEA_STDIN=true "$hook" 2>&1 >/dev/null | tail -n +2)
+  got=$(jq -n --arg c "$1" '{tool_input:{command:$c}}' | CLAUDE_PLUGIN_OPTION_GUARD_TEA_STDIN=true "$hook" 2>&1 >/dev/null | sed -n 2p)
   if [ "$got" = "$2" ]; then echo "ok   $1 -> fix $2"; else echo "FAIL $1: fix got '$got', want '$2'"; fail=1; fi
 }
 fixes 'tea pr list' 'tea pr list </dev/null'

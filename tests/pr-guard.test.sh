@@ -193,6 +193,7 @@ told() { # <repo> <command> [extra env...]
       PATH="$scratch/hubbin:$PATH" "${@:3}" bash "$hook" 2>&1 >/dev/null
 }
 leave='then delete feat/next here and on the remote'
+grep -qF "Nothing in this command ran" <<<"$(told hub "gh pr create --title N --body x")" && echo "ok   a refusal says nothing in the command ran" || { echo "FAIL a refusal says nothing in the command ran"; fail=1; }
 grep -qF "$leave" <<<"$(told hub "gh pr create --title N --body x")" && echo "ok   a second pull request is told to delete the branch it leaves" || { echo "FAIL a second pull request is told to delete the branch it leaves"; fail=1; }
 grep -qF "$leave" <<<"$(told hub "gh pr create --body x --base feat/one --label stacked")" && echo "ok   a too-small base is told to delete the branch it leaves" || { echo "FAIL a too-small base is told to delete the branch it leaves"; fail=1; }
 grep -qF "$leave" <<<"$(told big "gh pr create --body x --base feat/one --label stacked" CLAUDE_PLUGIN_OPTION_GUARD_PR_STACK_LIMIT=1)" && echo "ok   a full stack is told to delete the branch it leaves" || { echo "FAIL a full stack is told to delete the branch it leaves"; fail=1; }

@@ -11,6 +11,6 @@ command="$(jq -r '.tool_input.command // ""' 2>/dev/null)"
 grep -Eq '(^|[^[:alnum:]_-])tea([[:space:]]|$)' <<<"$command" || exit 0 # mutant-ok delete: a fast path: the checks below find nothing to refuse in such a command
 fixed="$(printf '%s' "$command" | gawk -f "$(dirname "$0")/tea-stdin.awk" || true)"
 [ -n "$fixed" ] || exit 0
-echo "tea-stdin: tea blocks on an open stdin and a retry can post twice; add </dev/null to each tea call and run again: Nothing in this command ran, not even its other steps: rerun the ones that need no change on their own." >&2
-printf '%s\n' "$fixed" >&2
+echo "tea-stdin: tea blocks on an open stdin and a retry can post twice; add </dev/null to each tea call and run again:" >&2
+printf '%s\n' "$fixed" "Nothing in this command ran, not even its other steps: rerun the ones that need no change on their own." >&2
 exit 2
