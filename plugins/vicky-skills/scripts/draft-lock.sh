@@ -19,7 +19,9 @@ if [ "$tool" = Bash ]; then
   command=$(jq -r '.tool_input.command // empty' <<<"$payload")
   # open-draft.sh run as a command opens the editor even on a desktop. The
   # page is open-page.sh, which runs it and falls back to the editor itself.
-  if grep -qE '(^|[[:space:];&|(/])open-draft\.sh([[:space:]]|$)' <<<"$command" && ! grep -qE '(^|[[:space:];&|(])(grep|cat|sed|head|tail|less|git|rg)[[:space:]][^;&|]*open-draft\.sh' <<<"$command"; then
+  runs_draft='(^|[[:space:];&|(/])open-draft\.sh([[:space:]]|$)'
+  reads_draft='(^|[[:space:];&|(])(grep|cat|sed|head|tail|less|git|rg)[[:space:]][^;&|]*open-draft\.sh'
+  if grep -qE "$runs_draft" <<<"$command" && ! grep -qE "$reads_draft" <<<"$command"; then
     echo "draft-lock: open-draft.sh opens the draft in the user's editor, which is only the fallback. Open it with open-page.sh <file> from the same folder, run in the background: it shows the page in the browser and falls back to the editor by itself when there is no display. Nothing in this command ran, not even its other steps: rerun the ones that need no change on their own." >&2
     exit 2
   fi

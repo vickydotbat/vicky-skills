@@ -114,8 +114,6 @@ writes=$(awk '{
     }
   }
 }' <<<"$code")
-# Only a command that moves HEAD or writes history claims the checkout: a
-# read leaves no record, so it never blocks the session working there.
 if [ "$event" = PostToolUse ]; then [ -z "$switch$writes" ] || remember; exit 0; fi
 
 was=$(awk -F '\t' -v t="$top" '$1 == t {print $2}' "$mine" 2>/dev/null)
