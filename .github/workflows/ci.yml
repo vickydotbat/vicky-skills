@@ -197,6 +197,8 @@ jobs:
         run: tests/draft_lock_reads_approved_examples.test.sh
       - name: Draft-lock lets read-only python3 run and names where the draft is open
         run: tests/draft_lock_python_approved_examples.test.sh
+      - name: open-draft marks a draft opened as a page
+        run: tests/open-draft-page.test.sh
       - name: Red-first decisions
         run: tests/red-first.test.sh
       - name: Step guard decisions
