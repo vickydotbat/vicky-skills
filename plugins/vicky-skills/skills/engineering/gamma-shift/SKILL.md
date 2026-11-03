@@ -7,7 +7,7 @@ description: Work through the tickets waiting on the user. Use when the user say
 
 > _You have the bridge, Number One. Build what's cleared, stop at a draft, and leave the rest on the captain's desk._
 
-A **waiting ticket** is an open ticket with a `Waits on: <who or what>` line in its body, and it waits on the user when that line names them. The tracker's "Park a ticket" action marks one. `loose-ends` parks a ticket this way, and the tracker's "Waiting work" section says how its tracker marks one when an effort can't finish it. A gamma shift checks each waiting ticket's wait and builds every one whose wait is over. At `engage` it also runs `spark-joy` and the `ticket-drift` agent when the session-start hooks say one is due (`${user_config.deepen_every_days}` and `${user_config.drift_every_days}` days). Every build of one shift lands on one shared **gamma-shift branch**, `gamma-shift-<date>` with the shift's start date, and one draft pull request per repo: never the branch the user has checked out. With nothing to build, make no branch and no pull request.
+A **waiting ticket** is an open ticket with a `Waits on: <who or what>` line in its body, and it waits on the user when that line names them. The tracker's "Park a ticket" action marks one. `loose-ends` parks a ticket this way, and the tracker's "Waiting work" section says how its tracker marks one when an effort can't finish it. A gamma shift checks each waiting ticket's wait and builds one batch of the cleared ones. At `engage` it also runs `spark-joy` and the `ticket-drift` agent when the session-start hooks say one is due (`${user_config.deepen_every_days}` and `${user_config.drift_every_days}` days). Every build of one shift lands on one shared **gamma-shift branch**, `gamma-shift-<date>` with the shift's start date, and one draft pull request per repo: never the branch the user has checked out. The user's own work gets its own branch and pull request, and stacks on the gamma-shift pull request only when it needs a change from it. With nothing to build, make no branch and no pull request.
 
 The run mode comes from its caller: `remind` from the session-start hook, `engage` from the hook or a typed run. The plugin setting is `${user_config.gamma_shift}`.
 
@@ -23,7 +23,7 @@ The run mode comes from its caller: `remind` from the session-start hook, `engag
    - Anything still open: **waits**.
 
    Done when every ticket is cleared, waits or asks, with the evidence quoted.
-4. **Build the cleared tickets**, one at a time, oldest first, so each build starts from the last one's push to the shared branch. For each, dispatch one background subagent with `isolation: "worktree"` and the brief below, then wait for its completion notification before the next. Any other wait is a gate, as [GATES.md](../../GATES.md) says, with `${CLAUDE_PLUGIN_ROOT}/scripts/watch.sh '<check>'` under the Monitor tool. You, the session's main thread, dispatch every subagent: a subagent never dispatches another. When the session-start hook said a `spark-joy` run is due, it goes last in the same queue: one background subagent with `isolation: "worktree"` and the spark-joy brief below. It is the repo's health check, so it runs even when no ticket cleared. When the hook said a drift check is due, start the `ticket-drift` agent as one background subagent at the start of the queue: it only comments, so it runs beside the builds. Done when every cleared ticket and a due `spark-joy` run has a commit on the shared branch or a reason it stopped, and a due drift check has reported.
+4. **Build one batch.** A batch is at most three cleared tickets, smallest first: the one whose examples and body promise the least change goes first. Dispatch one background subagent for the whole batch, with `isolation: "worktree"` and the brief below, naming the batch's tickets in order. It builds them in turn, each from the last one's push to the shared branch. One batch per session: when it finishes, no second batch starts by itself, and the next starts only when the user types "gamma shift". Any other wait is a gate, as [GATES.md](../../GATES.md) says, with `${CLAUDE_PLUGIN_ROOT}/scripts/watch.sh '<check>'` under the Monitor tool. You, the session's main thread, dispatch every subagent: a subagent never dispatches another. When the session-start hook said a `spark-joy` run is due, it goes last in the same queue: one background subagent with `isolation: "worktree"` and the spark-joy brief below. It is the repo's health check, so it runs even when no ticket cleared. When the hook said a drift check is due, start the `ticket-drift` agent as one background subagent at the start of the queue: it only comments, so it runs beside the builds. Done when every ticket in the batch and a due `spark-joy` run has a commit on the shared branch or a reason it stopped, and a due drift check has reported.
 5. **Ask the decisions in one round.** For each ticket that asks: the question, two options at most, your pick and why, in one message. Write each answer into its ticket as a comment and drop the `Waits on:` line. A ticket whose answer clears it goes to step 4. Done when the user has answered or the round is sent.
 6. **Report** in the form below. Done when the report is sent.
 
@@ -32,7 +32,7 @@ The run mode comes from its caller: `remind` from the session-start hook, `engag
 ## Subagent brief
 
 ```text
-Build <ticket> to a draft pull request. You work alone: no question reaches the user, and you dispatch no agent.
+Build <tickets>, in this order, one after another, onto one draft pull request. You work alone: no question reaches the user, and you dispatch no agent.
 1. Claim the ticket with "Claim a waiting ticket" in docs/agents/issue-tracker.md, before any other write. A claimed ticket drops off every other session's waiting list.
 2. Read the agent file (CLAUDE.md or AGENTS.md) of the repo the ticket changes. When it says to commit straight to main, this is a trunk repo: git pull --rebase on main, build there, push to main, and open no pull request. Otherwise git fetch --prune, then git switch --detach origin/gamma-shift-<date>, or origin/main when origin has no such branch yet. Push every commit with git push origin HEAD:gamma-shift-<date>. When that branch has no pull request, open one as a draft titled "Gamma shift <date>"; otherwise add this ticket to its body. Never commit to any other branch.
 3. No approved examples on the ticket: write drafts with `examples` steps 1 and 2 only, commit and push them to the shared branch, and stop. Report "examples wait on the user's approval". No page opens from a subagent.
@@ -47,6 +47,7 @@ The spark-joy run gets the same brief with `spark-joy` in place of `do`: no tick
 
 ```text
 Built (one draft pull request per repo, gamma-shift-<date>):
+<n> more waiting, say gamma shift for them
 - <pull request link>: <tickets it builds>, <n> Check these
 - spark-joy: <module folded in>, or Lean already
 Drift comments:
@@ -58,3 +59,5 @@ Q1 <ticket>: <question> A) <option> B) <option>. Pick: <A or B>, <why>
 ```
 
 A run with nothing to build, nothing waiting and no question reports one line: `gamma shift: nothing waits on you`.
+
+The `<n> more waiting, say gamma shift for them` line shows only when more than three cleared tickets wait, with `<n>` the count the batch left out.

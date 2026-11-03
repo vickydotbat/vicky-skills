@@ -33,7 +33,8 @@ if gitdir=$(git rev-parse --absolute-git-dir 2>/dev/null); then lock="$gitdir/re
 before=$(cat "$1" 2>/dev/null)
 # shellcheck disable=SC2086 # the editor variable holds a command and its flags
 $editor "$1" & pid=$!
-[ -n "$lock" ] && printf '%s\n%s\n' "$pid" "$1" > "$lock"
+# The third line tells draft-lock where the draft is open: open-page.sh sets DRAFT_PAGE.
+[ -n "$lock" ] && printf '%s\n%s\n%s\n' "$pid" "$1" "${DRAFT_PAGE:+page}" > "$lock"
 trap '[ -n "$lock" ] && rm -f "$lock"' EXIT
 wait "$pid"; status=$?
 [ -n "$lock" ] && [ -f "$1" ] || exit "$status"

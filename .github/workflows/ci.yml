@@ -39,6 +39,12 @@ jobs:
         run: tests/approved-spec-tags.test.sh
       - name: Approved-spec guard leaves a doc that shows the mark editable
         run: tests/approved_spec_prose_approved_examples.test.sh
+      - name: Approved-spec guard reads quoted text as text
+        run: tests/approved_spec_quoted_pipe_approved_examples.test.sh
+      - name: Approved-spec guard keeps a quoted redirect target a write
+        run: tests/approved-spec-quoted.test.sh
+      - name: Approved-spec guard lets a script run by path read the guard
+        run: tests/approved_spec_runs_other_script_approved_examples.test.sh
       - name: Approved-spec guard follows a leading cd
         run: tests/approved_spec_guard_cd_approved_examples.test.sh
       - name: Approved-spec guard follows a leading cd ~/
@@ -155,6 +161,10 @@ jobs:
         run: tests/poll_pace_heredoc_approved_examples.test.sh
       - name: Gamma-shift hook
         run: tests/gamma-shift.test.sh
+      - name: Gamma shift builds one batch a session
+        run: tests/gamma_shift_batch_approved_examples.test.sh
+      - name: Gamma shift keeps one pull request per run
+        run: tests/gamma-shift-runs.test.sh
       - name: Auto-tidy hook
         run: tests/auto-tidy.test.sh
       - name: Spark-joy hook
@@ -185,6 +195,8 @@ jobs:
         run: tests/draft-lock.test.sh
       - name: Draft-lock lets reads and scratch writes run
         run: tests/draft_lock_reads_approved_examples.test.sh
+      - name: Draft-lock lets read-only python3 run and names where the draft is open
+        run: tests/draft_lock_python_approved_examples.test.sh
       - name: Red-first decisions
         run: tests/red-first.test.sh
       - name: Step guard decisions

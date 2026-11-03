@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # PreToolUse hook (Edit, Write, MultiEdit, NotebookEdit, Bash): while red-pen
-# has a draft open in the user's editor, refuses writes to the checkout the
+# has a draft open, as a page or in the user's editor, refuses writes to the checkout the
 # draft was opened from. The lock is the red-pen-open file in that checkout's
 # git folder, holding the editor's process id; a lock whose editor has exited
 # counts for nothing. Writes outside the checkout run. A Bash command is a
@@ -18,6 +18,13 @@ if [ "$tool" = Bash ]; then
   command=$(jq -r '.tool_input.command // empty' <<<"$payload")
   # A stream sent to another stream (2>&1) or to /dev/null writes no file.
   command=$(sed -E 's#[0-9&]*>>?[[:space:]]*(&[0-9-]|/dev/null)##g' <<<"$command")
+  # An interpreter's own code that holds no write call (open for writing, a
+  # write, remove, rename, a shell-out) only reads, so it runs like a script.
+  code_re="(python3?|node|ruby|perl)[[:space:]]+-[a-zA-Z]*[ce][[:space:]]+('[^']*'|\"[^\"]*\")"
+  writer='open\([^)]*,[^)]*[wax+]|\.write|remove|unlink|rename|rmtree|mkdir|shutil|subprocess|system\(|spawn|exec|fs\.|File\.|>'
+  if ! grep -oE "$code_re" <<<"$command" | grep -qE "$writer"; then
+    command=$(sed -E "s/$code_re/\1 code.py/g" <<<"$command")
+  fi
   # Text in single quotes (a grep, awk or jq pattern) is never a redirect.
   command=$(sed -E "s/'[^']*'/''/g" <<<"$command")
   # A write form other than a redirect or tee. An interpreter writes only
@@ -58,5 +65,8 @@ lock="$gitdir/red-pen-open"
 pid=$(head -1 "$lock")
 case "$pid" in ''|*[!0-9]*) exit 0 ;; esac
 kill -0 "$pid" 2>/dev/null || exit 0
-echo "draft-lock: a draft is open in the user's editor ($(sed -n 2p "$lock")), so $place waits until they close it. Work in your scratch folder meanwhile." >&2
+# open-draft.sh writes "page" on the lock's third line when the draft opened in the browser.
+where="in the user's editor"
+[ "$(sed -n 3p "$lock")" = page ] && where="as a page in the user's browser"
+echo "draft-lock: a draft is open $where ($(sed -n 2p "$lock")), so $place waits until they close it. Work in your scratch folder meanwhile." >&2
 exit 2
