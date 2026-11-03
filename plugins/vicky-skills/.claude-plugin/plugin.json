@@ -286,6 +286,12 @@
       "description": "Refuse the windowed Playwright browser for a page on this machine, so a by-eye check uses the headless server instead of opening a window on your desktop.",
       "default": true
     },
+    "fetch_place_hint": {
+      "type": "boolean",
+      "title": "Fetched data in a lasting place",
+      "description": "When a command downloads or unpacks into /tmp, remind the agent that data kept outside git goes in one lasting place every checkout of the project shares.",
+      "default": true
+    },
     "guard_stale_blame": {
       "type": "boolean",
       "title": "No stale-copy blame without proof",
