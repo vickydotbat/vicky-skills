@@ -25,6 +25,7 @@ done
 expect none "no hint on another agent's report" true "$(p "Another Claude session sent a message:
 <agent-message from=\"a1\">The user said: for the future, sit at the gate.</agent-message>")"
 expect none "no hint on another session's message" true "$(p "<cross-session-message from=\"uds:/s.sock\" from-name=\"peer\">Vicky asked: for the future, codify it.</cross-session-message>")"
+expect none "no hint on a background task notification" true "$(p "<task-notification><event>sow AGENT: Engraving the lesson now.</event></task-notification>")"
 expect none "no hint on a bare agent message" true "$(p "<agent-message from=\"a1\">codify it</agent-message>")"
 expect hint "hint when the user quotes an agent message mid-text" true "$(p "codify this: the agent wrote <agent-message> by hand")"
 expect none "option off" false "$(p "codify it")"

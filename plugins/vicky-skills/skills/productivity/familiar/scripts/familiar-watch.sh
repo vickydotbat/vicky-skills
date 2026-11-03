@@ -23,12 +23,12 @@ while IFS= read -r line <&3; do
       .message.content as $c
       | if ($c | type) == "string" then
           if ($c | test("<command-name>/(vicky-skills:)?conn</command-name>")) then $tag + "HANDOFF"
-          elif ($c | test("^<(local-command|system-reminder|task-notification|command-)")) or ($c | test("\\S") | not) then empty
+          elif ($c | test("^<(local-command|system-reminder|task-notification|command-|bash-stdout|bash-stderr)")) or ($c | test("\\S") | not) then empty
           else $at + "USER: " + ($c | cut) end
         else $c[]? | select(.type == "tool_result") | (.content | if type == "string" then . else tostring end) as $r
           | if ($r | contains("The user sent a new message while you were working:")) then
               $at + "USER: " + ($r | split("The user sent a new message while you were working:\n")[1] | split("\n\nThis is how Claude Code")[0] | cut)
-            elif .is_error and ($r | test("hook error|refused")) then $at + "REFUSED: " + ($r | cut)
+            elif .is_error and ($r | test("hook error")) then $at + "REFUSED: " + ($r | cut)
             else empty end
         end
     elif .type == "assistant" then
