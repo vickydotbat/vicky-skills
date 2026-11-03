@@ -1,20 +1,21 @@
 #!/usr/bin/env bash
-# PreToolUse, PostToolUse (Bash), UserPromptSubmit and SessionEnd hook: keeps two sessions from
-# sharing one checkout. Each session's last git command in a checkout is kept
-# in the plugin's data folder as "<checkout>\t<branch>\t<epoch>", one file per
-# session, deleted when the session ends. Beside it, "<session>.pid" holds the
-# session's process id and start time, so the record of a session that closed
-# without SessionEnd (its terminal closed) is dropped once that process is
-# gone. A prompt that starts the conn skill writes "<session>.handoff": that
-# session handed the work on, so its record stops counting until the user's
-# next prompt to it. "<session>.first" keeps when the session first ran git in
-# each checkout: the session that came first keeps committing there, and a
-# newcomer is sent to a worktree of its own. A branch switch is refused while
-# another session used the checkout in the last 12 hours, and a session whose
-# checkout moved to another branch since its last git command is told once. A
-# git command that writes history there (commit, rebase, reset, merge,
-# cherry-pick, stash, pull) is refused like a switch, so the session works in
-# its own worktree. On unless the plugin option guard_checkout is false.
+# PreToolUse, PostToolUse (Bash), UserPromptSubmit and SessionEnd hook:
+# keeps two sessions from sharing one checkout. Each session's last git
+# command in a checkout is kept in the plugin's data folder as
+# "<checkout>\t<branch>\t<epoch>", one file per session, deleted when the
+# session ends. Beside it, "<session>.pid" holds the session's process id and
+# start time, so the record of a session that closed without SessionEnd (its
+# terminal closed) is dropped once that process is gone. A prompt that starts
+# the conn skill writes "<session>.handoff": that session handed the work on,
+# so its record stops counting until the user's next prompt to it.
+# "<session>.first" keeps when the session first ran git in each checkout: the
+# session that came first keeps committing there, and a newcomer is sent to a
+# worktree of its own. A branch switch is refused while another session used
+# the checkout in the last 12 hours, and a session whose checkout moved to
+# another branch since its last git command is told once. A git command that
+# writes history there (commit, rebase, reset, merge, cherry-pick, stash,
+# pull) is refused like a switch, so the session works in its own worktree. On
+# unless the plugin option guard_checkout is false.
 GUARD=checkout-guard
 OPTION=${CLAUDE_PLUGIN_OPTION_GUARD_CHECKOUT:-true}
 case "$OPTION" in false|0) exit 0 ;; esac
@@ -124,7 +125,7 @@ writes=$(awk '{
 if [ -n "$switch$writes" ]; then
   for other in "$records"/*; do
     [ -f "$other" ] && [ "$other" != "$mine" ] || continue
-    case "$other" in *.pid|*.new|*.handoff|*.first) continue ;; esac
+    case "${other##*/}" in *.*) continue ;; esac # a session id holds no dot, so this is a side file
     if gone "$other"; then rm -f "$other" "$other".*; continue; fi
     [ -e "$other.handoff" ] && continue
     line=$(awk -F '\t' -v t="$top" '$1 == t' "$other")

@@ -72,6 +72,8 @@ check "an offer in a session that never started do goes through" 'out=$(PLANNING
 check "an offer in a warp is sent back" 'PLANNING=1 stop | jq -e ".decision == \"block\"" >/dev/null'
 { user "<command-name>/vicky-skills:do</command-name>"; text "Sorting could be a follow-up PR."; } > "$fx/t.jsonl"
 check "an offer after the user typed /do is sent back" 'PLANNING=1 stop | jq -e ".decision == \"block\"" >/dev/null'
+{ jq -nc '{type:"user",message:{content:[{type:"tool_result",content:"\"skill\":\"vicky-skills:do\" <command-name>/vicky-skills:do</command-name>"}]}}'; user "go"; text "Sorting could be a follow-up PR."; } > "$fx/t.jsonl"
+check "a tool result that only mentions do does not count as building" 'out=$(PLANNING=1 stop); [ $? = 0 ] && [ -z "$out" ]'
 { building vicky-skills:mission-brief; user "go"; text "Sorting could be a follow-up PR."; } > "$fx/t.jsonl"
 check "another skill does not count as building" 'out=$(PLANNING=1 stop); [ $? = 0 ] && [ -z "$out" ]'
 # A Next list that waits on no one is work to start now.
@@ -80,6 +82,8 @@ check "a reply that ends on a Next list is sent back" 'blocked'
 check "the steer says to start the list now" 'stop | jq -r .reason | grep -q "Start its first item in this turn"'
 check "the Next steer is one decision and exits 0" 'out=$(stop); [ $? = 0 ] && [ "$(jq -s length <<<"$out")" = 1 ]'
 { user "go"; text "🚪 Waiting on you: Q1, keep the old branches?"; text "**Next**: fix S1 to C3."; } > "$fx/t.jsonl"
+{ user "go"; text "Next: fix the lint errors you introduced, then rerun after the change."; } > "$fx/t.jsonl"
+check "a Next list that only mentions you or after is sent back" 'blocked'
 check "a wait elsewhere in the reply leaves a Next list that waits on no one" 'blocked'
 for r in "Next: merge #12 once CI is green." "Next: the sitting, which waits on you." "Next up, want me to take the cloak?" "Next: after it merges, I stage the server."; do
   { user "go"; text "$r"; } > "$fx/t.jsonl"

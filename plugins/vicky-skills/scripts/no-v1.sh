@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Stop hook (guard_no_v1, off by default): an effort ships complete. In a
-# session that started do or warp, when the
-# agent's last reply offers found work as a follow-up pull request, a later
+# session that started do or warp, when the agent's last reply offers found work as a follow-up pull request, a later
 # ticket or a v2, keeps an open ticket out of the pull request, or asks
 # whether to fold it in, leave it for later or take a ticket next, the
 # stop is blocked once with a steer: fold it in, then report what was folded.
@@ -21,7 +20,9 @@ case "${CLAUDE_PLUGIN_OPTION_GUARD_NO_V1:-}" in true|1) ;; *) exit 0 ;; esac
 # Found work folds into an effort only while one is built. A session where do
 # or warp never started is planning (filing tickets, a sup, a question), and
 # its reply goes through.
-grep -qE '"skill": ?"(vicky-skills:)?(do|warp)"|<command-name>/(vicky-skills:)?(do|warp)</command-name>' "$transcript" || exit 0
+grep -E '"skill": ?"(vicky-skills:)?(do|warp)"|<command-name>/(vicky-skills:)?(do|warp)</command-name>' "$transcript" | jq -e 'select(
+  (.type == "assistant" and any(.message.content[]?; .type == "tool_use" and .name == "Skill" and (.input.skill | test("^(vicky-skills:)?(do|warp)$"))))
+  or (.type == "user" and (.message.content | type) == "string" and (.message.content | test("<command-name>/(vicky-skills:)?(do|warp)</command-name>"))))' >/dev/null 2>&1 || exit 0
 # A pull request of its own the user asked for is no deferral.
 grep -qiE '\b(separate|different|own|new|another) (pr|pull request)\b' <<<"$asked" && exit 0
 offers=$(prose | sed -E 's/"[^"]*"//g; s/“[^”]*”//g; s/‘[^’]*’//g; s/(^|[[:space:](])'"'"'[^'"'"']*'"'"'([[:space:].,;:!?)]|$)/\1\2/g' | tr '\n' ' ' | sed 's/\([.?!]\) /\1\n/g' \
@@ -35,7 +36,7 @@ if [ -z "$offers" ]; then
   # Only the turn's last message counts: a checkpoint's Next may be done by now.
   last=$(tail -n 400 "$transcript" | jq -rs '[.[] | select(.type == "assistant") | .message.content[]?
     | if .type == "text" then .text elif .type == "tool_use" and .name == "SendUserMessage" then .input.message else empty end] | last // ""' 2>/dev/null)
-  next=$(sed 's/`[^`]*`//g' <<<"$last" | grep -iE '^[[:space:]*_-]*next( up)?[*_]*[:,]' | grep -v '?' | grep -viE 'wait|blocked|🚪|\b(once|after|when|until|you|your)\b')
+  next=$(sed 's/`[^`]*`//g' <<<"$last" | grep -iE '^[[:space:]*_-]*next( up)?[*_]*[:,]' | grep -v '?' | grep -viE 'wait|blocked|🚪|\b(once|until|merges?|to you)\b')
   [ -n "$next" ] || exit 0
   jq -n --arg n "$next" '{decision:"block", reason:("Your reply ends on a Next list that waits on no one, so it is work to do now, not to report. Start its first item in this turn and keep going until each item is done or waits on the user, another person or a deploy. Review findings inside an effort are part of it: fix each one that waits on no one, then report. The line:\n" + $n)}'
   exit 0
