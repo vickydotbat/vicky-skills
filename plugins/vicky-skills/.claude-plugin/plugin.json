@@ -116,6 +116,18 @@
       "description": "Space-separated owner/repo names the local-path guard skips, such as a dotfiles repo.",
       "default": ""
     },
+    "guard_git": {
+      "type": "boolean",
+      "title": "Git branches, pushes and commits",
+      "description": "Refuse a new branch on top of unmerged work, a push to main or master, a commit message that credits an AI, and a commit that sets its own author or committer. In a trunk repo, a push to main runs and a new branch is refused.",
+      "default": false
+    },
+    "git_guard_trunk_repos": {
+      "type": "string",
+      "title": "Trunk repos for the git guard",
+      "description": "Repos that take every change on main, as owner/repo, separated by commas, for a repo that can't hold a \"Trunk: on\" line in its AGENTS.md, CLAUDE.md or docs/agents.",
+      "default": ""
+    },
     "guard_push_behind": {
       "type": "boolean",
       "title": "No push from behind main",
