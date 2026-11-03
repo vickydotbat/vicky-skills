@@ -106,4 +106,11 @@ check "a Next list in a planning session goes through" '{ user "plan it"; text "
 # Then the reply goes through untouched
 { user "go"; text "Done. I noted one idea, a retry on a dropped connection, in the Ideas place: the vault inbox."; } > "$fx/t.jsonl"
 check "E9 a reported Ideas line goes through" 'out=$(stop); [ $? = 0 ] && [ -z "$out" ]'
+# Ticket words match as whole words at both ends: "another project" names no pull request.
+{ user "go"; text "So the claim rests on another project's code until your next sitting."; } > "$fx/t.jsonl"
+check "another project is no other pull request" '[ -z "$(stop)" ]'
+{ user "go"; text "The tooltip could go in another PR."; } > "$fx/t.jsonl"
+check "another PR is still an offer" 'blocked'
+{ user "go"; text "Closed the open ticket for the pane jump, and every open issue here is fixed."; } > "$fx/t.jsonl"
+check "an open ticket named as a thing is no offer to file one" '[ -z "$(stop)" ]'
 exit $fail

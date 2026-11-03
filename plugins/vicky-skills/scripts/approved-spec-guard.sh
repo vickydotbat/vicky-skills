@@ -22,7 +22,7 @@ refuse() {
   jq -n --arg f "$1" --arg why "${2:-}" '{hookSpecificOutput: {
     hookEventName: "PreToolUse",
     permissionDecision: "deny",
-    permissionDecisionReason: ("\($f) holds approved examples, which change only with the user'"'"'s yes.\($why) Take the new wording through the examples skill'"'"'s \"Changing an approved example\": draft it with red-pen, naming the test file on the draft'"'"'s location line. Once the user changes it there and closes the file, the edit goes through.")
+    permissionDecisionReason: ("\($f) holds approved examples, which change only with the user'"'"'s yes.\($why) Take the new wording through the examples skill'"'"'s \"Changing an approved example\": draft it with red-pen, naming the test file on the draft'"'"'s location line. Once the user changes it there and closes the file, the edit goes through. A new test that no example approved goes in a test file of its own, such as a regression test beside the approved file, and needs no draft.")
   }}'
   exit 0
 }

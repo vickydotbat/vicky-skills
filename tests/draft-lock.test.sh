@@ -3,11 +3,15 @@
 # draft is open, an edit with no path, and what a refusal names.
 set -u
 # No test may reach the user's own editor.
-export VISUAL=true EDITOR=true
+export VISUAL=true EDITOR=true BROWSER=true
 root="$(cd "$(dirname "$0")/.." && pwd)"
 hook="$root/plugins/vicky-skills/scripts/draft-lock.sh"
 opener="$root/plugins/vicky-skills/skills/productivity/interactive-page/scripts/open-draft.sh"
-dir=$(mktemp -d); trap 'kill "$(head -1 "$lock" 2>/dev/null)" 2>/dev/null; rm -rf "$dir"' EXIT
+dir=$(mktemp -d); mkdir -p "$dir/desktop"
+# The fake desktop names the fake browser, so nothing reaches the user's own.
+printf '#!/usr/bin/env bash\necho "BROWSER=true"\n' > "$dir/desktop/systemctl"; chmod +x "$dir/desktop/systemctl"
+export PATH="$dir/desktop:$PATH"
+trap 'kill "$(head -1 "$lock" 2>/dev/null)" 2>/dev/null; rm -rf "$dir"' EXIT
 repo="$dir/repo"; git init -q "$repo"; mkdir -p "$repo/scripts"; printf 'x\n' > "$repo/scripts/c.sh"
 # The stand-in editor outlives the slowest run; the trap above stops it.
 printf '#!/bin/sh\nexec sleep 900\n' > "$dir/editor"; chmod +x "$dir/editor"
@@ -33,4 +37,12 @@ expect "a copy between two folders outside the checkout runs" 0 "" "$(bash_in "c
 expect "a copy into the checkout is still refused" 2 "$repo waits" "$(bash_in "cp $dir/a $repo/scripts/c.sh")"
 expect "a git write that names an outside path is still refused" 2 "$repo waits" "$(bash_in "git commit -F $dir/msg")"
 expect "a git write naming an outside path that holds rm, cp or sed is still refused" 2 "$repo waits" "$(bash_in "git commit -F /tmp/x-rm-cp-sed/msg")"
+# open-draft.sh run by hand opens the editor even on a desktop: the page is
+# open-page.sh, which falls back to the editor itself (debt log D37).
+expect "open-draft.sh run directly is refused and steered to open-page.sh" 2 "open-page.sh" "$(bash_in 'bash plugins/x/skills/productivity/interactive-page/scripts/open-draft.sh /tmp/s/drafts.md')"
+expect "open-draft.sh run by its path is refused too" 2 "open-page.sh" "$(bash_in 'cd /tmp && ./open-draft.sh drafts.md')"
+expect "open-page.sh runs" 0 "" "$(bash_in 'bash plugins/x/skills/productivity/interactive-page/scripts/open-page.sh /tmp/s/drafts.md')"
+expect "a read of open-draft.sh runs" 0 "" "$(bash_in 'grep -n lock plugins/x/scripts/open-draft.sh')"
+git init -q "$dir/plain"
+expect "open-draft.sh is refused with no draft open as well" 2 "open-page.sh" "$(jq -n --arg d "$dir/plain" '{tool_name: "Bash", tool_input: {command: "bash x/open-draft.sh /tmp/s/drafts.md"}, cwd: $d}')"
 exit $fail

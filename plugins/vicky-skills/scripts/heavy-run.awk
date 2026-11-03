@@ -16,7 +16,9 @@ BEGIN {
   CAP = "systemd-run --user --scope -p MemoryMax=4G -p MemorySwapMax=0 "
 }
 
-{ out = scan($0, 1); if (changed) print out }
+# HEAVY_RAW is the command before its heredocs were stripped. It comes through
+# the environment because gawk -v would read its backslashes as escapes.
+{ ALL = ENVIRON["HEAVY_RAW"]; out = scan($0, 1); if (changed) print out }
 
 # words(s, W, P): splits s into words with quotes removed. W[k] is word k,
 # P[k] the offset in s where it starts. Returns the count.
@@ -83,6 +85,16 @@ function classify(seg,   W, P, n, k, h, cap, v) {
   if (h == "magick" && W[k + 1] ~ /^(identify|-version|-list)$/) return "read"
   if (h ~ /^(magick|convert|montage|composite|mogrify|ffmpeg|blender|sd-cli|realesrgan.*)$/) return "heavy"
   if (h == "dotnet" && W[k + 1] ~ /^(test|build)$/) return "heavy"
+  # Python whose code is in the command (-c, or code on stdin) is image work
+  # only when that code imports an image or array library. The name rule below
+  # is left for a script run by its path.
+  # shortcut: stdin code is looked for in the whole command, not its heredoc alone; narrow it if a second command's import misfires.
+  if (h ~ /^python[0-9.]*$/) {
+    # Single-letter flags such as -I or -u come before the code.
+    for (v = k + 1; v <= n && W[v] ~ /^-[A-Za-z]+$/ && W[v] !~ /c|m/; v++) ;
+    if (W[v] ~ /^-[A-Za-z]*c$/) return imports(W[v + 1]) ? "heavy" : "other"
+    if (v > n || W[v] == "-" || W[v] ~ /^<</) return imports(ALL) ? "heavy" : "other"
+  }
   if (h ~ /^python[0-9.]*$/ && tolower(seg) ~ /\.(png|jpe?g|webp|gif|bmp|tga|dds|tiff?|exr|mp4|mkv|webm)([^a-z0-9]|$)|image|icon|sprite|atlas|texture|render|upscale|montage|build/) return "heavy"
   if (h ~ /^(ba|z|da)?sh$/ && W[k + 1] ~ /^-[a-z]*c[a-z]*$/) return scan(W[k + 2], 0) ? "heavy" : "other"
   if (h == "nix" && W[k + 1] ~ /^(develop|shell)$/) {
@@ -93,6 +105,11 @@ function classify(seg,   W, P, n, k, h, cap, v) {
   }
   if (h ~ /^(identify|ffprobe|echo|printf|true|which|ls|cat|head|tail|printenv|pwd|git|test)$/) return "read"
   return "other"
+}
+
+# imports(code): 1 when the python code imports an image or array library.
+function imports(code) {
+  return code ~ /(^|[^A-Za-z0-9_])(import|from)[ \t]+([A-Za-z0-9_.]+[ \t]*,[ \t]*)*(PIL|imageio|cv2|numpy|torch)([^A-Za-z0-9_]|$)/
 }
 
 # The cap goes in front of the first word after the env assignments. A timeout

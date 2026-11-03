@@ -26,7 +26,7 @@ fixture() {
 # When the agent runs a git command there to read the conflict
 # Then checkout-guard lets it through, since the checkout is still on main
 fixture "$dir/a"
-hook "$dir/a" PostToolUse "git status"
+hook "$dir/a" PostToolUse "git commit -am mine"
 g "$dir/a" rebase -q other >/dev/null 2>&1
 hook "$dir/a" PreToolUse "git diff --name-only --diff-filter=U"
 expect "a rebase in progress keeps the checkout on its branch" 0 $?
@@ -35,7 +35,7 @@ expect "a rebase in progress keeps the checkout on its branch" 0 $?
 # When the agent runs a git command there
 # Then checkout-guard still refuses it, and steers to a worktree
 fixture "$dir/b"
-hook "$dir/b" PostToolUse "git status"
+hook "$dir/b" PostToolUse "git commit -am mine"
 g "$dir/b" switch -q other
 hook "$dir/b" PreToolUse "git status"
 expect "a branch switched under the session is still refused" 2 $?

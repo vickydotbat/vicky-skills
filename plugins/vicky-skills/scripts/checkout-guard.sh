@@ -10,7 +10,8 @@
 # so its record stops counting until the user's next prompt to it.
 # "<session>.first" keeps when the session first ran git in each checkout: the
 # session that came first keeps committing there, and a newcomer is sent to a
-# worktree of its own. A branch switch is refused while another session used
+# worktree of its own. Only a switch or a history write is recorded: a read
+# leaves no claim. A branch switch is refused while another session used
 # the checkout in the last 12 hours, and a session whose checkout moved to
 # another branch since its last git command is told once. A git command that
 # writes history there (commit, rebase, reset, merge, cherry-pick, stash,
@@ -80,15 +81,6 @@ remember() {
 first() { # record -> when its session first ran git in this checkout
   awk -F '\t' -v t="$top" '$1 == t {print $2; exit}' "$1.first" 2>/dev/null
 }
-if [ "$event" = PostToolUse ]; then remember; exit 0; fi
-
-was=$(awk -F '\t' -v t="$top" '$1 == t {print $2}' "$mine" 2>/dev/null)
-if [ -n "$was" ] && [ "$was" != "$branch" ]; then
-  remember
-  refuse "$GUARD: this checkout moved from $was to $branch since your last git command here. Another session switched it." \
-    "Leave $branch to that session, and work on yours in its own worktree: git worktree add <dir> $was, with <dir> at .claude/worktrees/$was"
-fi
-
 # A switch moves the checkout: git switch, or a checkout of a branch or commit
 # with no "--" path list.
 switch=""
@@ -122,6 +114,15 @@ writes=$(awk '{
     }
   }
 }' <<<"$code")
+if [ "$event" = PostToolUse ]; then [ -z "$switch$writes" ] || remember; exit 0; fi
+
+was=$(awk -F '\t' -v t="$top" '$1 == t {print $2}' "$mine" 2>/dev/null)
+if [ -n "$was" ] && [ "$was" != "$branch" ]; then
+  remember
+  refuse "$GUARD: this checkout moved from $was to $branch since your last git command here. Another session switched it." \
+    "Leave $branch to that session, and work on yours in its own worktree: git worktree add <dir> $was, with <dir> at .claude/worktrees/$was"
+fi
+
 if [ -n "$switch$writes" ]; then
   for other in "$records"/*; do
     [ -f "$other" ] && [ "$other" != "$mine" ] || continue

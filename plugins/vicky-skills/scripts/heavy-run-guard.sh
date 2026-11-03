@@ -14,13 +14,15 @@ command -v gawk >/dev/null || { echo "heavy-run-guard: gawk is missing, guard is
 here="$(dirname "$0")"
 payload=$(cat)
 cmd=$(jq -r '.tool_input.command // ""' <<<"$payload" 2>/dev/null)
-# A heredoc body is text, unless the heredoc feeds a shell or an interpreter.
+# A heredoc body is text, unless the heredoc feeds a shell. Python reads its
+# heredoc as code, so heavy-run.awk sees the whole command as HEAVY_RAW.
+raw=$cmd
 cmd=$(gawk -v code=1 -f "$here/heredoc-strip.awk" <<<"$cmd")
 top=$(git -C "$(jq -r '.cwd // "."' <<<"$payload" 2>/dev/null)" rev-parse --show-toplevel 2>/dev/null)
 # Each declared glob becomes a regex: * and ? stay inside one folder.
 decl=$([ -n "$top" ] && sed -n 's/^Bounded scripts:[[:space:]]*//p' "$top"/docs/agents/*.md 2>/dev/null \
   | tr ' ' '\n' | sed '/^$/d; s/[.]/\\./g; s/[*]/[^\/]*/g; s/[?]/[^\/]/g' | paste -sd'|')
-fixed=$(printf '%s' "$cmd" | gawk -v decl="$decl" -f "$here/heavy-run.awk")
+fixed=$(printf '%s' "$cmd" | HEAVY_RAW=$raw gawk -v decl="$decl" -f "$here/heavy-run.awk")
 [ -n "$fixed" ] || exit 0
 echo "heavy-run-guard: a heavy run needs a memory cap (systemd-run with MemoryMax=), since a timeout alone lets it fill memory and freeze the desktop; run it like this:" >&2
 printf '%s\n' "$fixed" "Nothing in this command ran, not even its other steps: rerun the ones that need no change on their own." >&2
