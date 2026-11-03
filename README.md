@@ -98,6 +98,7 @@ Turn a hook on or off under `/plugin`, in the plugin's settings. The last column
 | **Stale copy** (recommended) | Tells the agent once a session when it runs an older vicky-skills copy than the one installed, so you know a restart picks up the new one. | Always on |
 | **Confirm the objective** (recommended) | When you type `/do` with the goal in your own words, it reminds the agent to say the goal back to you and wait for your answer before building anything. A `/do` that names a ticket, a ticket note or a star chart goes straight to work. | Always on |
 | **Viewscreen band** (recommended) | Sits above the prompt and says what the agent is doing and for how long, with a line naming the worktree. Open it for every step of the session and each background agent. It's a Claude Code mod, so it needs function hooks turned on. | Always on |
+| **Preview pane** (recommended) | Type `/preview <path>` and a pane beside the chat shows the picture, or one frame from a video, with an Open button for your default app. Where the terminal can't draw images (kitty, Ghostty and iTerm2 can), the pane shows the file's name. The status line links the newest image or video the chat named. JPEGs and video frames need ffmpeg. It's part of the same mod as the band. | Always on |
 
 ## Install
 
