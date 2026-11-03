@@ -24,7 +24,7 @@ if [[ $command =~ git[[:space:]]+-C[[:space:]]+([^[:space:]\;\&\|]+) ]]; then
 elif [[ $before_git =~ (^|[[:space:]\;\&\|])cd[[:space:]]+([^[:space:]\;\&\|]+) ]]; then
   target=${BASH_REMATCH[2]}
 fi
-target=${target//\"/}; target=${target//\'/}
+target=${target//[\"\']/}
 target=${target/#\~\//$HOME/}
 [ -n "$target" ] && { cd "$target" 2>/dev/null || exit 0; }
 git rev-parse --git-dir >/dev/null 2>&1 || exit 0 # mutant-ok delete: outside a repository each guard's own git calls fail and it refuses nothing
@@ -42,4 +42,20 @@ default_ref_of() {
     [ -z "$ref" ] && git rev-parse -q --verify "refs/remotes/$1/$name" >/dev/null && ref="$1/$name"
   done
   printf '%s' "$ref"
+}
+# The branch checked out, or empty on a detached HEAD.
+# shellcheck disable=SC2034 # read by the guard that sources this
+current=$(git symbolic-ref --short -q HEAD) || current=""
+# push_args_of <segment>: when the segment runs git push, fill push_args with
+# the words after `push`, flags included, and return 0. Return 1 otherwise.
+push_args_of() {
+  local word seen=0
+  local -a words # mutant-ok delete: a local declaration: no caller reads words
+  push_args=()
+  grep -Eq '(^|[[:space:]])git([[:space:]]|$)' <<<"$1" || return 1
+  read -ra words <<<"$1"
+  for word in ${words[@]+"${words[@]}"}; do
+    if [ "$seen" = 1 ]; then push_args+=("$word"); elif [ "$word" = push ]; then seen=1; fi
+  done
+  [ "$seen" = 1 ]
 }

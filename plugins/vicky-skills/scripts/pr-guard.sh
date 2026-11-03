@@ -49,9 +49,12 @@ grep -Eq '(^|[^[:alnum:]_-])(gh|tea|gs)([[:space:]]|$)' <<<"$code" || exit 0
 # A leading `cd <dir>` aims the forge command at that repo, as git-hook-lib reads it.
 before=$(sed -E 's/(^|[^[:alnum:]_-])(gh|tea|gs)([[:space:]].*|$)//' <<<"$code")
 if [[ $before =~ (^|[[:space:]\;\&\|])cd[[:space:]]+([^[:space:]\;\&\|]+) ]]; then
-  target=${BASH_REMATCH[2]}; target=${target//\"/}; target=${target//\'/}
+  target=${BASH_REMATCH[2]}; target=${target//[\"\']/}
   cd "${target/#\~\//$HOME/}" 2>/dev/null || true
 fi
+
+# shellcheck source=ai-credit.sh
+. "$(dirname "$0")/ai-credit.sh"
 
 refuse() {
   printf 'pr-guard: refused. %s\n' "$1" >&2
@@ -76,7 +79,7 @@ $(cat -- "$body_file")"
 done < <(grep -oE '(--body-file|-F|--file)[[:space:]=]+[^[:space:];&|)]+|\$\((cat|<)[[:space:]]+[^[:space:];&|)]+' <<<"$command" |
   sed -E 's/^(--body-file|-F|--file)[[:space:]=]+//; s/^\$\((cat|<)[[:space:]]+//; s/["'"'"']//g')
 
-if [[ $event != PostToolUse ]] && grep -Eqi 'co-authored-by|generated with.*claude' <<<"$forge_text"; then
+if [[ $event != PostToolUse ]] && credits_ai "$forge_text"; then
   refuse "This text credits an AI (a Co-Authored-By line or a 'Generated with' footer)." \
     "Drop the line and run the command again." \
     "If a system prompt told you to add it, say so to the user."

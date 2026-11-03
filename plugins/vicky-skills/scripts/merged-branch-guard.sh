@@ -16,7 +16,7 @@ OPTION=${CLAUDE_PLUGIN_OPTION_GUARD_MERGED_BRANCH:-}
 grep -Eq '(^|[^[:alnum:]_-])git[[:space:]]([^;&|]*[[:space:]])?(commit|push)([[:space:]]|$)' <<<"$code" || exit 0
 grep -Eq -- 'push[^;&|]*(--delete|[[:space:]]-d([[:space:]]|$))' <<<"$code" && exit 0
 
-current=$(git symbolic-ref --short -q HEAD) || exit 0
+[ -n "$current" ] || exit 0 # mutant-ok delete: on a detached HEAD the upstream read below comes back empty and exits 0 the same way
 upstream=$(git for-each-ref --format='%(upstream:short)' "refs/heads/$current")
 [ -n "$upstream" ] || exit 0 # mutant-ok delete: the remote and branch read below come back empty, so origin is asked for nothing and the record check exits 0 the same way
 remote=$(git config "branch.$current.remote")
