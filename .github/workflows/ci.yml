@@ -71,6 +71,8 @@ jobs:
         run: tests/rumsfeld_knowns_approved_examples.test.sh
       - name: Rumsfeld readiness
         run: tests/rumsfeld_readiness_approved_examples.test.sh
+      - name: Rumsfeld confirm
+        run: tests/rumsfeld_confirm.test.sh
       - name: Rumsfeld surprises
         run: tests/rumsfeld_surprises_approved_examples.test.sh
       - name: Tells lint
