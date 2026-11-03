@@ -23,6 +23,8 @@ check "code with no do is refused" deny "$(run "$dir/repo/src/app.py" "$dir/none
 check "a warp alone is no do" deny "$(run "$dir/repo/src/app.ts" "$dir/warp.jsonl")"
 check "a new file in a new folder is code too" deny "$(run "$dir/repo/src/new/deep/x.sh" "$dir/none.jsonl")"
 check "a started do lets code through" "" "$(run "$dir/repo/src/app.py" "$dir/do.jsonl")"
+jq -nc '{type:"assistant",message:{content:[{type:"tool_use",name:"Skill",input:{skill:"spark-joy"}}]}}' > "$dir/joy.jsonl"
+check "a spark-joy run lets code through" "" "$(run "$dir/repo/src/app.py" "$dir/joy.jsonl")"
 check "a typed /do lets code through" "" "$(run "$dir/repo/src/app.py" "$dir/typed.jsonl")"
 check "a test folder passes" "" "$(run "$dir/repo/tests/app.sh" "$dir/none.jsonl")"
 check "a test file by name passes" "" "$(run "$dir/repo/src/app.test.tsx" "$dir/none.jsonl")"

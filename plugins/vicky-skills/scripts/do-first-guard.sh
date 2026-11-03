@@ -4,7 +4,8 @@
 # to start it. Every build runs through `do`, a warp's stars included, so the
 # approved tests go red before any code. Production code is a source file in
 # a git checkout, outside a test folder and not named as a test. A session
-# counts `do` from a Skill call or a typed /do in its transcript. A missing
+# counts `do` from a Skill call or a typed /do in its transcript. `spark-joy`
+# counts too: it refactors with behaviour held by the tests at its seam. A missing
 # transcript lets the edit through. Off unless the plugin option step_guard
 # is true.
 case "${CLAUDE_PLUGIN_OPTION_STEP_GUARD:-}" in true|1) ;; *) exit 0 ;; esac
@@ -24,7 +25,7 @@ grep -qiE '(^|/)(tests?|spec|__tests__|testdata|fixtures)/|(^|[._/-])(test|spec)
 transcript=$(jq -r '.transcript_path // empty' <<<"$payload")
 [ -f "$transcript" ] || exit 0
 jq -r 'select(.type=="assistant") | .message.content[]? | select(.type=="tool_use" and .name=="Skill") | .input.skill' "$transcript" 2>/dev/null |
-  sed 's/.*://' | grep -qx do && exit 0
+  sed 's/.*://' | grep -qxE 'do|spark-joy' && exit 0
 grep -qE '<command-name>/(vicky-skills:)?do</command-name>' "$transcript" && exit 0
 jq -n --arg f "$rel" '{hookSpecificOutput: {
   hookEventName: "PreToolUse",
