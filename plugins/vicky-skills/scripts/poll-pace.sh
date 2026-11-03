@@ -11,7 +11,10 @@ cmd=$(awk -v code=1 -f "$(dirname "$0")/heredoc-strip.awk" <<<"$cmd")
 # A quoted string is text, unless a shell runs it (bash -c, eval, watch.sh):
 # those are unquoted first, so they stay as code.
 run='((bash|sh|zsh)[[:space:]]+-[a-z]*c|eval|watch\.sh)[[:space:]]+'
-cmd=$(sed -E "s/${run}'([^']*)'/\\1 \\3/g; s/${run}\"(([^\"\\]|\\.)*)\"/\\1 \\3/g" <<<"$cmd")
+# A runner that itself sits inside quoted text is text too: unquote only when
+# one shows once the quotes are masked.
+masked=$(awk -f "$(dirname "$0")/quote-mask.awk" <<<"$cmd") || masked=$cmd
+grep -Eq "$run" <<<"$masked" && cmd=$(sed -E "s/${run}'([^']*)'/\\1 \\3/g; s/${run}\"(([^\"\\]|\\.)*)\"/\\1 \\3/g" <<<"$cmd")
 # The rest of the quoted text is masked by the shell's own quote rules, so a
 # quote spliced into a string ('it'"'"'s') never leaves its words loose.
 masked=$(awk -f "$(dirname "$0")/quote-mask.awk" <<<"$cmd") && cmd=$masked

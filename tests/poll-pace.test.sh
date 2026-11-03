@@ -35,6 +35,7 @@ expect 0 true "a loop in a python heredoc is text" "$(printf "python3 - <<'PY'\n
 expect 0 true "a quoted sleep beside an eval of something else passes" 'echo "sleep 60"; eval x'
 expect 2 true "a loop run by bash -c in double quotes is refused" 'bash -c "while true; do sleep 5; done"'
 expect 0 true "a quote spliced into a string leaves its words as text" "sed -i 's/it'\"'\"'s asks for those steps/x/' f && sleep 15 && gh run list"
+expect 0 true "a bash -c quoted inside a sed text leaves the text quoted" "sed -i 's|sleep 300 \\& dead|dead=\$(bash -c '\"'\"'echo \$\$'\"'\"')|' f"
 expect 2 true "a real loop after a spliced quote is still refused" "sed -i 's/it'\"'\"'s/x/' f; while true; do sleep 5; done"
 expect 2 true "an unclosed quote is read as it stands" "echo 'oops; while true; do sleep 5; done"
 expect 0 false "switched off, a 60-second sleep passes" 'sleep 60'
