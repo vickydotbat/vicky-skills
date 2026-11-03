@@ -69,6 +69,8 @@ The Sensor log above.
 ### Unknown unknowns
 
 - Riskiest star: [<star title>](<link>), covered by <a timebox or a probe>
+- Seen before: <a kind of surprise an earlier chart logged>, checked by <how>
+- Surfaced: <the surprise>, while building [<star title>](<link>), cost <what it cost>
 
 ## Decisions
 
@@ -96,7 +98,7 @@ Every chart sorts what its stars rest on into the four boxes of the Rumsfeld mat
 - **Known knowns**: facts with a source. Each goes in the Sensor log with its source line quoted, so the box only points there.
 - **Known unknowns**: open questions you can state. Each is an anomaly or an away team ticket that blocks the stars behind it.
 - **Unknown knowns**: facts that likely sit in a record or in the user's head but were never written down, such as a rule the user always applies or how the work crosses an existing feature. Each gets an away team to find the record, or a `Confirm:` line the user answers in one word, before any star rests on it. Take the `Confirm:` line when no record is likely. Once the user confirms, the fact moves to the Sensor log, quoting the user.
-- **Unknown unknowns**: these can't be listed. Name the riskiest star and the timebox or probe that covers it.
+- **Unknown unknowns**: these can't be listed. Name the riskiest star and the timebox or probe that covers it. Then search the tracker's earlier charts for their `Surfaced:` lines, and name each kind of surprise seen before on a `Seen before:` line, with the check that covers it here. `loose-ends` adds a `Surfaced:` line for each asteroid belt a build hit.
 
 A box is never left empty without saying why: a box with nothing in it holds one line with the reason, such as "None: the spec answers every question."
 
