@@ -16,6 +16,12 @@ grep -qi "going with" <<<"$said" && exit 0
 # A gate whose answer comes in chat waits unseen while the user works in
 # another window, so a gated pick asked in chat, with no page link, goes back.
 if grep -qi "🚪 waiting on you" <<<"$said"; then
+  # Steps the user must carry out, numbered in chat, belong on an over-to-you
+  # checklist page, where each one is ticked and its command sits beside it.
+  if [ "$(grep -cE '^[[:space:]]*[0-9]+[.)][[:space:]]' <<<"$said")" -ge 2 ] && ! grep -qE "https?://" <<<"$said"; then
+    jq -n '{decision:"block", reason:"You gated numbered steps for the user to carry out in chat. Live checks only the user can do go through the over-to-you skill: a checklist page with each step, its exact command, and what to load or open. Start over-to-you and send the page link."}'
+    exit 0
+  fi
   grep -qiE "my pick|i recommend|\bpick:" <<<"$(prose)" && grep -qiE 'in chat|\?|\bO[0-9]+\b' <<<"$(prose)" && ! grep -qE "https?://" <<<"$said" || exit 0
   jq -n '{decision:"block", reason:"You gated your own pick and asked for the answer in chat. The user watches the browser, not the chat, so this waits unseen. When the pick is cheap to undo, take it: write \"Going with <pick>\" and act on it. When only the user can answer, put the question on a page with the interactive-page skill and send its link."}'
   exit 0

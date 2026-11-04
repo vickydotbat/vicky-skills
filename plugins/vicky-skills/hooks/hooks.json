@@ -194,16 +194,6 @@
         ]
       },
       {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/ready-queue-guard.sh\"",
-            "timeout": 20
-          }
-        ]
-      },
-      {
         "matcher": "Edit|Write|MultiEdit|Bash",
         "hooks": [
           {

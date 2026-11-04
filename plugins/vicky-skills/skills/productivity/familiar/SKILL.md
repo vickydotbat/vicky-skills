@@ -31,3 +31,5 @@ Each of these is a snag, whatever the line's tone:
 - A check, an answer or a fact the user already gave, asked for again.
 - A refused command run again unchanged.
 - A gate left open: a "Waiting on you" with no watch behind it, or a wait with no ask.
+- A hook that refused or sent back work that was right: a false positive. The fix lands in that hook and its test.
+- Live checks only the user can do (a game client, a look, real hardware), handed over in chat as steps rather than through `over-to-you`, or missing the exact commands and what to load.

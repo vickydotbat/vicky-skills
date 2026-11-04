@@ -329,12 +329,6 @@
       "description": "Refuse a mutation-tool command (Stryker, mutate.sh, mutmut, cargo-mutants, PIT) until the session has started the sentinels skill, which scopes the pass to the changed lines first.",
       "default": true
     },
-    "guard_ready_queue": {
-      "type": "boolean",
-      "title": "Pull requests leave draft one at a time",
-      "description": "Refuse taking a pull request out of draft (GitHub, Gitea or GitLab) while another one is out of draft or CI runs for another branch.",
-      "default": true
-    },
     "guard_todo_next": {
       "type": "boolean",
       "title": "A suggested next goes in .todo",
