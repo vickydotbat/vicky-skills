@@ -283,6 +283,10 @@ jobs:
         run: tests/publickey-hint.test.sh
       - name: same-refusal stops a refused call repeated unchanged
         run: tests/same-refusal.test.sh
+      - name: rebase-monks-hint sends a rebase conflict to history-monks
+        run: tests/rebase-monks-hint.test.sh
+      - name: publish-guard keeps making a repository public with the user
+        run: tests/publish-guard.test.sh
       - name: A backup copy of an approved test is no approved test
         run: tests/approved-backup-copies.test.sh
       - name: Warp hands every star to do

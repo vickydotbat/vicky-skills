@@ -33,15 +33,17 @@ plugin-data.sh	b183a483ba56dfc4	26714f51fc4eaca6	3/3
 poll-pace.sh	2efe70c6f4022fda	bfcb6f5ae4410bbc	32/32
 pr-guard.sh	4ce96bad7ca6cbfe	5b0c91857c6fd86d	136/136
 publickey-hint.sh	6af1237e3412256f	c54b0decec3909bc	7/7
+publish-guard.sh	425b226598ad0b9f	a1afec43ebbafb23	13/13
 push-behind-guard.sh	85b12f60ca06f8b6	13b9a7acb515a0e4	52/52
 quote-mask.awk	b04578521f7edc95	bf06e6309cdb776d	52/52
+rebase-monks-hint.sh	ae50ae1b8b9da4f0	35011c7ebf70f194	16/16
 red-first-check.sh	e585449df8cf7aee	f94ad9aefc4b0802	20/20
 red-first-guard.sh	ce1336cf1ab35246	a104a11090a04838	27/27
 rm-steer.sh	446e84a40f650cd3	bcfec59c13f3f047	28/28
 same-refusal.sh	a028a5e2340561f9	afad7f5d18d37e30	18/18
 scratch-guard.sh	c6e044c91bff4bfa	91bf0e0235b7ff9d	32/32
 sentinels-first-guard.sh	4132c93fcd58cd6e	f59ad98248a0ce97	22/22
-since-user.sh	a5a5eb97c46d4365	84ed2dccb1bd1d82	7/7
+since-user.sh	cb5a2846731d2968	c4ef6996fd46fc56	13/13
 skill-ledger.sh	4f6f1ba436f648ca	326b545e2e5a7e35	22/22
 spark-joy.sh	e88c476e7a612966	25b1f8934166f886	29/29
 springboard.sh	2b1a555e07899495	aa25977872a3c406	53/53
@@ -49,7 +51,7 @@ stale-blame.sh	11f0810758b3d743	6b42bd2441017085	14/14
 stale-copy-hint.sh	4e663d08786adf6b	b5706ded17a325ea	27/27
 step-guard.sh	a75d1da4efc9dee5	04f8dea0c38c9568	51/51
 step-hint.sh	59354ec4bf8b07a1	796823e2d0816874	14/14
-stop-reply.sh	79ab8770cecb448d	ec548d46ce513035	21/21
+stop-reply.sh	fff0fe89cce56914	ec548d46ce513035	21/21
 summit.sh	a7326a54e5ec3ae0	6f7066718f33e734	53/53
 take-pick.sh	cf7204f3e32e40d3	ba405d67ac399af1	28/28
 tea-stdin.awk	ddfdfc5257c31b06	71ac1cb1bc09c95f	70/70

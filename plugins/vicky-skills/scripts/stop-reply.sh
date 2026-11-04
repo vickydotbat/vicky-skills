@@ -17,8 +17,6 @@ said=$(tail -n 400 "$transcript" | jq -rs '
   | if .type == "text" then .text elif .type == "tool_use" and .name == "SendUserMessage" then .input.message else empty end' 2>/dev/null)
 prose() { sed 's/`[^`]*`//g' <<<"$said"; }
 # The user's last typed message, for a hook that weighs the reply against it.
+. "$(dirname "${BASH_SOURCE[0]}")/since-user.sh"
 # shellcheck disable=SC2034 # read by the hook that sources this
-asked=$(tail -n 400 "$transcript" | jq -rs '
-  [.[] | select(.type == "user" and (.isMeta | not)) | .message.content
-   | if type == "string" then . else ([.[]? | select(.type == "text") | .text] | join(" ")) end
-   | select(. != "")] | last // ""' 2>/dev/null)
+asked=$(last_user_message "$transcript")

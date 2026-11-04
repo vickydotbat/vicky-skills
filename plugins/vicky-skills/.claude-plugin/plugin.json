@@ -346,6 +346,18 @@
       "title": "A refused call is not repeated unchanged",
       "description": "Refuse a tool call identical to the one just before it, when a hook refused that one, so the agent acts on the refusal instead of firing the same call again.",
       "default": true
+    },
+    "guard_rebase_monks_hint": {
+      "type": "boolean",
+      "title": "A rebase conflict goes through history-monks",
+      "description": "When a git rebase stops on a conflict and the session has not started history-monks, tell the agent to abort and rebase again under it.",
+      "default": true
+    },
+    "guard_publish": {
+      "type": "boolean",
+      "title": "Only you make a repository public",
+      "description": "Refuse making a repository public (gh repo edit or create, gh api, tea) unless your last message says public.",
+      "default": true
     }
   }
 }

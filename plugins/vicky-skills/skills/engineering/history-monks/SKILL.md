@@ -7,7 +7,7 @@ description: Rebase a branch onto a main that moved, following the intent of wha
 
 > _History is mended so that it runs straight._
 
-Main moved while the branch was away, and some of what landed was **standardization**: one helper for a need, one theme, a new way CI runs. A good rebase keeps the branch's behaviour and re-expresses it in main's new form. Picking "ours" or "theirs" line by line breaks one or the other.
+Main moved while the branch was away, and some of what landed was **standardization**: one helper for a need, one theme, a new way CI runs. A good rebase keeps the branch's behaviour and re-expresses it in main's new form. Picking "ours" or "theirs" line by line breaks one or the other. The `rebase-monks-hint` hook sends a rebase that stops on a conflict here.
 
 **The authority rule.** What landed on main owns the **form**: the APIs, patterns, names, helpers and structure it introduced or standardized. The branch owns its **behaviour**: what its feature does, its approved examples, its decisions. The user may name exceptions, and those win.
 
