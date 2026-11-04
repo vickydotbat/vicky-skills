@@ -192,6 +192,16 @@
             "timeout": 5
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/ready-queue-guard.sh\"",
+            "timeout": 20
+          }
+        ]
       }
     ],
     "PostToolUse": [

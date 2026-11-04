@@ -33,6 +33,7 @@ poll-pace.sh	d91b5e020f4751a6	eb049d4f6d21a8e8	32/32
 pr-guard.sh	5177885295215424	cf65bab73063ebbb	135/135
 push-behind-guard.sh	f6103488c9c47198	13b9a7acb515a0e4	52/52
 quote-mask.awk	b04578521f7edc95	a19a331336a0d3c3	52/52
+ready-queue-guard.sh	57960f41d3c1cf40	3b5d11603bda4e9d	73/73
 red-first-check.sh	e585449df8cf7aee	f94ad9aefc4b0802	20/20
 red-first-guard.sh	ce1336cf1ab35246	a104a11090a04838	27/27
 rm-steer.sh	446e84a40f650cd3	bcfec59c13f3f047	28/28

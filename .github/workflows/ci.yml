@@ -273,6 +273,8 @@ jobs:
         run: tests/sentinels-first-guard.test.sh
       - name: A fixed review finding gets a prevention verdict
         run: tests/review-prevention.test.sh
+      - name: ready-queue-guard lets one pull request out of draft at a time
+        run: tests/ready-queue-guard.test.sh
       - name: A backup copy of an approved test is no approved test
         run: tests/approved-backup-copies.test.sh
       - name: Warp hands every star to do
