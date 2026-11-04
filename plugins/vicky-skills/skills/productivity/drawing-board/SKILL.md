@@ -1,6 +1,6 @@
 ---
 name: drawing-board
-description: Design how a window or screen looks with the user on a true-scale sketch in their browser, read their changes back as numbers, and keep the approved sketch as the build's example. Use before building or resizing a UI layout, when the user says "sketch it", "drawing board" or "let me see it first", and when a built layout came out the wrong size.
+description: Design a window or screen with the user on a true-scale sketch in their browser, and keep the approved sketch as the build's example. Use before building or resizing a UI layout, when the user says "sketch it", "drawing board" or "let me see it first", and when a built layout came out the wrong size.
 ---
 
 # Drawing board

@@ -1,6 +1,6 @@
 ---
 name: engrave
-description: Engrave a lesson — turn one snag, mistake or correction into a law (a check, a hook or a skill line) in the repo that owns it, built this turn. Use when the user says "codify", "lesson", "for the future", "from now on", "make sure we know" or "prevent this", when a snag that cost a retry is fixed, when a root cause turns out to be a platform limit, and for each finding `captains-log` or `loose-ends` hands over. Any other correction waits for `loose-ends`, which hands over every snag in one batch.
+description: Engrave a lesson: turn a snag, mistake or correction into a law (a check, hook or skill line) in its repo. Use when the user says "codify", "lesson", "for the future", "from now on", "make sure we know" or "prevent this", when a fixed snag cost a retry or its root cause is a platform limit, and for each finding `loose-ends` or `captains-log` hands over. Any other correction waits for `loose-ends`.
 ---
 
 # Engrave

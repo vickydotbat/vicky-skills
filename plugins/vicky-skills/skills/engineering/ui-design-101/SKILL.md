@@ -1,6 +1,6 @@
 ---
 name: ui-design-101
-description: Design the actions in an interface — buttons, confirmations, destructive operations, bulk edits, admin and moderation tools. Use when building or reviewing anything a user clicks repeatedly, anything that deletes or hides data, any list of rows with per-row actions, or when the user says a tool is tedious, asks for a confirmation dialog, or reports an interface that "does nothing".
+description: Design the actions in an interface: buttons, confirmations, destructive operations, bulk edits, admin tools. Use when building or reviewing anything clicked repeatedly, anything that deletes or hides data, rows with per-row actions, or when the user says a tool is tedious, asks for a confirmation dialog, or reports an interface that "does nothing".
 ---
 
 # UI design 101: actions

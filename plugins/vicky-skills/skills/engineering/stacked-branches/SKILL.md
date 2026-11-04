@@ -1,6 +1,6 @@
 ---
 name: stacked-branches
-description: Build, submit, sync and merge a stack of dependent pull requests on GitHub (`gh stack`) or Gitea (`git-spice`/`gs`). Use when a follow-up needs its own pull request on top of the effort's (a chunk big enough to review alone, or work that is truly different), when the user asks for a stack, when a `warp` builds past a blocked step, or when a stacked branch is checked out.
+description: Build, submit, sync and merge a stack of dependent pull requests on GitHub (`gh stack`) or Gitea (`git-spice`/`gs`). Use when a follow-up needs its own pull request on top of the effort's, when the user asks for a stack, when a `warp` builds past a blocked step, or when a stacked branch is checked out.
 ---
 
 # Stacked branches
