@@ -11,7 +11,7 @@ A **build** turns approved examples green, behaviour first: every behaviour chan
 
 Read the repo's `TESTING_STANDARDS.md` first: it wins over this skill's defaults.
 
-A **trunk repo** takes every change straight on main: its `CLAUDE.md` or `AGENTS.md` says to commit to `main` and open no branch or pull request. Read the agent file of the repo you will change, even when the session started in another one. In a trunk repo, every step below commits on `main` after `git pull --rebase` and pushes there, with no branch, draft or pull request, and an integration branch is `main` itself.
+A **trunk repo** takes every change straight on main: its `CLAUDE.md` or `AGENTS.md` says to commit to `main` and open no branch or pull request. Read the agent file of the repo you will change, even when the session started in another one. In a trunk repo, every step below commits on `main` after `git pull --rebase` and pushes there, with no branch, draft or pull request, and an integration branch is `main` itself. Outside a trunk repo, the `git-guard` hook refuses a push to main and a new branch stacked on unmerged work, and `checkout-guard` keeps two sessions out of one checkout: build in your own worktree.
 
 Before every push, run `git fetch` and rebase the branch onto the remote's default branch with `history-monks`: `push-behind-guard` refuses a push from behind it.
 

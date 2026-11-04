@@ -52,7 +52,9 @@ take-pick.sh	6963c779f575e40a	40f0ebb19fcc4c93	23/23
 tea-stdin.awk	ddfdfc5257c31b06	71ac1cb1bc09c95f	70/70
 tea-stdin.sh	d66e3759f797481e	aa202be0280b7b51	15/15
 ticket-drift.sh	1bc60db2e95d9227	d394fe3535d1d7bb	36/36
-todo-reminder.sh	15ef77134a257884	3c53424e2ac0c045	9/9
+todo-guard.sh	1b1fce0b6e03540b	3c2bb717460c7dec	24/24
+todo-next.sh	0f4676d8f990b010	4e8d5c993e697f2b	27/27
+todo-reminder.sh	87bab188b0686e79	3b39171b71fca45a	9/9
 watch.sh	5151329b7079b9ce	ff43a3661537f92a	31/31
 windowed-browser-guard.sh	de7570951b5f6444	c160af4169e77fb5	12/12
 worktree-place.sh	9cb9490030329d3a	2ae9586f693be9bd	57/57

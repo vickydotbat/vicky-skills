@@ -334,6 +334,12 @@
       "title": "Pull requests leave draft one at a time",
       "description": "Refuse taking a pull request out of draft (GitHub, Gitea or GitLab) while another one is out of draft or CI runs for another branch.",
       "default": true
+    },
+    "guard_todo_next": {
+      "type": "boolean",
+      "title": "A suggested next goes in .todo",
+      "description": "Refuse a write to .todo until the session has started standing-orders, and send back a reply that names what comes next when standing-orders has not run that turn.",
+      "default": true
     }
   }
 }
