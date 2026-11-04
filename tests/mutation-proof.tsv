@@ -32,6 +32,7 @@ plane-block-guard.sh	e73db5047568c280	80be2c862a31f85d	14/14
 plugin-data.sh	b183a483ba56dfc4	26714f51fc4eaca6	3/3
 poll-pace.sh	2efe70c6f4022fda	bfcb6f5ae4410bbc	32/32
 pr-guard.sh	d3319e40e25a3dc6	48726bc2f610ee16	131/131
+publickey-hint.sh	01ae35e5113026d0	1e7b43ecd73a2538	11/11
 push-behind-guard.sh	85b12f60ca06f8b6	13b9a7acb515a0e4	52/52
 quote-mask.awk	b04578521f7edc95	022775299e764ff9	52/52
 ready-queue-guard.sh	c6deeff021ce4b6f	3b5d11603bda4e9d	75/75

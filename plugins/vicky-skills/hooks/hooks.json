@@ -242,6 +242,11 @@
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/springboard.sh\"",
             "timeout": 15
+          },
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/publickey-hint.sh\"",
+            "timeout": 5
           }
         ]
       },
