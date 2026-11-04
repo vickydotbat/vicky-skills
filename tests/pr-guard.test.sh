@@ -225,6 +225,7 @@ quiet "a review comment is no body" "gh pr comment 7 --body x"
 out=$(told hub "gh pr create --title T")
 grep -q "## Status, ## Summary, ## Proof, ## Risk" <<<"$out" && echo "ok   a create with no body names every section" || { echo "FAIL a create with no body names every section"; fail=1; }
 out=$(told hub "gh pr create --fill-first"); grep -q "fill" <<<"$out" && echo "ok   --fill-first is refused" || { echo "FAIL --fill-first is refused"; fail=1; }
+out=$(told hub "tea pr edit 7 -d \"\$(cat \$S/pr.md)\" </dev/null"); grep -q "names a variable this command does not set" <<<"$out" && grep -q "full path written out" <<<"$out" && echo "ok   a body under a variable set elsewhere is named, with a literal-path steer" || { echo "FAIL a body under a variable set elsewhere: $out"; fail=1; }
 quiet "a body flag on another command in the chain is no body" "gh pr edit 7 --title x && gh pr comment 7 -b y"
 # A body waits for a human-voice pass in the session.
 good="$scratch/good.md"; printf '## Status\nx\n## Summary\nx\n## Proof\nx\n## Risk\nx\n' >"$good"
