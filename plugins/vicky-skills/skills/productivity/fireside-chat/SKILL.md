@@ -1,6 +1,6 @@
 ---
 name: fireside-chat
-description: Interview the user for a piece of writing in their name, a journal or blog post, an article, a case study or a talk, and gather the story, opinions and quotes it needs in their own words. Use when a writing skill reaches its interview step, when the user says "interview me" or "ask me about it", and before drafting prose that needs a war story, an angle or an opinion only the user holds. When the user must make decisions on a plan, use `interrogation` instead.
+description: Interview the user for a piece in their name (a journal or blog post, an article, a case study, a talk) and gather its story, opinions and quotes in their own words. Use when a writing skill reaches its interview step, when the user says "interview me" or "ask me about it", and before drafting prose that needs a story or opinion only the user holds. For decisions on a plan, use `interrogation`.
 ---
 
 # Fireside chat
