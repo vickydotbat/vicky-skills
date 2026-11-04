@@ -33,8 +33,10 @@ plugin-data.sh	b183a483ba56dfc4	26714f51fc4eaca6	3/3
 poll-pace.sh	2efe70c6f4022fda	bfcb6f5ae4410bbc	32/32
 pr-guard.sh	4ce96bad7ca6cbfe	5b0c91857c6fd86d	136/136
 publickey-hint.sh	6af1237e3412256f	c54b0decec3909bc	7/7
+publish-guard.sh	c09e3265e996e61c	bd9813fc21a1d198	17/17
 push-behind-guard.sh	85b12f60ca06f8b6	13b9a7acb515a0e4	52/52
 quote-mask.awk	b04578521f7edc95	bf06e6309cdb776d	52/52
+rebase-monks-hint.sh	8be9f7d01cf95c7f	b4977207b1737a8f	16/16
 red-first-check.sh	e585449df8cf7aee	f94ad9aefc4b0802	20/20
 red-first-guard.sh	ce1336cf1ab35246	a104a11090a04838	27/27
 rm-steer.sh	446e84a40f650cd3	bcfec59c13f3f047	28/28

@@ -72,6 +72,8 @@ TESTS = {
     "sentinels-first-guard.sh": ["sentinels-first-guard"],
     "publickey-hint.sh": ["publickey-hint"],
     "same-refusal.sh": ["same-refusal"],
+    "rebase-monks-hint.sh": ["rebase-monks-hint"],
+    "publish-guard.sh": ["publish-guard"],
     "since-user.sh": ["todo-guard", "todo-next"],
     "todo-guard.sh": ["todo-guard"],
     "todo-next.sh": ["todo-next"],
