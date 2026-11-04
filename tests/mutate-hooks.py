@@ -74,7 +74,7 @@ TESTS = {
     "same-refusal.sh": ["same-refusal"],
     "rebase-monks-hint.sh": ["rebase-monks-hint"],
     "publish-guard.sh": ["publish-guard"],
-    "since-user.sh": ["todo-guard", "todo-next"],
+    "since-user.sh": ["todo-guard", "todo-next", "publish-guard", "take-pick", "no-v1"],
     "todo-guard.sh": ["todo-guard"],
     "todo-next.sh": ["todo-next"],
     "windowed-browser-guard.sh": ["windowed-browser-guard"],
