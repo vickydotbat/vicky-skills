@@ -340,6 +340,12 @@
       "title": "A refused key is checked before it is blamed",
       "description": "After a push or fetch fails with Permission denied (publickey), tell the agent to compare your keys with the forge's and read its status page before it sends you to add a key.",
       "default": true
+    },
+    "guard_same_refusal": {
+      "type": "boolean",
+      "title": "A refused call is not repeated unchanged",
+      "description": "Refuse a tool call identical to the one just before it, when a hook refused that one, so the agent acts on the refusal instead of firing the same call again.",
+      "default": true
     }
   }
 }
