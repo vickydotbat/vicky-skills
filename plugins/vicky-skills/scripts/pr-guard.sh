@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # PreToolUse and PostToolUse hook (Bash): keeps an effort to one pull request,
-# opened once, so CI runs once, and refuses AI credit. Off unless the plugin
-# option guard_pr is on. Before a gh, tea or git-spice command runs it refuses:
+# opened once, so CI runs once, and refuses AI credit. On unless the plugin
+# option guard_pr is false or 0. Before a gh, tea or git-spice command runs it refuses:
 #
 #   1. Text that credits an AI (a Co-Authored-By line or a "Generated with
 #      Claude" footer), in the command or in a body file it reads.

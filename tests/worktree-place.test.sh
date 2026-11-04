@@ -35,6 +35,9 @@ yes "without a branch flag, the steer names the folder" 'expect x 2 "git worktre
 yes "a --reason value is no path" 'expect x 2 "git worktree add --lock --reason why ../locked" >/dev/null; grep -qF ".claude/worktrees/locked" "$scratch/said"'
 expect "an option without a value is skipped" 2 "git worktree add --detach ../out HEAD"
 expect "a path under ~ outside is refused" 2 "git worktree add ~/elsewhere"
+expect "a path set by the command itself passes" 0 'W=.claude/worktrees/v && git worktree add --detach $W HEAD'
+expect "a braced variable set by the command passes" 0 'W=".claude/worktrees/v2"; git worktree add --detach ${W} HEAD'
+expect "a variable set to a path outside is refused" 2 'W=../out && git worktree add $W'
 HOME="$scratch" expect "a path under ~ inside the folder passes" 0 "git worktree add ~/repo/.claude/worktrees/tilde"
 expect "an add with no path is left to git" 0 "git worktree add --detach"
 expect "an absolute path inside .claude/worktrees passes" 0 "git worktree add $repo/.claude/worktrees/abs"

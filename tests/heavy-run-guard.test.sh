@@ -18,6 +18,16 @@ allow() { check 0 "$1"; }
 # The run that froze the desktop: timeout alone caps time, not memory.
 refuse "timeout 200 nix develop path:. -c bash -c 'magick montage a.png b.png out.png && python3 check.py'"
 refuse 'magick a.png -resize 50% b.png'
+# pkill -f matches the shell that runs it.
+refuse 'pkill -f "dotnet stryker"'
+refuse 'sleep 1; pkill -f nwserver'
+refuse 'pkill -9 -f nwserver'
+refuse 'pkill -fx nwserver'
+refuse 'pkill --full nwserver'
+allow 'pkill -x nwserver'
+allow 'kill 4242'
+allow 'echo "pkill -f x"'
+allow 'mypkill -f x'
 refuse 'convert a.png b.jpg'
 refuse 'montage *.png -tile 8x out.png'
 refuse 'composite a.png b.png c.png'

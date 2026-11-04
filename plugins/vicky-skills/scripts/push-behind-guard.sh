@@ -4,7 +4,7 @@
 # The default branch comes from origin/HEAD; origin is fetched first (10
 # seconds at most) and a failed fetch lets the push through. Pushing the
 # default branch itself, deleting a branch and pushing to another remote are
-# not checked. Off unless the plugin option guard_push_behind is true.
+# not checked. On unless the plugin option guard_push_behind is false or 0.
 GUARD=push-behind-guard
 OPTION=${CLAUDE_PLUGIN_OPTION_GUARD_PUSH_BEHIND:-true}
 # shellcheck source=git-hook-lib.sh

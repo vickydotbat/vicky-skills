@@ -18,6 +18,8 @@ expectm() { # $1 want, $2 label, $3 command: the Monitor tool runs it in the bac
 }
 expectm 0 "a 60-round poll under the Monitor tool passes, since Monitor runs in the background" 'for i in $(seq 1 60); do test -f x && exit; sleep 5; done'
 expectm 2 "a 300-round poll under the Monitor tool is still refused for its rounds" 'for i in $(seq 1 300); do test -f x && exit; sleep 5; done'
+got=$(jq -nc '{tool_name:"Bash", tool_input:{command:"for i in 1 2; do echo x; sleep 1; done", timeout_ms:10000}}' | CLAUDE_PLUGIN_OPTION_GUARD_POLL_PACE=true "$hook" >/dev/null 2>&1; echo $?)
+[ "$got" = 0 ] && echo "ok   a Monitor call that arrives as Bash, marked by timeout_ms, passes" || { echo "FAIL a Monitor call that arrives as Bash: got $got"; fail=1; }
 expect 0 true "a 30-second poll, 60 rounds, in the background passes" 'for i in $(seq 1 60); do test -f x && exit; sleep 30; done' true
 expect 2 true "the same poll in the foreground is refused" 'for i in $(seq 1 60); do test -f x && exit; sleep 30; done'
 expect 0 true "a single short sleep passes" 'sleep 5'

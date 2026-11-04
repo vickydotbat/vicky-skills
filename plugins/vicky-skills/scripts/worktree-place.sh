@@ -47,6 +47,13 @@ check_add() {
     esac
   done
   [ -n "$path" ] || return 0
+  # A path named through a variable the same command sets (W=...; ... $W)
+  # reads as that value.
+  while IFS='=' read -r var value; do
+    path=${path//\$\{$var\}/$value}
+    path=${path//\$$var/$value}
+  done < <(grep -oE '(^|[;&|[:space:]])[A-Za-z_][A-Za-z0-9_]*=("[^"]*"|'"'"'[^'"'"']*'"'"'|[^[:space:];&|]+)' <<<"$command" |
+    sed -E 's/^[;&|[:space:]]//; s/=["'"'"']/=/; s/["'"'"']$//')
   path=${path/#\~\//$HOME/}
   abs=$(realpath -m -- "$path")
   if [[ $abs != "$home"/* ]]; then

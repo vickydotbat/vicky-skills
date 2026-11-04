@@ -19,7 +19,7 @@
 # when the git_guard_trunk_repos setting names it (owner/repo, matched in the
 # origin URL), for a repo that can't hold a docs file, such as a wiki.
 #
-# Off unless the plugin option guard_git is true.
+# On unless the plugin option guard_git is false or 0.
 GUARD=git-guard # mutant-ok delete: the name shows only when jq or git is missing, which no test can make
 OPTION=${CLAUDE_PLUGIN_OPTION_GUARD_GIT:-true}
 # shellcheck source=git-hook-lib.sh
