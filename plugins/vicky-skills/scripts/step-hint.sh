@@ -7,7 +7,8 @@
 # for the plan check, and when `council-of-elrond` starts it keeps every line in
 # the seats until Frodo speaks. When `review` starts, it asks for a prevention
 # verdict on each finding fixed. Off unless the plugin option
-# step_guard is true.
+# step_guard is true. When do, warp, examples, away-team or lay-course starts,
+# it first says to read the repo's docs before stating a rule.
 case "${CLAUDE_PLUGIN_OPTION_STEP_GUARD:-}" in true|1) ;; *) exit 0 ;; esac
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
 skill=$(jq -r '.tool_input.skill // ""' | sed 's/.*://')
@@ -18,7 +19,11 @@ case "$skill" in
   make-it-so) hint='Before the pull request goes ready, every player-facing or UI text the branch adds or changes has passed through the effort'"'"'s red-pen draft file.' ;;
   council-of-elrond) hint='Until Frodo speaks, every line the user sees comes from a seat: each chat message and each SendUserMessage, acks, checkpoints and summaries included, opens with a seat'"'"'s name. Once Frodo has chosen the road, the seats are done: write plain prose from then on.' ;;
   review) hint='Each finding you fix, from a person or a review agent, also gets a prevention verdict: engrave the cheapest check, hook or standard line that makes the mistake impossible, or write one line saying why not.' ;;
+  away-team|lay-course) hint='' ;;
   examples) hint='The drafts open on a page through red-pen, never in the chat, and nothing is built until the user closes them.' ;;
   *) exit 0 ;;
 esac
+# The docs come first for every skill that builds, plans or researches.
+docs="Read the repo's docs on what you touch before you state a rule about it: its agent guide, glossary, decision records and rules docs. A claim the docs contradict is corrected before it reaches a ticket, a comment or code."
+case "$skill" in do|warp|examples|away-team|lay-course) hint="$docs${hint:+ $hint}" ;; esac
 jq -nc --arg h "$hint" '{hookSpecificOutput:{hookEventName:"PostToolUse",additionalContext:$h}}'
