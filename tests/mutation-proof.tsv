@@ -47,13 +47,13 @@ since-user.sh	ea3f356762f9fc62	596af6018158c1b7	26/26
 skill-ledger.sh	4f6f1ba436f648ca	326b545e2e5a7e35	22/22
 spark-joy.sh	e88c476e7a612966	25b1f8934166f886	29/29
 springboard.sh	2b1a555e07899495	aa25977872a3c406	53/53
-stale-blame.sh	11f0810758b3d743	6b42bd2441017085	14/14
+stale-blame.sh	ed74378b4d7aac52	2aeca6b113ea4db9	18/18
 stale-copy-hint.sh	4e663d08786adf6b	b5706ded17a325ea	27/27
 step-guard.sh	a75d1da4efc9dee5	04f8dea0c38c9568	51/51
-step-hint.sh	59354ec4bf8b07a1	796823e2d0816874	14/14
+step-hint.sh	ed5be97f80ed8362	56057ba4ea15233e	14/14
 stop-reply.sh	fff0fe89cce56914	656e2eb06c8f62cf	17/17
 summit.sh	a7326a54e5ec3ae0	6f7066718f33e734	53/53
-take-pick.sh	8e8110fedf5a987b	3947817ffae3255a	31/31
+take-pick.sh	460d197fbecdadfe	fecf6dd0c018aeec	35/35
 tea-stdin.awk	ddfdfc5257c31b06	71ac1cb1bc09c95f	70/70
 tea-stdin.sh	c631fcfccdb1abf0	aa202be0280b7b51	15/15
 ticket-drift.sh	1bc60db2e95d9227	d394fe3535d1d7bb	36/36
