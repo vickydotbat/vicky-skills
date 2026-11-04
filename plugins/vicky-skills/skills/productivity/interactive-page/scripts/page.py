@@ -75,11 +75,18 @@ CHART = re.compile(r"^!\[[^\]]*\]\(([^/\\()\s]+\.svg)\)$")
 # on makes no request past this machine.
 DRAWIO = "/drawio/index.html?embed=1&proto=json&spin=1&stealth=1&offline=1&noExitBtn=1&noSaveBtn=1&saveAndExit=0"
 DRAWING_JS = """const frames={};let left=0;
+// A draw.io frame takes focus as it loads, and the browser scrolls the page to
+// it: with several frames the page lands at the last one. Until every frame has
+// loaded, and a second after, the page stays where the user last put it.
+let userY=scrollY,userAt=0,settled=0;["wheel","keydown","touchmove","mousedown"].forEach(t=>addEventListener(t,()=>userAt=Date.now(),{capture:true,passive:true}));
+const holding=()=>Object.values(frames).some(v=>v===1)||Date.now()-settled<1000;
+addEventListener("scroll",()=>{if(!holding()||Date.now()-userAt<1500)userY=scrollY;else scrollTo(0,userY)},{passive:true});
 function send(n,msg){document.getElementById("dio"+n).contentWindow.postMessage(JSON.stringify(msg),location.origin)}
 addEventListener("message",ev=>{if(ev.origin!==location.origin)return;let m;try{m=JSON.parse(ev.data)}catch(_){return}
 const n=Object.keys(frames).find(k=>document.getElementById("dio"+k).contentWindow===ev.source);if(n===undefined)return;
 const xml=document.getElementsByName("drawing_xml."+n)[0],png=document.getElementsByName("drawing_png."+n)[0];
 if(m.event==="init")send(n,{action:"load",xml:xml.value,autosave:1});
+else if(m.event==="load"){frames[n]=2;settled=Date.now();scrollTo(0,userY)}
 else if(m.event==="autosave"){xml.value=m.xml;fetch("/drawing/"+n,{method:"POST",body:new URLSearchParams({xml:m.xml})})}
 else if(m.event==="export"){png.value=m.data;if(--left===0)finish()}});
 // draw.io asks to confirm leaving while its drawing reads as modified, so a

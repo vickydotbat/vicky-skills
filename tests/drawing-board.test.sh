@@ -54,6 +54,7 @@ DRAWIO_HOME="$dir/drawio" python3 -I "$pagepy" "$dir/page.md" --timeout 60 2> "$
 url=""; for _ in $(seq 50); do url=$(grep -om1 'http://127.0.0.1:[0-9]*/' "$dir/page.err"); [ -n "$url" ] && break; sleep 0.1; done
 check "no file outside the draw.io folder is served" '[ -n "$url" ] && ! curl -s --path-as-is "${url}drawio/../secret.txt" | grep -q secret && ! curl -s "${url}drawio/..%2fsecret.txt" | grep -q secret'
 curl -s -o /dev/null --data-urlencode "xml=<mxGraphModel>latest</mxGraphModel>" "${url}drawing/0"
+check "the page holds its scroll while the draw.io frames load" 'curl -s "$url" | grep -q "scrollTo(0,userY)"'
 curl -s -o /dev/null --data-urlencode "note=" "${url}done"; sleep 0.3
 check "Done keeps the latest drawing" 'grep -q "<mxGraphModel>latest</mxGraphModel>" "$dir/page.md"'
 exit $fail
