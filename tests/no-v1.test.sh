@@ -85,7 +85,9 @@ check "the Next steer is one decision and exits 0" 'out=$(stop); [ $? = 0 ] && [
 { user "go"; text "Next: fix the lint errors you introduced, then rerun after the change."; } > "$fx/t.jsonl"
 check "a Next list that only mentions you or after is sent back" 'blocked'
 check "a wait elsewhere in the reply leaves a Next list that waits on no one" 'blocked'
-for r in "Next: merge #12 once CI is green." "Next: the sitting, which waits on you." "Next up, want me to take the cloak?" "Next: after it merges, I stage the server."; do
+{ user "go"; text "Next: the tests for E3-E21, which fail until their code exists. Then I build T5."; } > "$fx/t.jsonl"
+check "an until about the work itself is no wait, so the Next list is sent back" 'blocked'
+for r in "Next: merge #12 once CI is green." "Next: the build, until you say stop." "Next: the sitting, which waits on you." "Next up, want me to take the cloak?" "Next: after it merges, I stage the server."; do
   { user "go"; text "$r"; } > "$fx/t.jsonl"
   check "a Next list with a wait or a question goes through: $r" 'out=$(stop); [ $? = 0 ] && [ -z "$out" ]'
 done
