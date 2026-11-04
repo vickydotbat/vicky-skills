@@ -1,6 +1,6 @@
 ---
 name: cerebro
-description: Answer a question about the agent's own setup, or forecast the user's next asks, and propose the changes each implies before the user has to ask. Use when the user asks whether, how or why an agent or skill does something ("do we...", "does it...", "is this...", "why did..."), when they report an agent behaviour they saw, after `captains-log`, and at the end of a report that closes a stretch of work.
+description: Answer a question about the agent's own setup, or forecast the user's next asks, and propose the changes each implies. Use when the user asks whether, how or why an agent or skill does something ("do we...", "does it...", "why did..."), when they report an agent behaviour, after `captains-log`, and at the end of a report that closes a stretch of work.
 ---
 
 # Cerebro

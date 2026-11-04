@@ -2,7 +2,8 @@
 # The agent picks a skill by its description, so every skill it can start names
 # its trigger with "Use when", "Use whenever" or "Use before". A skill only a
 # person starts (disable-model-invocation: true) is marked "(typed only)" in the
-# README ("When you type it"), so a reader knows to type it.
+# README ("When you type it"), so a reader knows to type it. A description the
+# agent can start loads into every request, so it holds at most 400 characters.
 # Usage: skill-descriptions.test.sh [skills dir] [README]
 set -u
 here="$(dirname "$0")/.."
@@ -18,6 +19,8 @@ for f in "$root"/*/*/SKILL.md; do
   else
     grep '^description:' <<<"$fm" | grep -Eq 'Use (only )?(when|whenever|before)' \
       || { echo "FAIL $name has no \"Use when\", \"Use whenever\" or \"Use before\" in its description"; fail=1; }
+    desc=$(grep '^description:' <<<"$fm" | sed 's/^description: *//')
+    [ ${#desc} -le 400 ] || { echo "FAIL $name's description is ${#desc} characters, over 400"; fail=1; }
   fi
 done
 [ $fail = 0 ] && echo "ok   descriptions and README marks"

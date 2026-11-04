@@ -1,6 +1,6 @@
 ---
 name: human-voice
-description: Prose a person will read — wiki articles, docs, READMEs, runbooks, dev journal posts, announcements, release notes, in-game text, PR and ticket bodies, comments, decision records, commit messages, code comments, emails. Use when writing or editing such prose, and when text "sounds like AI". Text only an agent reads (CLAUDE.md, AGENTS.md, skills, prompts, handoffs) is out of scope.
+description: Prose a person will read: docs, READMEs, runbooks, wiki and journal posts, release notes, in-game text, PR and ticket bodies, comments, decision records, commit messages, code comments, emails. Use when writing or editing such prose, and when text "sounds like AI". Text only an agent reads (CLAUDE.md, AGENTS.md, skills, prompts, handoffs) is out of scope.
 ---
 
 # Human voice
