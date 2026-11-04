@@ -21,6 +21,7 @@ case "$skill" in
   council-of-elrond) hint='Until Frodo speaks, every line the user sees comes from a seat: each chat message and each SendUserMessage, acks, checkpoints and summaries included, opens with a seat'"'"'s name. Once Frodo has chosen the road, the seats are done: write plain prose from then on.' ;;
   review) hint='Each finding you fix, from a person or a review agent, also gets a prevention verdict: engrave the cheapest check, hook or standard line that makes the mistake impossible, or write one line saying why not.' ;;
   away-team|lay-course) hint='' ;;
+  sentinels) hint='Before the pass runs, write its estimate (mutants x the time of the tests that reach them / workers) and the test filter that narrows it to those tests: a pass over the whole suite can time out with nothing written.' ;;
   ship-it) hint='Run human-voice on the body file before the gh or tea command that sends it: pr-guard refuses a body human-voice never saw.' ;;
   examples) hint='The drafts open on a page through red-pen, never in the chat, and nothing is built until the user closes them.' ;;
   *) exit 0 ;;

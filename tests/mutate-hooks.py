@@ -99,7 +99,7 @@ TESTS = {
     "gate-state-guard.sh": ["gate-state-guard"],
     "ticket-drift.sh": ["ticket_drift_approved_examples", "no-remote-quiet"],
     "mutation-proof-guard.sh": ["mutation-proof-guard", "goal_driven_approved_examples", "mutation_proof_red_first_approved_examples"],
-    "plane-block-guard.sh": ["plane_block_approved_examples", "refusal-note"],
+    "plane-block-guard.sh": ["plane_block_approved_examples", "plane-block-guard", "refusal-note"],
     "poll-pace.sh": ["poll-pace", "watch_approved_examples", "poll_pace_heredoc_approved_examples", "poll_pace_quoted_approved_examples", "refusal-note"],
     "watch.sh": ["watch", "watch_approved_examples"],
     "assign-expand.sh": ["pr-guard", "worktree-place"],

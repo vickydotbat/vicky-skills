@@ -309,6 +309,8 @@ jobs:
         run: tests/mutation-proof-guard.test.sh
       - name: Plane block guard
         run: tests/plane_block_approved_examples.test.sh
+      - name: plane-block-guard steers by ticket
+        run: tests/plane-block-guard.test.sh
       - name: Goal-driven do, proof guard and hints
         run: tests/goal_driven_approved_examples.test.sh
       - name: Approved tests change only with a yes
