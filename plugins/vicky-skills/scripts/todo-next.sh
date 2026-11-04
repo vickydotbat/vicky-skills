@@ -17,7 +17,7 @@ git check-ignore -q .todo 2>/dev/null || exit 0 # standing orders live only wher
 line=$(prose | grep -iE '(^|[^[:alnum:]])(next|my pick for next|still want)([^[:alnum:]]|$)' | grep -iE '(^|[*_[:space:]-])next[*_]*:|my pick for next|still want' | grep -viE 'next[*_]*:[*_[:space:]]*(nothing|none)\b' | head -1)
 [ -n "$line" ] || exit 0
 jotted=$(tail -n 400 "$transcript" | jq -rs '
-  (map(.type == "user" and ((.message.content | type) == "string" or any(.message.content[]?; .type == "text"))) | rindex(true)) as $u
+  (map(.type == "user" and (.isMeta | not) and ((.message.content | type) == "string" or any(.message.content[]?; .type == "text"))) | rindex(true)) as $u
   | [.[(($u // -1) + 1):][] | select(.type == "assistant") | .message.content[]? | select(.type == "tool_use")
      | select(.name == "Skill" and ((.input.skill // "") | test("(^|:)standing-orders$")))] | length' 2>/dev/null)
 [ "${jotted:-0}" -gt 0 ] && exit 0

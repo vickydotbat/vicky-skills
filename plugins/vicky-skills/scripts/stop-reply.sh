@@ -12,13 +12,13 @@ transcript=$(jq -r '.transcript_path // ""' <<<"$payload" 2>/dev/null)
 [ -f "$transcript" ] || exit 0 # mutant-ok delete: tail reads nothing from a missing file, so the reply reads empty and each hook exits 0
 # shellcheck disable=SC2034 # read by the hook that sources this
 said=$(tail -n 400 "$transcript" | jq -rs '
-  (map(.type == "user" and ((.message.content | type) == "string" or any(.message.content[]?; .type == "text"))) | rindex(true)) as $u
+  (map(.type == "user" and (.isMeta | not) and ((.message.content | type) == "string" or any(.message.content[]?; .type == "text"))) | rindex(true)) as $u
   | .[(($u // -1) + 1):][] | select(.type == "assistant") | .message.content[]?
   | if .type == "text" then .text elif .type == "tool_use" and .name == "SendUserMessage" then .input.message else empty end' 2>/dev/null)
 prose() { sed 's/`[^`]*`//g' <<<"$said"; }
 # The user's last typed message, for a hook that weighs the reply against it.
 # shellcheck disable=SC2034 # read by the hook that sources this
 asked=$(tail -n 400 "$transcript" | jq -rs '
-  [.[] | select(.type == "user") | .message.content
+  [.[] | select(.type == "user" and (.isMeta | not)) | .message.content
    | if type == "string" then . else ([.[]? | select(.type == "text") | .text] | join(" ")) end
    | select(. != "")] | last // ""' 2>/dev/null)

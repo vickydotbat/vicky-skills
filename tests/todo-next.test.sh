@@ -26,6 +26,8 @@ done
 check "the steer quotes the line" 1 "$(jq -nc --arg t "$fx/t.jsonl" '{transcript_path:$t}' | CLAUDE_PROJECT_DIR=$fx bash "$hook" | jq -r .reason | grep -c 'build GAME-2531')"
 { user go; skill vicky-skills:standing-orders; sent "Next: build GAME-2531"; } > "$fx/t.jsonl"
 check "a started standing-orders passes" "" "$(stop)"
+{ user go; skill vicky-skills:standing-orders; jq -nc '{type:"user",isMeta:true,message:{content:[{type:"text",text:"Base directory for this skill"}]}}'; sent "Next: build GAME-2531"; } > "$fx/t.jsonl"
+check "the skill text Claude Code injects is no user message" "" "$(stop)"
 { user go; edit; sent "Next: build GAME-2531"; } > "$fx/t.jsonl"
 check "an Edit to .todo is no jot" block "$(stop)"
 { user go; skill vicky-skills:standing-orders; user again; sent "Next: build GAME-2531"; } > "$fx/t.jsonl"

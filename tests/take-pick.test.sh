@@ -33,9 +33,15 @@ done
 { user "go"; sent "My pick is O1. Going with O1. Say stop if not?"; } > "$fx/t.jsonl"
 check "a taken pick goes through" 'passes'
 { user "go"; sent "🚪 Waiting on you: the merge. My pick is squash. OK?"; } > "$fx/t.jsonl"
-check "a gated ask goes through" 'passes'
+check "a gated pick asking OK? in chat is sent back" 'blocked'
 { user "go"; sent "🚪 Waiting on you: O1 (my pick) or O2? Answer in chat."; } > "$fx/t.jsonl"
 check "a gated pick asked in chat is sent back with one answer and exit 0" 'out=$(stop); [ $? = 0 ] && [ "$(jq -s length <<<"$out")" = 1 ]'
+{ user "go"; sent "🚪 Waiting on you: O1 (my pick): add a 15s timeout. O2: leave it."; } > "$fx/t.jsonl"
+check "a gated pick between options, with no page, is sent back" 'stop | jq -e '"'"'.decision == "block"'"'"' >/dev/null'
+{ user "go"; sent "🚪 Waiting on you: can I run the compiler? My pick is yes."; } > "$fx/t.jsonl"
+check "a gated pick asked as a question, with no page, is sent back" 'stop | jq -e '"'"'.decision == "block"'"'"' >/dev/null'
+{ user "go"; sent "🚪 Waiting on you: the merge of #12. My pick is squash. Watching it."; } > "$fx/t.jsonl"
+check "a gated pick with no question and no options goes through" '[ -z "$(stop)" ]'
 { user "go"; text "My pick is O1, and I built it."; } > "$fx/t.jsonl"
 check "a pick with no question goes through" 'passes'
 { user "go"; text "Which file should I read?"; } > "$fx/t.jsonl"
