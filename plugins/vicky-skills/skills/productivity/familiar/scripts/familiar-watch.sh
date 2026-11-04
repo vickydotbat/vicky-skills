@@ -16,6 +16,8 @@ tailer=$!
 while IFS= read -r line <&3; do
   out=$(jq -r --arg tag "${tag:+$tag }" '
     def cut: gsub("\n"; " ") | .[0:400];
+    # An agent line that asks, picks or waits is never cut: its questions sit at the end.
+    def say: gsub("\n"; " ") | if test("\\?|Waiting on you|[Pp]ick|Going with") then . else .[0:400] end;
     ("[" + ((.timestamp // "")[11:19]) + "] " + $tag) as $at
     | if .type == "cost-state" then $tag + "HANDOFF"
     elif .type == "system" and .subtype == "compact_boundary" then $at + "COMPACTED"
@@ -32,7 +34,10 @@ while IFS= read -r line <&3; do
             else empty end
         end
     elif .type == "assistant" then
-      .message.content[]? | select(.type == "tool_use" and .name == "SendUserMessage") | $at + "AGENT: " + ((.input.message // "") | cut)
+      .message.content[]? | select(.type == "tool_use")
+      | if .name == "SendUserMessage" then $at + "AGENT: " + ((.input.message // "") | say)
+        elif .name == "Skill" then $at + "SKILL: " + ((.input.skill // "") | sub(".*:"; ""))
+        else empty end
     else empty end' <<<"$line" 2>/dev/null)
   [ -n "$out" ] || continue
   printf '%s\n' "$out"

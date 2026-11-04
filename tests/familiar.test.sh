@@ -81,6 +81,27 @@ jq -nc '{type:"user",cwd:"/w",message:{content:"hi"}}' > "$fx/p2/-r/me.jsonl"
 wait $npid; ncode=$?
 check "the new-session check stops itself after its rounds" '[ $ncode = 0 ]'
 check "the new-session check never announces the familiar itself or an ended session" '[ ! -s "$fx/n2.out" ]'
+# A session that started after the caller's own list but before this check
+# began is still NEW, once, when the caller names what it already watches.
+mkdir -p "$fx/p3/-r"
+for i in known late; do jq -nc '{type:"user",cwd:"/w",message:{content:"hi"}}' > "$fx/p3/-r/$i.jsonl"; done
+out=$(FAMILIAR_SESSIONS_DIR="$fx/no-records" FAMILIAR_PROJECTS_DIR="$fx/p3" CLAUDE_CODE_SESSION_ID=me FAMILIAR_SESSIONS_EVERY=0 FAMILIAR_SESSIONS_ROUNDS=2 timeout 10 bash "$tools/familiar-sessions.sh" --new known)
+check "a session the caller doesn't watch is NEW, once" '[ "$out" = "NEW late $fx/p3/-r/late.jsonl /w" ]'
+out=$(FAMILIAR_SESSIONS_DIR="$fx/no-records" FAMILIAR_PROJECTS_DIR="$fx/p3" CLAUDE_CODE_SESSION_ID=me FAMILIAR_SESSIONS_EVERY=0 FAMILIAR_SESSIONS_ROUNDS=2 timeout 10 bash "$tools/familiar-sessions.sh" --new)
+check "with no ids named, the sessions live at the start are known" '[ -z "$out" ]'
+
+# The familiar sees which skills start, and an agent line that asks is whole.
+long=$(printf 'x%.0s' $(seq 1 450))
+{ jq -nc '{type:"assistant",timestamp:"2026-11-03T10:00:01Z",message:{content:[{type:"tool_use",name:"Skill",input:{skill:"vicky-skills:do"}}]}}'
+  jq -nc --arg m "$long done" '{type:"assistant",timestamp:"2026-11-03T10:00:02Z",message:{content:[{type:"tool_use",name:"SendUserMessage",input:{message:$m}}]}}'
+  jq -nc --arg m "$long Q1: fix it? My pick: yes" '{type:"assistant",timestamp:"2026-11-03T10:00:03Z",message:{content:[{type:"tool_use",name:"SendUserMessage",input:{message:$m}}]}}'
+  jq -nc '{type:"assistant",timestamp:"2026-11-03T10:00:04Z",message:{content:[{type:"tool_use",name:"Bash",input:{command:"ls"}}]}}'
+  jq -nc '{type:"cost-state"}'; } > "$fx/s.jsonl"
+out=$(FAMILIAR_WATCH_FROM_START=1 timeout 10 bash "$tools/familiar-watch.sh" "$fx/s.jsonl")
+check "a skill start is a SKILL line" 'grep -qx "\[10:00:01\] SKILL: do" <<<"$out"'
+check "a plain agent line is cut at 400" 'grep "^\[10:00:02\]" <<<"$out" | grep -qv "done"'
+check "an agent line that asks and picks is never cut" 'grep "^\[10:00:03\]" <<<"$out" | grep -q "My pick: yes$"'
+check "another tool call prints nothing" '! grep -q "10:00:04" <<<"$out"'
 
 # S2's approved examples, held by the skill's words. They are plain regression
 # tests: the skill text was written before these tests, so they could not go red first.
