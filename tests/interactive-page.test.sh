@@ -88,9 +88,9 @@ check "the box stays ticked while the form sends it" '[ "$code" = 200 ] && cmp -
 cp "$scratch/template.md" "$scratch/d.md"
 start "$scratch/d.md"
 wrong=$(post /elsewhere "${same[@]}")
-{ printf 'text.0='; head -c 1100000 /dev/zero | tr '\0' 'x'; } >"$scratch/huge"
+{ printf 'text.0='; head -c 34000000 /dev/zero | tr '\0' 'x'; } >"$scratch/huge"
 big=$(curl -s -o /dev/null -w '%{http_code}' -X POST --data-binary "@$scratch/huge" "${url%/}/done")
-check "an answer over 1 MB is refused" '[ "$big" = 400 ] && ! grep -q xxxxxxxx "$scratch/d.md"'
+check "an answer over 32 MB is refused with a page that says so" '[ "$big" = 413 ] && ! grep -q xxxxxxxx "$scratch/d.md"'
 kill -0 "$pid" 2>/dev/null && alive=yes || alive=no
 code=$(post /done text.0=Changed text.1=Other comment.0= comment.1= mark.0=x field.0=)
 again=$(post /done text.0=Again)

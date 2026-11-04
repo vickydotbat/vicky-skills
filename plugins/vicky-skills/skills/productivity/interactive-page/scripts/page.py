@@ -36,7 +36,8 @@ import threading
 import urllib.parse
 import webbrowser
 
-LIMIT = 1024 * 1024
+# Done sends each drawing's PNG too, so a page of many sketches runs to megabytes.
+LIMIT = 32 * 1024 * 1024
 MARKS = ["x", "~", "-", " "]
 # The page owns each mark's label, so a legend line typed by hand can never
 # drop or swap one.
@@ -75,11 +76,18 @@ CHART = re.compile(r"^!\[[^\]]*\]\(([^/\\()\s]+\.svg)\)$")
 # on makes no request past this machine.
 DRAWIO = "/drawio/index.html?embed=1&proto=json&spin=1&stealth=1&offline=1&noExitBtn=1&noSaveBtn=1&saveAndExit=0"
 DRAWING_JS = """const frames={};let left=0;
+// A draw.io frame takes focus as it loads, and the browser scrolls the page to
+// it: with several frames the page lands at the last one. Until every frame has
+// loaded, and a second after, the page stays where the user last put it.
+let userY=scrollY,userAt=0,settled=0;["wheel","keydown","touchmove","mousedown"].forEach(t=>addEventListener(t,()=>userAt=Date.now(),{capture:true,passive:true}));
+const holding=()=>Object.values(frames).some(v=>v===1)||Date.now()-settled<1000;
+addEventListener("scroll",()=>{if(!holding()||Date.now()-userAt<1500)userY=scrollY;else scrollTo(0,userY)},{passive:true});
 function send(n,msg){document.getElementById("dio"+n).contentWindow.postMessage(JSON.stringify(msg),location.origin)}
 addEventListener("message",ev=>{if(ev.origin!==location.origin)return;let m;try{m=JSON.parse(ev.data)}catch(_){return}
 const n=Object.keys(frames).find(k=>document.getElementById("dio"+k).contentWindow===ev.source);if(n===undefined)return;
 const xml=document.getElementsByName("drawing_xml."+n)[0],png=document.getElementsByName("drawing_png."+n)[0];
 if(m.event==="init")send(n,{action:"load",xml:xml.value,autosave:1});
+else if(m.event==="load"){frames[n]=2;settled=Date.now();scrollTo(0,userY)}
 else if(m.event==="autosave"){xml.value=m.xml;fetch("/drawing/"+n,{method:"POST",body:new URLSearchParams({xml:m.xml})})}
 else if(m.event==="export"){png.value=m.data;if(--left===0)finish()}});
 // draw.io asks to confirm leaving while its drawing reads as modified, so a
@@ -417,6 +425,9 @@ def serve_form(text, path, on_post, timeout, on_drawing=None):
                 form = urllib.parse.parse_qs(self.rfile.read(size).decode())
                 on_drawing(int(live.group(1)), form.get("xml", [""])[0])
                 self.reply(200, b"Kept.")
+                return
+            if self.path == path and size > LIMIT and not done.is_set():
+                self.reply(413, b"<!doctype html><meta charset=utf-8><p>Too large to send, so nothing was sent. Go back: the page and its drawings are still open. Tell the agent the page is too big.</p>")
                 return
             if self.path != path or not 0 <= size <= LIMIT or done.is_set() or foreign(self.headers):
                 self.reply(400, b"Not taken.")
