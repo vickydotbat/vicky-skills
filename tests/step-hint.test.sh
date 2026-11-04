@@ -12,6 +12,7 @@ has "over-to-you opens the draft file before the sitting" over-to-you "before th
 has "over-to-you puts the branch in the clone itself" over-to-you "switch the clone to it"
 has "make-it-so checks player text went through the draft file" vicky-skills:make-it-so "red-pen draft file"
 has "do keeps its proof hint" do "ends with its proof"
+has "sentinels writes its estimate before a pass" sentinels "write its estimate"
 has "do reads a star's chart first" do "read the chart whole first"
 has "ship-it runs human-voice before it sends the body" ship-it "Run human-voice on the body file"
 for s in do warp examples away-team vicky-skills:lay-course; do has "$s reads the repo's docs first" "$s" "Read the repo's docs on what you touch"; done
@@ -32,7 +33,7 @@ for kind in owl imp raven; do
   same=$(jq -nc '{tool_input:{skill:"do"}}' | CLAUDE_PLUGIN_OPTION_FAMILIAR_KIND=$kind CLAUDE_PLUGIN_OPTION_STEP_GUARD=true bash "$hook" | jq -r '.hookSpecificOutput.additionalContext')
   [ "$same" = "$plain" ] && echo "ok   E13 the plan check is the same for the $kind" || { echo "FAIL E13 the plan check differs for the $kind"; fail=1; }
 done
-for s in vicky-skills:sup sentinels; do
+for s in vicky-skills:sup; do
   [ -z "$(hint "$s")" ] && echo "ok   no hint for $s" || { echo "FAIL hint for $s"; fail=1; }
 done
 [ -z "$(hint vicky-skills:over-to-you false)" ] && echo "ok   off when the option is off" || { echo "FAIL hint while off"; fail=1; }
