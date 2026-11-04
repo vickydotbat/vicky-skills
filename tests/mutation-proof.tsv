@@ -38,6 +38,7 @@ quote-mask.awk	b04578521f7edc95	bf06e6309cdb776d	52/52
 red-first-check.sh	e585449df8cf7aee	f94ad9aefc4b0802	20/20
 red-first-guard.sh	ce1336cf1ab35246	a104a11090a04838	27/27
 rm-steer.sh	446e84a40f650cd3	bcfec59c13f3f047	28/28
+same-refusal.sh	69d0fc339c54c522	6086b45a960d2d56	25/25
 scratch-guard.sh	c6e044c91bff4bfa	91bf0e0235b7ff9d	32/32
 sentinels-first-guard.sh	4132c93fcd58cd6e	f59ad98248a0ce97	22/22
 since-user.sh	a5a5eb97c46d4365	84ed2dccb1bd1d82	7/7

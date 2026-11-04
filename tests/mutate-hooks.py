@@ -71,6 +71,7 @@ TESTS = {
     "do-first-guard.sh": ["do-first-guard"],
     "sentinels-first-guard.sh": ["sentinels-first-guard"],
     "publickey-hint.sh": ["publickey-hint"],
+    "same-refusal.sh": ["same-refusal"],
     "since-user.sh": ["todo-guard", "todo-next"],
     "todo-guard.sh": ["todo-guard"],
     "todo-next.sh": ["todo-next"],
