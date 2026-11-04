@@ -221,5 +221,20 @@ out=$(told hub "gh pr create --title T")
 grep -q "## Status, ## Summary, ## Proof, ## Risk" <<<"$out" && echo "ok   a create with no body names every section" || { echo "FAIL a create with no body names every section"; fail=1; }
 out=$(told hub "gh pr create --fill-first"); grep -q "fill" <<<"$out" && echo "ok   --fill-first is refused" || { echo "FAIL --fill-first is refused"; fail=1; }
 quiet "a body flag on another command in the chain is no body" "gh pr edit 7 --title x && gh pr comment 7 -b y"
+# A body waits for a human-voice pass in the session.
+good="$scratch/good.md"; printf '## Status\nx\n## Summary\nx\n## Proof\nx\n## Risk\nx\n' >"$good"
+sk() { jq -nc --arg s "$1" '{type:"assistant",message:{content:[{type:"tool_use",name:"Skill",input:{skill:$s}}]}}'; }
+sk vicky-skills:ship-it >"$scratch/t-novoice.jsonl"
+{ sk vicky-skills:ship-it; sk vicky-skills:human-voice; } >"$scratch/t-voice.jsonl"
+voiced() { # <transcript> <command>
+  jq -nc --arg c "$2" --arg d "$scratch/hub" --arg t "$1" \
+    '{hook_event_name: "PreToolUse", tool_name: "Bash", cwd: $d, session_id: "s-hub", transcript_path: $t, tool_input: {command: $c}}' |
+    env CLAUDE_PLUGIN_OPTION_GUARD_PR=true CLAUDE_PLUGIN_DATA="$scratch/data" OPEN="" PATH="$scratch/hubbin:$PATH" bash "$hook" 2>&1 >/dev/null
+}
+out=$(voiced "$scratch/t-novoice.jsonl" "gh pr edit 7 --body-file $good"); grep -q "never went through human-voice" <<<"$out" && echo "ok   a body with no human-voice pass is refused" || { echo "FAIL a body with no human-voice pass is refused"; fail=1; }
+grep -q "Start the human-voice skill" <<<"$out" && echo "ok   the refusal steers to human-voice" || { echo "FAIL the refusal steers to human-voice"; fail=1; }
+[ -z "$(voiced "$scratch/t-voice.jsonl" "gh pr edit 7 --body-file $good")" ] && echo "ok   a body after a human-voice pass goes through" || { echo "FAIL a body after a human-voice pass goes through"; fail=1; }
+[ -z "$(voiced "$scratch/gone.jsonl" "gh pr edit 7 --body-file $good")" ] && echo "ok   a missing transcript lets a body through" || { echo "FAIL a missing transcript lets a body through"; fail=1; }
+[ -z "$(voiced "$scratch/t-novoice.jsonl" "gh pr comment 7 --body x")" ] && echo "ok   a comment needs no human-voice pass" || { echo "FAIL a comment needs no human-voice pass"; fail=1; }
 rm -rf "$scratch/hub/docs"
 exit $fail
