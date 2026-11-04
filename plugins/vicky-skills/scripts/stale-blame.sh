@@ -19,7 +19,7 @@ blame='\b(stale|old|older|outdated|out[ -]of[ -]date|update|updated|redownload|r
 # step follows, never blame, so that phrase is dropped before the blame match,
 # unless the sentence names "your" copy as the thing needing it.
 rule='\b(needs?|requires?|takes?)[[:space:]]+(a[[:space:]]+)?(full[[:space:]]+|fresh[[:space:]]+|client[[:space:]]+)?(restart|reload|rebuild|refresh|relaunch)\b'
-blamed=$(prose | tr '\n' ' ' | sed 's/\([.?!]\) /\1\n/g' | grep -iE "$copy" | sed -E "/\b[Yy]our\b/!s/$rule/RULE/Ig" | grep -iE "$blame" | grep -viE "\b(not|no|nothing|never|nor)\b")
+blamed=$(prose | sed -E 's/"[^"]*"//g; s/“[^”]*”//g' | tr '\n' ' ' | sed 's/\([.?!]\) /\1\n/g' | grep -iE "$copy" | sed -E "/\b[Yy]our\b/!s/$rule/RULE/Ig" | grep -iE "$blame" | grep -viE "\b(not|no|nothing|never|nor)\b")
 [ -n "$blamed" ] || exit 0
 # Proof: a hash (six or more hex characters, digits and letters both, so
 # a date or a clock time is none) or a logged version (the word version, then

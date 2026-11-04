@@ -76,6 +76,8 @@ check "their copy with no stale word goes through" 'passes'
 { user "go"; text "Your hak is fine."; text "The old loop was the bug."; } > "$fx/t.jsonl"
 check "the copy and the stale word in different sentences go through" 'passes'
 { user "go"; text 'The hook matches `your hak is stale`.'; } > "$fx/t.jsonl"
+{ user "go"; text 'The fix makes "Your client needs a restart" trip again.'; } > "$fx/t.jsonl"
+check "a blame quoted in double quotes is no blame" 'passes'
 check "a blame quoted in backticks is no blame" 'passes'
 { user "go"; text "Your hak is stale."; user "no it is not"; text "Tracing the code."; } > "$fx/t.jsonl"
 check "a blame before the user's last message is not read again" 'passes'
