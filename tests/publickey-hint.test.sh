@@ -17,5 +17,7 @@ check "other output is quiet" "" "$(said '{"stdout":"Everything up-to-date"}')"
 check "a different denial is quiet" "" "$(said '{"stderr":"Permission denied (password)"}')"
 check "the setting off is quiet" "" "$(OPT=false said "{\"stderr\":$deny}")"
 check "the setting 0 is quiet" "" "$(OPT=0 said "{\"stderr\":$deny}")"
+check "it names the Gitea and GitLab checks" 1 "$(said "{\"stderr\":$deny}" | grep -c 'tea api user/keys.*glab api user/keys')"
+check "without jq it is quiet" "" "$(echo '{"tool_response":{"stderr":"Permission denied (publickey)"}}' | PATH=/nonexistent /usr/bin/env bash "$hook" 2>/dev/null)"
 check "bad input is quiet" "" "$(echo nope | bash "$hook")"
 exit $fail

@@ -52,6 +52,8 @@ check "a pick quoted in backticks is no pick" 'passes'
 check "a pick outside backticks still counts" '! passes'
 { user "go"; text "My pick is A. Which one?"; user "A"; text "Done."; } > "$fx/t.jsonl"
 check "a question before the user's last message is not read again" 'passes'
+{ user "go"; jq -nc '{type:"user",isMeta:true,message:{content:[{type:"text",text:"Base directory for this skill"}]}}'; sent "🚪 Waiting on you: O1 (my pick) or O2?"; } > "$fx/t.jsonl"
+check "injected skill text is no user message, so the reply before it still counts" 'blocked'
 check "the setting off lets it through" '{ user "go"; text "My pick is A. Which?"; } > "$fx/t.jsonl"; CLAUDE_PLUGIN_OPTION_GUARD_TAKE_PICK=false passes'
 check "a missing transcript goes through" 'out=$(jq -nc "{transcript_path:\"$fx/none\"}" | bash "$hook"); [ $? = 0 ] && [ -z "$out" ]'
 check "bad input goes through" 'out=$(echo "not json" | bash "$hook"); [ $? = 0 ] && [ -z "$out" ]'
