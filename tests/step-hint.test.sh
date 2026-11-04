@@ -13,6 +13,11 @@ has "over-to-you puts the branch in the clone itself" over-to-you "switch the cl
 has "make-it-so checks player text went through the draft file" vicky-skills:make-it-so "red-pen draft file"
 has "do keeps its proof hint" do "ends with its proof"
 has "do reads a star's chart first" do "read the chart whole first"
+for s in do warp examples away-team vicky-skills:lay-course; do has "$s reads the repo's docs first" "$s" "Read the repo's docs on what you touch"; done
+has "away-team gets only the docs line" away-team "corrected before it reaches a ticket, a comment or code."
+[ "$(hint away-team | tail -c 6)" = "code." ] && echo "ok   away-team hint ends at the docs line" || { echo "FAIL away-team hint has a trailing part"; fail=1; }
+has "review gets no docs line" review "prevention verdict"
+hint review | grep -q "repo's docs" && { echo "FAIL review got the docs line"; fail=1; }
 has "warp reads the chart's Prime directive first" warp "Prime directive binds every star"
 has "a council keeps every line in the seats until Frodo speaks" vicky-skills:council-of-elrond "every line the user sees comes from a seat"
 has "after Frodo, the council writes plain prose" council-of-elrond "write plain prose from then on"
