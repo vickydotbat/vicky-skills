@@ -36,9 +36,11 @@ look() {
   for r in "${@:3}"; do
     s=$(state "$f" "$r" "$n") || continue
     [[ $s == open || $hits == *"$r#$n "* ]] || hits+="  $r#$n $s"$'\n'
-    return
+    return 0
   done
+  return 1
 }
+other=gh; [[ $forge == gh ]] && other=tea
 
 while read -r host path n; do
   f=tea
@@ -53,12 +55,17 @@ if [[ -n "$origin" ]]; then
     n=${m##*[#!]}
     pre=${m%[#!]*}
     pre=${pre% }
+    named=""
+    [[ $pre == *" PR" ]] && named=1
+    pre=${pre% PR}
+    # A repo the line names (owner/repo, or "repo PR #N") that no forge here
+    # knows is someone else's: skip it, never read its number here.
     case $pre in
-      */*) look "$forge" "$n" "$pre" "$here" ;;
-      ?*) look "$forge" "$n" "${here%/*}/$pre" "$here" ;;
+      */*) look "$forge" "$n" "$pre" || look "$other" "$n" "$pre" ;;
+      ?*) look "$forge" "$n" "${here%/*}/$pre" || { [[ -z $named || $pre == "${here##*/}" ]] && look "$forge" "$n" "$here"; } ;;
       *) look "$forge" "$n" "$here" ;;
     esac
-  done < <(sed -E 's#pulls/[0-9]+##g' <<<"$line" | grep -oE '([A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)? ?)?[#!][0-9]+')
+  done < <(sed -E 's#pulls/[0-9]+##g' <<<"$line" | grep -oE '([A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)? ?(PR )?)?[#!][0-9]+')
 fi
 
 [[ -n "$hits" ]] || exit 0

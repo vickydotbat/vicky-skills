@@ -12,6 +12,7 @@ set -u
 case "${CLAUDE_PLUGIN_OPTION_GUARD_TAKE_PICK:-}" in true|1) ;; *) exit 0 ;; esac
 # shellcheck source=stop-reply.sh
 . "$(dirname "$0")/stop-reply.sh"
+council_sits "$transcript" && exit 0 # a council's picks and Frodo's Next are its own, for the user to argue
 grep -qi "going with" <<<"$said" && exit 0
 # A gate whose answer comes in chat waits unseen while the user works in
 # another window, so a gated pick asked in chat, with no page link, goes back.

@@ -34,6 +34,7 @@ pr gh ana other 5 closed true 2026-11-02T08:00:00Z
 pr tea team codebase 1466 closed true 2026-11-02T10:36:58Z
 pr tea team platform 521 closed true 2026-11-02T10:35:28Z
 pr tea team codebase 12 open false
+pr gh vick tools 1466 closed true 2026-11-04T10:00:00Z
 
 git init -q "$scratch/gh-repo"; git -C "$scratch/gh-repo" remote add origin git@github.com:ana/skills.git
 git init -q "$scratch/tea-repo"; git -C "$scratch/tea-repo" remote add origin ssh://git@forge.example:2222/team/codebase.git
@@ -87,6 +88,9 @@ check "a merged PR in the body below the gate line passes" 0 "" "$gh" "$gate mer
 #81 merged earlier."
 check "an ordinary message passes" 0 "" "$gh" "#81 merged as abc123."
 check "another tool passes" 0 "" "$gh" "$gate merge #81" Bash
+check "an owner/repo PR on the other forge is read there, not in the checkout" 2 "vick/tools#1466 merged" "$tea" "$gate merge vick/tools#1466"
+check "a repo name no forge knows is skipped, not read in the checkout" 0 "" "$tea" "$gate merge tools PR #1466"
+check "the checkout's own repo name before PR reads the checkout" 2 "team/codebase#1466 merged" "$tea" "$gate merge codebase PR #1466"
 check "outside a repository a bare #N passes" 0 "" "$scratch/plain" "$gate merge #81"
 check "an unknown PR passes" 0 "" "$gh" "$gate merge #999"
 : >"$FAKE_LOG"

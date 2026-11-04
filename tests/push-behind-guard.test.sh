@@ -24,6 +24,7 @@ for dflt in main master; do
   gi "$w" checkout -q -b topic
   gi "$w" commit -q --allow-empty -m topic-work
   expect 0 "$dflt: up to date passes" "$w" 'git push -u origin topic'
+  expect 0 "$dflt: marking an up-to-date branch ready passes" "$w" 'gh pr ready 5'
   gi "$seed" commit -q --allow-empty -m two
   gi "$seed" push -q origin "$dflt"
   # The hook fetches itself, so the local copy of origin is stale on purpose.
@@ -35,6 +36,8 @@ for dflt in main master; do
   expect 2 "$dflt: behind via a bare push" "$w" 'git push'
   expect 2 "$dflt: behind via a forced refspec" "$w" 'git push origin +topic'
   expect 2 "$dflt: behind via a quoted branch" "$w" 'git push origin "topic"'
+  expect 2 "$dflt: marking a behind branch ready is refused" "$w" 'gh pr ready 5'
+  expect 2 "$dflt: reopening a behind branch on tea is refused" "$w" 'tea pr reopen 5 </dev/null'
   expect 0 "$dflt: a git command before an out-of-scope push passes" "$w" 'git log -1; git push fork topic'
   expect 2 "$dflt: behind via a quoted git -C path" "$scratch" "git -C \"$w\" push origin topic"
   HOME="$scratch" expect 2 "$dflt: behind via cd ~" "$scratch" "cd ~/work-$dflt && git push origin topic"

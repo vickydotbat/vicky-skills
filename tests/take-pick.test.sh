@@ -10,6 +10,7 @@ fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 user() { jq -nc --arg t "$1" '{type:"user",message:{content:$t}}'; }
 text() { jq -nc --arg t "$1" '{type:"assistant",message:{content:[{type:"text",text:$t}]}}'; }
+skill() { jq -nc --arg s "$1" '{type:"assistant",message:{content:[{type:"tool_use",name:"Skill",input:{skill:$s}}]}}'; }
 sent() { jq -nc --arg t "$1" '{type:"assistant",message:{content:[{type:"tool_use",name:"SendUserMessage",input:{message:$t}}]}}'; }
 stop() { jq -nc --arg t "$fx/t.jsonl" --argjson a "${1:-false}" '{stop_hook_active:$a,transcript_path:$t}' | bash "$hook"; }
 passes() { local out; out=$(stop "$@"); [ $? = 0 ] && [ -z "$out" ]; }
@@ -34,6 +35,10 @@ done
 check "a taken pick goes through" 'passes'
 { user "go"; sent "🚪 Waiting on you: the merge. My pick is squash. OK?"; } > "$fx/t.jsonl"
 check "a gated pick asking OK? in chat is sent back" 'blocked'
+{ user "council it"; skill council-of-elrond; sent "Gandalf: my pick is O1. O1 or O2?"; } > "$fx/t.jsonl"
+check "a seat's pick in a sitting council passes" 'out=$(stop); [ $? = 0 ] && [ -z "$out" ]'
+{ user "council it"; skill council-of-elrond; sent "**Frodo:** I will take it."; user "go"; sent "🚪 Waiting on you: O1 (my pick) or O2? Answer in chat."; } > "$fx/t.jsonl"
+check "a pick after the council concluded is still sent back" 'blocked'
 { user "go"; sent "🚪 Waiting on you: O1 (my pick) or O2? Answer in chat."; } > "$fx/t.jsonl"
 check "a gated pick asked in chat is sent back with one answer and exit 0" 'out=$(stop); [ $? = 0 ] && [ "$(jq -s length <<<"$out")" = 1 ]'
 { user "go"; sent "🚪 Waiting on you: O1 (my pick): add a 15s timeout. O2: leave it."; } > "$fx/t.jsonl"
