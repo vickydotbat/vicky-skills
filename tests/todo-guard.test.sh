@@ -23,6 +23,8 @@ check "after standing-orders an Edit passes" "" "$(run Edit '{"file_path":".todo
 check "after standing-orders a shell write passes" "" "$(run Bash "$(cmd "echo x >> .todo")" "$dir/so.jsonl")"
 { cat "$dir/so.jsonl"; jq -nc '{type:"user",message:{content:"next ask"}}'; } > "$dir/old.jsonl"
 check "a standing-orders before the user's last message does not count" deny "$(run Edit '{"file_path":".todo"}' "$dir/old.jsonl")"
+{ jq -nc '{type:"user",message:{content:"go"}}'; cat "$dir/so.jsonl"; jq -nc '{type:"user",isMeta:true,message:{content:[{type:"text",text:"Base directory for this skill"}]}}'; } > "$dir/meta.jsonl"
+check "the skill text Claude Code injects after standing-orders is no user message" "" "$(run Edit '{"file_path":".todo"}' "$dir/meta.jsonl")"
 check "a read passes" "" "$(run Bash "$(cmd "cat .todo")" "$dir/none.jsonl")"
 check "a grep passes" "" "$(run Bash "$(cmd "grep -n GAME .todo")" "$dir/none.jsonl")"
 check "another file passes" "" "$(run Edit '{"file_path":"x.todo.md"}' "$dir/none.jsonl")"

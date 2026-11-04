@@ -281,6 +281,8 @@ jobs:
         run: tests/todo-next.test.sh
       - name: Every default-on guard is named in a skill
         run: tests/guard-pointers.test.sh
+      - name: publickey-hint checks a refused key before blaming it
+        run: tests/publickey-hint.test.sh
       - name: A backup copy of an approved test is no approved test
         run: tests/approved-backup-copies.test.sh
       - name: Warp hands every star to do

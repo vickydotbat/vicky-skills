@@ -71,6 +71,8 @@ TESTS = {
     "do-first-guard.sh": ["do-first-guard"],
     "sentinels-first-guard.sh": ["sentinels-first-guard"],
     "ready-queue-guard.sh": ["ready-queue-guard"],
+    "publickey-hint.sh": ["publickey-hint"],
+    "since-user.sh": ["todo-guard", "todo-next"],
     "todo-guard.sh": ["todo-guard"],
     "todo-next.sh": ["todo-next"],
     "windowed-browser-guard.sh": ["windowed-browser-guard"],

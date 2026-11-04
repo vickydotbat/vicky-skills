@@ -33,9 +33,15 @@ done
 { user "go"; sent "My pick is O1. Going with O1. Say stop if not?"; } > "$fx/t.jsonl"
 check "a taken pick goes through" 'passes'
 { user "go"; sent "🚪 Waiting on you: the merge. My pick is squash. OK?"; } > "$fx/t.jsonl"
-check "a gated ask goes through" 'passes'
+check "a gated pick asking OK? in chat is sent back" 'blocked'
 { user "go"; sent "🚪 Waiting on you: O1 (my pick) or O2? Answer in chat."; } > "$fx/t.jsonl"
 check "a gated pick asked in chat is sent back with one answer and exit 0" 'out=$(stop); [ $? = 0 ] && [ "$(jq -s length <<<"$out")" = 1 ]'
+{ user "go"; sent "🚪 Waiting on you: O1 (my pick): add a 15s timeout. O2: leave it."; } > "$fx/t.jsonl"
+check "a gated pick between options, with no page, is sent back" 'stop | jq -e '"'"'.decision == "block"'"'"' >/dev/null'
+{ user "go"; sent "🚪 Waiting on you: can I run the compiler? My pick is yes."; } > "$fx/t.jsonl"
+check "a gated pick asked as a question, with no page, is sent back" 'stop | jq -e '"'"'.decision == "block"'"'"' >/dev/null'
+{ user "go"; sent "🚪 Waiting on you: the merge of #12. My pick is squash. Watching it."; } > "$fx/t.jsonl"
+check "a gated pick with no question and no options goes through" '[ -z "$(stop)" ]'
 { user "go"; text "My pick is O1, and I built it."; } > "$fx/t.jsonl"
 check "a pick with no question goes through" 'passes'
 { user "go"; text "Which file should I read?"; } > "$fx/t.jsonl"
@@ -46,6 +52,8 @@ check "a pick quoted in backticks is no pick" 'passes'
 check "a pick outside backticks still counts" '! passes'
 { user "go"; text "My pick is A. Which one?"; user "A"; text "Done."; } > "$fx/t.jsonl"
 check "a question before the user's last message is not read again" 'passes'
+{ user "go"; jq -nc '{type:"user",isMeta:true,message:{content:[{type:"text",text:"Base directory for this skill"}]}}'; sent "🚪 Waiting on you: O1 (my pick) or O2?"; } > "$fx/t.jsonl"
+check "injected skill text is no user message, so the reply before it still counts" 'blocked'
 check "the setting off lets it through" '{ user "go"; text "My pick is A. Which?"; } > "$fx/t.jsonl"; CLAUDE_PLUGIN_OPTION_GUARD_TAKE_PICK=false passes'
 check "a missing transcript goes through" 'out=$(jq -nc "{transcript_path:\"$fx/none\"}" | bash "$hook"); [ $? = 0 ] && [ -z "$out" ]'
 check "bad input goes through" 'out=$(echo "not json" | bash "$hook"); [ $? = 0 ] && [ -z "$out" ]'

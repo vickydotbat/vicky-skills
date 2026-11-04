@@ -340,6 +340,12 @@
       "title": "A suggested next goes in .todo",
       "description": "Refuse a write to .todo until the session has started standing-orders, and send back a reply that names what comes next when standing-orders has not run that turn.",
       "default": true
+    },
+    "guard_publickey_hint": {
+      "type": "boolean",
+      "title": "A refused key is checked before it is blamed",
+      "description": "After a push or fetch fails with Permission denied (publickey), tell the agent to compare your keys with the forge's and read its status page before it sends you to add a key.",
+      "default": true
     }
   }
 }

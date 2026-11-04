@@ -32,6 +32,7 @@ plane-block-guard.sh	e73db5047568c280	80be2c862a31f85d	14/14
 plugin-data.sh	b183a483ba56dfc4	26714f51fc4eaca6	3/3
 poll-pace.sh	2efe70c6f4022fda	bfcb6f5ae4410bbc	32/32
 pr-guard.sh	d3319e40e25a3dc6	48726bc2f610ee16	131/131
+publickey-hint.sh	6af1237e3412256f	c54b0decec3909bc	7/7
 push-behind-guard.sh	85b12f60ca06f8b6	13b9a7acb515a0e4	52/52
 quote-mask.awk	b04578521f7edc95	022775299e764ff9	52/52
 ready-queue-guard.sh	c6deeff021ce4b6f	3b5d11603bda4e9d	75/75
@@ -40,6 +41,7 @@ red-first-guard.sh	ce1336cf1ab35246	a104a11090a04838	27/27
 rm-steer.sh	446e84a40f650cd3	bcfec59c13f3f047	28/28
 scratch-guard.sh	c6e044c91bff4bfa	91bf0e0235b7ff9d	32/32
 sentinels-first-guard.sh	4132c93fcd58cd6e	f59ad98248a0ce97	22/22
+since-user.sh	a5a5eb97c46d4365	84ed2dccb1bd1d82	7/7
 skill-ledger.sh	4f6f1ba436f648ca	326b545e2e5a7e35	22/22
 spark-joy.sh	e88c476e7a612966	25b1f8934166f886	29/29
 springboard.sh	2b1a555e07899495	aa25977872a3c406	53/53
@@ -47,14 +49,14 @@ stale-blame.sh	4084eb0a4362e5b2	132996127b0e8779	14/14
 stale-copy-hint.sh	4e663d08786adf6b	b5706ded17a325ea	27/27
 step-guard.sh	a75d1da4efc9dee5	04f8dea0c38c9568	51/51
 step-hint.sh	59354ec4bf8b07a1	796823e2d0816874	14/14
-stop-reply.sh	99b9252e2c6a5ea3	3be1066721fbe776	21/21
+stop-reply.sh	79ab8770cecb448d	3217f42cd06b3e4e	21/21
 summit.sh	a7326a54e5ec3ae0	6f7066718f33e734	53/53
-take-pick.sh	6963c779f575e40a	a3427d907a5cbd2d	23/23
+take-pick.sh	3a85499fa043a635	7c4fcf8fe0729324	23/23
 tea-stdin.awk	ddfdfc5257c31b06	71ac1cb1bc09c95f	70/70
 tea-stdin.sh	c631fcfccdb1abf0	aa202be0280b7b51	15/15
 ticket-drift.sh	1bc60db2e95d9227	d394fe3535d1d7bb	36/36
-todo-guard.sh	47a4bfde0d8391f8	3c8730d7afdffb11	30/30
-todo-next.sh	0f4676d8f990b010	4e8d5c993e697f2b	27/27
+todo-guard.sh	897fde3c6bead0ed	684d4625e6160dc0	30/30
+todo-next.sh	166e12a5967d8f19	14bd93bf36683263	27/27
 todo-reminder.sh	87bab188b0686e79	3b39171b71fca45a	9/9
 watch.sh	5151329b7079b9ce	ff43a3661537f92a	31/31
 windowed-browser-guard.sh	de7570951b5f6444	c160af4169e77fb5	12/12
