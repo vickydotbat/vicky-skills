@@ -13,6 +13,7 @@ has "over-to-you puts the branch in the clone itself" over-to-you "switch the cl
 has "make-it-so checks player text went through the draft file" vicky-skills:make-it-so "red-pen draft file"
 has "do keeps its proof hint" do "ends with its proof"
 has "do reads a star's chart first" do "read the chart whole first"
+has "ship-it runs human-voice before it sends the body" ship-it "Run human-voice on the body file"
 for s in do warp examples away-team vicky-skills:lay-course; do has "$s reads the repo's docs first" "$s" "Read the repo's docs on what you touch"; done
 has "away-team gets only the docs line" away-team "corrected before it reaches a ticket, a comment or code."
 [ "$(hint away-team | tail -c 6)" = "code." ] && echo "ok   away-team hint ends at the docs line" || { echo "FAIL away-team hint has a trailing part"; fail=1; }
