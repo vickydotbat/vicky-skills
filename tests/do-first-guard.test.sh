@@ -59,4 +59,12 @@ check "a missing transcript passes" "" "$(run "$dir/repo/src/app.py" "$dir/gone.
 check "the setting off passes" "" "$(run "$dir/repo/src/app.py" "$dir/none.jsonl" false)"
 check "no file path passes" "" "$(jq -n '{tool_name:"Edit",tool_input:{}}' | CLAUDE_PLUGIN_OPTION_STEP_GUARD=true bash "$hook")"
 check "the refusal steers to do" 1 "$(jq -n --arg f "$dir/repo/src/app.py" --arg t "$dir/none.jsonl" '{tool_name:"Edit",tool_input:{file_path:$f},transcript_path:$t}' | CLAUDE_PLUGIN_OPTION_STEP_GUARD=true bash "$hook" | grep -c 'start do on the change now')"
+# A reply line sent through SendUserMessage counts, as brief mode sends every reply there.
+jq -nc '{type:"assistant",message:{content:[{type:"tool_use",name:"Skill",input:{skill:"vicky-skills:do"}}]}}' > "$dir/sum.jsonl"
+jq -nc '{type:"assistant",message:{content:[{type:"tool_use",name:"SendUserMessage",input:{message:"Examples: none, because found work: review findings on #1490"}}]}}' >> "$dir/sum.jsonl"
+mkdir -p "$dir/repo/server/src/Core" "$dir/repo/server/src/IntegrationTests/Reload"
+check "a found-work line in a SendUserMessage lets the edit through" "" "$(run "$dir/repo/server/src/Core/Thing.cs" "$dir/sum.jsonl")"
+jq -nc '{type:"assistant",message:{content:[{type:"tool_use",name:"Skill",input:{skill:"vicky-skills:do"}}]}}' > "$dir/donly.jsonl"
+check "a file in an IntegrationTests folder is a test" "" "$(run "$dir/repo/server/src/IntegrationTests/Reload/ReloadExamples.cs" "$dir/donly.jsonl")"
+check "the same file outside a test folder is still held" deny "$(run "$dir/repo/server/src/Core/Thing.cs" "$dir/donly.jsonl")"
 exit $fail

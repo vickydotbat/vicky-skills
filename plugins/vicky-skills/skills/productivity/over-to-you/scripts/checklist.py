@@ -27,7 +27,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path[:0] = [HERE, os.path.join(HERE, "..", "..", "interactive-page", "scripts")]
 from importlib import import_module
 
-lint = import_module("lint-checklist").lint
+_lint = import_module("lint-checklist")
+lint, opted_out = _lint.lint, _lint.opted_out
 LABELS = import_module("page").LABELS
 
 # The legend a person reads when the file opens in an editor; the page draws its own labels.
@@ -80,7 +81,7 @@ def render(spec):
     lines += ["## Extra tests", "", spec.get("extra", "") or "nothing yet", ""] + quick_notes()
     lines += ["", "## Other", ""]
     text = "\n".join(lines) + "\n"
-    found = lint(text.split("\n"))
+    found = lint(text.split("\n"), opted_out())
     if found:
         return None, [f"line {number}: {problem}" for number, problem in found]
     return text, []

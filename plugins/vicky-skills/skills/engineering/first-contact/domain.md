@@ -11,6 +11,10 @@ Sketches: <the repo-relative folder for drawing-board sketches, or delete this l
 
 Todo file: on
 
+Checklist lint: full
+
+Write `Checklist lint: basic` to keep only the person, kit and proof checks on over-to-you pages.
+
 The `.todo` file at the root holds small items, one per line, too small for a ticket. Delete an item's line once it is done.
 
 Use the glossary's words in tickets, tests and names. A word the glossary lacks is either invented (pick the glossary's word) or a gap (raise it with the `true-names` skill). When your work contradicts a decision record, say so and name it before you go on.
