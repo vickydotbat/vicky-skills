@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # PreToolUse hook (Bash): refuses marking a pull request ready in a session
 # that started `warp` but never `do`, or `do` but never `sentinels` or
-# `review`, unless the pull request body says "Skipped: <step>, because
-# <reason>" for each missing step, and a do build's body until it has a
-# "Plan check: <what it found>" line. On GitHub that is `gh pr ready`; on
+# `review`, unless the body says "Skipped: <step>, because <reason>" for each
+# missing step. It also refuses a do build's pull request whose body has no
+# "Plan check: <what it found>" line. On GitHub that is `gh pr ready`. On
 # Gitea it is `tea pr edit <n> -t <title>` with a title that has no "WIP:".
 # Reads the session transcript for Skill calls. A failed body lookup lets the
 # command through. Off unless the plugin option step_guard is true.
@@ -34,7 +34,6 @@ else
 fi
 unmet=()
 for step in "${missing[@]}"; do grep -q "Skipped: $step, because " <<<"$body" || unmet+=("$step"); done
-msg="" # mutant-ok delete: an unset msg reads empty the same way below
 [ ${#unmet[@]} -gt 0 ] && msg="this build never ran its ${unmet[*]} step. Run the ${unmet[*]} skill, or add 'Skipped: <step>, because <reason>' with its proof to the pull request body. A warp builds each star with do, and do runs sentinels on what it changed."
 grep -qx do <<<"$skills" && ! grep -qE '(^|[[:space:]])Plan check: [^<[:space:]]' <<<"$body" &&
   msg="${msg:+$msg }This do build's pull request body has no Plan check line: add one line 'Plan check: <what the check found>', or 'Plan check: none found'."

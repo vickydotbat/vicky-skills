@@ -28,6 +28,7 @@ for ext in new bak orig; do
 done
 cp "$repo/tests/a_approved_examples.test.sh" "$repo/tests/a_approved_examples.test.sh~"
 expect "an edit to a ~ copy is free" "" "$(spec "$repo/tests/a_approved_examples.test.sh~")"
+expect "deleting a ~ copy is free" "" "$(rm_cmd "rm tests/a_approved_examples.test.sh~")"
 printf 'code\n' > "$repo/code.sh"
 expect "a commit beside a ~ copy runs" 0 "$(red 'git add -A && git commit -m code')"
 rm -f "$repo/tests/a_approved_examples.test.sh~"

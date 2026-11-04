@@ -10,6 +10,7 @@
 approved() {
   [ -f "$1" ] || return 1
   # A backup copy (.new, .bak, .orig, a trailing ~) is scratch, never the contract.
+  # red-first-guard.sh keeps the same list as an awk pattern: change both.
   case "$1" in *.new | *.bak | *.orig | *~) return 1 ;; esac
   # A file outside every git checkout, such as a session log quoting a test,
   # is no contract: approved tests are in a repo.
