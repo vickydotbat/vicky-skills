@@ -68,7 +68,15 @@ refuse() {
 # A body usually arrives as a file, so read every file the command names as
 # a body. Expand the session ID, $HOME and ~ the command still holds.
 forge_text=$command
+# A simple NAME=value the command sets, such as S=/tmp/x before --body-file $S/b.md.
+assigns=$(grep -oE '(^|[;&|[:space:]])[A-Za-z_][A-Za-z0-9_]*=("[^"]*"|'"'"'[^'"'"']*'"'"'|[^[:space:];&|]+)' <<<"$command" |
+  sed -E 's/^[;&|[:space:]]//; s/=["'"'"']/=/; s/["'"'"']$//')
 while IFS= read -r body_file; do
+  while IFS='=' read -r name value; do
+    [ -n "$name" ] || continue
+    body_file=${body_file//\$\{$name\}/$value}
+    body_file=${body_file//\$$name/$value}
+  done <<<"$assigns"
   body_file=${body_file//\$\{CLAUDE_CODE_SESSION_ID\}/$session_id}
   body_file=${body_file//\$CLAUDE_CODE_SESSION_ID/$session_id}
   body_file=${body_file//\$\{HOME\}/$HOME}
