@@ -28,3 +28,12 @@ council_sits() {
         | if .type == "text" then .text elif .type == "tool_use" and .name == "SendUserMessage" then .input.message else empty end
         | select(test("\\*\\*Frodo:\\*\\*"))] | if length == 0 then 1 else 0 end end' 2>/dev/null)" = 1 ]
 }
+# warp_flies <transcript> returns 0 when warp started this session and no
+# "Dropped out of warp" report came after its last start.
+warp_flies() {
+  local w d # mutant-ok delete: the names only scope two scratch values, read nowhere else
+  w=$(grep -nE '"name": ?"Skill".*"skill": ?"(vicky-skills:)?warp"' "$1" 2>/dev/null | tail -n 1 | cut -d: -f1)
+  [ -n "$w" ] || return 1
+  d=$(grep -n 'Dropped out of warp' "$1" 2>/dev/null | grep '"type": \?"assistant"' | tail -n 1 | cut -d: -f1)
+  [ -z "$d" ] || [ "$d" -lt "$w" ]
+}

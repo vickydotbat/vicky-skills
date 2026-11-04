@@ -15,6 +15,7 @@ cd "${CLAUDE_PROJECT_DIR:-.}" 2>/dev/null || exit 0
 grep -qs '^Todo file: off' docs/agents/*.md && exit 0
 git check-ignore -q .todo 2>/dev/null || exit 0 # standing orders live only where .gitignore keeps .todo out of git
 grep -q "Dropped out of warp" <<<"$said" && exit 0 # the end of a warp is the end: its report stands
+warp_flies "$transcript" && exit 0 # a warp in flight does its Next or opens its gate now, never a .todo line
 council_sits "$transcript" && exit 0 # a council's picks and Frodo's Next are its own, for the user to argue
 line=$(prose | grep -iE '(^|[^[:alnum:]])(next|my pick for next|still want)([^[:alnum:]]|$)' | grep -iE '(^|[*_[:space:]-])next[*_]*:|my pick for next|still want' | grep -viE 'next[*_]*:[*_[:space:]]*(nothing|none)\b' | head -1)
 [ -n "$line" ] || exit 0
