@@ -36,7 +36,8 @@ import threading
 import urllib.parse
 import webbrowser
 
-LIMIT = 1024 * 1024
+# Done sends each drawing's PNG too, so a page of many sketches runs to megabytes.
+LIMIT = 32 * 1024 * 1024
 MARKS = ["x", "~", "-", " "]
 # The page owns each mark's label, so a legend line typed by hand can never
 # drop or swap one.
@@ -424,6 +425,9 @@ def serve_form(text, path, on_post, timeout, on_drawing=None):
                 form = urllib.parse.parse_qs(self.rfile.read(size).decode())
                 on_drawing(int(live.group(1)), form.get("xml", [""])[0])
                 self.reply(200, b"Kept.")
+                return
+            if self.path == path and size > LIMIT and not done.is_set():
+                self.reply(413, b"<!doctype html><meta charset=utf-8><p>Too large to send, so nothing was sent. Go back: the page and its drawings are still open. Tell the agent the page is too big.</p>")
                 return
             if self.path != path or not 0 <= size <= LIMIT or done.is_set() or foreign(self.headers):
                 self.reply(400, b"Not taken.")
