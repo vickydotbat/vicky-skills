@@ -6,7 +6,8 @@
 # GitHub had on file. The hint names the checks that tell the two apart.
 # It fires only on a command that runs git, ssh, scp, sftp, rsync or jj, and on
 # a line the ssh client writes ("<host>: Permission denied (publickey)"), so
-# reading a file that quotes the phrase stays quiet.
+# reading a file that quotes the phrase stays quiet. The ssh client starts that
+# line with the host, so a line with anything before the host is ignored.
 case "${CLAUDE_PLUGIN_OPTION_GUARD_PUBLICKEY_HINT:-true}" in true|1) ;; *) exit 0 ;; esac
 payload=$(cat)
 cmd=$(jq -r '.tool_input.command // ""' <<<"$payload" 2>/dev/null)

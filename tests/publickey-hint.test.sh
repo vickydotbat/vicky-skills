@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 # publickey-hint adds its context after an output holding "Permission denied
 # (publickey)", in any output shape, and stays quiet on other output, bad
-# input and the setting off. It fires only on a git, ssh, scp, sftp, rsync or jj
-# command and on the line the ssh client writes, so a file read that quotes the
-# phrase stays quiet.
+# input and the setting off, and on any command but the ones the script lists.
 set -u
 hook="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/scripts/publickey-hint.sh"
 fail=0
@@ -17,16 +15,9 @@ check "output holding it is hinted" 1 "$(said "{\"output\":$deny}" | grep -c 'wa
 check "a plain string response is hinted" 1 "$(said "$deny" | grep -c 'Only a key the forge lacks')"
 check "other output is quiet" "" "$(said '{"stdout":"Everything up-to-date"}')"
 check "a different denial is quiet" "" "$(said '{"stderr":"Permission denied (password)"}')"
-check "an ssh command is hinted" 1 "$(CMD='ssh -T git@github.com' said "{\"stderr\":$deny}" | grep -c 'watch.sh')"
-check "a command after && is hinted" 1 "$(CMD='cd repo && git fetch' said "{\"stderr\":$deny}" | grep -c 'watch.sh')"
-check "a scp command is hinted" 1 "$(CMD='scp a host:b' said "{\"stderr\":$deny}" | grep -c 'watch.sh')"
-check "a sftp command is hinted" 1 "$(CMD='sftp host' said "{\"stderr\":$deny}" | grep -c 'watch.sh')"
-check "a rsync command is hinted" 1 "$(CMD='rsync -a a host:b' said "{\"stderr\":$deny}" | grep -c 'watch.sh')"
-check "a jj command is hinted" 1 "$(CMD='jj git push' said "{\"stderr\":$deny}" | grep -c 'watch.sh')"
-check "a git command in a subshell is hinted" 1 "$(CMD='(git push)' said "{\"stderr\":$deny}" | grep -c 'watch.sh')"
-check "a git command after a pipe is hinted" 1 "$(CMD='true|git push' said "{\"stderr\":$deny}" | grep -c 'watch.sh')"
-check "a git command after ; is hinted" 1 "$(CMD='true;git push' said "{\"stderr\":$deny}" | grep -c 'watch.sh')"
-check "a bare git is hinted" 1 "$(CMD='git' said "{\"stderr\":$deny}" | grep -c 'watch.sh')"
+for c in 'ssh -T git@github.com' 'cd repo && git fetch' 'scp a host:b' 'sftp host' 'rsync -a a host:b' 'jj git push' '(git push)' 'x=`git push`' 'true|git push' 'true;git push' git; do
+  check "$c is hinted" 1 "$(CMD=$c said "{\"stderr\":$deny}" | grep -c 'watch.sh')"
+done
 check "a file read is quiet" "" "$(CMD='cat scripts/publickey-hint.sh' said "{\"stdout\":$deny}")"
 check "a word holding git is quiet" "" "$(CMD='digit push' said "{\"stderr\":$deny}")"
 check "a word starting git is quiet" "" "$(CMD='gitk push' said "{\"stderr\":$deny}")"
