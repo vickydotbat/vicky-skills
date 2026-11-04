@@ -34,13 +34,14 @@ offers=$(prose | sed -E 's/"[^"]*"//g; s/“[^”]*”//g; s/‘[^’]*’//g; s
   | grep -viE 'waits on|as you (said|asked)')
 if [ -z "$offers" ]; then
   # A Next list that waits on no one is work to start, not to report. A Next
-  # line that names a wait or a condition, asks, or ends a handoff the user
+  # line that names a wait, a condition on someone else (once or until
+  # with you, CI, a review, a deploy), asks, or ends a handoff the user
   # asked for goes through.
   grep -qE '(^|[[:space:]/:])conn([[:space:]]|$)' <<<"$asked" && exit 0
   # Only the turn's last message counts: a checkpoint's Next may be done by now.
   last=$(tail -n 400 "$transcript" | jq -rs '[.[] | select(.type == "assistant") | .message.content[]?
     | if .type == "text" then .text elif .type == "tool_use" and .name == "SendUserMessage" then .input.message else empty end] | last // ""' 2>/dev/null)
-  next=$(sed 's/`[^`]*`//g' <<<"$last" | grep -iE '^[[:space:]*_-]*next( up)?[*_]*[:,]' | grep -v '?' | grep -viE 'wait|blocked|🚪|\b(once|until|merges?|to you)\b')
+  next=$(sed 's/`[^`]*`//g' <<<"$last" | grep -iE '^[[:space:]*_-]*next( up)?[*_]*[:,]' | grep -v '?' | grep -viE 'wait|blocked|🚪|\b(merges?|to you)\b|\b(once|until)\b[^.]*\b(you|your|ci|checks?|green|approv[a-z]*|deploy[a-z]*|review[a-z]*|lands?)\b')
   [ -n "$next" ] || exit 0
   jq -n --arg n "$next" '{decision:"block", reason:("Your reply ends on a Next list that waits on no one, so it is work to do now, not to report. Start its first item in this turn and keep going until each item is done or waits on the user, another person or a deploy. Review findings inside an effort are part of it: fix each one that waits on no one, then report. The line:\n" + $n)}'
   exit 0
