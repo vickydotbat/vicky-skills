@@ -6,10 +6,10 @@
 # when origin can't answer. The refusal holds
 # the move: a fresh branch from origin's default, plus the commits made after
 # the merge, found as those after the newest commit whose tree the default
-# branch holds. A branch that was never pushed is not checked. Off unless the
-# plugin option guard_merged_branch is true.
+# branch holds. A branch that was never pushed is not checked. On unless the
+# plugin option guard_merged_branch is false or 0.
 GUARD=merged-branch-guard
-OPTION=${CLAUDE_PLUGIN_OPTION_GUARD_MERGED_BRANCH:-}
+OPTION=${CLAUDE_PLUGIN_OPTION_GUARD_MERGED_BRANCH:-true}
 # shellcheck source=git-hook-lib.sh
 . "$(dirname "$0")/git-hook-lib.sh"
 

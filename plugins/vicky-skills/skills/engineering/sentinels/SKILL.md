@@ -42,6 +42,7 @@ Before you write a test a pass will run, and whenever a pass runs slow or hangs,
    ```bash
    systemd-run --user --scope -p MemoryMax=4G -p MemorySwapMax=0 timeout 3600 <command> > <scratch>/mutate.log 2>&1; echo "exit=$?"
    ```
+   The `heavy-run-guard` hook refuses a heavy run without the memory cap.
    Size the workers from the memory free, about half the cores at most. A repo wrapper sizes its own: leave its defaults alone. When the tool takes a budget (this plugin's `tests/mutate-hooks.sh --budget <seconds>`), set `--budget` below the outer timeout, so the tool stops itself and names what it left unrun, rather than being killed with nothing written. After fixing a survivor, rerun only the survivors first (`--survivors`), then the full pass once. Done when the run exits.
 5. **When a run dies, read why from the system**, before you guess a cause:
    ```bash

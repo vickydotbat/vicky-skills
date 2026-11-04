@@ -24,7 +24,7 @@ for kind in owl imp raven; do
   same=$(jq -nc '{tool_input:{skill:"do"}}' | CLAUDE_PLUGIN_OPTION_FAMILIAR_KIND=$kind CLAUDE_PLUGIN_OPTION_STEP_GUARD=true bash "$hook" | jq -r '.hookSpecificOutput.additionalContext')
   [ "$same" = "$plain" ] && echo "ok   E13 the plan check is the same for the $kind" || { echo "FAIL E13 the plan check differs for the $kind"; fail=1; }
 done
-for s in vicky-skills:sup review; do
+for s in vicky-skills:sup sentinels; do
   [ -z "$(hint "$s")" ] && echo "ok   no hint for $s" || { echo "FAIL hint for $s"; fail=1; }
 done
 [ -z "$(hint vicky-skills:over-to-you false)" ] && echo "ok   off when the option is off" || { echo "FAIL hint while off"; fail=1; }

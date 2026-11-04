@@ -18,6 +18,16 @@ allow() { check 0 "$1"; }
 # The run that froze the desktop: timeout alone caps time, not memory.
 refuse "timeout 200 nix develop path:. -c bash -c 'magick montage a.png b.png out.png && python3 check.py'"
 refuse 'magick a.png -resize 50% b.png'
+# pkill -f matches the shell that runs it.
+refuse 'pkill -f "dotnet stryker"'
+refuse 'sleep 1; pkill -f nwserver'
+refuse 'pkill -9 -f nwserver'
+refuse 'pkill -fx nwserver'
+refuse 'pkill --full nwserver'
+allow 'pkill -x nwserver'
+allow 'kill 4242'
+allow 'echo "pkill -f x"'
+allow 'mypkill -f x'
 refuse 'convert a.png b.jpg'
 refuse 'montage *.png -tile 8x out.png'
 refuse 'composite a.png b.png c.png'
@@ -137,7 +147,7 @@ allow 'echo $(ls; magick a b)'
 mkdir "$dir/bin"; for t in bash jq cat dirname git sed tr paste; do ln -s "$(command -v $t)" "$dir/bin/$t"; done
 jq -n '{tool_input:{command:"magick a b"}}' | CLAUDE_PLUGIN_OPTION_GUARD_HEAVY_RUN=true PATH="$dir/bin" "$dir/bin/bash" "$hook" >/dev/null 2>&1
 if [ $? = 0 ]; then echo "ok   gawk missing -> 0"; else echo "FAIL gawk missing: not 0"; fail=1; fi
-check 0 'magick a b' ""
+check 2 'magick a b' ""
 check 0 'magick a b' false
 check 2 'magick a b' 1
 # A refusal ends with the command rewritten, the cap put in front of each heavy part.

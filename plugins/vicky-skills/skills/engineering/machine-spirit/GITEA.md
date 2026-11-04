@@ -1,6 +1,6 @@
 # Gitea Actions: checked behaviour
 
-Each row names the release it holds from and the source that proves it. Compare the version column with `tea api version </dev/null` before relying on a row. Gitea numbers releases 1.26, 1.27, then 28.0 (2026-09-29): 28.x is newer than 1.27.
+Each row names the release it holds from and the source that proves it. Compare the version column with `tea api version </dev/null` before relying on a row. Every `tea` call takes `</dev/null`: the `tea-stdin` hook refuses one without it. Gitea numbers releases 1.26, 1.27, then 28.0 (2026-09-29): 28.x is newer than 1.27.
 
 | Behaviour | Holds from | Source |
 | --- | --- | --- |

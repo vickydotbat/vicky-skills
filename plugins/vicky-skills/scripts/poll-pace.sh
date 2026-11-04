@@ -21,7 +21,9 @@ masked=$(awk -f "$(dirname "$0")/quote-mask.awk" <<<"$cmd") && cmd=$masked
 grep -Eq '(^|[^[:alnum:]_])sleep[[:space:]]' <<<"$cmd" || exit 0
 refuse() { echo "poll-pace: $1. Wait with \${CLAUDE_PLUGIN_ROOT}/scripts/watch.sh '<check>', run by the Monitor tool or as a background command: it checks every 30 seconds, at most 60 times. Nothing in this command ran, not even its other steps: rerun the ones that need no change on their own." >&2; exit 2; }
 # The Monitor tool runs its command in the background, like run_in_background.
-[ "$(jq -r '.tool_name == "Monitor" or .tool_input.run_in_background == true' <<<"$payload")" = true ] || {
+# Its hooks can arrive under the Bash matcher with tool_name Bash, so its own
+# timeout_ms field marks it too.
+[ "$(jq -r '.tool_name == "Monitor" or .tool_input.run_in_background == true or (.tool_input | has("timeout_ms"))' <<<"$payload")" = true ] || {
   grep -Eq '(^|[^[:alnum:]_])(while|until|for)[[:space:]]' <<<"$cmd" && refuse "a foreground loop that sleeps and checks holds the session"
 }
 while read -r n; do

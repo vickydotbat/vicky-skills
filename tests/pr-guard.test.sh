@@ -40,6 +40,10 @@ expect "a body under \${HOME} is refused" 2 'gh pr create --body-file ${HOME}/bo
 expect "a body under ~ is refused" 2 'gh pr create --body-file ~/body.md'
 expect "a body under the session variable is refused" 2 "gh pr create --body-file $scratch/\$CLAUDE_CODE_SESSION_ID/body.md"
 expect "a body under the braced session variable is refused" 2 "gh pr create --body-file $scratch/\${CLAUDE_CODE_SESSION_ID}/body.md"
+expect "a body under a variable the command sets is refused" 2 "S=$scratch; gh pr create --body-file \$S/body.md"
+expect "a body under a braced variable the command sets is refused" 2 "S=$scratch; gh pr edit 7 --body-file \${S}/body.md"
+expect "a set variable that holds the session variable is read" 2 "S=$scratch/\$CLAUDE_CODE_SESSION_ID; mkdir -p \$S; gh pr create --body-file \$S/body.md"
+expect "a quoted assignment is read" 2 "S=\"$scratch\" && gh pr create --body-file \"\$S/body.md\""
 expect "a relative body file is read from the command's folder" 2 "gh pr create --body-file body.md" true "$scratch"
 expect "credit in a git-spice submit is refused" 2 "gs branch submit --body \"$credit\""
 expect "credit in a heredoc body is refused" 2 "gh pr create --body-file - <<'EOF'
@@ -58,7 +62,8 @@ EOF"
 expect "a missing body file passes" 0 "gh pr create --body-file $scratch/none.md"
 expect "a folder that doesn't exist still checks the command" 2 "gh pr create --body \"$credit\"" true "$scratch/gone"
 expect "the option at 1 refuses" 2 "gh pr create --body \"$credit\"" 1
-expect "the option off passes" 0 "gh pr create --body \"$credit\"" ""
+expect "the option off passes" 0 "gh pr create --body \"$credit\"" false
+expect "the option unset is on" 2 "gh pr create --body \"$credit\"" ""
 expect "the option at false passes" 0 "gh pr create --body \"$credit\"" false
 # The one-pull-request rule, beyond its approved examples. Each forge gets
 # only its own stand-in, so asking the wrong one finds nothing open.

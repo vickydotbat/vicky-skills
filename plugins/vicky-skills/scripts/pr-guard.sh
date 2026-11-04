@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # PreToolUse and PostToolUse hook (Bash): keeps an effort to one pull request,
-# opened once, so CI runs once, and refuses AI credit. Off unless the plugin
-# option guard_pr is on. Before a gh, tea or git-spice command runs it refuses:
+# opened once, so CI runs once, and refuses AI credit. On unless the plugin
+# option guard_pr is false or 0. Before a gh, tea or git-spice command runs it refuses:
 #
 #   1. Text that credits an AI (a Co-Authored-By line or a "Generated with
 #      Claude" footer), in the command or in a body file it reads.
@@ -28,7 +28,7 @@
 # counts as open and the command runs.
 set -u
 
-case "${CLAUDE_PLUGIN_OPTION_GUARD_PR:-}" in true | 1) ;; *) exit 0 ;; esac
+case "${CLAUDE_PLUGIN_OPTION_GUARD_PR:-true}" in true | 1) ;; *) exit 0 ;; esac
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool the read below comes back empty, and the pre-filter exits 0
 
 payload=$(cat)
@@ -68,7 +68,11 @@ refuse() {
 # A body usually arrives as a file, so read every file the command names as
 # a body. Expand the session ID, $HOME and ~ the command still holds.
 forge_text=$command
+# A simple NAME=value the command sets, such as S=/tmp/x before --body-file $S/b.md.
+# shellcheck source=assign-expand.sh
+. "$(dirname "$0")/assign-expand.sh"
 while IFS= read -r body_file; do
+  body_file=$(expand_assigns "$body_file" "$command")
   body_file=${body_file//\$\{CLAUDE_CODE_SESSION_ID\}/$session_id}
   body_file=${body_file//\$CLAUDE_CODE_SESSION_ID/$session_id}
   body_file=${body_file//\$\{HOME\}/$HOME}
