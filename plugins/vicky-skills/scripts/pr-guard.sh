@@ -78,6 +78,8 @@ while IFS= read -r body_file; do
   body_file=${body_file//\$\{HOME\}/$HOME}
   body_file=${body_file//\$HOME/$HOME}
   body_file=${body_file/#\~\//$HOME/}
+  # A variable set by an earlier command is out of reach: the steer names it.
+  grep -q '\$' <<<"$body_file" && unread="$body_file"
   if [ -r "$body_file" ]; then
     forge_text="$forge_text
 $(cat -- "$body_file")"
@@ -105,6 +107,8 @@ if [[ $event != PostToolUse ]] && [ -f "$tracker" ] && ! grep -qix 'PR template:
       grep -Eq "^[[:space:]'\"]*## $section([[:space:]]|$)" <<<"$forge_text" || missing+=("## $section")
     done
     printf -v list '%s, ' "${missing[@]}"
+    [ ${#missing[@]} = 0 ] || [ -z "${unread:-}" ] || refuse "The body file $unread names a variable this command does not set, so its sections can't be read." \
+      "Pass the body with --body-file and the file's full path written out."
     [ ${#missing[@]} = 0 ] || refuse "This pull request body has no ${list%, } section." \
       "Write the body with the ship-it skill, whose template holds every section, and pass it with --body-file."
     # shortcut: any human-voice start in the session counts, not one after this body was written; a record ship-it writes per body would replace it.
