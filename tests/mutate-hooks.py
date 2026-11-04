@@ -108,7 +108,7 @@ TESTS = {
     "fetch-place-hint.sh": ["fetch-place-hint"],
     "adr-scope-hint.sh": ["adr-scope-hint"],
     "step-guard.sh": ["step-guard", "mutation_step_approved_examples", "step_guard_approved_examples", "step_guard_gitea_approved_examples"],
-    "step-hint.sh": ["step_guard_approved_examples", "mutation_step_approved_examples", "step-hint", "do_imp_pass_approved_examples"],
+    "step-hint.sh": ["step_guard_approved_examples", "mutation_step_approved_examples", "step-hint", "review-prevention", "do_imp_pass_approved_examples"],
     "scratch-guard.sh": ["scratch-guard", "refusal-note"],
     "rm-steer.sh": ["rm-steer", "rm_steer_approved_examples", "refusal-note"],
     "lesson-hint.sh": ["lesson-hint", "engrave_approved_examples"],
