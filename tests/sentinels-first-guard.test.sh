@@ -26,6 +26,9 @@ for c in "dotnet stryker --since main" "cd server; scripts/mutate.sh --base orig
   "systemd-run --user --scope -p MemoryMax=4G timeout 300 dotnet-stryker"; do
   check "no sentinels refuses: $c" deny "$(run "$c" "$dir/none.jsonl")"
 done
+for c in "python3 tests/mutate-hooks.py --all" "bash -c 'mutmut run'" "sh -c \"dotnet stryker\""; do
+  check "no sentinels refuses: $c" deny "$(run "$c" "$dir/none.jsonl")"
+done
 check "another skill is no sentinels" deny "$(run "mutmut run" "$dir/do.jsonl")"
 check "a started sentinels lets it through" "" "$(run "dotnet stryker" "$dir/sent.jsonl")"
 check "a bare skill name counts" "" "$(run "mutmut run" "$dir/bare.jsonl")"
