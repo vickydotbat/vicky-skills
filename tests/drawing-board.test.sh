@@ -32,6 +32,7 @@ for o in t.iter("object"):
 t.write(sys.argv[5])' "$@"; }
 
 b new --screen 1920x1080 --window "hub=600x400" --box "pack cell=10,10,24,24" -o "$dir/a.drawio"
+check "a new sketch is a draw.io file: mxfile, then diagram, then mxGraphModel" 'python3 -I -c "import sys,xml.etree.ElementTree as E;r=E.parse(sys.argv[1]).getroot();sys.exit(not(r.tag==\"mxfile\" and r[0].tag==\"diagram\" and r[0][0].tag==\"mxGraphModel\"))" "$dir/a.drawio"'
 check "the window sits centred on the screen" '[ "$(geo "$dir/a.drawio" hub)" = 660,340,600,400 ]'
 
 setgeo "$dir/a.drawio" "pack cell" width 32 "$dir/wide.drawio"
