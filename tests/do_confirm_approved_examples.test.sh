@@ -14,10 +14,15 @@ typed() { jq -nc --arg p "<command-message>vicky-skills:$1</command-message>
 <command-args>$2</command-args>" '{hook_event_name:"UserPromptSubmit",prompt:$p}' | bash "$hint" 2>/dev/null; }
 said() { jq -r '.hookSpecificOutput.additionalContext // empty' 2>/dev/null; }
 
-# Given you type /do with an objective in your own words
+# Given you type /do with an objective your own words already state in full
+# When the agent starts
+# Then it says "Going with: <the objective>" and builds, with no gate
+check "a stated objective is taken, not asked" '[ -f "$hint" ] && out=$(typed do "zip every download on the CDN" | said) && grep -q "Going with: " <<<"$out" && ! grep -q "🚪 Waiting on you" <<<"$out"'
+
+# Given you type /do with an objective it has to read into, such as a question or a maybe
 # When the agent starts
 # Then its first message is a gate that says the objective back to you, and it builds nothing until you answer
-check "a chat objective is confirmed first" '[ -f "$hint" ] && typed do "can every download be zipped, maybe by the CDN" | said | grep -q "🚪 Waiting on you" && grep -q "Confirm the objective" "$root/skills/engineering/do/SKILL.md"'
+check "an objective read into is confirmed first" '[ -f "$hint" ] && typed do "can every download be zipped, maybe by the CDN" | said | grep -q "🚪 Waiting on you" && grep -q "Confirm the objective" "$root/skills/engineering/do/SKILL.md"'
 
 # Given you type /do with a ticket, or start a warp through a star chart
 # When the agent starts
