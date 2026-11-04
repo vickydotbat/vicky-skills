@@ -19,6 +19,7 @@ heavy-run-guard.sh	dbdeec27de6f67ac	d458d47a51a3c609	23/23
 heavy-run.awk	29bae3f6c7302160	26909cd12624ae9c	90/90
 heredoc-strip.awk	6fa4caa108d2e5b7	a3da8a7c7f58aa37	6/6
 issue-guard.sh	e8ffbfff391d14cc	11d4066631be8c93	21/21
+keep-awake.sh	22802e859fc77574	bf0d3a7add418fa2	20/20
 lesson-hint.sh	1797c0ff569f7265	b0f4a51cdb2013a6	11/11
 lesson-ledger.sh	4c88dc2d0aebcfe6	0e4bcf0a16a39809	18/18
 local-path-guard.sh	262afb6fbdb2a8d7	8ddcf8981e6a878b	29/29

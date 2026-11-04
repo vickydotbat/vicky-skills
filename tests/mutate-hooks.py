@@ -71,6 +71,7 @@ TESTS = {
     "do-first-guard.sh": ["do-first-guard"],
     "windowed-browser-guard.sh": ["windowed-browser-guard"],
     "gate-notify.sh": ["gate-notify"],
+    "keep-awake.sh": ["keep-awake", "sleep_lock_approved_examples"],
     "git-hook-lib.sh": GIT_GUARDS,
     "ai-credit.sh": ["git-guard", "git_guard_approved_examples", "pr-guard", "pr_guard_ai_credit_approved_examples"],
     "heredoc-strip.awk": GIT_GUARDS + ["pr-guard", "issue-guard", "poll-pace", "poll_pace_heredoc_approved_examples", "heavy-run-guard"],

@@ -312,6 +312,11 @@
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/checkout-guard.sh\"",
             "timeout": 1
+          },
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/keep-awake.sh\"",
+            "timeout": 5
           }
         ]
       }
@@ -342,6 +347,11 @@
           {
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/do-confirm-hint.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/keep-awake.sh\"",
             "timeout": 5
           }
         ]
@@ -376,6 +386,11 @@
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/stale-blame.sh\"",
             "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/keep-awake.sh\"",
+            "timeout": 5
           }
         ]
       }

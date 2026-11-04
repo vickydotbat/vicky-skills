@@ -316,6 +316,12 @@
       "title": "No stale-copy blame without proof",
       "description": "When the agent ends its turn blaming your build, client, cache or package as stale, or telling you to update or restart it, with no hash or logged version quoted, it is sent back once to keep tracing the code.",
       "default": true
+    },
+    "keep_awake": {
+      "type": "boolean",
+      "title": "Keep the computer awake while an agent works",
+      "description": "Hold a sleep lock while any Claude Code session on this machine has a turn running, and release it when every turn has ended. Needs systemd-inhibit.",
+      "default": false
     }
   }
 }
