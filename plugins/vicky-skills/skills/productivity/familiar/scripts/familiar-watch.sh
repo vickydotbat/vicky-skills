@@ -17,7 +17,7 @@ while IFS= read -r line <&3; do
   out=$(jq -r --arg tag "${tag:+$tag }" '
     def cut: gsub("\n"; " ") | .[0:400];
     # An agent line that asks, picks or waits is never cut: its questions sit at the end.
-    def say: gsub("\n"; " ") | if test("\\?|Waiting on you|[Pp]ick|Going with") then . else .[0:400] end;
+    def say: if test("\\?|Waiting on you|\\b[Pp]ick\\b|Going with") then gsub("\n"; " ") else cut end;
     ("[" + ((.timestamp // "")[11:19]) + "] " + $tag) as $at
     | if .type == "cost-state" then $tag + "HANDOFF"
     elif .type == "system" and .subtype == "compact_boundary" then $at + "COMPACTED"

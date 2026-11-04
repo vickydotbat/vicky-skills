@@ -6,8 +6,11 @@
 # per-session process records, while that process runs. The familiar's own session
 # ($CLAUDE_CODE_SESSION_ID) is left out.
 # With --new it lists again every minute (FAMILIAR_SESSIONS_EVERY seconds)
-# and prints "NEW <line>" once for each session not named after --new (or,
-# with none named, not live at its start), for 30 rounds (FAMILIAR_SESSIONS_ROUNDS), so a Monitor re-arms it.
+# and prints "NEW <line>" once for each session not named after --new, the
+# ids the caller already watches, so one that started between the caller's
+# list and this check still shows. With no ids, the sessions live at its
+# start are known. It runs 30 rounds (FAMILIAR_SESSIONS_ROUNDS), so a Monitor
+# re-arms it.
 # The mutation tool covers plugins/vicky-skills/scripts only: mutate this script by hand, with sentinels.
 set -u
 dir=${FAMILIAR_PROJECTS_DIR:-$HOME/.claude/projects}
@@ -34,10 +37,6 @@ list() {
   done
 }
 [ "${1:-}" = --new ] || { list; exit 0; }
-# The ids after --new are the sessions the caller already watches. A session
-# that started between the caller's own list and this check is then still
-# NEW, on the first round. With no ids, the live list at the start is the
-# known set.
 shift
 if [ $# -gt 0 ]; then seen=$(printf '%s\n' "$@"); else seen=$(list | cut -d' ' -f1); fi
 for _ in $(seq 1 "${FAMILIAR_SESSIONS_ROUNDS:-30}"); do
