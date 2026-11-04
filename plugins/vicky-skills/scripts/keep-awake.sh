@@ -13,15 +13,21 @@ event=$(jq -r '.hook_event_name // empty' <<<"$input" 2>/dev/null)
 session=$(jq -r '.session_id // empty' <<<"$input" 2>/dev/null)
 case "$session" in ''|*/*|.*) exit 0 ;; esac
 dir="${KEEP_AWAKE_DIR:-${XDG_RUNTIME_DIR:-/tmp}/vicky-skills-keep-awake-$(id -u)}"
-poll="${KEEP_AWAKE_POLL:-5}"  # mutant-ok delete: without it the holder spins on a failing sleep, which no test can time
+poll="${KEEP_AWAKE_POLL:-5}"  # mutant-ok delete: without it sleep fails and the holder busy-loops, a CPU cost no output shows
 
 case "$event" in
   UserPromptSubmit)
-    { mkdir -p "$dir" && touch "$dir/$session"; } 2>/dev/null || exit 0
-    # shortcut: a prompt landing in the holder's last poll can miss the lock until the next prompt, fine at a 5 s poll.
+    # The mark holds the Claude Code process id, so a session that crashed or was killed drops out.
+    owner="${KEEP_AWAKE_OWNER:-}" p=$PPID
+    while [ -z "$owner" ] && [ "${p:-1}" -gt 1 ]; do
+      case "$(cat "/proc/$p/comm" 2>/dev/null)" in *claude*) owner=$p ;; esac
+      p=$(awk '{print $4}' "/proc/$p/stat" 2>/dev/null)
+    done
+    { mkdir -p "$dir" && echo "${owner:-$PPID}" > "$dir/$session"; } 2>/dev/null || exit 0
+    # shortcut: a prompt in the holder's last poll misses the lock until the next prompt.
     setsid flock -n "$dir.holder" systemd-inhibit --what=sleep:idle --who="Claude Code" \
       --why="A Claude Code session is working" --mode=block \
-      sh -c 'while [ -n "$(ls -A "$1" 2>/dev/null)" ]; do sleep "$2"; done' keep-awake "$dir" "$poll" \
+      sh -c 'while [ -n "$(ls -A "$1" 2>/dev/null)" ]; do for m in "$1"/*; do kill -0 "$(cat "$m" 2>/dev/null)" 2>/dev/null || rm -f "$m"; done; sleep "$2"; done' keep-awake "$dir" "$poll" \
       </dev/null >/dev/null 2>&1 &
     ;;
   Stop|SessionEnd) rm -f "$dir/$session" ;;

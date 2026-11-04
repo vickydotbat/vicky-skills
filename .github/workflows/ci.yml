@@ -227,6 +227,8 @@ jobs:
         run: tests/sleep_lock_approved_examples.test.sh
       - name: Keep-awake hook
         run: tests/keep-awake.test.sh
+      - name: Keep-awake drops a crashed session
+        run: tests/keep-awake-crash.test.sh
       - name: Skill ledger hook
         run: tests/skill_ledger_approved_examples.test.sh
       - name: Idle skills

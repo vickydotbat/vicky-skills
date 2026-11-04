@@ -18,8 +18,8 @@ rm -f "$KEEP_AWAKE_TEST_LOCK"
 STUB
 chmod +x "$fx/bin/systemd-inhibit"
 export KEEP_AWAKE_TEST_LOCK="$fx/lock" KEEP_AWAKE_DIR="$fx/state" KEEP_AWAKE_POLL=0.1
-export CLAUDE_PLUGIN_OPTION_KEEP_AWAKE=true
-trap 'touch "$fx/stop"; rm -rf "$KEEP_AWAKE_DIR"; sleep 0.3; rm -rf "$fx"' EXIT
+export KEEP_AWAKE_OWNER=$$ CLAUDE_PLUGIN_OPTION_KEEP_AWAKE=true
+trap 'rm -rf "$KEEP_AWAKE_DIR"; sleep 0.3; rm -rf "$fx"' EXIT
 send() { jq -nc --arg e "$1" --arg s "$2" '{hook_event_name:$e,session_id:$s}' | PATH="$fx/bin:$PATH" bash "$hook"; }
 held() { for _ in $(seq 30); do [ -f "$fx/lock" ] && return 0; sleep 0.1; done; return 1; }
 free() { for _ in $(seq 30); do [ -f "$fx/lock" ] || return 0; sleep 0.1; done; return 1; }
