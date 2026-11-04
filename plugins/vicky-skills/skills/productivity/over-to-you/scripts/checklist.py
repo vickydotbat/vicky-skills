@@ -11,7 +11,8 @@ The spec:
      "signed_off": "nothing yet", "proven_by": "`health.sh` answers ok",
      "sections": [{"title": "Pack", "items": [
         {"do": "Spawn the paper", "see": "the sheet shows",
-         "person": "real client", "kit": "`/runscript paper` as a DM"}]}],
+         "person": "real client", "kit": "`/runscript paper` as a DM",
+         "source": "scripts/paper.nss in the module"}]}],
      "extra": "checks run outside the list"}
 
 Writes the file and exits 0, or prints `<problem>` lines and exits 1 without
@@ -72,6 +73,8 @@ def render(spec):
             lines.append(f"   person: {item['person']}")
             if item.get("kit"):
                 lines.append(f"   kit: {item['kit']}")
+            if item.get("source"):
+                lines.append(f"   source: {item['source']}")
             lines += ["   notes:", ""]
         lines += quick_notes() + [""]
     lines += ["## Extra tests", "", spec.get("extra", "") or "nothing yet", ""] + quick_notes()
