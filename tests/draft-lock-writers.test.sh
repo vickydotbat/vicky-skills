@@ -15,6 +15,8 @@ for code in 'import pathlib; pathlib.Path("a").write_text("x")' 'import os; os.r
   check "refused: $code" 2 "$(run "python3 -c '$code'")"
 done
 check "a read runs" 0 "$(run "python3 -c 'print(open(\"a\").read())'")"
+check "a read with a flag before -c runs" 0 "$(run "curl -s https://x/y | python3 -I -c 'import json,sys;print(json.load(sys.stdin))'")"
+check "a write with a flag before -c is refused" 2 "$(run "python3 -I -c 'open(\"x\",\"w\").write(1)'")"
 # A variable the command sets to an absolute path names where its redirect writes.
 check "a redirect into a folder the command names in a variable runs" 0 "$(run 'S=/tmp/scratch-x; ls > $S/out.txt')"
 check "a braced variable names its folder too" 0 "$(run 'S=/tmp/scratch-x; ls > ${S}/out.txt')"
