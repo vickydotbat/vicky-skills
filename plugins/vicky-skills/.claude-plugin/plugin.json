@@ -89,7 +89,7 @@
     "guard_heavy_run": {
       "type": "boolean",
       "title": "Cap the memory of heavy runs",
-      "description": "Refuse an image, video, render or build run (ImageMagick, Real-ESRGAN, ffmpeg, Blender, sd-cli, dotnet build or test, python on image work, nix develop -c) that no systemd-run MemoryMax= cap wraps, and give the command with the cap in place. Short reads such as magick identify pass. A repo lists scripts that cap themselves on a 'Bounded scripts:' line in docs/agents/.",
+      "description": "Refuse pkill -f, which also kills the shell running it. Refuse an image, video, render or build run (ImageMagick, Real-ESRGAN, ffmpeg, Blender, sd-cli, dotnet build or test, python on image work, nix develop -c) that no systemd-run MemoryMax= cap wraps, and give the command with the cap in place. Short reads such as magick identify pass. A repo lists scripts that cap themselves on a 'Bounded scripts:' line in docs/agents/.",
       "default": true
     },
     "guard_gate_state": {

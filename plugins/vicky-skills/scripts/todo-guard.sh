@@ -2,7 +2,7 @@
 # PreToolUse hook (Edit, Write, Bash; guard_todo_next, on by default): .todo
 # work goes through standing-orders only. An edit or write to a .todo file,
 # or a shell command that writes one (a redirect, sed -i, tee, rm, mv), is
-# refused until the session has started standing-orders, which keeps each
+# refused until standing-orders has started since the user's last message, which keeps each
 # line to its form and length. A read passes.
 set -u
 case "${CLAUDE_PLUGIN_OPTION_GUARD_TODO_NEXT:-true}" in true|1) ;; *) exit 0 ;; esac
@@ -18,5 +18,8 @@ case $tool in
   *) exit 0 ;;
 esac
 transcript=$(jq -r '.transcript_path // empty' <<<"$payload")
-[ -f "$transcript" ] && jq -r 'select(.type=="assistant") | .message.content[]? | select(.type=="tool_use" and .name=="Skill") | .input.skill // ""' "$transcript" 2>/dev/null | grep -qE '(^|:)standing-orders$' && exit 0
+[ -f "$transcript" ] && [ "$(tail -n 400 "$transcript" | jq -rs '
+  (map(.type == "user" and ((.message.content | type) == "string" or any(.message.content[]?; .type == "text"))) | rindex(true)) as $u
+  | [.[(($u // -1) + 1):][] | select(.type == "assistant") | .message.content[]? | select(.type == "tool_use")
+     | select(.name == "Skill" and ((.input.skill // "") | test("(^|:)standing-orders$")))] | length' 2>/dev/null)" -gt 0 ] 2>/dev/null && exit 0
 jq -n '{hookSpecificOutput:{hookEventName:"PreToolUse",permissionDecision:"deny",permissionDecisionReason:"todo-guard: refused, .todo work goes through the standing-orders skill only, which keeps each line to its form. Nothing ran: start standing-orders, then make the change it describes."}}'

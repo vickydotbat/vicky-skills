@@ -63,6 +63,7 @@ expect "a missing body file passes" 0 "gh pr create --body-file $scratch/none.md
 expect "a folder that doesn't exist still checks the command" 2 "gh pr create --body \"$credit\"" true "$scratch/gone"
 expect "the option at 1 refuses" 2 "gh pr create --body \"$credit\"" 1
 expect "the option off passes" 0 "gh pr create --body \"$credit\"" false
+expect "the option unset is on" 2 "gh pr create --body \"$credit\"" ""
 expect "the option at false passes" 0 "gh pr create --body \"$credit\"" false
 # The one-pull-request rule, beyond its approved examples. Each forge gets
 # only its own stand-in, so asking the wrong one finds nothing open.

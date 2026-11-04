@@ -21,6 +21,8 @@ for c in "echo x >> .todo" "printf x > ./.todo" "echo x | tee -a .todo" "sed -i 
 done
 check "after standing-orders an Edit passes" "" "$(run Edit '{"file_path":".todo"}' "$dir/so.jsonl")"
 check "after standing-orders a shell write passes" "" "$(run Bash "$(cmd "echo x >> .todo")" "$dir/so.jsonl")"
+{ cat "$dir/so.jsonl"; jq -nc '{type:"user",message:{content:"next ask"}}'; } > "$dir/old.jsonl"
+check "a standing-orders before the user's last message does not count" deny "$(run Edit '{"file_path":".todo"}' "$dir/old.jsonl")"
 check "a read passes" "" "$(run Bash "$(cmd "cat .todo")" "$dir/none.jsonl")"
 check "a grep passes" "" "$(run Bash "$(cmd "grep -n GAME .todo")" "$dir/none.jsonl")"
 check "another file passes" "" "$(run Edit '{"file_path":"x.todo.md"}' "$dir/none.jsonl")"

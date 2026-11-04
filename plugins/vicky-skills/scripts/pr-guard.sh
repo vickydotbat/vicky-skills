@@ -69,14 +69,10 @@ refuse() {
 # a body. Expand the session ID, $HOME and ~ the command still holds.
 forge_text=$command
 # A simple NAME=value the command sets, such as S=/tmp/x before --body-file $S/b.md.
-assigns=$(grep -oE '(^|[;&|[:space:]])[A-Za-z_][A-Za-z0-9_]*=("[^"]*"|'"'"'[^'"'"']*'"'"'|[^[:space:];&|]+)' <<<"$command" |
-  sed -E 's/^[;&|[:space:]]//; s/=["'"'"']/=/; s/["'"'"']$//')
+# shellcheck source=assign-expand.sh
+. "$(dirname "$0")/assign-expand.sh"
 while IFS= read -r body_file; do
-  while IFS='=' read -r name value; do
-    [ -n "$name" ] || continue
-    body_file=${body_file//\$\{$name\}/$value}
-    body_file=${body_file//\$$name/$value}
-  done <<<"$assigns"
+  body_file=$(expand_assigns "$body_file" "$command")
   body_file=${body_file//\$\{CLAUDE_CODE_SESSION_ID\}/$session_id}
   body_file=${body_file//\$CLAUDE_CODE_SESSION_ID/$session_id}
   body_file=${body_file//\$\{HOME\}/$HOME}

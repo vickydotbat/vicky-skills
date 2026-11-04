@@ -17,6 +17,8 @@ GUARD=worktree-place
 OPTION=${CLAUDE_PLUGIN_OPTION_GUARD_WORKTREE_PLACE:-}
 # shellcheck source=git-hook-lib.sh
 . "$(dirname "$0")/git-hook-lib.sh"
+# shellcheck source=assign-expand.sh
+. "$(dirname "$0")/assign-expand.sh"
 
 event=$(jq -r '.hook_event_name // "PreToolUse"' <<<"$payload")
 common=$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)
@@ -47,13 +49,8 @@ check_add() {
     esac
   done
   [ -n "$path" ] || return 0
-  # A path named through a variable the same command sets (W=...; ... $W)
-  # reads as that value.
-  while IFS='=' read -r var value; do
-    path=${path//\$\{$var\}/$value}
-    path=${path//\$$var/$value}
-  done < <(grep -oE '(^|[;&|[:space:]])[A-Za-z_][A-Za-z0-9_]*=("[^"]*"|'"'"'[^'"'"']*'"'"'|[^[:space:];&|]+)' <<<"$command" |
-    sed -E 's/^[;&|[:space:]]//; s/=["'"'"']/=/; s/["'"'"']$//')
+  # A path named through a variable the same command sets reads as its value.
+  path=$(expand_assigns "$path" "$command")
   path=${path/#\~\//$HOME/}
   abs=$(realpath -m -- "$path")
   if [[ $abs != "$home"/* ]]; then

@@ -12,6 +12,8 @@
 # to false or 0 turns it off.
 case "${CLAUDE_PLUGIN_OPTION_GUARD_READY_QUEUE:-}" in false|0) exit 0 ;; esac
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool the command reads back empty, and the hook exits 0 the same way
+# A pull request not opened yet stands after every open one.
+NEW_PR=999999999
 cmd=$(jq -r '.tool_input.command // empty' 2>/dev/null)
 # The title's quotes are kept for tea, where the title is the draft marker.
 bare=$(sed -E "s/'[^']*'//g; s/\"[^\"]*\"//g" <<<"$cmd")
@@ -22,17 +24,17 @@ if grep -qE "${s}gh[[:space:]]+pr[[:space:]]+ready$e" <<<"$bare"; then
   forge=gh; grep -qE -- '--undo' <<<"$bare" && exit 0
   n=$(num 'gh[[:space:]]+pr[[:space:]]+ready'); [ -n "$n" ] || n=$(gh pr view --json number --jq .number 2>/dev/null)
 elif grep -qE "${s}gh[[:space:]]+pr[[:space:]]+create$e" <<<"$bare"; then
-  forge=gh; grep -qE -- '(^|[[:space:]])(--draft|-d)([[:space:]=]|$)' <<<"$bare" && exit 0; n=999999999
+  forge=gh; grep -qE -- '(^|[[:space:]])(--draft|-d)([[:space:]=]|$)' <<<"$bare" && exit 0; n=$NEW_PR
 elif grep -qE "${s}tea[[:space:]]+(pr|pulls)[[:space:]]+(edit|create)$e" <<<"$bare"; then
   forge=tea; t=$(title); [ -n "$t" ] || exit 0
   grep -qiE '^(WIP:|\[WIP\]|Draft:)' <<<"$t" && exit 0
-  n=$(num 'tea[[:space:]]+(pr|pulls)[[:space:]]+edit'); [ -n "$n" ] || n=999999999
+  n=$(num 'tea[[:space:]]+(pr|pulls)[[:space:]]+edit'); [ -n "$n" ] || n=$NEW_PR
 elif grep -qE "${s}glab[[:space:]]+mr[[:space:]]+update$e" <<<"$bare" && grep -qE -- '(^|[[:space:]])(--ready|-r)([[:space:]]|$)' <<<"$bare"; then
   forge=glab; n=$(num 'glab[[:space:]]+mr[[:space:]]+update')
 elif grep -qE "${s}glab[[:space:]]+mr[[:space:]]+create$e" <<<"$bare"; then
-  forge=glab; grep -qE -- '(^|[[:space:]])(--draft|--wip)([[:space:]]|$)' <<<"$bare" && exit 0; n=999999999
+  forge=glab; grep -qE -- '(^|[[:space:]])(--draft|--wip)([[:space:]]|$)' <<<"$bare" && exit 0; n=$NEW_PR
 else
-  exit 0 # mutant-ok delete: the deny is already printed, and the checks after it print no second one on any input that reached it
+  exit 0
 fi
 deny() {
   jq -n --arg r "ready-queue-guard: refused, $1 Nothing in this command ran. Keep this pull request a draft, and mark it ready once the queue is clear: no other pull request out of draft and no CI run for another branch. Wait for that with watch.sh, and work on what doesn't wait." \

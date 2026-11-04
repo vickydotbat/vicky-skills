@@ -26,4 +26,11 @@ check "bad input exits 0 with nothing" '[ -z "$(echo "not json" | bash "$hook")"
 check "no objective exits 0" 'run "$(cmd do "")" >/dev/null; [ $? = 0 ]'
 check "a written-down objective exits 0" 'run "$(cmd do "PLAT-3")" >/dev/null; [ $? = 0 ]'
 check "a hint exits 0" 'run "$(cmd do "zip it")" >/dev/null; [ $? = 0 ]'
+gated() { run "$(cmd do "$1")" | jq -r .hookSpecificOutput.additionalContext | grep -q "Waiting on you"; }
+for o in "zip every download" "Rename the sync job to nightly-export"; do
+  if gated "$o"; then echo "FAIL a stated objective is gated: $o"; fail=1; else echo "ok   a stated objective is taken: $o"; fi
+done
+for o in "can we zip downloads" "zip them?" "maybe zip them" "perhaps cache it" "it might need a cache" "could we zip" "should it zip" "would zip help" "what about zip" "how about zip" "not sure, zip" "zip or so" "i guess zip" "I wonder about zip"; do
+  if gated "$o"; then echo "ok   a hedged objective is gated: $o"; else echo "FAIL a hedged objective is taken: $o"; fail=1; fi
+done
 exit $fail
