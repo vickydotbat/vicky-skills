@@ -30,9 +30,11 @@ expect "a command that marks nothing ready runs" 0 ok "$dir/noreview.jsonl" 'git
 expect "a forge variable left in the environment changes nothing" 0 ok "$dir/noreview.jsonl" 'git status' forge=gh
 mkdir "$dir/garbled"; printf '#!/bin/sh\necho not json\n' > "$dir/garbled/tea"; chmod +x "$dir/garbled/tea"
 expect "a Gitea answer that isn't JSON lets it through" 0 garbled "$dir/noreview.jsonl" 'tea pr edit 12 -t "Step guard" </dev/null'
-echo 'Skipped: review, because the diff is one typo' > "$dir/body"
+printf 'Skipped: review, because the diff is one typo\nPlan check: none found\n' > "$dir/body"
 expect "a skip reason on Gitea lets it through" 0 ok "$dir/noreview.jsonl" 'tea pr edit 12 -t "Step guard" </dev/null'
 started vicky-skills:warp > "$dir/warponly.jsonl"
 printf 'Skipped: sentinels, because a\nSkipped: review, because b\n' > "$dir/body"
 expect "a warp that skipped all but do is still refused for do" 2 ok "$dir/warponly.jsonl" 'gh pr ready 37'
+printf 'Skipped: do, because a\nSkipped: sentinels, because b\nSkipped: review, because c\n' > "$dir/body"
+expect "a warp with no do needs no Plan check line" 0 ok "$dir/warponly.jsonl" 'gh pr ready 37'
 exit $fail

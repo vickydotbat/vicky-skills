@@ -20,6 +20,8 @@ A pass always ends in counts or in "unrun, because <the log line>". It never end
 - Skip code no test can see: log calls and messages to a person.
 - Time each mutant out at its tests' baseline time x 1.5 plus a few seconds. A higher timeout hides an endless loop as slowness.
 
+Every mutation pass starts here, no exceptions: `sentinels-first-guard` refuses a mutation-tool command (Stryker, a `mutate.sh`, mutmut, cargo-mutants, PIT, `tests/mutate-hooks.sh`) until this skill has started in the session.
+
 Read the repo's `TESTING_STANDARDS.md` first: it wins over this skill's defaults.
 
 ## Tests that make a pass fast
