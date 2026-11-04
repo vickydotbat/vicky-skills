@@ -65,6 +65,8 @@ jobs:
         run: tests/guard-locks.test.sh
       - name: Step hints
         run: tests/step-hint.test.sh
+      - name: Every skill that reads a ticket whole reads its star chart
+        run: tests/chart-read.test.sh
       - name: Do runs its plan check first
         run: tests/do_imp_pass_approved_examples.test.sh
       - name: Scratch guard

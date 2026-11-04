@@ -21,6 +21,9 @@ blame='\b(stale|old|older|outdated|out[ -]of[ -]date|update|updated|redownload|r
 rule='\b(needs?|requires?|takes?)[[:space:]]+(a[[:space:]]+)?(full[[:space:]]+|fresh[[:space:]]+|client[[:space:]]+)?(restart|reload|rebuild|refresh|relaunch)\b'
 blamed=$(prose | sed -E 's/"[^"]*"//g; s/“[^”]*”//g' | tr '\n' ' ' | sed 's/\([.?!]\) /\1\n/g' | grep -iE "$copy" | sed -E "/\b[Yy]our\b/!s/$rule/RULE/Ig" | grep -iE "$blame" | grep -viE "\b(not|no|nothing|never|nor)\b")
 [ -n "$blamed" ] || exit 0
+# The session's own skills lagging the installed plugin is the agent's copy,
+# not the user's: that notice comes from the plugin itself.
+grep -qiE '\b(this|the) session\b[^.]*\b(old|older|stale|outdated|previous)\b[^.]*\b(skills?|plugin)\b' <<<"$said" && exit 0
 # Proof: a hash (six or more hex characters, digits and letters both, so
 # a date or a clock time is none) or a logged version (the word version, then
 # a number).

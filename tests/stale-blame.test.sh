@@ -86,4 +86,6 @@ check "the setting 0 lets it through" '{ user "go"; text "Your hak is stale."; }
 check "the setting true still checks" '{ user "go"; text "Your hak is stale."; } > "$fx/t.jsonl"; CLAUDE_PLUGIN_OPTION_GUARD_STALE_BLAME=true blocked'
 check "a missing transcript goes through" 'out=$(jq -nc "{transcript_path:\"$fx/none\"}" | bash "$hook"); [ $? = 0 ] && [ -z "$out" ]'
 check "bad input goes through" 'out=$(echo "not json" | bash "$hook"); [ $? = 0 ] && [ -z "$out" ]'
+check "the session's own older skills is no blame" '{ user "why"; text "This session is still running an older copy of the skills. A restart picks up the version you have installed."; } > "$fx/t.jsonl"; passes'
+check "an older session blamed on the user's plugin still blocks" '{ user "why"; text "Your plugin is stale in this session."; } > "$fx/t.jsonl"; blocked'
 exit $fail

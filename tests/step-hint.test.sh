@@ -12,6 +12,8 @@ has "over-to-you opens the draft file before the sitting" over-to-you "before th
 has "over-to-you puts the branch in the clone itself" over-to-you "switch the clone to it"
 has "make-it-so checks player text went through the draft file" vicky-skills:make-it-so "red-pen draft file"
 has "do keeps its proof hint" do "ends with its proof"
+has "do reads a star's chart first" do "read the chart whole first"
+has "warp reads the chart's Prime directive first" warp "Prime directive binds every star"
 has "a council keeps every line in the seats until Frodo speaks" vicky-skills:council-of-elrond "every line the user sees comes from a seat"
 has "after Frodo, the council writes plain prose" council-of-elrond "write plain prose from then on"
 # E13, a plain regression test: no familiar_kind setting exists yet, so the
