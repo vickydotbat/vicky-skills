@@ -27,6 +27,7 @@ case "${CLAUDE_PLUGIN_OPTION_GUARD_NO_V1:-}" in true|1) ;; *) exit 0 ;; esac
 grep -E '"skill": ?"(vicky-skills:)?(do|warp)"|<command-name>/(vicky-skills:)?(do|warp)</command-name>' "$transcript" | jq -e 'select(
   (.type == "assistant" and any(.message.content[]?; .type == "tool_use" and .name == "Skill" and (.input.skill | test("^(vicky-skills:)?(do|warp)$"))))
   or (.type == "user" and (.message.content | type) == "string" and (.message.content | test("<command-name>/(vicky-skills:)?(do|warp)</command-name>"))))' >/dev/null 2>&1 || exit 0
+grep -q "Dropped out of warp" <<<"$said" && exit 0 # the end of a warp is the end: its report stands
 # A pull request of its own the user asked for is no deferral.
 grep -qiE '\b(separate|different|own|new|another) (pr|pull request)\b' <<<"$asked" && exit 0
 offers=$(prose | sed -E 's/"[^"]*"//g; s/“[^”]*”//g; s/‘[^’]*’//g; s/(^|[[:space:](])'"'"'[^'"'"']*'"'"'([[:space:].,;:!?)]|$)/\1\2/g' | tr '\n' ' ' | sed 's/\([.?!]\) /\1\n/g' \

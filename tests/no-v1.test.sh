@@ -70,6 +70,8 @@ check "a planning session's reply goes through" 'out=$(PLANNING=1 stop); [ $? = 
 check "an offer in a session that never started do goes through" 'out=$(PLANNING=1 stop); [ $? = 0 ] && [ -z "$out" ]'
 { building vicky-skills:warp; user "go"; text "Sorting could be a follow-up PR."; } > "$fx/t.jsonl"
 check "an offer in a warp is sent back" 'PLANNING=1 stop | jq -e ".decision == \"block\"" >/dev/null'
+{ building vicky-skills:warp; user "go"; text "🖖 Dropped out of warp. Sorting could be a follow-up PR. Next: fix S1."; } > "$fx/t.jsonl"
+check "a warp's closing report passes" 'out=$(PLANNING=1 stop); [ $? = 0 ] && [ -z "$out" ]'
 { user "<command-name>/vicky-skills:do</command-name>"; text "Sorting could be a follow-up PR."; } > "$fx/t.jsonl"
 check "an offer after the user typed /do is sent back" 'PLANNING=1 stop | jq -e ".decision == \"block\"" >/dev/null'
 { jq -nc '{type:"user",message:{content:[{type:"tool_result",content:"\"skill\":\"vicky-skills:do\" <command-name>/vicky-skills:do</command-name>"}]}}'; user "go"; text "Sorting could be a follow-up PR."; } > "$fx/t.jsonl"

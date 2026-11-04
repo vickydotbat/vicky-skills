@@ -13,7 +13,7 @@ done
 payload=$(cat)
 command=$(jq -r ".tool_input.command // \"\"" <<<"$payload")
 cwd=$(jq -r ".cwd // \"\"" <<<"$payload")
-grep -Eq "git[[:space:]]" <<<"$command" || exit 0 # mutant-ok delete: a fast path: the checks below find nothing to refuse in such a command
+grep -Eq "git[[:space:]]|(gh|tea)[[:space:]]+(pr|pulls?)[[:space:]]+(ready|reopen)" <<<"$command" || exit 0 # mutant-ok delete: a fast path: the checks below find nothing to refuse in such a command
 [ -n "$cwd" ] && { cd "$cwd" 2>/dev/null || exit 0; }
 # The command may aim at another repo with `git -C <dir>` or a leading `cd <dir>`.
 # The first one wins.

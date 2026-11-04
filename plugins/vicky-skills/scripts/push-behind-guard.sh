@@ -4,13 +4,16 @@
 # The default branch comes from origin/HEAD; origin is fetched first (10
 # seconds at most) and a failed fetch lets the push through. Pushing the
 # default branch itself, deleting a branch and pushing to another remote are
-# not checked. On unless the plugin option guard_push_behind is false or 0.
+# not checked. Marking a pull request ready or reopening it (gh, tea) is
+# checked like a push of the current branch: CI would test a stale base.
+# On unless the plugin option guard_push_behind is false or 0.
 GUARD=push-behind-guard
 OPTION=${CLAUDE_PLUGIN_OPTION_GUARD_PUSH_BEHIND:-true}
 # shellcheck source=git-hook-lib.sh
 . "$(dirname "$0")/git-hook-lib.sh"
 
-grep -Eq 'git[[:space:]].*push([[:space:]]|$)' <<<"$code" || exit 0
+ready='(gh|tea)[[:space:]]+(pr|pulls?)[[:space:]]+(ready|reopen)'
+grep -Eq "git[[:space:]].*push([[:space:]]|\$)|$ready" <<<"$code" || exit 0
 grep -Eq -- '--delete|[[:space:]]-d([[:space:]]|$)' <<<"$code" && exit 0
 
 default_ref=$(default_ref_of origin)
@@ -19,6 +22,9 @@ dflt=${default_ref#origin/}
 fetched=""
 
 while IFS= read -r segment; do
+  if grep -Eq "$ready" <<<"$segment"; then
+    src=$current
+  else
   push_args_of "$segment" || continue
   args=()
   for word in ${push_args[@]+"${push_args[@]}"}; do [[ $word == -* ]] || args+=("$word"); done
@@ -30,6 +36,7 @@ while IFS= read -r segment; do
     src=${src#+}
     src=${src//[\"\']/}
     [ "$src" = "HEAD" ] && src=$current
+  fi
   fi
   if [ -z "$src" ] || [ "$src" = "$dflt" ] || ! git rev-parse --verify -q "$src" >/dev/null 2>&1; then
     continue
@@ -46,7 +53,7 @@ while IFS= read -r segment; do
     refuse "push-behind-guard: '$src' lacks commits that origin/$dflt has." \
       "Bring it up to date first:" \
       "  git fetch origin && git rebase origin/$dflt" \
-      "Settle each conflict, rerun the checks, then push again."
+      "Settle each conflict, rerun the checks, push, then mark it ready or reopen it."
   fi
 done < <(tr ';&|' '\n' <<<"$command")
 exit 0 # mutant-ok delete: the loop above ends with status 0 on every path
