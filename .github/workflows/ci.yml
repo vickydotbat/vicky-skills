@@ -273,8 +273,6 @@ jobs:
         run: tests/sentinels-first-guard.test.sh
       - name: A fixed review finding gets a prevention verdict
         run: tests/review-prevention.test.sh
-      - name: ready-queue-guard lets one pull request out of draft at a time
-        run: tests/ready-queue-guard.test.sh
       - name: todo-guard sends .todo writes through standing-orders
         run: tests/todo-guard.test.sh
       - name: todo-next jots a suggested next

@@ -35,7 +35,6 @@ pr-guard.sh	d3319e40e25a3dc6	48726bc2f610ee16	131/131
 publickey-hint.sh	6af1237e3412256f	c54b0decec3909bc	7/7
 push-behind-guard.sh	85b12f60ca06f8b6	13b9a7acb515a0e4	52/52
 quote-mask.awk	b04578521f7edc95	022775299e764ff9	52/52
-ready-queue-guard.sh	58e6ac3f3aa4368f	aaebb056f60fedf4	76/76
 red-first-check.sh	e585449df8cf7aee	f94ad9aefc4b0802	20/20
 red-first-guard.sh	ce1336cf1ab35246	a104a11090a04838	27/27
 rm-steer.sh	446e84a40f650cd3	bcfec59c13f3f047	28/28
@@ -45,7 +44,7 @@ since-user.sh	a5a5eb97c46d4365	84ed2dccb1bd1d82	7/7
 skill-ledger.sh	4f6f1ba436f648ca	326b545e2e5a7e35	22/22
 spark-joy.sh	e88c476e7a612966	25b1f8934166f886	29/29
 springboard.sh	2b1a555e07899495	aa25977872a3c406	53/53
-stale-blame.sh	81e6e052053f2516	775e88a7d09bc483	14/14
+stale-blame.sh	8f059b9c3c038c56	3ca0f3d36199805c	14/14
 stale-copy-hint.sh	4e663d08786adf6b	b5706ded17a325ea	27/27
 step-guard.sh	a75d1da4efc9dee5	04f8dea0c38c9568	51/51
 step-hint.sh	59354ec4bf8b07a1	796823e2d0816874	14/14

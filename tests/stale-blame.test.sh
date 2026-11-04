@@ -65,7 +65,7 @@ for p in "Start the client fully, since a shader change needs a restart." "Close
   { user "go"; text "$p"; } > "$fx/t.jsonl"
   check "a restart the engine needs, stated as a rule, goes through: $p" 'passes'
 done
-for p in "Your client is probably running the old shader, restart it." "The client needs a restart because your build is stale."; do
+for p in "Your client is probably running the old shader, restart it." "The client needs a restart because your build is stale." "Your client needs a restart."; do
   { user "go"; text "$p"; } > "$fx/t.jsonl"
   check "blame beside a rule still counts: $p" 'blocked'
 done
