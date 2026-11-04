@@ -242,7 +242,7 @@
     "step_guard": {
       "type": "boolean",
       "title": "No skipped do steps",
-      "description": "Refuse an edit to production code until the session has started do, refuse to mark a do or warp build's pull request ready when do, sentinels or review never ran and the body gives no reason, and remind the agent at do's and warp's start what each step needs.",
+      "description": "Refuse an edit to production code until the session has started do and that do build has approved examples, refuse to mark a do or warp build's pull request ready when do, sentinels or review never ran and the body gives no reason, and remind the agent at do's and warp's start what each step needs.",
       "default": false
     },
     "guard_poll_pace": {

@@ -1,13 +1,17 @@
 #!/usr/bin/env bash
-# PreToolUse hook (Edit, Write, MultiEdit): refuses the first edit to
-# production code in a session that never started `do`, and steers the agent
-# to start it. Every build runs through `do`, a warp's stars included, so the
-# approved tests go red before any code. Production code is a source file in
-# a git checkout, outside a test folder and not named as a test. A session
-# counts `do` from a Skill call or a typed /do in its transcript. `spark-joy`
-# counts too: it refactors with behaviour held by the tests at its seam. A missing
-# transcript lets the edit through. Off unless the plugin option step_guard
-# is true.
+# PreToolUse hook (Edit, Write, MultiEdit): refuses an edit to production code
+# (a source file in a git checkout, outside a test folder and not named as a
+# test) until the session has started `do`, and then until that do build has
+# approved examples. Every build runs through `do`, a warp's stars included.
+# `spark-joy` passes on its own, since tests at its seam hold its behaviour,
+# but a `do` started later needs examples like any other. Examples count from
+# an examples or red-pen start after the latest do, or a reply line
+# "Examples: approved on <ticket>" or "Examples: none, because <reason>", whose
+# ticket or reason is real text, never a <placeholder>. shortcut: the reply
+# line is the agent's own word, and a resumed or subagent build has no other
+# way to show examples another session approved; a record the examples page
+# writes when the user ticks it would replace it. A missing transcript lets
+# the edit through. Off unless the plugin option step_guard is true.
 case "${CLAUDE_PLUGIN_OPTION_STEP_GUARD:-}" in true|1) ;; *) exit 0 ;; esac
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
 payload=$(cat)
@@ -24,12 +28,23 @@ rel=${file#"$top"/}
 grep -qiE '(^|/)(tests?|spec|__tests__|testdata|fixtures)/|(^|[._/-])(test|spec)s?([._-][^/]*)?\.[a-z]+$' <<<"$rel" && exit 0
 transcript=$(jq -r '.transcript_path // empty' <<<"$payload")
 [ -f "$transcript" ] || exit 0
-jq -r 'select(.type=="assistant") | .message.content[]? | select(.type=="tool_use" and .name=="Skill") | .input.skill' "$transcript" 2>/dev/null |
-  sed 's/.*://' | grep -qxE 'do|spark-joy' && exit 0
-grep -qE '<command-name>/(vicky-skills:)?do</command-name>' "$transcript" && exit 0
-jq -n --arg f "$rel" '{hookSpecificOutput: {
+marks=$(jq -r '
+  if .type=="assistant" then .message.content[]? |
+    if .type=="tool_use" and .name=="Skill" then (.input.skill // "" | sub(".*:";"")) |
+      if .=="do" then "D" elif .=="spark-joy" then "S" elif .=="examples" or .=="red-pen" then "E" else empty end
+    elif .type=="text" and ((.text // "") | test("(^|\\n)Examples: (approved on|none, because) [^<\\s]")) then "E"
+    else empty end
+  elif .type=="user" and ((.message.content | if type=="string" then . else "" end) | test("<command-name>/(vicky-skills:)?do</command-name>")) then "D"
+  else empty end' "$transcript" 2>/dev/null | tr -d '\n')
+case "$marks" in
+  *D*) [[ ${marks##*D} == *E* ]] && exit 0
+       reason="this do build has no approved examples yet. Run the examples skill, which hands its drafts to the user through red-pen, and write code once each one comes back ticked. When the ticket already holds approved examples, write the line \"Examples: approved on <ticket>\" in a reply. For found work (a review finding, a bug a test caught) or a test the user never decides, write \"Examples: none, because <reason>\". Then make this edit again." ;;
+  *S*) exit 0 ;;
+  *) reason="this session has not started the do skill. Every build runs through do, a warp's stars included: start do on the change now, and it writes the approved tests red before this edit." ;;
+esac
+jq -n --arg f "$rel" --arg r "$reason" '{hookSpecificOutput: {
   hookEventName: "PreToolUse",
   permissionDecision: "deny",
-  permissionDecisionReason: ("\($f) is production code, and this session has not started the do skill. Every build runs through do, a warp'"'"'s stars included: start do on the change now, and it writes the approved tests red before this edit.")
+  permissionDecisionReason: ("\($f) is production code, and \($r)")
 }}'
 exit 0 # mutant-ok delete: jq above leaves status 0, so the script ends the same way

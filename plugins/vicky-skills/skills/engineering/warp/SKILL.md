@@ -32,7 +32,7 @@ A warp is one effort: every star it builds goes on one branch and one pull reque
    - **Probe**: make it and show it. The user's reaction is its answer.
    - **Task**: do it. A task that needs another person, an account or a deploy is an obstacle.
    - **Anomaly** or **probe**: answered in pre-flight. One left for mid-flight is a mid-flight question.
-   - **Star**, a target included: start the `do` skill on it with the Skill tool, one `do` run per star, on the warp's branch. `do` is the build: a warp never writes a star's code itself, and `do-first-guard` refuses code edits until `do` has started. Its steps 1 and 2 find the examples approved and the red tests committed by pre-flight, and it goes on at step 3, so its `sentinels` pass and `review` run. Close the star once `do` ends.
+   - **Star**, a target included: start the `do` skill on it with the Skill tool, one `do` run per star, on the warp's branch. `do` is the build: a warp never writes a star's code itself, and `do-first-guard` refuses code edits until `do` has started and written its `Examples: approved on <star>` line. Its steps 1 and 2 find the examples approved and the red tests committed by pre-flight, and it goes on at step 3, so its `sentinels` pass and `review` run. Close the star once `do` ends.
 
    Done when every ticket on the course is closed.
 6. **Finish the build.** Run `review` over the whole branch, then `make-it-so`. A warp through several stars passes `make-it-so`'s size item with the body line "A warp through <n> stars, one pull request per effort." Done when the pull request's required checks are green.
