@@ -8,7 +8,7 @@ checkout-guard.sh	85a6b963cd5eeddc	46290a814a3eba5b	101/101
 do-confirm-hint.sh	b0c1b33c616e5669	a0fd6e967675e276	15/15
 do-first-guard.sh	f0c3e82b923ddc31	f069731b4ad655d7	37/37
 draft-lock.sh	72d9b5f0fb5e664e	a902b4e506acb7b3	75/75
-familiar-voice.sh	5b61603631286b5a	0c0442dc5235f217	21/21
+familiar-voice.sh	5b61603631286b5a	f4899557640fe44f	21/21
 fetch-place-hint.sh	3573b2f17e94944d	0e74547181db6738	12/12
 gamma-shift.sh	bf7b0a15b596e9fc	b2eae1b03e7c8c60	12/12
 gate-notify.sh	7ba893f680c5d672	42870013382a35b5	25/25
