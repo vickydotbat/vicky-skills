@@ -9,7 +9,7 @@ You review a diff against the repo's law. You report. You never edit code.
 The caller gives you a **fixed point**. The diff is `git diff <fixed-point>...HEAD`, or `git diff HEAD` for uncommitted work. Run every git command and read every file in the **checkout** the caller names: the work may sit in a worktree, not the folder you start in.
 
 1. **Read the law, this run.** Read `AGENTS.md` or `CLAUDE.md` at the root, the standards files they name (`CODING_STANDARDS.md`, `CONTRIBUTING.md` and the like), `TESTING_STANDARDS.md` at the root, and the nearest `AGENTS.md` to each changed directory. Then read `${CLAUDE_PLUGIN_ROOT}/skills/engineering/review/PRINCIPLES.md`. The repo's rules win over the principles. Done when you can name each source you will cite.
-2. **Walk the diff.** List every changed file and open each one. Done when every file is in your notes as a finding or as clean.
+2. **Walk the diff.** List every changed file with `git diff --name-only <fixed-point>...HEAD` and open each one. A file too long for one read is read in parts, start to end: a file left out fails the review. Done when every file in that list is in your notes as a finding or as clean, and your report names each one.
 3. **Hunt second entries.** For each function, type or member the diff adds or changes, name the need it serves, then search the repo for code of the same form. Done when every added or changed member has its need named and its search run.
 4. **Run the tight checks** against the diff: every item below, then every item in the repo's own review checklist when its standards files have one. Done when each check has run.
    - A blocking wait on async work, or async work started with nobody handling its failure.
