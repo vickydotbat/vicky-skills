@@ -23,7 +23,7 @@ has "make-it-so rewrites the body to the template" "$skills/engineering/make-it-
 has "loose-ends keeps the template's sections" "$skills/engineering/loose-ends/SKILL.md" "3. **Make the body true.**" 'keep `ship-it`'"'"'s sections'
 has "the push hint names ship-it" "$root/plugins/vicky-skills/scripts/after-push.sh" - "with the ship-it skill"
 has "ship-it has steps" "$skills/engineering/ship-it/SKILL.md" - "## Steps"
-has "ship-it's template has the imp pass line" "$skills/engineering/ship-it/SKILL.md" - "Imp pass: <what it found>"
+has "ship-it's template has the plan check line" "$skills/engineering/ship-it/SKILL.md" - "Plan check: <what it found>"
 for f in "$skills"/engineering/first-contact/issue-tracker-*.md "$root/docs/agents/issue-tracker.md"; do
   has "$(basename "$f") switches the body check on" "$f" - "PR template: on"
 done

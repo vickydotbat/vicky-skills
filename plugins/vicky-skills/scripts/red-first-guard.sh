@@ -27,7 +27,8 @@ elif adds=$(grep -oE 'git[[:space:]]+add[[:space:]][^;&|]*' <<<"$code"); then
     changes=$(printf '%s\n%s\n' "$changes" "$(everything | awk -F '\t' 'NR == FNR {want[$0]; next} $2 in want' <(printf '%s\n' "$paths") -)")
   fi
 fi
-new_tests=$(awk -F '\t' '$1 == "A" && tolower($2) ~ /approved_?examples/ {print $2}' <<<"$changes")
+# A backup copy (.new, .bak, .orig, a trailing ~) is no approved test, the same list approved-spec.sh keeps: change both.
+new_tests=$(awk -F '\t' '$1 == "A" && tolower($2) ~ /approved_?examples/ && $2 !~ /\.(new|bak|orig)$|~$/ {print $2}' <<<"$changes")
 [ -n "$new_tests" ] || exit 0
 others=$(awk -F '\t' 'NF && tolower($2) !~ /approved_?examples/ {print $2}' <<<"$changes")
 [ -n "$others" ] || exit 0

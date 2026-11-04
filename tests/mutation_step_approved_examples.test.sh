@@ -32,7 +32,7 @@ check "do without sentinels is refused" '[ $code = 2 ] && grep -q "sentinels" "$
 # And a pull request body that says Skipped: sentinels, because the diff holds no decision logic
 # When the agent marks its pull request ready
 # Then the pull request goes ready
-echo 'Skipped: sentinels, because the diff holds no decision logic' > "$dir/body"
+printf 'Skipped: sentinels, because the diff holds no decision logic\nPlan check: none found\n' > "$dir/body"
 run "$dir/nosentinels.jsonl"; code=$?
 check "a written skip lets it through" '[ $code = 0 ]'
 : > "$dir/body"
@@ -41,6 +41,7 @@ check "a written skip lets it through" '[ $code = 0 ]'
 # When the agent marks its pull request ready
 # Then the pull request goes ready
 started vicky-skills:warp vicky-skills:do vicky-skills:sentinels vicky-skills:review > "$dir/full.jsonl"
+echo 'Plan check: none found' > "$dir/body"
 run "$dir/full.jsonl"; code=$?
 check "a full build goes ready" '[ $code = 0 ]'
 

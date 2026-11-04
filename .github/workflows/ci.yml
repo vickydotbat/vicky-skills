@@ -65,7 +65,7 @@ jobs:
         run: tests/guard-locks.test.sh
       - name: Step hints
         run: tests/step-hint.test.sh
-      - name: Do runs its imp pass first
+      - name: Do runs its plan check first
         run: tests/do_imp_pass_approved_examples.test.sh
       - name: Scratch guard
         run: tests/scratch-guard.test.sh
@@ -269,6 +269,10 @@ jobs:
         run: tests/drawing-board.test.sh
       - name: do-first-guard holds code edits until do starts
         run: tests/do-first-guard.test.sh
+      - name: sentinels-first-guard holds mutation passes until sentinels starts
+        run: tests/sentinels-first-guard.test.sh
+      - name: A backup copy of an approved test is no approved test
+        run: tests/approved-backup-copies.test.sh
       - name: Warp hands every star to do
         run: tests/warp-do.test.sh
       - name: Windowed browser guard

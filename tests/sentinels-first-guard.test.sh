@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# sentinels-first-guard refuses a mutation-tool command until the session has
+# started sentinels, and lets other commands, a started sentinels, quoted
+# mentions, a missing transcript, bad input and the setting off through.
+set -u
+hook="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/scripts/sentinels-first-guard.sh"
+dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
+: > "$dir/none.jsonl"
+sk() { jq -nc --arg s "$1" '{type:"assistant",message:{content:[{type:"tool_use",name:"Skill",input:{skill:$s}}]}}'; }
+sk vicky-skills:sentinels > "$dir/sent.jsonl"
+sk sentinels > "$dir/bare.jsonl"
+sk vicky-skills:do > "$dir/do.jsonl"
+jq -nc '{type:"user",message:{content:"<command-name>/vicky-skills:sentinels</command-name>"}}' > "$dir/typed.jsonl"
+fail=0
+run() {
+  local out code
+  out=$(jq -n --arg c "$1" --arg t "$2" '{tool_name:"Bash",tool_input:{command:$c},transcript_path:$t}' |
+    CLAUDE_PLUGIN_OPTION_GUARD_SENTINELS_FIRST=${3:-true} bash "$hook"); code=$?
+  [ "$code" = 0 ] || { echo "exit $code"; return; }
+  jq -r '.hookSpecificOutput.permissionDecision // empty' <<<"$out"
+}
+check() { if [ "$2" = "$3" ]; then echo "ok   $1"; else echo "FAIL $1: got '$3', want '$2'"; fail=1; fi; }
+for c in "dotnet stryker --since main" "cd server; scripts/mutate.sh --base origin/main" "./mutate.sh" \
+  "mutmut run" "cargo mutants --in-diff x" "cargo-mutants" "mvn org.pitest:pitest-maven:mutationCoverage" \
+  "gradle pitest" "tests/mutate-hooks.sh git-guard.sh" "npx stryker run" "timeout 300 bash tests/mutate-hooks.sh" \
+  "systemd-run --user --scope -p MemoryMax=4G timeout 300 dotnet-stryker"; do
+  check "no sentinels refuses: $c" deny "$(run "$c" "$dir/none.jsonl")"
+done
+for c in "python3 tests/mutate-hooks.py --all" "bash -c 'mutmut run'" "sh -c \"dotnet stryker\""; do
+  check "no sentinels refuses: $c" deny "$(run "$c" "$dir/none.jsonl")"
+done
+check "another skill is no sentinels" deny "$(run "mutmut run" "$dir/do.jsonl")"
+check "a started sentinels lets it through" "" "$(run "dotnet stryker" "$dir/sent.jsonl")"
+check "a bare skill name counts" "" "$(run "mutmut run" "$dir/bare.jsonl")"
+check "a typed /sentinels counts" "" "$(run "cargo mutants" "$dir/typed.jsonl")"
+check "a plain command passes" "" "$(run "dotnet test" "$dir/none.jsonl")"
+check "a quoted mention passes" "" "$(run "git commit -m 'stryker config tidied'" "$dir/none.jsonl")"
+check "a double-quoted mention passes" "" "$(run "grep -n \"mutate.sh\" README.md" "$dir/none.jsonl")"
+check "a word holding the name passes" "" "$(run "cat strykerish.txt" "$dir/none.jsonl")"
+check "the refusal names the sentinels skill" 1 "$(jq -n --arg t "$dir/none.jsonl" '{tool_name:"Bash",tool_input:{command:"mutmut run"},transcript_path:$t}' | CLAUDE_PLUGIN_OPTION_GUARD_SENTINELS_FIRST=true bash "$hook" | grep -c 'start the sentinels skill')"
+check "a missing transcript is refused too" deny "$(run "mutmut run" "$dir/gone.jsonl")"
+check "the setting off passes" "" "$(run "mutmut run" "$dir/none.jsonl" false)"
+check "the setting unset stays on" deny "$(jq -n --arg t "$dir/none.jsonl" '{tool_name:"Bash",tool_input:{command:"mutmut run"},transcript_path:$t}' | env -u CLAUDE_PLUGIN_OPTION_GUARD_SENTINELS_FIRST bash "$hook" | jq -r '.hookSpecificOutput.permissionDecision')"
+check "bad input passes" "" "$(echo 'not json' | CLAUDE_PLUGIN_OPTION_GUARD_SENTINELS_FIRST=true bash "$hook" 2>/dev/null)"
+check "no command passes" "" "$(jq -n '{tool_name:"Bash",tool_input:{}}' | CLAUDE_PLUGIN_OPTION_GUARD_SENTINELS_FIRST=true bash "$hook")"
+exit $fail
