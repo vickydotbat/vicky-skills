@@ -15,6 +15,7 @@ run() { # tool, field json, transcript
 cmd() { jq -nc --arg c "$1" '{command:$c}'; }
 check() { if [ "$2" = "$3" ]; then echo "ok   $1"; else echo "FAIL $1: got '$3', want '$2'"; fail=1; fi; }
 check "an Edit to .todo refuses" deny "$(run Edit '{"file_path":"/r/.todo"}' "$dir/none.jsonl")"
+run Edit '{"file_path":".todo"}' "$dir/none.jsonl" >/dev/null; grep -q "message of its own" "$dir/out" && echo "ok   the refusal says to start the skill in a message of its own" || { echo "FAIL the refusal lacks the own-message steer"; fail=1; }
 check "a Write to .todo refuses" deny "$(run Write '{"file_path":".todo"}' "$dir/none.jsonl")"
 for c in "echo x >> .todo" "printf x > ./.todo" "echo x | tee -a .todo" "sed -i 1d .todo" "rm .todo" "mv a .todo"; do
   check "a shell write refuses: $c" deny "$(run Bash "$(cmd "$c")" "$dir/none.jsonl")"

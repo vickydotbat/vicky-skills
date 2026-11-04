@@ -21,4 +21,4 @@ transcript=$(jq -r '.transcript_path // empty' <<<"$payload")
 # shellcheck source=since-user.sh
 . "$(dirname "$0")/since-user.sh"
 [ -f "$transcript" ] && skill_since_user "$transcript" standing-orders && exit 0
-jq -n '{hookSpecificOutput:{hookEventName:"PreToolUse",permissionDecision:"deny",permissionDecisionReason:"todo-guard: refused, .todo work goes through the standing-orders skill only, which keeps each line to its form. Nothing ran: start standing-orders, then make the change it describes."}}'
+jq -n '{hookSpecificOutput:{hookEventName:"PreToolUse",permissionDecision:"deny",permissionDecisionReason:"todo-guard: refused, .todo work goes through the standing-orders skill only, which keeps each line to its form. Nothing ran: start standing-orders, then make the change it describes. Start the skill in a message of its own, never beside the edit: a call made in the same message runs before the skill is on record."}}'

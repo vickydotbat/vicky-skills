@@ -43,7 +43,7 @@ rm-steer.sh	446e84a40f650cd3	bcfec59c13f3f047	28/28
 same-refusal.sh	a028a5e2340561f9	afad7f5d18d37e30	18/18
 scratch-guard.sh	c6e044c91bff4bfa	91bf0e0235b7ff9d	32/32
 sentinels-first-guard.sh	4132c93fcd58cd6e	f59ad98248a0ce97	22/22
-since-user.sh	ac2800c62dac64a8	79d1266dcd9bcaeb	33/33
+since-user.sh	ac2800c62dac64a8	9612cb166e3f4dce	33/33
 skill-ledger.sh	4f6f1ba436f648ca	326b545e2e5a7e35	22/22
 spark-joy.sh	e88c476e7a612966	25b1f8934166f886	29/29
 springboard.sh	2b1a555e07899495	aa25977872a3c406	53/53
@@ -57,7 +57,7 @@ take-pick.sh	460d197fbecdadfe	fecf6dd0c018aeec	35/35
 tea-stdin.awk	ddfdfc5257c31b06	71ac1cb1bc09c95f	70/70
 tea-stdin.sh	c631fcfccdb1abf0	aa202be0280b7b51	15/15
 ticket-drift.sh	1bc60db2e95d9227	d394fe3535d1d7bb	36/36
-todo-guard.sh	897fde3c6bead0ed	684d4625e6160dc0	30/30
+todo-guard.sh	5ce96f6ec1a44101	d985b121d3b1bf94	24/24
 todo-next.sh	a7ae5fde4fb76b39	1d6470dc2be2e6ca	30/30
 todo-reminder.sh	87bab188b0686e79	3b39171b71fca45a	9/9
 watch.sh	5151329b7079b9ce	ff43a3661537f92a	31/31
