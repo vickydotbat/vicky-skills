@@ -54,6 +54,21 @@ check "a pick outside backticks still counts" '! passes'
 check "a question before the user's last message is not read again" 'passes'
 { user "go"; jq -nc '{type:"user",isMeta:true,message:{content:[{type:"text",text:"Base directory for this skill"}]}}'; sent "🚪 Waiting on you: O1 (my pick) or O2?"; } > "$fx/t.jsonl"
 check "injected skill text is no user message, so the reply before it still counts" 'blocked'
+{ user "go"; sent "🚪 Waiting on you: run probe 1.
+1. Start the client.
+2. Run dm_runscript rgbprobe."; } > "$fx/t.jsonl"
+check "numbered steps for the user in a gate, with no page, go to over-to-you" 'stop | jq -r .reason | grep -q over-to-you'
+{ user "go"; sent "🚪 Waiting on you: run probe 1, my pick is now. OK?
+1. Start the client.
+2. Run the probe."; } > "$fx/t.jsonl"
+check "steps with a pick are sent back once, with exit 0" 'out=$(stop); [ $? = 0 ] && [ "$(jq -s length <<<"$out")" = 1 ] && grep -q over-to-you <<<"$out"'
+{ user "go"; sent "🚪 Waiting on you: the checklist at http://127.0.0.1:4000/
+1. Start the client.
+2. Run the probe."; } > "$fx/t.jsonl"
+check "numbered steps beside a page link go through" 'passes'
+{ user "go"; sent "🚪 Waiting on you: the merge of #12.
+1. CI is green."; } > "$fx/t.jsonl"
+check "one numbered line in a gate goes through" 'passes'
 check "the setting off lets it through" '{ user "go"; text "My pick is A. Which?"; } > "$fx/t.jsonl"; CLAUDE_PLUGIN_OPTION_GUARD_TAKE_PICK=false passes'
 check "a missing transcript goes through" 'out=$(jq -nc "{transcript_path:\"$fx/none\"}" | bash "$hook"); [ $? = 0 ] && [ -z "$out" ]'
 check "bad input goes through" 'out=$(echo "not json" | bash "$hook"); [ $? = 0 ] && [ -z "$out" ]'

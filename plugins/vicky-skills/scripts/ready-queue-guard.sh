@@ -3,7 +3,8 @@
 # draft while another pull request in the repo is out of draft, or a CI run
 # started in the last two hours is going for another branch. CI on a pull
 # request that is not first in line is wasted: the one ahead merges, this
-# one rebases, and CI runs again. A draft is not in line: CI runs only to merge. Two runs side by side also slow each other.
+# one rebases, and CI runs again. A draft is not in line: CI runs only to merge. Nor is one whose last
+# CI run failed: it merges only after a fix, which runs CI again. Two runs side by side also slow each other.
 # Forges: GitHub (gh pr ready, gh pr create without --draft), Gitea (tea pr
 # edit or tea pr create with a title that drops WIP:), GitLab (glab mr update
 # --ready, glab mr create without --draft). A raw API call is not caught.
@@ -45,19 +46,19 @@ mine=$(git branch --show-current 2>/dev/null)
 # Each forge's lists, as [{number,branch,title,draft}] and [{branch,title,status,started}].
 case $forge in
   gh)
-    prs=$(gh pr list --state open --json number,headRefName,title,isDraft --limit 100 2>/dev/null | jq -c '[.[]|{number,branch:.headRefName,title,draft:.isDraft}]' 2>/dev/null) || prs=""
+    prs=$(gh pr list --state open --json number,headRefName,title,isDraft,statusCheckRollup --limit 100 2>/dev/null | jq -c '[.[]|{number,branch:.headRefName,title,draft:.isDraft,red:any(.statusCheckRollup[]?; (.conclusion // .state // "") | test("^(FAILURE|ERROR|CANCELLED|TIMED_OUT)$"))}]' 2>/dev/null) || prs=""
     runs=$(gh run list --json headBranch,displayTitle,status,createdAt --limit 50 2>/dev/null | jq -c '[.[]|{branch:.headBranch,title:.displayTitle,status,started:.createdAt}]' 2>/dev/null) || runs="" ;;
   tea)
-    prs=$(tea pr list --state open -o json -f index,head,title </dev/null 2>/dev/null | jq -c '[.[]|{number:(.index|tonumber),branch:.head,title,draft:(.title|test("^(WIP:|\\[WIP\\]|Draft:)";"i"))}]' 2>/dev/null) || prs=""
+    prs=$(tea pr list --state open -o json -f index,head,title,ci </dev/null 2>/dev/null | jq -c '[.[]|{number:(.index|tonumber),branch:.head,title,red:((.ci // "") | test("^(failure|error|cancelled)$")),draft:(.title|test("^(WIP:|\\[WIP\\]|Draft:)";"i"))}]' 2>/dev/null) || prs=""
     runs=$(tea actions runs list -o json </dev/null 2>/dev/null | jq -c '[.[]|{branch,title:.workflow,status,started}]' 2>/dev/null) || runs="" ;;
   glab)
-    prs=$(glab mr list -F json 2>/dev/null | jq -c '[.[]|{number:.iid,branch:.source_branch,title,draft:(.draft // .work_in_progress // false)}]' 2>/dev/null) || prs=""
+    prs=$(glab mr list -F json 2>/dev/null | jq -c '[.[]|{number:.iid,branch:.source_branch,title,draft:(.draft // .work_in_progress // false),red:((.head_pipeline.status // "") == "failed")}]' 2>/dev/null) || prs=""
     runs=$(glab ci list -F json 2>/dev/null | jq -c '[.[]|{branch:.ref,title:"",status,started:.created_at}]' 2>/dev/null) || runs="" ;;
 esac
 [ -n "$prs" ] || deny "$forge could not list the open pull requests, so the queue can't be shown clear."
 [ -n "$runs" ] || deny "$forge could not list the CI runs, so the queue can't be shown clear."
 [ -n "$n" ] || deny "no pull request number was found for this branch."
-ahead=$(jq -r --argjson n "$n" --arg b "$mine" '[.[]|select(.draft|not)|select(.number != $n and .branch != $b)|"#\(.number)"]|join(" ")' <<<"$prs")
+ahead=$(jq -r --argjson n "$n" --arg b "$mine" '[.[]|select(.draft|not)|select(.red|not)|select(.number != $n and .branch != $b)|"#\(.number)"]|join(" ")' <<<"$prs")
 [ -z "$ahead" ] || deny "other pull requests are out of draft: $ahead. Each one ahead merges first, and this one rebases after it."
 # A run counts as this branch's when its branch or its title (Gitea leaves the
 # branch empty on a pull request's run) matches this branch's pull request.

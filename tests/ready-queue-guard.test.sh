@@ -81,6 +81,14 @@ check "glab: a running pipeline elsewhere refuses" deny "$(PRS=$gdrafts RUNS="[{
 check "glab: an update without --ready passes" "" "$(PRS=$gready run "glab mr update 7 --title x")"
 check "glab: a --draft create passes" "" "$(PRS=$gready run "glab mr create --draft")"
 check "glab: a non-draft create refuses" deny "$(PRS=$gready run "glab mr create --fill")"
+# A pull request whose last run failed is not in line
+check "gh: one out of draft with a failed run does not block" "" "$(PRS='[{"number":5,"headRefName":"old","title":"a","isDraft":false,"statusCheckRollup":[{"conclusion":"FAILURE"}]}]' run "gh pr ready 7")"
+check "gh: one out of draft with a passing run still blocks" deny "$(PRS='[{"number":5,"headRefName":"old","title":"a","isDraft":false,"statusCheckRollup":[{"conclusion":"SUCCESS"}]}]' run "gh pr ready 7")"
+check "gh: one out of draft with a status error does not block" "" "$(PRS='[{"number":5,"headRefName":"old","title":"a","isDraft":false,"statusCheckRollup":[{"state":"ERROR"}]}]' run "gh pr ready 7")"
+check "tea: one out of draft with failed ci does not block" "" "$(PRS='[{"index":"5","head":"old","title":"a","ci":"failure"}]' run "tea pr edit 7 -t 'm' </dev/null")"
+check "tea: one out of draft with pending ci still blocks" deny "$(PRS='[{"index":"5","head":"old","title":"a","ci":"pending"}]' run "tea pr edit 7 -t 'm' </dev/null")"
+check "glab: one out of draft with a failed pipeline does not block" "" "$(PRS='[{"iid":5,"source_branch":"old","title":"a","draft":false,"head_pipeline":{"status":"failed"}}]' run "glab mr update 7 --ready")"
+check "glab: one out of draft with a running pipeline still blocks" deny "$(PRS='[{"iid":5,"source_branch":"old","title":"a","draft":false,"head_pipeline":{"status":"running"}}]' run "glab mr update 7 --ready")"
 # Off and bad input
 check "the setting off passes" "" "$(OPT=false PRS=$ready run "gh pr ready 7")"
 check "the setting 0 passes" "" "$(OPT=0 PRS=$ready run "gh pr ready 7")"
