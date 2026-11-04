@@ -9,6 +9,8 @@
 # that shows the mark is never locked by it.
 approved() {
   [ -f "$1" ] || return 1
+  # A backup copy (.new, .bak, .orig, a trailing ~) is scratch, never the contract.
+  case "$1" in *.new | *.bak | *.orig | *~) return 1 ;; esac
   # A file outside every git checkout, such as a session log quoting a test,
   # is no contract: approved tests are in a repo.
   git -C "$(dirname -- "$1")" rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 1
