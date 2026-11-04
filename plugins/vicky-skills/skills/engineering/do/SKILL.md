@@ -59,8 +59,9 @@ Lazy about the solution, never about the change: every caller, test, fixture and
 3. **Deepen, don't spread**: put new behaviour inside the module that owns its concept, behind the interface it already has. A new module passes the deletion test in the review principles.
 4. **Add nothing for later**: no abstraction, option, wrapper or layer without a current caller. Keep the repo's structure and the platform's own types.
 5. **Fix a bug at its root**: make the bad state impossible, as the design moves in [PRINCIPLES.md](../review/PRINCIPLES.md) teach, before you handle it downstream. Build new code with those moves too. Find every caller of what you touch, then fix the shared code once.
-6. **Mark a known limit** with a one-line comment, `shortcut: <the limit>, <when to upgrade>`. Every other comment follows [PRINCIPLES.md](../review/PRINCIPLES.md)'s "A comment is a one-line why".
-7. **End the report** with each approved example with its red run and its green run, then each test under Tested unasked with its red and green run, then what you skipped or didn't check, and any risk the user must know. An example only a person can check is marked unchecked and handed to `over-to-you` as a checklist. A skipped step names the step, the reason and the proof, also written as `Skipped: <step>, because <reason>` in the pull request body.
+6. **Edit by exact text, never by a searched position.** A scripted edit replaces one exact passage and checks it matched once. A splice between two searched offsets lands on the first match anywhere in the file: one duplicated and mangled a whole include.
+7. **Mark a known limit** with a one-line comment, `shortcut: <the limit>, <when to upgrade>`. Every other comment follows [PRINCIPLES.md](../review/PRINCIPLES.md)'s "A comment is a one-line why".
+8. **End the report** with each approved example with its red run and its green run, then each test under Tested unasked with its red and green run, then what you skipped or didn't check, and any risk the user must know. An example only a person can check is marked unchecked and handed to `over-to-you` as a checklist. A skipped step names the step, the reason and the proof, also written as `Skipped: <step>, because <reason>` in the pull request body.
 
 Validation at a trust boundary, error handling that prevents data loss, security and accessibility are never cut.
 
