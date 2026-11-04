@@ -67,7 +67,10 @@ def new(args):
             sys.exit(f"board: unknown flag {flag}")
     if not screen or not out or not (window or shot):
         sys.exit(__doc__.strip().splitlines()[3])
-    model = ET.Element("mxGraphModel")
+    # draw.io opens only a file wrapped in <mxfile><diagram>: a bare
+    # <mxGraphModel> loads as "Not a diagram file".
+    wrapper = ET.Element("mxfile")
+    model = ET.SubElement(ET.SubElement(wrapper, "diagram", {"id": "sketch", "name": "sketch"}), "mxGraphModel")
     root = ET.SubElement(model, "root")
     ET.SubElement(root, "mxCell", {"id": "0"})
     ET.SubElement(root, "mxCell", {"id": "1", "parent": "0"})
@@ -91,7 +94,7 @@ def new(args):
         x, y, w, h = (int(v) for v in fields[:4])
         props = dict(f.split("=", 1) for f in fields[4:])
         add(root, f"box{i}", label, x, y, w, h, "rounded=0;whiteSpace=wrap;", parent="window", props=props)
-    ET.ElementTree(model).write(out, encoding="unicode")
+    ET.ElementTree(wrapper).write(out, encoding="unicode")
 
 
 def boxes(path):
