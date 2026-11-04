@@ -69,6 +69,7 @@ TESTS = {
     "draft-lock.sh": ["draft-lock", "red_first_approved_examples", "draft_lock_reads_approved_examples", "draft_lock_python_approved_examples", "draft-lock-writers", "refusal-note"],
     "gamma-shift.sh": ["gamma-shift"],
     "do-first-guard.sh": ["do-first-guard"],
+    "sentinels-first-guard.sh": ["sentinels-first-guard"],
     "windowed-browser-guard.sh": ["windowed-browser-guard"],
     "gate-notify.sh": ["gate-notify"],
     "keep-awake.sh": ["keep-awake", "keep-awake-crash", "sleep_lock_approved_examples"],
