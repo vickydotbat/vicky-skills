@@ -28,7 +28,7 @@
 # counts as open and the command runs.
 set -u
 
-case "${CLAUDE_PLUGIN_OPTION_GUARD_PR:-}" in true | 1) ;; *) exit 0 ;; esac
+case "${CLAUDE_PLUGIN_OPTION_GUARD_PR:-true}" in true | 1) ;; *) exit 0 ;; esac
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool the read below comes back empty, and the pre-filter exits 0
 
 payload=$(cat)

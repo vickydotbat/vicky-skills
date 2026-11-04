@@ -9,7 +9,7 @@
 # branch holds. A branch that was never pushed is not checked. Off unless the
 # plugin option guard_merged_branch is true.
 GUARD=merged-branch-guard
-OPTION=${CLAUDE_PLUGIN_OPTION_GUARD_MERGED_BRANCH:-}
+OPTION=${CLAUDE_PLUGIN_OPTION_GUARD_MERGED_BRANCH:-true}
 # shellcheck source=git-hook-lib.sh
 . "$(dirname "$0")/git-hook-lib.sh"
 

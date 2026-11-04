@@ -7,7 +7,7 @@
 # in local_path_exempt_repos (space-separated owner/repo, matched against the
 # end of origin's URL) are skipped. Binary untracked files are not scanned.
 GUARD=local-path-guard
-OPTION=${CLAUDE_PLUGIN_OPTION_GUARD_LOCAL_PATHS:-}
+OPTION=${CLAUDE_PLUGIN_OPTION_GUARD_LOCAL_PATHS:-true}
 # shellcheck source=git-hook-lib.sh
 . "$(dirname "$0")/git-hook-lib.sh"
 

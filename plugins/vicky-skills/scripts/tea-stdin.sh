@@ -4,7 +4,7 @@
 # the plugin option guard_tea_stdin is true. Needs jq and gawk; without them it says
 # so and stays off.
 set -u
-case "${CLAUDE_PLUGIN_OPTION_GUARD_TEA_STDIN:-}" in true | 1) ;; *) exit 0 ;; esac
+case "${CLAUDE_PLUGIN_OPTION_GUARD_TEA_STDIN:-true}" in true | 1) ;; *) exit 0 ;; esac
 command -v jq >/dev/null || { echo "tea-stdin: jq is missing, guard is off" >&2; exit 0; } # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
 command -v gawk >/dev/null || { echo "tea-stdin: gawk is missing, guard is off" >&2; exit 0; } # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
 command="$(jq -r '.tool_input.command // ""' 2>/dev/null)"

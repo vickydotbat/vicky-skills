@@ -8,7 +8,7 @@
 # plugin option guard_heavy_run is true. Needs jq and gawk; without them it
 # says so and stays off.
 set -u
-case "${CLAUDE_PLUGIN_OPTION_GUARD_HEAVY_RUN:-}" in true | 1) ;; *) exit 0 ;; esac
+case "${CLAUDE_PLUGIN_OPTION_GUARD_HEAVY_RUN:-true}" in true | 1) ;; *) exit 0 ;; esac
 command -v jq >/dev/null || { echo "heavy-run-guard: jq is missing, guard is off" >&2; exit 0; } # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
 command -v gawk >/dev/null || { echo "heavy-run-guard: gawk is missing, guard is off" >&2; exit 0; } # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
 # The cap it steers to is systemd-run's, so a system without systemd has none to offer.

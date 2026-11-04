@@ -60,7 +60,7 @@
       "type": "boolean",
       "title": "One pull request per effort, and no AI credit",
       "description": "Keep each session's effort to one pull request, opened once: a new one opens only stacked on it, labelled stacked, on a big enough pull request or as separate work. Also refuse a gh, tea or git-spice command whose text, or the body file it sends, credits an AI.",
-      "default": false
+      "default": true
     },
     "guard_pr_stack_min_lines": {
       "type": "string",
@@ -84,13 +84,13 @@
       "type": "boolean",
       "title": "Close tea's stdin",
       "description": "Refuse a tea command that leaves stdin open, since tea blocks on it and a retry can post twice.",
-      "default": false
+      "default": true
     },
     "guard_heavy_run": {
       "type": "boolean",
       "title": "Cap the memory of heavy runs",
       "description": "Refuse an image, video, render or build run (ImageMagick, Real-ESRGAN, ffmpeg, Blender, sd-cli, dotnet build or test, python on image work, nix develop -c) that no systemd-run MemoryMax= cap wraps, and give the command with the cap in place. Short reads such as magick identify pass. A repo lists scripts that cap themselves on a 'Bounded scripts:' line in docs/agents/.",
-      "default": false
+      "default": true
     },
     "guard_gate_state": {
       "type": "boolean",
@@ -108,7 +108,7 @@
       "type": "boolean",
       "title": "No local paths in commits",
       "description": "Refuse a commit that adds your home folder, username or another machine-specific path.",
-      "default": false
+      "default": true
     },
     "local_path_exempt_repos": {
       "type": "string",
@@ -120,7 +120,7 @@
       "type": "boolean",
       "title": "Git branches, pushes and commits",
       "description": "Refuse a new branch on top of unmerged work, a push to main or master, a commit message that credits an AI, and a commit that sets its own author or committer. In a trunk repo, a push to main runs and a new branch is refused.",
-      "default": false
+      "default": true
     },
     "git_guard_trunk_repos": {
       "type": "string",
@@ -132,7 +132,7 @@
       "type": "boolean",
       "title": "No push from behind main",
       "description": "Refuse a push from a branch that lacks the tip of origin's default branch.",
-      "default": false
+      "default": true
     },
     "guard_worktree_place": {
       "type": "boolean",
@@ -261,7 +261,7 @@
       "type": "boolean",
       "title": "No commits on a merged branch",
       "description": "Refuse a commit or push on a branch whose remote branch is gone, and name the fresh branch to move to and the commits to carry over.",
-      "default": false
+      "default": true
     },
     "guard_scratch": {
       "type": "boolean",

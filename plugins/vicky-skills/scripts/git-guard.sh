@@ -21,7 +21,7 @@
 #
 # Off unless the plugin option guard_git is true.
 GUARD=git-guard # mutant-ok delete: the name shows only when jq or git is missing, which no test can make
-OPTION=${CLAUDE_PLUGIN_OPTION_GUARD_GIT:-}
+OPTION=${CLAUDE_PLUGIN_OPTION_GUARD_GIT:-true}
 # shellcheck source=git-hook-lib.sh
 . "$(dirname "$0")/git-hook-lib.sh"
 # shellcheck source=ai-credit.sh

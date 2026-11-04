@@ -6,7 +6,7 @@
 # default branch itself, deleting a branch and pushing to another remote are
 # not checked. Off unless the plugin option guard_push_behind is true.
 GUARD=push-behind-guard
-OPTION=${CLAUDE_PLUGIN_OPTION_GUARD_PUSH_BEHIND:-}
+OPTION=${CLAUDE_PLUGIN_OPTION_GUARD_PUSH_BEHIND:-true}
 # shellcheck source=git-hook-lib.sh
 . "$(dirname "$0")/git-hook-lib.sh"
 

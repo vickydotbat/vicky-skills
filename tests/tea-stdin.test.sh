@@ -36,7 +36,7 @@ allow 'echo tea'
 allow 'git commit -m "tea time"'
 allow $'cat <<EOF\ntea pr list\nEOF'
 allow "bash -c 'tea pr list'"
-check 0 'tea pr list' ""
+check 2 'tea pr list' ""
 check 0 'tea pr list' false
 check 2 'tea pr list' 1
 # A refusal ends with the command rewritten, each tea call's stdin closed.
