@@ -24,15 +24,17 @@ dir=$(dirname -- "$file")
 while [ ! -d "$dir" ]; do dir=$(dirname -- "$dir"); done
 top=$(git -C "$dir" rev-parse --show-toplevel 2>/dev/null) || exit 0
 rel=${file#"$top"/}
-# A test is no production code: a test folder, or a name that says test or spec.
-grep -qiE '(^|/)(tests?|spec|__tests__|testdata|fixtures)/|(^|[._/-])(test|spec)s?([._-][^/]*)?\.[a-z]+$' <<<"$rel" && exit 0
+# A test is no production code: a test folder (IntegrationTests/ included), or
+# a name that says test or spec. A reply line counts in chat text or a
+# SendUserMessage, since brief mode sends every reply through the tool.
+grep -qiE '(^|/)(tests?|spec|__tests__|testdata|fixtures)/|(^|/)[A-Za-z]+Tests?/|(^|[._/-])(test|spec)s?([._-][^/]*)?\.[a-z]+$' <<<"$rel" && exit 0
 transcript=$(jq -r '.transcript_path // empty' <<<"$payload")
 [ -f "$transcript" ] || exit 0
 marks=$(jq -r '
   if .type=="assistant" then .message.content[]? |
     if .type=="tool_use" and .name=="Skill" then (.input.skill // "" | sub(".*:";"")) |
       if .=="do" then "D" elif .=="spark-joy" then "S" elif .=="examples" or .=="red-pen" then "E" else empty end
-    elif .type=="text" and ((.text // "") | test("(^|\\n)Examples: (approved on|none, because) [^<\\s]")) then "E"
+    elif ((if .type=="text" then .text elif .type=="tool_use" and .name=="SendUserMessage" then .input.message else null end) // "" | test("(^|\\n)Examples: (approved on|none, because) [^<\\s]")) then "E"
     else empty end
   elif .type=="user" and ((.message.content | if type=="string" then . else "" end) | test("<command-name>/(vicky-skills:)?do</command-name>")) then "D"
   else empty end' "$transcript" 2>/dev/null | tr -d '\n')
