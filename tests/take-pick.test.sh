@@ -77,4 +77,12 @@ check "one numbered line in a gate goes through" 'passes'
 check "the setting off lets it through" '{ user "go"; text "My pick is A. Which?"; } > "$fx/t.jsonl"; CLAUDE_PLUGIN_OPTION_GUARD_TAKE_PICK=false passes'
 check "a missing transcript goes through" 'out=$(jq -nc "{transcript_path:\"$fx/none\"}" | bash "$hook"); [ $? = 0 ] && [ -z "$out" ]'
 check "bad input goes through" 'out=$(echo "not json" | bash "$hook"); [ $? = 0 ] && [ -z "$out" ]'
+{ user "sup"; skill vicky-skills:sup; sent "Next: the handoff says to warp GAME-1. Say **go** and I start N1."; } > "$fx/t.jsonl"
+check "a sup that found a handoff and asks for go is sent back" 'blocked && { stop >/dev/null; [ $? = 0 ]; }'
+{ user "sup"; skill sup; sent "Next: say go and I start N1."; } > "$fx/t.jsonl"
+check "a sup with no handoff may ask for go" 'passes'
+{ user "status"; sent "The handoff says to warp GAME-1. Say go and I start."; } > "$fx/t.jsonl"
+check "a handoff go with no sup this turn passes" 'passes'
+{ user "sup"; skill sup; sent "The handoff says warp GAME-1. My pick is warp. Say go?"; } > "$fx/t.jsonl"
+check "a handoff go with a pick and a question is sent back once, for the handoff" '[ "$(stop | jq -s "length")" = 1 ] && stop | grep -q "sup step 4"'
 exit $fail

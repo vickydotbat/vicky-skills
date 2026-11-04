@@ -8,11 +8,17 @@
 # or opens a gate goes through, unless the gate carries its pick and asks a
 # question (in chat, a question mark, or options such as O1) with no page link. It steers once per turn: with
 # stop_hook_active set, the reply goes through, so a misjudged one never loops.
+# After a sup that found a handoff, a reply asking for go is sent back to start it.
 set -u
 case "${CLAUDE_PLUGIN_OPTION_GUARD_TAKE_PICK:-}" in true|1) ;; *) exit 0 ;; esac
 # shellcheck source=stop-reply.sh
 . "$(dirname "$0")/stop-reply.sh"
 council_sits "$transcript" && exit 0 # a council's picks and Frodo's Next are its own, for the user to argue
+# A sup that found a handoff starts its work unasked (sup step 4), so a "say go" after one goes back.
+if skill_since_user "$transcript" sup && grep -qi "handoff" <<<"$said" && grep -qiE "\b(say|reply|type)[[:space:]]+[*_]*go\b|shall i start|want me to start" <<<"$said"; then
+  jq -n '{decision:"block", reason:"sup found a handoff, and sup step 4 starts its work unasked: start do, or warp when the handoff names a run of stars, in this turn, without asking for go."}'
+  exit 0
+fi
 grep -qi "going with" <<<"$said" && exit 0
 # A gate whose answer comes in chat waits unseen while the user works in
 # another window, so a gated pick asked in chat, with no page link, goes back.
