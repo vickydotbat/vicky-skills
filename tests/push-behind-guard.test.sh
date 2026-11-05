@@ -23,10 +23,12 @@ for dflt in main master; do
   git clone -q "$rem" "$w" 2>/dev/null
   gi "$w" checkout -q -b topic
   gi "$w" commit -q --allow-empty -m topic-work
+  gi "$w" push -q origin topic:refs/pull/5/head
   expect 0 "$dflt: up to date passes" "$w" 'git push -u origin topic'
   expect 0 "$dflt: marking an up-to-date branch ready passes" "$w" 'gh pr ready 5'
   gi "$seed" commit -q --allow-empty -m two
   gi "$seed" push -q origin "$dflt"
+  gi "$seed" push -q origin "$dflt:refs/pull/6/head"
   # The hook fetches itself, so the local copy of origin is stale on purpose.
   expect 2 "$dflt: behind is refused" "$w" 'git push origin topic'
   expect 2 "$dflt: behind via HEAD" "$w" 'git push -u origin HEAD'
@@ -38,6 +40,11 @@ for dflt in main master; do
   expect 2 "$dflt: behind via a quoted branch" "$w" 'git push origin "topic"'
   expect 2 "$dflt: marking a behind branch ready is refused" "$w" 'gh pr ready 5'
   expect 2 "$dflt: reopening a behind branch on tea is refused" "$w" 'tea pr reopen 5 </dev/null'
+  expect 2 "$dflt: a bare ready on a behind checkout is refused" "$w" 'gh pr ready'
+  expect 0 "$dflt: a named pull request that is current passes from a behind checkout" "$w" 'gh pr ready 6'
+  expect 0 "$dflt: a named pull request on tea that is current passes from a behind checkout" "$w" 'tea pr reopen 6 </dev/null'
+  expect 0 "$dflt: a pull request named with a hash is read as its number" "$w" 'gh pr ready #6'
+  expect 0 "$dflt: a pull request that cannot be fetched is not checked" "$w" 'gh pr ready 9'
   expect 0 "$dflt: a git command before an out-of-scope push passes" "$w" 'git log -1; git push fork topic'
   expect 2 "$dflt: behind via a quoted git -C path" "$scratch" "git -C \"$w\" push origin topic"
   HOME="$scratch" expect 2 "$dflt: behind via cd ~" "$scratch" "cd ~/work-$dflt && git push origin topic"

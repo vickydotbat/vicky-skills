@@ -15,10 +15,10 @@ gamma-shift.sh	bf7b0a15b596e9fc	b2eae1b03e7c8c60	12/12
 gate-notify.sh	7ba893f680c5d672	42870013382a35b5	25/25
 gate-state-guard.sh	71c338f183976bce	5bd14148a9c2ece7	71/71
 git-guard.sh	f572d9231838f73d	147e8989b955e705	66/66
-git-hook-lib.sh	5b23f2ed23f960ca	f0f71cefcccb7c6f	51/51
+git-hook-lib.sh	5b23f2ed23f960ca	751af0485b9a513a	51/51
 heavy-run-guard.sh	13841dd418b59007	1708b5a21f167abe	25/25
 heavy-run.awk	29bae3f6c7302160	1e566d742c22bf2c	90/90
-heredoc-strip.awk	6fa4caa108d2e5b7	34a3121158380f87	6/6
+heredoc-strip.awk	6fa4caa108d2e5b7	d2d1b0f41b4ce7e7	6/6
 issue-guard.sh	e8ffbfff391d14cc	11d4066631be8c93	21/21
 keep-awake.sh	64e8be754351199c	dfa3dc85d985d09f	25/25
 lesson-hint.sh	1797c0ff569f7265	b0f4a51cdb2013a6	11/11
@@ -34,7 +34,7 @@ poll-pace.sh	2efe70c6f4022fda	bfcb6f5ae4410bbc	32/32
 pr-guard.sh	4ce96bad7ca6cbfe	5b0c91857c6fd86d	136/136
 publickey-hint.sh	d3098ec01110850e	bb81b637f3ec2adf	13/13
 publish-guard.sh	425b226598ad0b9f	a1afec43ebbafb23	13/13
-push-behind-guard.sh	2eb7a3e2ddc52895	8cc1ed4015631e47	42/42
+push-behind-guard.sh	716e28624109853a	6ebf3ce027d846a4	45/45
 quote-mask.awk	b04578521f7edc95	bf06e6309cdb776d	52/52
 rebase-monks-hint.sh	ae50ae1b8b9da4f0	35011c7ebf70f194	16/16
 red-first-check.sh	e585449df8cf7aee	f94ad9aefc4b0802	20/20
