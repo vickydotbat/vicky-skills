@@ -27,3 +27,5 @@ A branch **sparks joy** while it holds work that exists nowhere else. A branch w
 Every worktree lives in the repo's own `.claude/worktrees/` folder. A worktree `git worktree list` shows anywhere else is sorted like the rest, and a kept one moves there with `git worktree move <path> .claude/worktrees/<branch>`.
 
 A remote branch is deleted only by step 5's rule, or when the user asks.
+
+Charter: C6 ([CHARTER.md](../../CHARTER.md)).

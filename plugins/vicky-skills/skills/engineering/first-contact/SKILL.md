@@ -25,3 +25,5 @@ The pointer block:
 - Tickets: <where they live>. See `docs/agents/issue-tracker.md`.
 - Domain: <single or multi-context>. See `docs/agents/domain.md`.
 ```
+
+Charter: C8 ([CHARTER.md](../../CHARTER.md)).

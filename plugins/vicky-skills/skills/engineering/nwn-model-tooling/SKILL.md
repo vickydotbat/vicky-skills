@@ -37,3 +37,5 @@ ${user_config.nwn_blender} --background --python <scratch folder>/<script>.py
 ```
 
 Prefer this to a Blender MCP server. Use one only when `claude mcp list` shows it registered and the user has Blender open with its add-on running.
+
+Charter: C3 ([CHARTER.md](../../CHARTER.md)).

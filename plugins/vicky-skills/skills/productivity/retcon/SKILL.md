@@ -24,3 +24,5 @@ A **retcon** rewrites continuity: the named change never happened, and every oth
 
    Done when each target holds its earlier state.
 5. **Prove it**: `git diff` shows only the named change undone, and the checks it reaches still pass. Done when the diff and the checks are in your reply.
+
+Charter: C1, C7 ([CHARTER.md](../../CHARTER.md)).

@@ -53,3 +53,5 @@ Measured by one read:
 Measured after the push:
 
 - **Q11 Green.** Every required check on the head commit is final and successful. No red check was rerun without a new commit.
+
+Charter: C2, C4 ([CHARTER.md](../../CHARTER.md)).

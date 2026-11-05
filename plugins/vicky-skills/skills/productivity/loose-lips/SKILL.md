@@ -31,3 +31,5 @@ Write as if a hostile reader holds a copy. An **attack map** is text that tells 
 - **This machine**: absolute paths, home folders, usernames, hostnames, and paths outside the repo. Repo-relative paths are fine.
 
 Ticket keys, repo names, decision record numbers and doc links are navigation, and they stay.
+
+Charter: C7 ([CHARTER.md](../../CHARTER.md)).

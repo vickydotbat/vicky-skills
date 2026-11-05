@@ -19,3 +19,5 @@ When you can't tell whether a message is a pivot, ask in one line: "Going with Y
 4. **Report** what you changed and what you couldn't reach, one line each. Done when both lists are in your reply.
 
 A pivot overrides the project's earlier decisions. It never overrides the user's standing rules (their global agent file), which change only when they say so.
+
+Charter: C3 ([CHARTER.md](../../CHARTER.md)).

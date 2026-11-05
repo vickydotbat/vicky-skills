@@ -60,3 +60,5 @@ an approval prompt or an error before you stop it.
 ## Done
 
 Open the saved PNG and look at it before you report it. Done when the report names the path and the defects you see, or says "none seen".
+
+Charter: C1 ([CHARTER.md](../../CHARTER.md)).

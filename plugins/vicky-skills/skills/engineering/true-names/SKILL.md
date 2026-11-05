@@ -21,3 +21,5 @@ The **glossary** holds the project's words, one meaning each. A **decision recor
 - **Record a decision** when it is hard to reverse, would surprise a reader without context, and came from a real trade-off. When any of the three is missing, skip the record. A record is a broad rule only: check it against [ADR-FORMAT.md](ADR-FORMAT.md)'s Scope first. Write it in the form the `ADR format:` line of `docs/agents/domain.md` names: [ADR-FORMAT.md](ADR-FORMAT.md) when the line says `true-names` or is missing, else the repo's own template. A record changes only when its decision does.
 
 Done when every settled term is in the glossary, every decision that meets all three tests has a record, and `scripts/check-adr.sh` beside this file passes on each record you wrote in the ADR-FORMAT.md form.
+
+Charter: C1, C3 ([CHARTER.md](../../CHARTER.md)).

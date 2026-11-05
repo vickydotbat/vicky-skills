@@ -58,3 +58,5 @@ An obstacle is anything on the course that waits on someone else, or refuses: an
 A brief for an agent working a public repository holds it to `loose-lips`' attack-map test, never to a ban on every name: repository names, ticket keys and decision record numbers are navigation.
 
 When the user stops the warp partway, leave each cleared ticket closed and the rest open, and post where it stopped as a comment on the chart, or on each target still open when there is no chart.
+
+Charter: C5, C6 ([CHARTER.md](../../CHARTER.md)).

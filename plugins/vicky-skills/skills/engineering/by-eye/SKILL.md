@@ -17,3 +17,5 @@ A **by-eye check** is the agent looking at a page it changed, the way the user w
 4. **Keep the pictures.** Copy the screenshots to your scratch folder, and attach them to the report. Name that folder in the chat report only, never in a pull request or ticket. Done when the report names that folder.
 5. **Stop the dev site** by the id you saved. Done when its address no longer answers.
 6. **Report** each look with its verdict and its screenshot, and what you fixed. Done when the report is sent.
+
+Charter: C2 ([CHARTER.md](../../CHARTER.md)).

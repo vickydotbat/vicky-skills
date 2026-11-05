@@ -33,3 +33,5 @@ New developers pick work from the tracker and trust what a ticket says. So an ef
 A ticket whose state lags the work moves now: one the pull request names moves to the started state while the pull request is open, a parked one through the tracker's "Park a ticket" action, and the report names each move.
 
 Repeat step 3 after every push.
+
+Charter: C3, C6 ([CHARTER.md](../../CHARTER.md)).

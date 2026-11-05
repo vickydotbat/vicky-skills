@@ -21,3 +21,5 @@ A video page gives you its title and little else. Its captions give you every wo
    ```
    Done when `test -s transcript.txt` succeeds and its lines read as sentences, with no caption timings.
 4. **Read the transcript whole** before you answer. Automatic captions misspell names, so check a name against another source before you quote it. Done when your answer quotes the transcript.
+
+Charter: C3 ([CHARTER.md](../../CHARTER.md)).

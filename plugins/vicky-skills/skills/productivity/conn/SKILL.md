@@ -21,3 +21,5 @@ A **handoff** is a short comment a fresh agent reads first, after the user clear
 6. **Post it.** Open it with a `**Handoff**` line, so `sup` finds it. It names no path outside the repo: commit scratch work it needs, or name it by what it holds. Run `loose-lips` on it before you post. Post it as a comment on the effort's open pull request or ticket, with the "Comment" action in `docs/agents/issue-tracker.md`. With no tracker, write it as a note where the user's own agent instructions keep that project's notes. Done when the comment's link is in your reply, or the note's path is in your reply when there is no tracker, with the line the user types after the clear to pick it up: `/sup`.
 
 Done when a stranger could start from the handoff and the links alone.
+
+Charter: C5 ([CHARTER.md](../../CHARTER.md)).

@@ -91,3 +91,5 @@ An action someone repeats has a keyboard path, focus moves somewhere sensible af
 ### An empty state says what to do
 
 An empty list says why it's empty and offers the action that fills it.
+
+Charter: C1, C5 ([CHARTER.md](../../CHARTER.md)).

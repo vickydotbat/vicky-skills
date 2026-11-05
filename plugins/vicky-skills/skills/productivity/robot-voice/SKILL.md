@@ -68,3 +68,5 @@ Split a document when it sprawls past one screen of steps, when its branches sha
 3. Is it in context and outranked? Find what outranks it: a default, a louder line, an example that contradicts it.
 4. Is it a ban? Rewrite it as the target behaviour.
 5. Is it mechanical? Move it to a check, and let the check say no.
+
+Charter: C1 ([CHARTER.md](../../CHARTER.md)).

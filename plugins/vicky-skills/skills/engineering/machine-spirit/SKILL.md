@@ -51,3 +51,5 @@ Run them in order for every workflow change. Diagnosing a run starts at step 7.
 - A test proves one result in one place. Shared setup starts once per suite, and an expensive evaluation runs once and is shared.
 - Evidence about CI comes from the runner's own log. A local run shows which step is slow, never why the runner is.
 - Two gates on one runner slow each other, so the fix is often to stop one of them running.
+
+Charter: C4, C7 ([CHARTER.md](../../CHARTER.md)).

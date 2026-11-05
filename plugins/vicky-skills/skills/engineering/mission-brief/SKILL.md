@@ -19,3 +19,5 @@ A **mission brief** writes down what a conversation already settled, and files i
 ## Examples the user cut
 
 A slice whose examples the user cut is filed with "Examples: not written yet", never with examples the user did not see. `examples` writes them later, before that star is built.
+
+Charter: C1, C6 ([CHARTER.md](../../CHARTER.md)).

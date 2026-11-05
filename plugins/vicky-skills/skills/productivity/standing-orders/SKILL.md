@@ -19,3 +19,5 @@ When the session-start context says standing orders are off, keep no `.todo` lin
 4. **Strike it.** Delete a line once its work is done or what it points at closes. `loose-ends` and `gamma-shift` sweep for these. Done when no line points at closed work.
 
 Work with real impact gets a ticket or a star from the start, and its line only points at it.
+
+Charter: C6 ([CHARTER.md](../../CHARTER.md)).

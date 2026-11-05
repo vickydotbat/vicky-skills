@@ -79,7 +79,7 @@ receipts=$(awk '/^## Receipts/{on=1; next} /^## /{on=0} on' "$do")
 # When it runs the test
 # Then the receipt shows what it predicted, pass or fail and the failing line, above what the run showed
 check "E8 do's receipt shows the prediction above each red and green run" \
-  'grep -q "predicted" <<<"$receipts" && awk "/predicted/{p=NR} /^red: /{r=NR} END{exit !(p && r && p < r)}" <<<"$receipts" && step "$do" 3 | grep -q "write your prediction"'
+  'grep -q "predicted" <<<"$receipts" && awk "/^predicted red:/{p=NR} /^red: /{r=NR} /^predicted green:/{q=NR} /^green: /{g=NR} END{exit !(p && p < r && q && q < g)}" <<<"$receipts" && step "$do" 3 | grep -q "write your prediction"'
 
 # Given a run that differs from do's prediction
 # When do reads the result

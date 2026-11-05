@@ -75,6 +75,8 @@ jobs:
         run: tests/rm-steer.test.sh
       - name: Skill steps
         run: tests/skill-steps.test.sh
+      - name: Every skill names the charter lines it serves
+        run: tests/charter_approved_examples.test.sh
       - name: No skill holds a token the skill loader replaces
         run: tests/skill-no-positional.test.sh
       - name: Video-captions flattens captions to prose

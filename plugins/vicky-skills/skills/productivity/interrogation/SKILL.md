@@ -27,3 +27,5 @@ Every answer comes from the user. You ask questions and give **leads**: facts yo
 3. **When the user asks what you'd pick**, answer "This one is yours." Then give leads and threads: a **thread** is a narrower question that helps them decide. Done when the reply holds no option and no pick.
 4. **Wait for the answers**, then recompute the frontier and ask the next round. An "I don't know" stays on the frontier, marked open, and the round moves on. Done when every answer has its place on the tree, and every branch it opens is on the frontier.
 5. **Release the user when the frontier is empty**: every branch visited, nothing assumed. Write the answers as Given / When / Then examples in the user's words, the form `examples` uses, and act only after the user confirms them. Then offer the stars [lay-course](../../engineering/lay-course/SKILL.md) places under "Start an effort", step 4. Done when the user has confirmed or edited every example and taken an ending.
+
+Charter: C1 ([CHARTER.md](../../CHARTER.md)).
