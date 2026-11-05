@@ -7,7 +7,7 @@ set -u
 root="$(dirname "$0")/../plugins/vicky-skills/skills"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
-step() { awk -v n="$2" '$0 ~ "^"n"\\. "{on=1; print; next} /^[0-9]+\. /{on=0} /^## /{on=0} on' "$1"; }
+. "$(dirname "$0")/lib/skill-step.sh"; step() { skill_step "$1" "$2"; }
 
 # Prints "<skill> <problem>" for each skill under $1 whose Charter: line is
 # missing or names a line that $1/CHARTER.md lacks.
@@ -15,8 +15,8 @@ charter_check() {
   local dir=$1 f codes c
   codes=$(grep -oE '^- \*\*C[0-9]+\*\*' "$dir/CHARTER.md" 2>/dev/null | grep -oE 'C[0-9]+')
   for f in "$dir"/*/*/SKILL.md; do
-    line=$(grep -m1 '^Charter: ' "$f")
-    [ -n "$line" ] || { echo "$f names no charter line"; continue; }
+    line=$(grep -v '^[[:space:]]*$' "$f" | tail -n 1 | grep '^Charter: ')
+    grep -qE 'C[0-9]+' <<<"$line" || { echo "$f names no charter line"; continue; }
     for c in $(grep -oE 'C[0-9]+' <<<"$line"); do
       grep -qx "$c" <<<"$codes" || echo "$f names $c, which the charter lacks"
     done
@@ -28,7 +28,7 @@ charter_check() {
 # Then the skill names at least one charter line it serves
 out=$(charter_check "$root")
 check "E1 every skill names at least one charter line it serves" \
-  '[ -z "$out" ] && [ "$(grep -l "^Charter: C[0-9]" "$root"/*/*/SKILL.md | wc -l)" -eq "$(ls "$root"/*/*/SKILL.md | wc -l)" ]'
+  '[ -z "$out" ]'
 [ -z "$out" ] || echo "$out" | sed 's/^/     /'
 
 # Given a skill that names charter line C9, which the charter does not hold
@@ -36,10 +36,10 @@ check "E1 every skill names at least one charter line it serves" \
 # Then they fail, naming the skill and C9
 fx=$(mktemp -d); trap 'rm -rf "$fx"' EXIT
 mkdir -p "$fx/engineering/stray"
-cp "$root/CHARTER.md" "$fx/CHARTER.md" 2>/dev/null || : > "$fx/CHARTER.md"
+cp "$root/CHARTER.md" "$fx/CHARTER.md"
 printf -- '---\nname: stray\n---\n# Stray\n\nCharter: C1, C9.\n' > "$fx/engineering/stray/SKILL.md"
 check "E2 a skill naming C9, which the charter lacks, fails naming the skill and C9" \
-  'charter_check "$fx" | grep -q "stray/SKILL.md names C9" && ! charter_check "$fx" | grep -q "names C1,"'
+  'charter_check "$fx" | grep -q "stray/SKILL.md names C9" && [ "$(charter_check "$fx" | wc -l)" -eq 1 ]'
 
 fam="$root/productivity/familiar/SKILL.md"
 # Given the familiar sees a snag in a watched session

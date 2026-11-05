@@ -41,4 +41,4 @@ Each of these is a snag, whatever the line's tone:
 - A fix to one half of a pair (draw and holster, open and close, enter and leave) handed over with only that half proven.
 - A pick offered for the user to answer, even when the same message holds a "Going with" for another decision: that line covers the text above it only.
 
-Charter: C1, C2, C3, C4, C5, C6, C7, C8 ([CHARTER.md](../../CHARTER.md)).
+Charter: C1, C2, C5, C6 ([CHARTER.md](../../CHARTER.md)).

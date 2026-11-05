@@ -145,7 +145,7 @@ The agent drafts examples, but only the ones you approve become tests, and each 
 
 The hook only sees edits made through Claude Code's own edit tools. Back it in each repository with a merge gate: a code-owner rule that names you for files ending `ApprovedExamples`, or a CI check that refuses a change to one without your approval.
 
-The idea is acceptance test-driven development. Dave Farley's [The Industry Is Catching Up](https://www.youtube.com/watch?v=EkH_uoybj8k) is the best short case for it.
+The idea is example-guided development, Daniel Terhorst-North and Matt Wynne's name for what behaviour-driven development, acceptance test-driven development and specification by example share. TDD is one part of it. Dave Farley's [The Industry Is Catching Up](https://www.youtube.com/watch?v=EkH_uoybj8k) is the best short case for it.
 
 `examples`' check for entries no test would miss, its split for a star with more than six rules, and `do`'s predicted runs come from Marco Emrich's [EXACT Coding](https://github.com/marcoemrich/EXACT-Coding), shown in Emily Bache's [interview on Modern Software Engineering](https://www.youtube.com/watch?v=a6HYpocKwXU).
 
