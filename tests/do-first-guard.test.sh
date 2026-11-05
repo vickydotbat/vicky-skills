@@ -67,4 +67,7 @@ check "a found-work line in a SendUserMessage lets the edit through" "" "$(run "
 jq -nc '{type:"assistant",message:{content:[{type:"tool_use",name:"Skill",input:{skill:"vicky-skills:do"}}]}}' > "$dir/donly.jsonl"
 check "a file in an IntegrationTests folder is a test" "" "$(run "$dir/repo/server/src/IntegrationTests/Reload/ReloadExamples.cs" "$dir/donly.jsonl")"
 check "the same file outside a test folder is still held" deny "$(run "$dir/repo/server/src/Core/Thing.cs" "$dir/donly.jsonl")"
+mkdir -p "$dir/repo/plugins/p/evals/skill/case"
+check "an eval case's scaffold is a test" "" "$(run "$dir/repo/plugins/p/evals/skill/case/scaffold.sh" "$dir/donly.jsonl")"
+check "a script beside an evals folder is still code" deny "$(run "$dir/repo/plugins/p/evaluate.sh" "$dir/donly.jsonl")"
 exit $fail

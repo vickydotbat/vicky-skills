@@ -31,10 +31,10 @@ ticked() { # the branch's examples were ticked on a page, in this session or an 
     common=$(git -C "$dir" rev-parse --path-format=absolute --git-common-dir) &&
     grep -qxF -- "$branch" "$common/examples-approved" 2>/dev/null
 }
-# A test is no production code: a test folder (IntegrationTests/ included), or
+# A test is no production code: a test or eval folder (IntegrationTests/ included), or
 # a name that says test or spec. A reply line counts in chat text or a
 # SendUserMessage, since brief mode sends every reply through the tool.
-grep -qiE '(^|/)(tests?|spec|__tests__|testdata|fixtures)/|(^|/)[A-Za-z]+Tests?/|(^|[._/-])(test|spec)s?([._-][^/]*)?\.[a-z]+$' <<<"$rel" && exit 0
+grep -qiE '(^|/)(tests?|spec|__tests__|testdata|fixtures|evals)/|(^|/)[A-Za-z]+Tests?/|(^|[._/-])(test|spec)s?([._-][^/]*)?\.[a-z]+$' <<<"$rel" && exit 0
 transcript=$(jq -r '.transcript_path // empty' <<<"$payload")
 [ -f "$transcript" ] || exit 0
 marks=$(jq -r '
