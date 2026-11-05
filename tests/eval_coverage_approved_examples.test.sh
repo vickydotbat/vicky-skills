@@ -5,7 +5,7 @@
 # no model, so CI can run it.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
-check_cmd="$root/plugins/vicky-skills/scripts/eval-coverage.sh"
+check_cmd="$root/tests/eval-coverage.sh"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 fail=0
 check() { if [ "$2" = "$3" ]; then echo "ok   $1"; else echo "FAIL $1: got '$3', want '$2'"; fail=1; fi; }
