@@ -38,4 +38,5 @@ Each of these is a snag, whatever the line's tone:
 - Files copied by shell between a worktree and a shared checkout, since a copy skips the checkout, `do` and approved-spec guards.
 - Debug or trace lines left in production code, for a live look that a log kept outside the diff could have given.
 - Code that rebuilds what the repo already has one way to do (a renderer, a menu, an entry point its docs name as the single path). It goes to the user at once if it reaches a pull request.
+- A fix to one half of a pair (draw and holster, open and close, enter and leave) handed over with only that half proven.
 - A pick offered for the user to answer, even when the same message holds a "Going with" for another decision: that line covers the text above it only.
