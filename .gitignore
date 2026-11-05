@@ -2,3 +2,4 @@
 plugins/vicky-skills/.claude-plugin/types/
 tests/.mutation-survivors
 __pycache__/
+plugins/vicky-skills/evals/results/
