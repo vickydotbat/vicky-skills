@@ -75,6 +75,10 @@ jobs:
         run: tests/rm-steer.test.sh
       - name: Skill steps
         run: tests/skill-steps.test.sh
+      - name: Familiar intent and repo examples
+        run: tests/familiar_intent_approved_examples.test.sh
+      - name: Familiar skips sessions in repos that turned it off
+        run: tests/familiar-sessions-off.test.sh
       - name: Familiar visibility probe examples
         run: tests/familiar_visibility_approved_examples.test.sh
       - name: Familiar visibility probe edges
