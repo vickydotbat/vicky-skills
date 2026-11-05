@@ -16,4 +16,7 @@ check "a label three minutes away is not found" 'grep -qx "catch 12:45 0/3" <<<"
 check "precision counts the false positives the replay left alone" 'grep -qx "precision on false positives: 2 of 3 left alone" <<<"$out"'
 FAMILIAR_REPLAY_MODEL="$dir/model" bash "$replay" "$dir/none.jsonl" "$dir/labels" >/dev/null 2>"$dir/err"; code=$?
 check "a missing transcript exits 2 and names it" '[ $code -eq 2 ] && grep -q "none.jsonl" "$dir/err"'
+printf '#!/usr/bin/env bash\ncat >/dev/null\nexit 7\n' > "$dir/broken"; chmod +x "$dir/broken"
+FAMILIAR_REPLAY_MODEL="$dir/broken" bash "$replay" "$dir/s.jsonl" "$dir/labels" >"$dir/out" 2>"$dir/err"; code=$?
+check "a failed model run stops the replay with no score, naming the run" '[ $code -eq 3 ] && grep -q "run 1 failed" "$dir/err" && ! grep -q "recall" "$dir/out"'
 exit $fail

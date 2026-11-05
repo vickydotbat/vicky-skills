@@ -23,8 +23,11 @@ TAGS = ("visible", "not visible", "no transcript")
 
 def watch_minutes(transcript):
     env = dict(os.environ, FAMILIAR_WATCH_ONCE="1")
-    out = subprocess.run(["bash", str(WATCH), str(transcript)], env=env,
-                         capture_output=True, text=True, timeout=120).stdout
+    try:
+        out = subprocess.run(["bash", str(WATCH), str(transcript)], env=env,
+                             capture_output=True, text=True, timeout=120).stdout
+    except subprocess.TimeoutExpired:
+        sys.exit(f"familiar-visibility: the watch ran past 120 seconds on {transcript}")
     return {int(m[1]) * 60 + int(m[2]) for m in map(EVENT.match, out.splitlines()) if m}
 
 
@@ -44,7 +47,7 @@ def main(notes, corpus):
             at = int(m[2]) * 60 + int(m[3])
             if minutes is None:
                 tag = "no transcript"
-            elif minutes & {at - 1, at, at + 1}:
+            elif minutes & {at - 1, at, at + 1}:  # the same window as familiar-replay.sh
                 tag = "visible"
             else:
                 tag = "not visible"

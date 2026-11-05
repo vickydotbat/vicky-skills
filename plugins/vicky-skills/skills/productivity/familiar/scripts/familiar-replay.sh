@@ -17,14 +17,17 @@ prompt="You are the familiar. Below is a watched session's event log on stdin. L
 $shapes"
 model() {
   if [ -n "${FAMILIAR_REPLAY_MODEL:-}" ]; then timeout 300 "$FAMILIAR_REPLAY_MODEL"
-  else systemd-run --user --scope -q -p MemoryMax=4G -p MemorySwapMax=0 timeout 300 claude -p "$prompt"; fi
+  else systemd-run --user --scope -q -p MemoryMax=4G -p MemorySwapMax=0 timeout 300 claude -p --tools "" --max-budget-usd 1 "$prompt"; fi
 }
 seen=$(mktemp); trap 'rm -f "$seen"' EXIT
 for run in $(seq 1 "$runs"); do
-  model <<<"$watch" | grep -oE '^- *[SM][0-9]+b? [0-9]{2}:[0-9]{2}' | grep -oE '[0-9]{2}:[0-9]{2}$' | sed "s/^/$run /"
+  answer=$(model <<<"$watch") || { echo "familiar-replay: run $run failed with exit $?, so no score" >&2; exit 3; }
+  sed -nE "s/^- *[SM][0-9]+b? ([0-9]{2}:[0-9]{2}).*/$run \1/p" <<<"$answer"
 done > "$seen"
 awk -v runs="$runs" '
   function min(t) { split(t, p, ":"); return p[1] * 60 + p[2] }
+  # The one-minute window matches familiar-visibility.py; awk and Python share no code.
+  # shortcut: matches by minute only, since the labels carry no shape code yet.
   FNR == NR { at[$1, min($2)] = 1; next }
   {
     m = min($2); k = 0

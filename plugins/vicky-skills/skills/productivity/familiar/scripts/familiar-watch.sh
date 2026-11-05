@@ -12,8 +12,7 @@ tag=${2:-}
 from=0
 [ "${FAMILIAR_WATCH_FROM_START:-}" = 1 ] && from=+1
 # FAMILIAR_WATCH_ONCE=1 reads a saved transcript whole and ends, for the replay tools.
-if [ "${FAMILIAR_WATCH_ONCE:-}" = 1 ]; then exec 3< "$file"; else exec 3< <(tail -n "$from" -F "$file" 2>/dev/null); fi
-tailer=${!:-}
+if [ "${FAMILIAR_WATCH_ONCE:-}" = 1 ]; then exec 3< "$file"; tailer=; else exec 3< <(tail -n "$from" -F "$file" 2>/dev/null); tailer=$!; fi
 while IFS= read -r line <&3; do
   out=$(jq -r --arg tag "${tag:+$tag }" '
     def cut: gsub("\n"; " ") | .[0:400];

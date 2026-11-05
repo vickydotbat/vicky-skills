@@ -25,7 +25,7 @@ Three scripts in this skill's `scripts/` folder measure the familiar against sav
 
 - `familiar-visibility.py <notes folder> <transcripts folder>` tags each timed snag line on the debt notes as visible to the watch, not visible, or no transcript.
 - `familiar-shapes.sh <transcripts folder> --law <shape>=<YYYY-MM-DD>` counts each frozen rule in `shapes/` per 100 user turns, per day, and before and after its law. A rule is frozen: a changed rule gets a new name.
-- `familiar-replay.sh <transcript> <labels file>` runs the familiar three times over one transcript, and scores catches, recall on the misses and precision on the false positives. Run it under a memory cap.
+- `familiar-replay.sh <transcript> <labels file>` runs the familiar three times over one transcript, and scores catches, recall on the misses and precision on the false positives. It caps each model run itself: 4G of memory, 300 seconds, no tools and one dollar.
 
 ## Snag shapes
 

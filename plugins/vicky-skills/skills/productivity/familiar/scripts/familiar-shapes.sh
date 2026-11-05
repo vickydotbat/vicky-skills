@@ -9,12 +9,13 @@ while [ $# -gt 0 ]; do
   case $1 in --law) laws+=("${2:?--law needs <shape>=<YYYY-MM-DD>}"); shift 2 ;; *) echo "familiar-shapes: unknown argument $1" >&2; exit 2 ;; esac
 done
 rules=$(dirname "$0")/shapes
-# The watch's USER rule, kept here because its output carries no date.
+# A copy of familiar-watch.sh's USER rule: the watch prints times without a date, and a rate needs the day.
 turns='.[] | select(.type == "user" and (.isMeta | not) and (.isCompactSummary | not))
   | select((.message.content | type) == "string") | select(.message.content | test("^<") | not)
   | select(.message.content | test("\\S")) | .timestamp[0:10]'
 tally=$(mktemp); trap 'rm -f "$tally"' EXIT
 while IFS= read -r t; do
+  jq -e -s 'length >= 0' "$t" >/dev/null 2>&1 || { echo unreadable; continue; }
   jq -r -s '.[] | .timestamp? // empty | "day " + .[0:10]' "$t" 2>/dev/null
   jq -r -s "$turns" "$t" 2>/dev/null | sed 's/^/turn /'
   for r in "$rules"/*.jq; do
@@ -23,7 +24,7 @@ while IFS= read -r t; do
 done < <(find "$corpus" -name '*.jsonl' -type f | sort) > "$tally"
 shapes=$(for r in "$rules"/*.jq; do basename "$r" .jq; done)
 awk -v shapes="$shapes" -v laws="${laws[*]}" '
-  $1 == "day" { days[$2] = 1 } $1 == "turn" { turns[$2]++ } $1 == "hit" { hits[$2, $3]++ }
+  $1 == "day" { days[$2] = 1 } $1 == "turn" { turns[$2]++ } $1 == "hit" { hits[$2, $3]++ } $1 == "unreadable" { unreadable++ }
   END {
     n = split(shapes, s, "\n"); m = 0
     for (d in days) list[++m] = d
@@ -33,6 +34,7 @@ awk -v shapes="$shapes" -v laws="${laws[*]}" '
       if (turns[d] + 0 == 0) printf "%s %s no user turns, no rate\n", d, s[k]
       else printf "%s %s %d/%d turns = %.1f per 100\n", d, s[k], h, turns[d], 100 * h / turns[d]
     }
+    if (unreadable) printf "unreadable transcripts, left out: %d\n", unreadable
     split(laws, l, " ")
     for (q in l) {
       split(l[q], kv, "="); bh = bt = ah = at = 0
