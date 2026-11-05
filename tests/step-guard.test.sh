@@ -35,6 +35,25 @@ expect "a skip reason on Gitea lets it through" 0 ok "$dir/noreview.jsonl" 'tea 
 started vicky-skills:warp > "$dir/warponly.jsonl"
 printf 'Skipped: sentinels, because a\nSkipped: review, because b\n' > "$dir/body"
 expect "a warp that skipped all but do is still refused for do" 2 ok "$dir/warponly.jsonl" 'gh pr ready 37'
+{ started vicky-skills:warp; started vicky-skills:sentinels; } > "$dir/warpsent.jsonl"
+printf 'Skipped: do, because a\nSkipped: review, because c\n' > "$dir/body"
+expect "a warp with no do needs no Plan check line" 0 ok "$dir/warpsent.jsonl" 'gh pr ready 37'
 printf 'Skipped: do, because a\nSkipped: sentinels, because b\nSkipped: review, because c\n' > "$dir/body"
-expect "a warp with no do needs no Plan check line" 0 ok "$dir/warponly.jsonl" 'gh pr ready 37'
+expect "a warp that never ran sentinels is refused whatever its body says" 2 ok "$dir/warponly.jsonl" 'gh pr ready 37'
+printf 'Skipped: review, because c\nPlan check: none found\n' > "$dir/body"
+expect "a warp that ran sentinels and skipped review is still refused for do" 2 ok "$dir/warpsent.jsonl" 'gh pr ready 37'
+says() { # name transcript present-text absent-text: what the refusal says
+  local err
+  err=$(jq -nc --arg c 'gh pr ready 37' --arg t "$2" '{tool_input:{command:$c},transcript_path:$t}' |
+    PATH="$dir/ok:$PATH" CLAUDE_PLUGIN_OPTION_STEP_GUARD=true "$guard" 2>&1 >/dev/null)
+  if grep -qF -- "$3" <<<"$err" && ! grep -qF -- "$4" <<<"$err"; then echo "ok   $1"; else echo "FAIL $1: $err"; fail=1; fi
+}
+printf 'Plan check: none found\n' > "$dir/body"
+says "a missing review is told it can be skipped in writing, and sentinels is not mentioned as never skipped" "$dir/noreview.jsonl" "Skipped: <step>, because" "never skipped"
+printf 'Skipped: review, because c\nPlan check: none found\n' > "$dir/body"
+says "a warp that ran nothing is told that its do and sentinels steps never ran" "$dir/warponly.jsonl" "its do sentinels step" "xxxx"
+says "a refusal reminds the agent that a warp builds each star with do, and do runs sentinels" "$dir/warponly.jsonl" "do runs sentinels on what it changed" "xxxx"
+{ started vicky-skills:do; started vicky-skills:review; } > "$dir/nosent.jsonl"
+printf 'Plan check: none found\n' > "$dir/body"
+says "a missing sentinels is told it is never skipped, with its manual pass, and no written skip is offered" "$dir/nosent.jsonl" "manual pass" "Skipped: <step>, because"
 exit $fail

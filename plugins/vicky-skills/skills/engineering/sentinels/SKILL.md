@@ -11,6 +11,8 @@ Your tests are the **sentinels**, and a **mutant** is a small deliberate bug: a 
 
 A pass always ends in counts or in "unrun, because <the log line>". It never ends in silence.
 
+A mutation loop you write yourself never replaces this skill, whatever the language or file kind (shell, workflow YAML, config). Code no tool fits takes "The manual pass" below. No `Skipped: sentinels` line in a pull request body counts: `step-guard` refuses it, and `sentinels-first-guard` refuses a script of your own named for mutation until this skill has started.
+
 **A pass ends within an hour, in the worst case, and usually within minutes.** A slow pass means it mutates too much or runs the wrong tests. Fix the scope or the tests, never the budget. The cuts, largest first ([SPEED.md](SPEED.md) has the flags and sources):
 
 - Mutate only the lines the branch changed. A whole-codebase pass runs on a schedule, over the lines merged since the last green one, never in a pull request's gate.
