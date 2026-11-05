@@ -23,10 +23,10 @@ say() { # say <session's copy> <session id>: what the agent is told when the use
 
 # Given a session that started on one vicky-skills copy, and the plugin since updated to a newer one
 # When the user sends a message
-# Then the agent is told the session runs an older vicky-skills, both commits by short hash, and that a restart picks up the new one
+# Then the agent is told the session runs an older vicky-skills, both commits by short hash, and that typing /reload-plugins picks up the new one
 told=$(say d1e400e24377 one)
-check "S1 a session on an older copy is told so, with both short hashes and that a restart picks up the new one" \
-  'grep -q "older vicky-skills" <<<"$told" && grep -q "d1e400e" <<<"$told" && grep -q "700a045" <<<"$told" && grep -qi "restart" <<<"$told"'
+check "S1 a session on an older copy is told so, with both short hashes and that /reload-plugins picks up the new one" \
+  'grep -q "older vicky-skills" <<<"$told" && grep -q "d1e400e" <<<"$told" && grep -q "700a045" <<<"$told" && grep -q "/reload-plugins" <<<"$told"'
 
 # Given a session running the copy the plugin has installed
 # When the user sends a message
