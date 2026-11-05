@@ -182,6 +182,12 @@
       "description": "When a local branch's upstream is gone, ask the agent to run marie-kondo before its first reply. When the clone stands on a merged branch, hand it back to main.",
       "default": false
     },
+    "familiar_plugin_repo": {
+      "type": "string",
+      "title": "Familiar: where plugin fixes go",
+      "description": "A checkout of the vicky-skills plugin's own repository. The familiar builds a fix to a skill or hook there. Left empty, it files the fix on the watched repo's tracker instead.",
+      "default": ""
+    },
     "familiar_kind": {
       "type": "string",
       "title": "Familiar: its kind",
