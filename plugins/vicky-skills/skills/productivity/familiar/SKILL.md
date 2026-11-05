@@ -34,3 +34,8 @@ Each of these is a snag, whatever the line's tone:
 - A gate left open: a "Waiting on you" with no watch behind it, or a wait with no ask.
 - A hook that refused or sent back work that was right: a false positive. The fix lands in that hook and its test.
 - Live checks only the user can do (a game client, a look, real hardware), handed over in chat as steps rather than through `over-to-you`, or missing the exact commands and what to load.
+- A file written outside the session's scratch folder (`/tmp/<session id>`), a page path included.
+- Files copied by shell between a worktree and a shared checkout, since a copy skips the checkout, `do` and approved-spec guards.
+- Debug or trace lines left in production code, for a live look that a log kept outside the diff could have given.
+- Code that rebuilds what the repo already has one way to do (a renderer, a menu, an entry point its docs name as the single path). It goes to the user at once if it reaches a pull request.
+- A pick offered for the user to answer, even when the same message holds a "Going with" for another decision: that line covers the text above it only.
