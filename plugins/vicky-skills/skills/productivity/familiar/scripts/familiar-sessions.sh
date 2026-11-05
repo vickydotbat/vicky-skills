@@ -35,7 +35,7 @@ list() {
     compgen -G "$records/*.json" >/dev/null && ! grep -qxF "$id" <<<"$alive" && continue
     cwd=$(grep -m1 '"cwd"' "$f" | jq -r '.cwd // empty' 2>/dev/null)
     top=$(git -C "$cwd" rev-parse --show-toplevel 2>/dev/null || printf '%s' "$cwd")
-    if grep -qx 'Familiar: off' "$top/docs/agents/issue-tracker.md" 2>/dev/null; then printf 'OFF '; fi
+    if grep -qiE '^Familiar:[[:space:]]*off[[:space:]]*$' "$top/docs/agents/issue-tracker.md" 2>/dev/null; then printf 'OFF '; fi
     printf '%s %s %s\n' "$id" "$f" "$cwd"
   done
 }
