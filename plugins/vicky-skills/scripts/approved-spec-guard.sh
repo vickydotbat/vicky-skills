@@ -6,7 +6,6 @@
 # grants a test file when the user changes its example in a draft.
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
 payload=$(cat)
-# approved-spec: the guard keeps its own script locked, so this line marks it.
 # shellcheck source=approved-spec.sh
 . "$(dirname "$0")/approved-spec.sh"
 # A file the user re-approved in red-pen, listed in the checkout's grants.
