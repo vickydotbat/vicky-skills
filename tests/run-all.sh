@@ -4,6 +4,6 @@
 set -u
 fail=0
 for t in "$(dirname "$0")"/*.test.sh; do
-  bash "$t" || { echo "FAIL $t"; fail=1; }
+  "$t" || { echo "FAIL $t"; fail=1; } # run as CI does, so a script without its execute bit fails here too
 done
 exit $fail

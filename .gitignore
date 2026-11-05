@@ -2,3 +2,6 @@
 plugins/vicky-skills/.claude-plugin/types/
 tests/.mutation-survivors
 __pycache__/
+plugins/vicky-skills/evals/results/
+# A case that resumes a history file leaves its session transcript, named by session id, in the case folder.
+plugins/vicky-skills/evals/**/*-*-*-*-*.jsonl

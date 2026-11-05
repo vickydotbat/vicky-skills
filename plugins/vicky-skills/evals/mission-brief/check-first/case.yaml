@@ -1,0 +1,5 @@
+schema_version: "1.1"
+name: check-first
+description: mission-brief searches the tracker and the codebase before it writes a ticket, and amends the ticket that already covers the work.
+context:
+  scaffold_script: scaffold.sh
