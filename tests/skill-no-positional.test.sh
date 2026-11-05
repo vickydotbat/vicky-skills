@@ -2,6 +2,7 @@
 # Claude Code replaces $0, $1 and $ARGUMENTS in a SKILL.md body with the
 # skill's arguments when it loads, so a shell line holding one reaches the
 # agent broken. A skill puts such code in a script under its scripts/ folder.
+# Any $<digit> counts, a price such as $5 included.
 set -u
 cd "$(dirname "$0")/../plugins/vicky-skills"
 fail=0
