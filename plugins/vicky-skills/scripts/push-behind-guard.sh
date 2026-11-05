@@ -5,7 +5,9 @@
 # seconds at most) and a failed fetch lets the push through. Pushing the
 # default branch itself, deleting a branch and pushing to another remote are
 # not checked. Marking a pull request ready or reopening it (gh, tea) is
-# checked like a push of the current branch: CI would test a stale base.
+# checked like a push: bare, it is the current branch, and a named pull request
+# is its own head (refs/pull/<n>/head), so a behind checkout never blocks another
+# pull request. CI would test a stale base.
 # On unless the plugin option guard_push_behind is false or 0.
 GUARD=push-behind-guard
 OPTION=${CLAUDE_PLUGIN_OPTION_GUARD_PUSH_BEHIND:-true}
@@ -24,6 +26,17 @@ fetched=""
 while IFS= read -r segment; do
   if grep -Eq "$ready" <<<"$segment"; then
     src=$current
+    # A named pull request is its own head, whichever branch is checked out. The forge's
+    # refs/pull/<n>/head carries it; a head that cannot be fetched is not checked.
+    num=$(sed -nE 's/.*(pr|pulls?)[[:space:]]+(ready|reopen)[[:space:]]+#?([0-9]+).*/\3/p' <<<"$segment")
+    if [ -n "$num" ]; then
+      if GIT_TERMINAL_PROMPT=0 timeout 10 git fetch -q origin "refs/pull/$num/head" >/dev/null 2>&1; then
+        src=$(git rev-parse -q --verify FETCH_HEAD)
+      else
+        echo "push-behind-guard: could not fetch pull request $num, so it is not checked for being behind origin/$dflt." >&2
+        continue
+      fi
+    fi
   else
   push_args_of "$segment" || continue
   args=()
