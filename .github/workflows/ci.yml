@@ -147,6 +147,8 @@ jobs:
         run: tests/no_v1_ideas_approved_examples.test.sh
       - name: Take the pick hook
         run: tests/take-pick.test.sh
+      - name: Hooks read SendUserMessage
+        run: tests/sendusermessage-mode.test.sh
       - name: Take the pick, chat gates
         run: tests/take_pick_chat_gate_approved_examples.test.sh
       - name: Stale-copy blame hook

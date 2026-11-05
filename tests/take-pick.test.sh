@@ -85,4 +85,38 @@ check "a sup with no handoff may ask for go" 'passes'
 check "a handoff go with no sup this turn passes" 'passes'
 { user "sup"; skill sup; sent "The handoff says warp GAME-1. My pick is warp. Say go?"; } > "$fx/t.jsonl"
 check "a handoff go with a pick and a question is sent back once, for the handoff" '[ "$(stop | jq -s "length")" = 1 ] && stop | grep -q "sup step 4"'
+# Given a reply that takes one pick with "Going with" and asks about another below it
+# When the agent stops
+# Then the second pick is sent back, since a "Going with" covers only the text above it
+{ user "go"; sent "Weapon sets are live. Going with a Holster square on each set.
+Picker question: where do the icon rows open? Answer with a letter in chat:
+- A (my pick): a pop-up at the cursor.
+- B: an in-hub panel."; } > "$fx/t.jsonl"
+check "a pick asked below an unrelated Going with is sent back" 'blocked'
+{ user "go"; sent "Picker question: where do the icon rows open? A is my pick.
+Going with A."; } > "$fx/t.jsonl"
+check "a Going with below the question takes it" 'passes'
+{ user "go"; sent "Going with A.
+The build is green."; } > "$fx/t.jsonl"
+check "a Going with with nothing asked below it goes through" 'passes'
+{ user "go"; sent "Going with A."; } > "$fx/t.jsonl"
+check "a Going with on the last line goes through" 'passes'
+{ user "go"; sent "A is my pick, or B. Answer with a letter in chat."; } > "$fx/t.jsonl"
+check "an Answer with ask, with no question mark, is sent back" 'blocked'
+{ user "go"; sent "A is my pick, or B. Reply with a letter."; } > "$fx/t.jsonl"
+check "a Reply with ask, with no question mark, is sent back" 'blocked'
+{ user "go"; sent "🚪 Still waiting on your picker letter: A (my pick) or B. Answer with a letter in chat."; } > "$fx/t.jsonl"
+check "a still-waiting gate that asks its pick in chat is sent back" 'blocked'
+{ user "go"; sent "🚪 Still waiting on you: the merge of #12. My pick is squash."; } > "$fx/t.jsonl"
+check "a still-waiting gate with no question goes through" 'passes'
+{ user "go"; sent "Going with a Holster square.
+Which letter? B is my pick.
+Going with B."; } > "$fx/t.jsonl"
+check "only the text below the last Going with is weighed" 'passes'
+{ user "go"; sent "🚪 Still waiting on you: run probe 1.
+1. Start the client.
+2. Run the probe."; } > "$fx/t.jsonl"
+check "a still-waiting gate with numbered steps goes to over-to-you" 'stop | jq -r .reason | grep -q over-to-you'
+{ user "go"; sent "🚪 Waiting on you: A (my pick) or B. Answer with a letter."; } > "$fx/t.jsonl"
+check "a gated pick that says Answer with, with no question mark, is sent back" 'blocked'
 exit $fail
