@@ -4,15 +4,16 @@
 # session ends. Claude Code ends a transcript with a cost-state line when its
 # session exits.
 # Usage: familiar-watch.sh <transcript> [<session tag>]
-# It starts at the end of the file; FAMILIAR_WATCH_FROM_START=1 reads it whole.
+# It starts at the end of the file; FAMILIAR_WATCH_FROM_START=1 reads it whole and follows on.
 # The mutation tool covers plugins/vicky-skills/scripts only: mutate this script by hand, with sentinels.
 set -u
 file=${1:?usage: familiar-watch.sh <transcript> [<session tag>]}
 tag=${2:-}
 from=0
 [ "${FAMILIAR_WATCH_FROM_START:-}" = 1 ] && from=+1
-exec 3< <(tail -n "$from" -F "$file" 2>/dev/null)
-tailer=$!
+# FAMILIAR_WATCH_ONCE=1 reads a saved transcript whole and ends, for the replay tools.
+if [ "${FAMILIAR_WATCH_ONCE:-}" = 1 ]; then exec 3< "$file"; else exec 3< <(tail -n "$from" -F "$file" 2>/dev/null); fi
+tailer=${!:-}
 while IFS= read -r line <&3; do
   out=$(jq -r --arg tag "${tag:+$tag }" '
     def cut: gsub("\n"; " ") | .[0:400];
