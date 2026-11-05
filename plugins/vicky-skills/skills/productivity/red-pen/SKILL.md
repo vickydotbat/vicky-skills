@@ -11,7 +11,7 @@ The user edits drafts on a page in their browser, never in the chat. Only audien
 
 ## Steps
 
-1. **Write the draft file** with `python3 <this skill's folder>/../interactive-page/scripts/write-page.py <spec.json> <file>` and a `drafts` spec, never by hand: one per effort, at `.drafts/<branch>.md` when the repo ignores `.drafts/`, otherwise in the system temp folder (`$TMPDIR`, else `/tmp`). The file opens with `# Drafts: <effort>` and one line saying that closing the file sends the text back. Each draft is a section:
+1. **Write the draft file** with `python3 <this skill's folder>/../interactive-page/scripts/write-page.py <spec.json> <file>` and a `drafts` spec, never by hand: one per effort, at `.drafts/<branch>.md` when the repo ignores `.drafts/`, otherwise in the session scratch folder, `/tmp/$CLAUDE_CODE_SESSION_ID` (the script refuses a file loose in the shared temp folder). The file opens with `# Drafts: <effort>` and one line saying that closing the file sends the text back. Each draft is a section:
 
    ````markdown
    ## <what it is>

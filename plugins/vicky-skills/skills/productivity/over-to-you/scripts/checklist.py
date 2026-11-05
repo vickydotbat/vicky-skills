@@ -27,6 +27,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path[:0] = [HERE, os.path.join(HERE, "..", "..", "interactive-page", "scripts")]
 from importlib import import_module
 
+loose_page = import_module("scratch").loose_page
+
 _lint = import_module("lint-checklist")
 lint, opted_out = _lint.lint, _lint.opted_out
 LABELS = import_module("page").LABELS
@@ -91,6 +93,10 @@ def main(argv):
     if len(argv) != 3:
         print("usage: checklist.py <spec.json> <out.md>", file=sys.stderr)
         return 2
+    refusal = loose_page(argv[2])
+    if refusal:
+        print(refusal)
+        return 1
     with open(argv[1], encoding="utf-8") as f:
         text, problems = render(json.load(f))
     if problems:
