@@ -57,6 +57,7 @@ take-pick.sh	542786086c44be3d	1b68306002aada14	37/37
 tea-stdin.awk	ddfdfc5257c31b06	71ac1cb1bc09c95f	70/70
 tea-stdin.sh	c631fcfccdb1abf0	aa202be0280b7b51	15/15
 ticket-drift.sh	1bc60db2e95d9227	d394fe3535d1d7bb	36/36
+ticket-filing-guard.sh	52b8f97a561d1a0f	cb3b25d86aedf6f6	17/17
 todo-guard.sh	5ce96f6ec1a44101	d985b121d3b1bf94	24/24
 todo-next.sh	a7ae5fde4fb76b39	1d6470dc2be2e6ca	30/30
 todo-reminder.sh	87bab188b0686e79	3b39171b71fca45a	9/9
