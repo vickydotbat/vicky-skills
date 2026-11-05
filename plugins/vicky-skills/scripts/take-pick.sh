@@ -6,7 +6,8 @@
 # steer: take the pick now and say "Going with", or gate it with a
 # "🚪 Waiting on you" ask and a watch. A reply that already says "Going with"
 # or opens a gate goes through, but a "Going with" covers only the text above it, unless the gate carries its pick and asks a
-# question (in chat, a question mark, or options such as O1) with no page link. It steers once per turn: with
+# question (in chat, a question mark, or options such as O1) with no page link. A gate that links its page but also leaves
+# "yes or no" or "A yes is enough" in chat goes back too. It steers once per turn: with
 # stop_hook_active set, the reply goes through, so a misjudged one never loops.
 # After a sup that found a handoff, a reply asking for go is sent back to start it.
 set -u
@@ -31,6 +32,12 @@ if grep -qiE "🚪 (still )?waiting on you" <<<"$said"; then
   if [ "$(grep -cE '^[[:space:]]*[0-9]+[.)][[:space:]]' <<<"$said")" -ge 2 ] && ! grep -qE "https?://" <<<"$said"; then
     jq -n '{decision:"block", reason:"You gated numbered steps for the user to carry out in chat. Live checks only the user can do go through the over-to-you skill: a checklist page with each step, its exact command, and what to load or open. Start over-to-you and send the page link."}'
     exit 0
+  fi
+  # A yes or no question left in chat beside the page waits unseen too, and it is
+  # usually cheap: the agent takes it, or moves it onto the page.
+  if grep -qE "https?://" <<<"$said" && grep -qiE '\byes or no\b|\ba yes is enough\b' <<<"$(prose)"; then
+    jq -n '{decision:"block", reason:"You left a yes or no question in chat beside a page. The user watches the browser, so it waits unseen. When it is cheap to undo, or the rules on record already answer it, take it: write \"Going with <pick>\" and act on it. Otherwise put the question on the page with the interactive-page skill."}'
+    exit 0 # mutant-ok delete: falling through, the next line sees the page link and exits 0 the same way
   fi
   grep -qiE "my pick|i recommend|\bpick:" <<<"$(prose)" && grep -qiE 'in chat|answer with|reply with|\?|\bO[0-9]+\b' <<<"$(prose)" && ! grep -qE "https?://" <<<"$said" || exit 0
   jq -n '{decision:"block", reason:"You gated your own pick and asked for the answer in chat. The user watches the browser, not the chat, so this waits unseen. When the pick is cheap to undo, take it: write \"Going with <pick>\" and act on it. When only the user can answer, put the question on a page with the interactive-page skill and send its link."}'

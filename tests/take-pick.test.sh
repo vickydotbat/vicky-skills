@@ -119,4 +119,20 @@ check "only the text below the last Going with is weighed" 'passes'
 check "a still-waiting gate with numbered steps goes to over-to-you" 'stop | jq -r .reason | grep -q over-to-you'
 { user "go"; sent "🚪 Waiting on you: A (my pick) or B. Answer with a letter."; } > "$fx/t.jsonl"
 check "a gated pick that says Answer with, with no question mark, is sent back" 'blocked'
+# Given a gate that links its page and also leaves a yes or no question in chat
+# When the agent stops
+# Then the stop is sent back to take the cheap one, or put it on the page
+{ user "go"; sent "🚪 Waiting on you: the slot bar page, http://127.0.0.1:44623/ (Done sends it back)
+
+Also open: ex 19 to GAME-2562, yes or no."; } > "$fx/t.jsonl"
+check "a page gate with a yes or no question beside it is sent back" 'blocked'
+check "that steer exits 0 with one answer" 'out=$(stop); [ $? = 0 ] && [ "$(jq -s length <<<"$out")" = 1 ]'
+check "that steer says to take it or put it on the page" 'stop | jq -r .reason | grep -q "Going with" && stop | jq -r .reason | grep -q "page"'
+{ user "go"; sent "🚪 Waiting on you: may I post the 6 examples, http://127.0.0.1:44623/? A yes is enough."; } > "$fx/t.jsonl"
+check "A yes is enough beside a page link is sent back" 'blocked'
+{ user "go"; sent "🚪 Waiting on you: the slot bar page, http://127.0.0.1:44623/ (Done sends it back)"; } > "$fx/t.jsonl"
+check "a page gate with no chat question goes through" 'passes'
+{ user "go"; sent "Going with filing ex 19 to GAME-2562.
+🚪 Waiting on you: the slot bar page, http://127.0.0.1:44623/"; } > "$fx/t.jsonl"
+check "a taken pick above a clean page gate goes through" 'passes'
 exit $fail

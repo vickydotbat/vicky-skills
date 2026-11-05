@@ -43,7 +43,7 @@ rm-steer.sh	446e84a40f650cd3	bcfec59c13f3f047	28/28
 same-refusal.sh	a028a5e2340561f9	afad7f5d18d37e30	18/18
 scratch-guard.sh	c6e044c91bff4bfa	91bf0e0235b7ff9d	32/32
 sentinels-first-guard.sh	4132c93fcd58cd6e	f59ad98248a0ce97	22/22
-since-user.sh	ac2800c62dac64a8	686c6be6bb549568	33/33
+since-user.sh	ac2800c62dac64a8	02860ad7461bbbcb	33/33
 skill-ledger.sh	4f6f1ba436f648ca	326b545e2e5a7e35	22/22
 spark-joy.sh	e88c476e7a612966	25b1f8934166f886	29/29
 springboard.sh	2b1a555e07899495	aa25977872a3c406	53/53
@@ -51,9 +51,9 @@ stale-blame.sh	ed74378b4d7aac52	2aeca6b113ea4db9	18/18
 stale-copy-hint.sh	4e663d08786adf6b	b5706ded17a325ea	27/27
 step-guard.sh	a75d1da4efc9dee5	04f8dea0c38c9568	51/51
 step-hint.sh	e2494ca8c42871eb	98275f02c7cc89fd	18/18
-stop-reply.sh	fff0fe89cce56914	45d500be383eaad4	17/17
+stop-reply.sh	fff0fe89cce56914	1c275237150c0233	17/17
 summit.sh	a7326a54e5ec3ae0	6f7066718f33e734	53/53
-take-pick.sh	9e2ea495006a9fea	bc51f84c7caf334b	34/34
+take-pick.sh	542786086c44be3d	1b68306002aada14	37/37
 tea-stdin.awk	ddfdfc5257c31b06	71ac1cb1bc09c95f	70/70
 tea-stdin.sh	c631fcfccdb1abf0	aa202be0280b7b51	15/15
 ticket-drift.sh	1bc60db2e95d9227	d394fe3535d1d7bb	36/36
