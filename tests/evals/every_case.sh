@@ -39,7 +39,7 @@ done
 systemctl --user set-property --runtime evals.slice MemoryMax=8G MemorySwapMax=0 2>/dev/null
 run_all() { # run_all <plugin dir> <out name>
   systemd-run --user --scope -q --slice=evals.slice -p MemoryMax=4G -p MemorySwapMax=0 timeout 3600 \
-    claude plugin eval "$1" --scaffold --trust-plugin --ablation none -j "$jobs" \
+    claude plugin eval "$1" --scaffold --trust-plugin --keep-temp --ablation none -j "$jobs" \
     --runs 1 --max-cost-usd 40 --allow-tools Write Edit Bash --no-publish --json "$evals_out/$2.json" >"$evals_out/$2.out" 2>&1
 }
 run_all "$evals_out/now-plugin" now
@@ -55,6 +55,7 @@ for c in "${cuts[@]}"; do
     echo "ok   $name: 1 now, $cut with its section cut"
   else
     echo "FAIL $name: ${now:-none} now (failed: $(failed now "$name")), ${cut:-none} with its section cut"; fail=1
+    echo "     traces: $(jq -r --arg n "$name" '[.cases[] | select(.name == $n) | .arms.with[]?.tracePath] | join(" ")' "$evals_out/now.json" "$evals_out/cut.json" 2>/dev/null | tr '\n' ' ')"
   fi
 done
 echo "cost: \$$(jq -r '.costUsd' "$evals_out/now.json" 2>/dev/null) now, \$$(jq -r '.costUsd' "$evals_out/cut.json" 2>/dev/null) cut"
