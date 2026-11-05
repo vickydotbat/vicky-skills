@@ -20,6 +20,6 @@ check "a session whose watch prints nothing is not visible, never no transcript"
 check "a note name with two ids takes the last one as its session" '! grep -q deadbeef <<<"$quiet"'
 once=$(FAMILIAR_WATCH_ONCE=1 timeout 10 bash "$here/familiar-watch.sh" "$dir/corpus/-p/cccc3333-x.jsonl"); code=$?
 check "the watch's read-once mode prints the saved events and ends" '[ $code -eq 0 ] && grep -q "SKILL: do" <<<"$once"'
-kinds=$(printf -- '- S1 10:01: hook refused the edit\n- S2 10:02: the sentinels skill never ran\n- S3 10:03: the user had to ask for the todo line\n- S4 10:04: claimed done in chat\n- S5 10:05: debug lines left in the code\nnot a snag line\n' | python3 "$here/familiar-visibility.py" --kind)
+kinds=$(printf -- '- S1 10:01: hook refused the edit\n- S2 10:02: the sentinels skill never ran\n- S3 10:03: the user had to ask for the todo line\n- S4 10:04: claimed done in chat\n- S5 10:05: debug lines left in the code\n- S6 10:06: Refused twice\nnot a snag line\n' | python3 "$here/familiar-visibility.py" --kind)
 check "the classifier names each kind of snag and skips other lines" '[ "$(tr "\n" " " <<<"$kinds")" = "10:01 refused 10:02 skill 10:03 user 10:04 agent 10:05 none 10:06 refused " ]'
 exit $fail
