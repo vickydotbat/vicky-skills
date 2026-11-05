@@ -43,4 +43,14 @@ check "the setting off passes" "" "$(run "mutmut run" "$dir/none.jsonl" false)"
 check "the setting unset stays on" deny "$(jq -n --arg t "$dir/none.jsonl" '{tool_name:"Bash",tool_input:{command:"mutmut run"},transcript_path:$t}' | env -u CLAUDE_PLUGIN_OPTION_GUARD_SENTINELS_FIRST bash "$hook" | jq -r '.hookSpecificOutput.permissionDecision')"
 check "bad input passes" "" "$(echo 'not json' | CLAUDE_PLUGIN_OPTION_GUARD_SENTINELS_FIRST=true bash "$hook" 2>/dev/null)"
 check "no command passes" "" "$(jq -n '{tool_name:"Bash",tool_input:{}}' | CLAUDE_PLUGIN_OPTION_GUARD_SENTINELS_FIRST=true bash "$hook")"
+# A mutation script the agent wrote itself, named for mutation, counts like a tool.
+for c in "python3 -I /scratch/mutate_loop.py" "bash scratch/run-mutants.sh" "sh ./mutation.sh" "zsh x/mutate.sh" \
+  "node mutants.js" "deno run mutate.ts" "bun mutate.ts" "ruby mutate.rb" "perl -w mutate.pl" "./mutate_loop.sh" \
+  "/scratch/mutate_loop.py" "cd s && python3 mutate.py" "python3 mutate.py | tail"; do
+  check "no sentinels refuses a script of its own: $c" deny "$(run "$c" "$dir/none.jsonl")"
+done
+check "a started sentinels lets a script of its own through" "" "$(run "python3 mutate_loop.py" "$dir/sent.jsonl")"
+check "a script not named for mutation passes" "" "$(run "python3 summarise.py" "$dir/none.jsonl")"
+check "a script named for mutation, quoted, passes" "" "$(run "cat 'mutate_loop.py'" "$dir/none.jsonl")"
+check "a mutation word with no script extension passes" "" "$(run "python3 mutate_notes.txt" "$dir/none.jsonl")"
 exit $fail
