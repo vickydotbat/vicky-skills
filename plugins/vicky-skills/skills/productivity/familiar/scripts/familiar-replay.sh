@@ -21,7 +21,7 @@ model() {
 }
 seen=$(mktemp); trap 'rm -f "$seen"' EXIT
 for run in $(seq 1 "$runs"); do
-  model <<<"$watch" | grep -oE '^- *[SM][0-9]+b? [0-9]{2}:[0-9]{2}' | grep -oE '[0-9]{2}:[0-9]{2}$' | sort -u | sed "s/^/$run /"
+  model <<<"$watch" | grep -oE '^- *[SM][0-9]+b? [0-9]{2}:[0-9]{2}' | grep -oE '[0-9]{2}:[0-9]{2}$' | sed "s/^/$run /"
 done > "$seen"
 awk -v runs="$runs" '
   function min(t) { split(t, p, ":"); return p[1] * 60 + p[2] }
