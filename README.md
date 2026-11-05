@@ -158,3 +158,5 @@ tests/run-all.sh
 ```
 
 Run both before every push. CI runs every test once a pull request is marked ready, and refuses a draft.
+
+The skills' eval cases live in `plugins/vicky-skills/evals/`, and you run them by hand with the scripts in `tests/evals/`. Each run starts a real Claude session on your own credential, so CI never runs them. A run costs about $0.25, and each script caps every run at $3. `tests/eval-coverage.sh plugins/vicky-skills` names each skill that has no case yet, and starts no model.
