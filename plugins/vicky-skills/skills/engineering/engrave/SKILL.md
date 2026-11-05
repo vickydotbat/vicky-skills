@@ -19,7 +19,7 @@ A **snag** is one thing that went wrong: a red check, a crash, a retry, a wrong 
    - **The repo you work in**: a lesson about that repo (its code, data, build or workflow), in a test, a standard or its agent docs, on the current effort's branch.
 
    Done when each part of the lesson has one destination.
-4. **Build it** this turn, under the destination's own rules: test first where it is code, its checks run. When you commit the rule, the commit message ends with `Engraved: <snag>`, and you run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/lesson-ledger.sh add <plugin|setup|repo> "<snag>"`, so `sup` counts it from any repo. Done when the law is committed, handed to a session that accepted it, or filed with what it waits on.
+4. **Build it** this turn, under the destination's own rules: test first where it is code, its checks run. When you commit the rule, the commit message ends with `Engraved: <snag>`, and you run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/lesson-ledger.sh add <plugin|setup|repo> "<snag>"`, so `sup` counts it from any repo. A law that lands in a skill, in a repo with an `evals/` suite, also gets an eval case in the same commit: `evals/<skill>/<case>/`, with a prompt that recreates the snag and a free grader (regex, tool_used, tool_order, file_exists) that fails against the skill text from before the law. Name the case at the end of the ledger snag: `"<snag> (eval case: <skill>/<case>)"`. A law that is a hook or a check with its own test needs no case. Done when the law is committed, with its eval case when it lands in a skill, handed to a session that accepted it, or filed with what it waits on.
 5. **Report** in one line, in the reply that closes the snag:
 
    ```markdown
