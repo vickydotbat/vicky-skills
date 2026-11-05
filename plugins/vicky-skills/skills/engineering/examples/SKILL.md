@@ -24,6 +24,7 @@ Then the charm ends
 - Names its observer, and holds only what that observer can set up, do and see: the screen, a sound, a setting, a reply, a log line. The **observer check**: could the observer verify each line with the product and its settings alone? A line that needs a debugger, a profiler or the source is design.
 - Uses the domain's words. The mechanism (a class, method, hook, table, file, pass, buffer or queue) is design.
 - Uses concrete values the observer sets or sees: a level, an item, a distance, a GPU. A Then measures against a case the observer can set up (the setting off, a clear view, the previous build) in place of a tuning constant (a threshold, a tile size, a filter cutoff), which is design.
+- In a layout or size example, the Then states a relation (one size, one row, the rows end together) and never the sketch's numbers. A number changes in the sketch only, never in an example.
 - Holds one behaviour. A second outcome is a second example.
 - Cites its source: the rule, the ADR or the ticket line.
 - Has a boundary partner: the case just outside the rule.
