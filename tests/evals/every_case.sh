@@ -35,8 +35,10 @@ for c in "${cuts[@]}"; do
     skip && match($0, /^#+ /) && RLENGTH - 1 <= lv {skip=0}
     !skip' "$file" > "$file.tmp" && mv "$file.tmp" "$file"
 done
+# Every run shares one 8 GB ceiling, however many runners go at once.
+systemctl --user set-property --runtime evals.slice MemoryMax=8G MemorySwapMax=0 2>/dev/null
 run_all() { # run_all <plugin dir> <out name>
-  systemd-run --user --scope -q -p MemoryMax=4G -p MemorySwapMax=0 timeout 3600 \
+  systemd-run --user --scope -q --slice=evals.slice -p MemoryMax=4G -p MemorySwapMax=0 timeout 3600 \
     claude plugin eval "$1" --scaffold --trust-plugin --ablation none -j "$jobs" \
     --runs 1 --max-cost-usd 40 --allow-tools Write Edit Bash --no-publish --json "$evals_out/$2.json" >"$evals_out/$2.out" 2>&1
 }
