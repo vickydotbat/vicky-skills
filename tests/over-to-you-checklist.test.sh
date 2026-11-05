@@ -34,4 +34,10 @@ check "a spec with no proven by is refused" 'out=$(write); [ $? = 1 ] && grep -q
 jq -n --argjson i "[$item]" '{name: "Bob", open: "x", signed_off: "n", proven_by: "p", sitting: [2, 3], sections: [{title: "P", items: $i}]}' > "$dir/spec.json"
 check "a numbered sitting says which one it is" 'write >/dev/null && grep -qx "Sitting 2 of 3." "$dir/out.md"'
 check "a wrong call prints its usage and exits 2" 'python3 -I "$skill/checklist.py" 2>/dev/null; [ $? = 2 ]'
+mkdir -p "$dir/tmp/s1"
+spec "[$item]"
+out=$(env TMPDIR="$dir/tmp" CLAUDE_CODE_SESSION_ID=s1 python3 -I "$skill/checklist.py" "$dir/spec.json" "$dir/tmp/over-to-you-x.md" 2>&1); rc=$?
+check "a checklist loose in the shared temp folder is refused, naming the session folder" '[ $rc = 1 ] && grep -q "tmp/s1" <<<"$out" && [ ! -e "$dir/tmp/over-to-you-x.md" ]'
+env TMPDIR="$dir/tmp" CLAUDE_CODE_SESSION_ID=s1 python3 -I "$skill/checklist.py" "$dir/spec.json" "$dir/tmp/s1/over-to-you-x.md" >/dev/null
+check "a checklist in the session folder is written" '[ -s "$dir/tmp/s1/over-to-you-x.md" ]'
 exit $fail

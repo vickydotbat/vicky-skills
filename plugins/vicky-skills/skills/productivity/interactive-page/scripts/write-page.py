@@ -22,7 +22,11 @@ writing. The agent never types a page file by hand; over-to-you's checklist
 comes from its own checklist.py.
 """
 import json
+import os
 import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from scratch import loose_page
 
 FENCE = "```"
 
@@ -83,6 +87,10 @@ def main(argv):
     if len(argv) != 3:
         print("usage: write-page.py <spec.json> <out.md>", file=sys.stderr)
         return 2
+    refusal = loose_page(argv[2])
+    if refusal:
+        print(refusal)
+        return 1
     with open(argv[1], encoding="utf-8") as f:
         spec = json.load(f)
     kinds = {"question": question, "drafts": drafts}

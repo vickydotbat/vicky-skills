@@ -13,7 +13,7 @@ A pull request body tells a reviewer what changed, the proof that it works, and 
 
 1. **Gather.** Read `git diff <base>...HEAD`, `git log <base>..HEAD`, every ticket the branch, commits or current body names, and the current body when there is one (`gh pr view <n> --comments`, or `tea pr <n> --comments </dev/null`). Done when you hold the diff, the commits and each ticket's state.
 2. **Write the body** to `<scratch>/pr-body.md` in the template, with `human-voice`, in the plain register and the repo glossary's words. A rewrite keeps every section and changes only what the diff made untrue. Done when every sentence is true of the diff, and a section with no evidence to fill it says "unchecked".
-3. **Apply it** with `--body-file`: `gh pr create --draft --title "<title>" --body-file <scratch>/pr-body.md`, `gh pr edit <n> --body-file <scratch>/pr-body.md`, or Gitea's `tea pr create`/`tea pr edit <n>` with `--description "$(cat <scratch>/pr-body.md)" </dev/null`. Done when the command ran and `pr-guard` let it through.
+3. **Apply it** with `--body-file`: `gh pr create --draft --title "<title>" --body-file <scratch>/pr-body.md`, `gh pr edit <n> --body-file <scratch>/pr-body.md`, or Gitea's `tea pr create`/`tea pr edit <n>` with `--description "$(cat <scratch>/pr-body.md)" </dev/null`. Then read the pull request back (`gh pr view <n>`, or `tea pr <n> --comments </dev/null`) before you say it is open or its body is set. Done when the command ran, `pr-guard` let it through, and the read-back shows the body.
 
 ## Template
 

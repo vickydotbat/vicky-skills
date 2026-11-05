@@ -32,4 +32,17 @@ check "draft text holding a code fence is refused" 'out=$(write "{\"kind\": \"dr
 check "a section with no location is refused" 'out=$(write "{\"kind\": \"drafts\", \"effort\": \"e\", \"sections\": [{\"what\": \"w\", \"text\": \"t\"}]}"); [ $? = 1 ] && grep -q "no where" <<<"$out"'
 check "an unknown kind is refused" 'out=$(write "{\"kind\": \"poster\"}"); [ $? = 1 ] && grep -q "kind must be" <<<"$out"'
 check "a wrong call exits 2" 'python3 -I "$scripts/write-page.py" 2>/dev/null; [ $? = 2 ]'
+# A page file goes in the session's scratch folder, never loose in the shared temp folder.
+mkdir -p "$dir/tmp/s1"
+q='{"kind": "question", "questions": [{"q": "Which one?", "options": ["a", "b"], "pick": 1}]}'
+printf '%s' "$q" > "$dir/qspec.json"
+scratch() { env -u CLAUDE_CODE_SESSION_ID TMPDIR="$dir/tmp" "$@" python3 -I "$scripts/write-page.py" "$dir/qspec.json" "$f" 2>&1; }
+f="$dir/tmp/loose.md"; out=$(scratch CLAUDE_CODE_SESSION_ID=s1)
+check "a page loose in the shared temp folder is refused, naming the session folder" '[ $? = 1 ] && grep -q "tmp/s1" <<<"$out" && [ ! -e "$f" ]'
+f="$dir/tmp/s1/page.md"; scratch CLAUDE_CODE_SESSION_ID=s1 >/dev/null
+check "a page in the session folder is written" '[ -s "$f" ]'
+f="$dir/tmp/open.md"; scratch >/dev/null
+check "with no session id the shared temp folder is allowed" '[ -s "$f" ]'
+f="$dir/elsewhere.md"; scratch CLAUDE_CODE_SESSION_ID=s1 >/dev/null
+check "a page outside the temp folder is allowed" '[ -s "$f" ]'
 exit $fail
