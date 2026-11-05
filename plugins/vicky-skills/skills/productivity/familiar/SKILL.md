@@ -19,6 +19,14 @@ Typing `/familiar` makes this session the **familiar** for the rest of the sessi
 5. **Re-arm.** Each time a watch or the new-session check expires, arm it again in the same turn, the new-session check with every watched id again, and list the sessions again so none is left unwatched. Done when every live session has an armed watch.
 6. **Close a session's list.** When a watch prints `HANDOFF`, work only that session's note, and keep every other watch armed. Build each open line in the repo it belongs to, send it to that repo's session with `SendMessage`, or file it with a `Waits on:` line. Then report every code and its outcome. For each line marked `no line fits`, draft a new charter line that would cover it, and hand the drafts to the user on a `red-pen` page. Done when the note holds no open line, and each `no line fits` line has its draft on the page.
 
+## Measuring the familiar
+
+Three scripts in this skill's `scripts/` folder measure the familiar against saved sessions. Each one reads private transcripts, so keep their output off the repo:
+
+- `familiar-visibility.py <notes folder> <transcripts folder>` tags each timed snag line on the debt notes as visible to the watch, not visible, or no transcript.
+- `familiar-shapes.sh <transcripts folder> --law <shape>=<YYYY-MM-DD>` counts each frozen rule in `shapes/` per 100 user turns, per day, and before and after its law. A rule is frozen: a changed rule gets a new name.
+- `familiar-replay.sh <transcript> <labels file>` runs the familiar three times over one transcript, and scores catches, recall on the misses and precision on the false positives. Run it under a memory cap.
+
 ## Snag shapes
 
 Each of these is a snag, whatever the line's tone:
