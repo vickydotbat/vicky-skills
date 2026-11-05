@@ -2,7 +2,8 @@
 # UserPromptSubmit hook: a session keeps the plugin copy it started with, so
 # after the plugin updates it goes on running the old skills and scripts. When
 # the session's copy is not the one installed, tells the agent once a session,
-# with both commits, that a restart picks up the new one.
+# with both commits, that typing /reload-plugins picks up the new one, so no
+# restart is needed.
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
 [ -n "${CLAUDE_PLUGIN_ROOT:-}" ] && [ -n "${CLAUDE_PLUGIN_DATA:-}" ] || exit 0
 installed="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/plugins/installed_plugins.json"
@@ -17,5 +18,5 @@ newest=$(jq -r --arg p "$(dirname -- "$CLAUDE_PLUGIN_ROOT")" '[.plugins[]?[] | s
 told="$CLAUDE_PLUGIN_DATA/stale-copy-told"
 mkdir -p "$told" && [ ! -e "$told/$session" ] || exit 0
 touch "$told/$session"
-hint="This session runs an older vicky-skills copy (${mine:0:7}) than the one installed ($(basename -- "$newest" | cut -c1-7)), so its skills and scripts are out of date. Tell the user in one line that a restart picks up the new one."
+hint="This session runs an older vicky-skills copy (${mine:0:7}) than the one installed ($(basename -- "$newest" | cut -c1-7)), so its skills and scripts are out of date. Tell the user in one line that typing /reload-plugins picks up the new one, with no restart."
 jq -nc --arg h "$hint" '{hookSpecificOutput:{hookEventName:"UserPromptSubmit",additionalContext:$h}}'
