@@ -22,7 +22,9 @@ New developers pick work from the tracker and trust what a ticket says. So an ef
 
    A ticket blocked by a ticket its body never names as a hard dependency holds a link only a person can remove where the tracker can't (Plane): name it in the report and ask the user to remove the link.
 
-   A comment settles nothing. Done when every ticket on the list has a verdict in the tracker or the body.
+   A ticket that records a decision (an answered anomaly or away team, a decision record) also gets `plot-twist`'s sweep: search the repo's skills, docs and scripts for text that states the old rule, and fix it in the same effort. A skill or script left holding the old rule is what the next session reads as the rule.
+
+   A comment settles nothing. Done when every ticket on the list has a verdict in the tracker or the body, and every decision a ticket records has had its sweep.
 3. **Make the body true.** Read the pull request body against `git diff <base>...HEAD` sentence by sentence. Rewrite a superseded sentence in place with `human-voice`, never under an "update" heading, and keep `ship-it`'s sections. Done when every sentence matches the diff.
 4. **Log the surprises.** For each asteroid belt the effort found, an unknown unknown that became known, add a `Surfaced:` line to the Unknown unknowns box of its star chart's Knowns, as [STAR-CHART.md](../lay-course/STAR-CHART.md)'s chart body shows: the surprise, the star it was found building, and what it cost, such as a parked slice, a retry or an hour. Done when each asteroid belt has its line, or the effort has no chart.
 5. **Engrave the snags**, once, before you call the effort done. List each snag the effort hit: a red check, a crash, a retry, or a correction from the user. Run `engrave` on each one, and on each review finding the effort fixed, from a person or a review agent: the best fix makes the mistake impossible next time. Done when the report names each snag with the law built for it, or says why it needs none.
