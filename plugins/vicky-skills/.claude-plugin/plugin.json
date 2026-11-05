@@ -246,6 +246,12 @@
       "description": "The folder that holds the stock game resources, unpacked one folder per BIF. Leave blank when there is none.",
       "default": ""
     },
+    "guard_ticket_filing": {
+      "type": "boolean",
+      "title": "File tickets only through mission-brief",
+      "description": "Refuse a command that files a ticket (plane file, tea issues create, gh issue create) until the session has started mission-brief, which checks the source material, the tracker and the codebase first.",
+      "default": true
+    },
     "step_guard": {
       "type": "boolean",
       "title": "No skipped do steps",
