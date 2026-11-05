@@ -25,3 +25,5 @@ Main moved while the branch was away, and some of what landed was **standardizat
 
 - A standardization pull request lands its rule as a check (a ban, an analyzer, a lint) in the same change. Step 5 then becomes the build saying no, instead of a grep someone has to remember.
 - Rebase early and often. A small drift is a quick mend; a month of drift is a rewrite.
+
+Charter: C3, C4 ([CHARTER.md](../../CHARTER.md)).

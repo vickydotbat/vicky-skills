@@ -34,3 +34,5 @@ The user names something broken. Sort it, run the skills its kind calls for, and
 | **Unknown** | none of the above fits | `interrogation` until a kind fits |
 
 A leak goes first, whatever else is broken: anyone can copy it while it stands.
+
+Charter: C6 ([CHARTER.md](../../CHARTER.md)).

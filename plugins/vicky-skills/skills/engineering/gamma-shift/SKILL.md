@@ -61,3 +61,5 @@ Q1 <ticket>: <question> A) <option> B) <option>. Pick: <A or B>, <why>
 A run with nothing to build, nothing waiting and no question reports one line: `gamma shift: nothing waits on you`.
 
 The `<n> more waiting, say gamma shift for them` line shows only when more than three cleared tickets wait, with `<n>` the count the batch left out.
+
+Charter: C5, C6 ([CHARTER.md](../../CHARTER.md)).

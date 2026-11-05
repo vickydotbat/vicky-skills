@@ -43,3 +43,5 @@ The user brings a star chart, and maybe a ticket. Resolve one anomaly per sessio
 5. **Move the chart forward.** Turn a nebula that is now sharp into tickets. When a decision makes a star specifiable, file it through "Filing a star". An anomaly whose answer "ends with the build items filed" files them the same way, never straight from its own design. Close a ticket the answer puts past the mission, with its line under Neutral zone. Update or close any ticket the answer makes wrong. Redraw the chart. Done when every line of the chart body is true.
 
 Other sessions may work the same chart, so read the tracker again before each write.
+
+Charter: C1, C5 ([CHARTER.md](../../CHARTER.md)).

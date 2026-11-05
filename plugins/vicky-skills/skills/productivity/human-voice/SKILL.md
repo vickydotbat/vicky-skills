@@ -186,3 +186,5 @@ empty, find the specific thing the writer knows and say it.
 **The human part is the thinking, never the surface.** Write spelling,
 grammar and punctuation correctly, and invent nothing: no planted typo, no
 anecdote that did not happen, no uncertainty the user does not have.
+
+Charter: C1 ([CHARTER.md](../../CHARTER.md)).

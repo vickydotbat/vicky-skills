@@ -131,6 +131,10 @@ claude plugin marketplace add vickydotbat/vicky-skills --scope project
 
 Turn on auto-update under `/plugin`, then **Marketplaces**. The plugin has no version number, so every commit to `main` is an update.
 
+## The charter
+
+`skills/CHARTER.md` says what the whole workflow is for, in eight lines: you get what you meant, done is proven, facts come from their source, and so on. Every skill ends with a `Charter:` line naming the lines it serves, and a test fails when one doesn't. The `familiar` ties each snag it logs to the line the snag broke. A snag that breaks no line means the charter is missing one, so the familiar drafts it for you.
+
 ## Approved examples
 
 An example says what the game or app does, in its own words, with no code in it:
@@ -141,7 +145,9 @@ The agent drafts examples, but only the ones you approve become tests, and each 
 
 The hook only sees edits made through Claude Code's own edit tools. Back it in each repository with a merge gate: a code-owner rule that names you for files ending `ApprovedExamples`, or a CI check that refuses a change to one without your approval.
 
-The idea is acceptance test-driven development. Dave Farley's [The Industry Is Catching Up](https://www.youtube.com/watch?v=EkH_uoybj8k) is the best short case for it.
+The idea is example-guided development, Daniel Terhorst-North and Matt Wynne's name for what behaviour-driven development, acceptance test-driven development and specification by example share. TDD is one part of it. Dave Farley's [The Industry Is Catching Up](https://www.youtube.com/watch?v=EkH_uoybj8k) is the best short case for it.
+
+`examples`' check for entries no test would miss, its split for a star with more than six rules, and `do`'s predicted runs come from Marco Emrich's [EXACT Coding](https://github.com/marcoemrich/EXACT-Coding), shown in Emily Bache's [interview on Modern Software Engineering](https://www.youtube.com/watch?v=a6HYpocKwXU).
 
 ## Development
 

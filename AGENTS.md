@@ -28,6 +28,7 @@ Every file stays free of local paths, hostnames and any project's infrastructure
 4. Write the description with `robot-voice`: it begins with the trigger and holds "Use when", "Use whenever" or "Use before". A skill only a person starts sets `disable-model-invocation: true` and its README row says "When you type it". Done when `tests/skill-descriptions.test.sh` passes.
 5. Every numbered step under a `## Steps` heading ends in "Done when", and the file has a `# ` title. Done when `tests/skill-steps.test.sh` passes.
 6. A skill the agent can start asks the user to type a typed-only skill and never starts it itself. Done when `tests/skill-links.test.sh` passes.
+7. End the skill with a `Charter:` line naming the lines of `plugins/vicky-skills/skills/CHARTER.md` it serves. Done when `tests/charter_approved_examples.test.sh` passes.
 
 ## Where a rule lives
 

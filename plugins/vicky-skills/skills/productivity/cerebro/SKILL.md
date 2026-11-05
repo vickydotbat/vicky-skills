@@ -31,3 +31,5 @@ It runs one of two ways:
 
    Under a proposal that raised questions in step 5, indent one line per question with its answer. Done when every picked proposal is built and reported, and the reply asks only about the ones a wrong guess would make expensive to undo.
 7. **Remember the need**, only when the session has auto memory: a memory directory shows in your context. Save the need and the user's answer as one feedback memory, so the next session proposes it unasked. With auto memory off, keep nothing: no notes file and no stand-in for memory. Done when the memory is saved, or auto memory is off.
+
+Charter: C5 ([CHARTER.md](../../CHARTER.md)).

@@ -82,3 +82,5 @@ Every other line a turn needs belongs to a seat:
 
    Done when Frodo's line names one road, every settled and parked item is written down, and cerebro has proposed or found nothing.
 6. **Decide the next moves.** Only now may a page open, and only for the next moves: the road's first step, a parked idea's home, an unapproved example to approve. With three or more next moves, open them as an answer page with `interactive-page`, one question per move with its pick. Otherwise ask in chat. Take the road the user confirms, or the one they name instead. When the user is tired, ask them to type `/conn` for a handoff. Done when the user has taken the road or named another.
+
+Charter: C1, C5 ([CHARTER.md](../../CHARTER.md)).

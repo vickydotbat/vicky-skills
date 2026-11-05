@@ -14,3 +14,5 @@ The **summit** is tickets closed against tickets opened in one repo's tracker. T
 1. **Count with the tracker's "since" operations.** Run "List items created or changed since <time>" and "List items closed since <time>" from `docs/agents/issue-tracker.md`, for the time the hook or the user names. Opened is the new items only. Never count from snapshots. Done when you hold the opened and closed numbers.
 2. **Record or show.** For a 30-day count, run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/summit.sh record <opened> <closed> <since-opened> <since-closed>`, with the counts since the user's last session as the last two. When the hook says today's count is kept, run `summit.sh show <since-opened> <since-closed>` instead. Both print a `summit:` line, which the viewscreen band shows. Done when the script printed its line.
 3. **Report the line** in the reply, as the script printed it, without the `summit: ` prefix. On B or C, propose one way to close more, never a way to find less. Done when the reply holds the line.
+
+Charter: C6 ([CHARTER.md](../../CHARTER.md)).

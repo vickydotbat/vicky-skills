@@ -31,3 +31,5 @@ the unmerged work.
   stack knows it is not readable alone.
 
 Done when every branch is submitted or merged, bottom-up, and each PR body names its base.
+
+Charter: C4 ([CHARTER.md](../../CHARTER.md)).

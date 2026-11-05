@@ -45,3 +45,5 @@ Checking one test you're writing or reviewing? Match it against the shapes above
 4. **Act, one fixture per commit.** Each message names the fixture, the verdict and the shape. Run the touched cases as you go. Done when every verdict is applied and each commit builds.
 5. **Prove nothing real was lost.** Run the suites the scope reaches once. Run `sentinels` on the production files whose tests you deleted, with the base branch's tests and then the branch's. A mutant killed before and not after means a deleted case had a real red: restore it or replace it. Done when the runs are green and every new survivor is answered.
 6. **Report** in the pull request: cases deleted, merged and rewritten per shape, the survivor behind each delete, the time saved, and the mutation counts. Done when the body matches the diff.
+
+Charter: C2 ([CHARTER.md](../../CHARTER.md)).

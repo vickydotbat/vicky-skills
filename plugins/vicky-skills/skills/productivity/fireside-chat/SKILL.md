@@ -37,3 +37,5 @@ Two kinds of question, kept apart:
 3. **Keep their words.** Record each answer in the piece's notes as the user wrote it, quoted, before you paraphrase anything. A turn of phrase, a joke or a swear word is material: keep it for the draft. Done when every answer sits verbatim in the notes, under its question.
 4. **Follow the story.** An answer that opens a better story than the planned angle gets a follow-up in the next round, and an angle change goes to the user as a craft question with your pick. An "I don't remember" leaves the claim out of the piece. Done when every answer is placed, every branch it opened is asked or dropped, and no `[?]` is left.
 5. **Hand over to the writer.** Stop when the frontier is empty. Tell the calling skill, or the user, that the notes are ready, and name the angle, the story beats and the quotes to use. The draft itself is written through `human-voice`. Done when the notes hold the angle, the beats and the quotes, and the writing step has started or the user has named a later time.
+
+Charter: C1 ([CHARTER.md](../../CHARTER.md)).

@@ -27,3 +27,5 @@ A **snag** is one thing that went wrong: a red check, a crash, a retry, a wrong 
    ```
 
    Done when every snag of the turn has its line.
+
+Charter: C5, C6 ([CHARTER.md](../../CHARTER.md)).

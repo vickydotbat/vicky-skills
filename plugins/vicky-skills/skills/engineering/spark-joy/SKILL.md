@@ -19,3 +19,5 @@ A spark-joy run is the repo's health check: `do` aims for code that never needs 
 4. **Fold it in** with `do`'s smallest complete change, one caller at a time, the seam's tests green after each. A test marked `approved-spec` that has to change means the fold changes behaviour: undo it and stop with that reason. Done when the module is gone and every seam test passes.
 5. **Mutate** the decision logic that moved, with `sentinels`. Done when no survivor is unanswered.
 6. **Open a draft pull request** with `ship-it`. Its body names the module, why it failed the deletion test, where it went, the net line count, and each guard test it wrote. Stop at the draft: `make-it-so` is the user's call. Done when the draft is open.
+
+Charter: C4 ([CHARTER.md](../../CHARTER.md)).

@@ -14,3 +14,5 @@ Start a **background agent** for the reading, so the session keeps working. Its 
 3. **Lead with the answer**, then the evidence, one claim per line with its source. A claim no primary source settles is posted as `unverified`, with the sources tried.
 
 Done when the ticket holds the findings and every claim has a source.
+
+Charter: C3 ([CHARTER.md](../../CHARTER.md)).

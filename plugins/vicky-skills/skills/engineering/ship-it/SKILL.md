@@ -57,3 +57,5 @@ Closes <ticket>
 - **The smallest picture.** Pick one: a `diff` of a call tree, file tree or state flow for a change to something that exists, a plain tree for something new, pseudocode for logic, or a Mermaid diagram for data passing between parts. Keep only the calls, files and states the reviewer needs.
 - **Status, Summary, Proof and Risk always stay.** Leave out an optional section with nothing in it: no approved examples, no Examples section. Check these comes from `do` and is gone by the time the pull request is ready.
 - **Settle the tickets** with the `loose-ends` skill after every push, and keep this template while it rewrites the body. A body whose branch, commits and tickets name no ticket drops the `Closes` line.
+
+Charter: C3, C4 ([CHARTER.md](../../CHARTER.md)).

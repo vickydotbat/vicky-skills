@@ -115,3 +115,5 @@ quick notes:
 ```
 
 Each item is one line. A step that needs explaining is two items. Group the items into sections by feature area.
+
+Charter: C2, C5 ([CHARTER.md](../../CHARTER.md)).

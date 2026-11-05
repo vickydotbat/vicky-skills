@@ -34,3 +34,5 @@ The user edits drafts on a page in their browser, never in the chat. Only audien
 For each section whose text the user changed, show their edited text and ask once whether it joins their voice samples. Ask once for the whole file, listing the sections.
 On a yes, append each one word for word to `${CLAUDE_PLUGIN_DATA}/voice-samples.md`, under a line saying what it was: `## <section title>, <date>`. `human-voice` reads that file before it drafts.
 On a no, or a draft closed unchanged, keep nothing and ask nothing more.
+
+Charter: C1, C5 ([CHARTER.md](../../CHARTER.md)).
