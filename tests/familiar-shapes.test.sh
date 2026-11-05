@@ -19,10 +19,14 @@ refused() { printf '{"type":"user","timestamp":"%s","message":{"content":[{"type
   use 03 c Bash "rm x"; refused 03 c
   use 03 d Edit "rm x"
 } > "$dir/c/late.jsonl"
-printf '{"type":"user","timestamp":"%s","message":{"content":"earlier"}}\n' "$(at 02)" > "$dir/c/early.jsonl"
+{
+  printf '{"type":"user","timestamp":"%s","message":{"content":[{"type":"tool_result","tool_use_id":"z","content":"ok"}]}}\n' "$(at 02)"
+  printf '{"type":"user","timestamp":"%s","message":{"content":"earlier"}}\n' "$(at 02)"
+} > "$dir/c/early.jsonl"
 out=$(bash "$counter" "$dir/c" --law same-refusal=2026-11-01 --law same-refusal=2026-11-09)
 check "only real user turns count: no meta line, command line or tool result" 'grep -qx "2026-11-03 same-refusal 0/1 turns = 0.0 per 100" <<<"$out"'
 check "a repeat after a call that was not refused is no hit, nor is the same input to another tool" 'grep -q "^2026-11-03 same-refusal 0/" <<<"$out"'
+check "a tool result before a turn still lets the turn count" 'grep -qx "2026-11-02 same-refusal 0/1 turns = 0.0 per 100" <<<"$out"'
 check "days print in date order" '[ "$(grep -o "^2026-11-0[0-9]" <<<"$out" | head -2 | tr "\n" " ")" = "2026-11-02 2026-11-03 " ]'
 check "a law before every day has no rate before it" 'grep -qx "same-refusal law 2026-11-01: before no rate, after 0.0 per 100" <<<"$out"'
 check "a law after every day has no rate after it" 'grep -qx "same-refusal law 2026-11-09: before 0.0 per 100, after no rate" <<<"$out"'
