@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Replays one saved transcript through the familiar three times and scores it
-# against labels: "<set> <HH:MM>" lines, set being catch, miss or fp.
+# against labels: "<set> <HH:MM> [<kind>]" lines, set being catch, miss or fp, and
+# kind one familiar-visibility.py --kind names. A label with no kind matches any.
 # Usage: familiar-replay.sh <transcript> <labels file>
 # FAMILIAR_REPLAY_MODEL names a stand-in for the model, which reads the watch
 # output on stdin and prints snag lines ("- S<n> HH:MM: ..."). Unset, it runs
@@ -22,16 +23,16 @@ model() {
 seen=$(mktemp); trap 'rm -f "$seen"' EXIT
 for run in $(seq 1 "$runs"); do
   answer=$(model <<<"$watch") || { echo "familiar-replay: run $run failed with exit $?, so no score" >&2; exit 3; }
-  sed -nE "s/^- *[SM][0-9]+b? ([0-9]{2}:[0-9]{2}).*/$run \1/p" <<<"$answer"
+  python3 "$here/familiar-visibility.py" --kind <<<"$answer" | sed "s/^/$run /"
 done > "$seen"
 awk -v runs="$runs" '
   function min(t) { split(t, p, ":"); return p[1] * 60 + p[2] }
   # The one-minute window matches familiar-visibility.py; awk and Python share no code.
-  # shortcut: matches by minute only, since the labels carry no shape code yet.
-  FNR == NR { at[$1, min($2)] = 1; next }
+  FNR == NR { at[$1, min($2)] = 1; kinds[$1, min($2), $3] = 1; next }
+  function hit(r, t) { return (r, t) in at && (want == "" || (r, t, want) in kinds) }
   {
-    m = min($2); k = 0
-    for (r = 1; r <= runs; r++) if ((r, m - 1) in at || (r, m) in at || (r, m + 1) in at) k++
+    m = min($2); want = $3; k = 0
+    for (r = 1; r <= runs; r++) if (hit(r, m - 1) || hit(r, m) || hit(r, m + 1)) k++
     printf "%s %s %d/%d\n", $1, $2, k, runs
     total[$1]++; if (k > 0) flagged[$1]++
   }

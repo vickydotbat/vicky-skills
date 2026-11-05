@@ -4,9 +4,12 @@ could show of it: visible, not visible, or no transcript.
 
     familiar-visibility.py <notes folder> <transcripts folder>
 
+    familiar-visibility.py --kind < snag lines
+
 A note names its session by the 8-hex id in its file name. A line is visible
-when familiar-watch.sh prints an event within a minute of the line's time.
-Prints "<session> <code> <HH:MM> <tag>" per line, then one count per tag.
+when familiar-watch.sh prints an event of the line's kind within a minute of
+its time. Prints "<session> <code> <HH:MM> <tag>" per line, then one count per
+tag. With --kind it prints "<HH:MM> <kind>" for each snag line on stdin.
 """
 import os
 import re
@@ -16,7 +19,20 @@ from pathlib import Path
 
 LINE = re.compile(r"^\s*-\s*\*{0,2}([SM]\d+b?) (\d{2}):(\d{2})\b")
 SESSION = re.compile(r"\b([0-9a-f]{8})\b")
-EVENT = re.compile(r"^\[(\d{2}):(\d{2}):\d{2}\]")
+EVENT = re.compile(r"^\[(\d{2}):(\d{2}):\d{2}\] (?:\S+ )?(REFUSED|AGENT|USER|SKILL):")
+EVENT_KIND = {"REFUSED": "refused", "AGENT": "agent", "USER": "user", "SKILL": "skill"}
+# The watch event each kind of snag shows up as, tried in order; "none" never shows.
+KINDS = [
+    ("refused", re.compile(r"refus|\bguard\b|hook (refused|sent back)")),
+    ("skill", re.compile(r"\bskill\b|never ran|skipped")),
+    ("user", re.compile(r"\b(user|vicky) (said|asked|reported|had to|found)")),
+    ("agent", re.compile(r"\basked\b|\bpick\b|in chat|reported|claimed|\bsaid\b|\btold\b|\bwrote\b|message|going with")),
+]
+
+
+def kind(text):
+    text = text.lower()
+    return next((name for name, rule in KINDS if rule.search(text)), "none")
 WATCH = Path(__file__).with_name("familiar-watch.sh")
 TAGS = ("visible", "not visible", "no transcript")
 
@@ -28,7 +44,7 @@ def watch_minutes(transcript):
                              capture_output=True, text=True, timeout=120).stdout
     except subprocess.TimeoutExpired:
         sys.exit(f"familiar-visibility: the watch ran past 120 seconds on {transcript}")
-    return {int(m[1]) * 60 + int(m[2]) for m in map(EVENT.match, out.splitlines()) if m}
+    return {(int(m[1]) * 60 + int(m[2]), EVENT_KIND[m[3]]) for m in map(EVENT.match, out.splitlines()) if m}
 
 
 def main(notes, corpus):
@@ -47,7 +63,7 @@ def main(notes, corpus):
             at = int(m[2]) * 60 + int(m[3])
             if minutes is None:
                 tag = "no transcript"
-            elif minutes & {at - 1, at, at + 1}:  # the same window as familiar-replay.sh
+            elif {(t, kind(line)) for t in (at - 1, at, at + 1)} & minutes:  # the same window as familiar-replay.sh
                 tag = "visible"
             else:
                 tag = "not visible"
@@ -57,7 +73,16 @@ def main(notes, corpus):
         print(f"{tag}: {counts[tag]}")
 
 
+def kinds():
+    for line in sys.stdin:
+        m = LINE.match(line)
+        if m:
+            print(f"{m[2]}:{m[3]} {kind(line)}")
+
+
 if __name__ == "__main__":
+    if sys.argv[1:] == ["--kind"]:
+        sys.exit(kinds())
     if len(sys.argv) != 3:
         sys.exit("usage: familiar-visibility.py <notes folder> <transcripts folder>")
     main(sys.argv[1], sys.argv[2])
