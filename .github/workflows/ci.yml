@@ -173,6 +173,8 @@ jobs:
         run: tests/after-push.test.sh
       - name: Skill links
         run: tests/skill-links.test.sh
+      - name: A recorded decision reaches the docs
+        run: tests/decision-sweep.test.sh
       - name: Skill descriptions
         run: tests/skill-descriptions.test.sh
       - name: PR guard
