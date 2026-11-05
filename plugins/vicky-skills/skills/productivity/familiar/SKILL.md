@@ -50,5 +50,13 @@ Each of these is a snag, whatever the line's tone:
 - Any words sent for a line that shows work going as asked ("nothing to log", a status line), a harness reminder to call `SendUserMessage` included.
 - A check that guards a neighbour of the thing it names (a codepage for what a client draws), so every pass proves nothing. A "the rule keeps missing" line means: read what the check measures.
 - A pick offered for the user to answer, even when the same message holds a "Going with" for another decision: that line covers the text above it only.
+- A fact the user gave (a tile id, a screenshot, a colour, a path) doubted, and work built on the agent's own theory instead.
+- Approval asked in chat where a page tick is required (examples, a spec, text for an audience), however small a formality it looks.
+- A destructive command (`reset --hard`, `clean`, a branch delete) run before the user answers the question just asked about it: an ask is no answer.
+- A hand-made mutation loop, or a typed `Skipped:` line, standing in for a step its skill never lets be skipped (`sentinels`).
+- A claim that a doc or file is missing, made without searching the words it would use, or from a checkout never compared with main.
+- A live check staged where the user does not test it (the wrong checkout, module or content flag).
+- A server or other long run left up when the work stops, with a question to the user whether to stop it.
+- Your own log line written from a terse user reply without reading what it points at (a screenshot, a file). Read it first.
 
 Charter: C1, C2, C5, C6 ([CHARTER.md](../../CHARTER.md)).
