@@ -21,6 +21,8 @@ tick='s/- \[ \] approve/- [x] approve/'
 
 page; close_with ""
 check "a page closed with no tick records nothing" 0 "$(lines)"
+printf '# Drafts: x\n\n## Grant\ntests/a_approved_examples.test.sh:4\n- [ ] approve\n\n```text\nThe button reads Save\n```\n' > "$dir/d.md"; close_with "$tick"
+check "a tick on a page that holds no example records nothing" 0 "$(lines)"
 page; close_with 's/Given a thing/Given another thing/'
 check "an edit with no tick records nothing" 0 "$(lines)"
 page; close_with "$tick"

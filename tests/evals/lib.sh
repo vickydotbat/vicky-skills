@@ -8,6 +8,7 @@
 evals_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 evals_plugin="$evals_root/plugins/vicky-skills"
 evals_out=$(mktemp -d) # kept after the run, so each result can be read back
+echo "eval results: $evals_out" >&2
 eval_case() {
   local plugin=$1 name=$2 out=$3; shift 3
   systemd-run --user --scope -q -p MemoryMax=4G -p MemorySwapMax=0 timeout 900 \

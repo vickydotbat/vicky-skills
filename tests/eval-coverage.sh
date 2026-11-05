@@ -2,7 +2,8 @@
 # Checks a plugin's eval suite without running it: every skill plugin.json
 # lists has a case under evals/<skill>/, and every case has a grader, which
 # `claude plugin eval` refuses to load a case without. Starts no model, so CI
-# can run it.
+# can run it. CI runs it on fixture plugins only, until every skill has its
+# first case: then a CI step runs it on plugins/vicky-skills too.
 # Usage: eval-coverage.sh <plugin dir>
 # Prints one line per gap and exits 1, or exits 0 when nothing is missing.
 set -u

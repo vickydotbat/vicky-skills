@@ -6,12 +6,11 @@
 # Each run is a full Claude session on your own credential, so CI never runs
 # this file: run it by hand. It caps every run at --max-cost-usd.
 set -u
-root="$(cd "$(dirname "$0")/../.." && pwd)"
-plugin="$root/plugins/vicky-skills"
-dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
-fail=0
 # shellcheck source=lib.sh
 . "$(dirname "$0")/lib.sh"
+plugin=$evals_plugin
+dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
+fail=0
 run() { eval_case "$1" check-first "$2"; }
 
 # Given the mission-brief skill and a thin brief that names a feature in one sentence
