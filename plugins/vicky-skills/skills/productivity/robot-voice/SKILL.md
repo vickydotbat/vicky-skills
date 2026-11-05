@@ -23,7 +23,7 @@ An agent document is a program the model runs. Good ergonomics means the agent t
 4. **Write the steps**, each ending in **Done when** plus a condition the agent can see. Done when no step ends on a feeling ("understood", "thorough").
 5. **Push reference down.** Inline what every branch needs. Move what only some branches need into a sibling file behind a pointer. Done when the steps fit on one screen.
 6. **Lint it** against the checklist below. Done when every item passes.
-7. **Run it.** Start a fresh agent on two different branches and read its transcript. A wrong path is fixed by sharpening the wording first, and by inlining material only when sharpening fails. When the document is a skill in a plugin with an `evals/` suite, those runs are its eval cases: rerun the skill's cases once, by hand, with `--max-cost-usd` set, and give a new rule its own case, one that fails with the rule cut. Done when both runs take the path you meant, and every case of an edited skill passes.
+7. **Run it.** Start a fresh agent on two different branches and read its transcript. A wrong path is fixed by sharpening the wording first, and by inlining material only when sharpening fails. When the skill already has cases under the plugin's `evals/<skill>/`, rerun them once, by hand, with `--max-cost-usd` set. Done when both runs take the path you meant, and every existing case of an edited skill passes.
 
 ## Lint checklist
 

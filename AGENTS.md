@@ -29,7 +29,6 @@ Every file stays free of local paths, hostnames and any project's infrastructure
 5. Every numbered step under a `## Steps` heading ends in "Done when", and the file has a `# ` title. Done when `tests/skill-steps.test.sh` passes.
 6. A skill the agent can start asks the user to type a typed-only skill and never starts it itself. Done when `tests/skill-links.test.sh` passes.
 7. End the skill with a `Charter:` line naming the lines of `plugins/vicky-skills/skills/CHARTER.md` it serves. Done when `tests/charter_approved_examples.test.sh` passes.
-8. Give it an eval case in `plugins/vicky-skills/evals/<name>/<case>/`: a prompt a user would type, and a free grader (regex, tool_used, tool_order, file_exists) that fails with the skill's main section cut. Run it by hand with a runner in `tests/evals/`, since each run is a paid Claude session. Done when the case passes, fails with the section cut, and `tests/eval-coverage.sh plugins/vicky-skills` names no gap for the skill.
 
 ## Where a rule lives
 
