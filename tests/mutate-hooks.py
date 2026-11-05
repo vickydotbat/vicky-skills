@@ -65,7 +65,7 @@ TESTS = {
     "do-confirm-hint.sh": ["do_confirm_approved_examples", "do-confirm-hint"],
     "approved-spec.sh": ["approved-spec-guard", "approved-backup-copies", "approved-spec-tags", "approved_spec_prose_approved_examples", "guard_reads_approved_examples", "guard-locks", "open-draft", "guard_steers_approved_examples", "guard_outside_checkout_approved_examples"],
     "git-guard.sh": ["git-guard", "git_guard_approved_examples"],
-    "checkout-guard.sh": ["checkout-guard", "checkout_guard_approved_examples", "worktree_default_approved_examples", "checkout_guard_rebase_approved_examples"],
+    "checkout-guard.sh": ["checkout-guard", "checkout_guard_approved_examples", "worktree_default_approved_examples", "checkout_guard_rebase_approved_examples", "checkout_guard_left_approved_examples", "checkout_guard_left_edges"],
     "draft-lock.sh": ["draft-lock", "red_first_approved_examples", "draft_lock_reads_approved_examples", "draft_lock_python_approved_examples", "draft-lock-writers", "refusal-note"],
     "gamma-shift.sh": ["gamma-shift"],
     "do-first-guard.sh": ["do-first-guard", "do_first_guard_approved_examples"],

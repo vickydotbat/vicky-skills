@@ -12,7 +12,9 @@
 # session that came first keeps committing there, and a newcomer is sent to a
 # worktree of its own. Only a switch or a history write is recorded: a read
 # leaves no claim. A branch switch is refused while another session used
-# the checkout in the last 12 hours, and a session whose checkout moved to
+# the checkout in the last 12 hours, unless that session has since run git in
+# another checkout of the same repository (its own worktree, say): it has left
+# this one and claims nothing here. A session whose checkout moved to
 # another branch since its last git command is told once. A git command that
 # writes history there (commit, rebase, reset, merge, cherry-pick, stash,
 # pull) is refused like a switch, so the session works in its own worktree. On
@@ -124,6 +126,7 @@ if [ -n "$was" ] && [ "$was" != "$branch" ]; then
 fi
 
 if [ -n "$switch$writes" ]; then
+  common=$(git rev-parse --path-format=absolute --git-common-dir)
   for other in "$records"/*; do
     [ -f "$other" ] && [ "$other" != "$mine" ] || continue
     case "${other##*/}" in *.*) continue ;; esac # a session id holds no dot, so this is a side file
@@ -133,6 +136,14 @@ if [ -n "$switch$writes" ]; then
     when=${line##*	}; theirs=$(cut -f2 <<<"$line")
     case "$when" in ''|*[!0-9]*) continue ;; esac
     [ $((now - when)) -lt 43200 ] || continue
+    # A session that has run git since in another checkout of this repository
+    # (its own worktree, say) has left this one: its old line claims nothing.
+    left=""
+    while IFS=$'\t' read -r there _ later; do
+      [ "$there" != "$top" ] && [ "$later" -gt "$when" ] 2>/dev/null || continue
+      [ "$(git -C "$there" rev-parse --path-format=absolute --git-common-dir 2>/dev/null)" = "$common" ] && left=yes
+    done < "$other"
+    [ -z "$left" ] || continue
     # A trunk repo takes every commit on main, from any session.
     [ -z "$switch" ] && [ "$theirs" = main ] && [ "$branch" = main ] && is_trunk "$top" && continue
     if [ -z "$switch" ]; then
