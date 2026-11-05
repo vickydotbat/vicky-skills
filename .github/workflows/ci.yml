@@ -75,6 +75,20 @@ jobs:
         run: tests/rm-steer.test.sh
       - name: Skill steps
         run: tests/skill-steps.test.sh
+      - name: Familiar visibility probe examples
+        run: tests/familiar_visibility_approved_examples.test.sh
+      - name: Familiar visibility probe edges
+        run: tests/familiar-visibility.test.sh
+      - name: Familiar shape counter examples
+        run: tests/familiar_shapes_approved_examples.test.sh
+      - name: Familiar shape counter edges
+        run: tests/familiar-shapes.test.sh
+      - name: Familiar replay examples
+        run: tests/familiar_replay_approved_examples.test.sh
+      - name: Familiar replay edges
+        run: tests/familiar-replay.test.sh
+      - name: Familiar visibility by evidence examples
+        run: tests/familiar_evidence_approved_examples.test.sh
       - name: Every skill names the charter lines it serves
         run: tests/charter_approved_examples.test.sh
       - name: No skill holds a token the skill loader replaces
