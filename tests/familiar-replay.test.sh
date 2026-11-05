@@ -19,4 +19,7 @@ check "a missing transcript exits 2 and names it" '[ $code -eq 2 ] && grep -q "n
 printf '#!/usr/bin/env bash\ncat >/dev/null\nexit 7\n' > "$dir/broken"; chmod +x "$dir/broken"
 FAMILIAR_REPLAY_MODEL="$dir/broken" bash "$replay" "$dir/s.jsonl" "$dir/labels" >"$dir/out" 2>"$dir/err"; code=$?
 check "a failed model run stops the replay with no score, naming the run" '[ $code -eq 3 ] && grep -q "run 1 failed" "$dir/err" && ! grep -q "recall" "$dir/out"'
+printf 'catch 12:42 refusd\n' > "$dir/typo"
+FAMILIAR_REPLAY_MODEL="$dir/model" bash "$replay" "$dir/s.jsonl" "$dir/typo" >/dev/null 2>"$dir/err"; code=$?
+check "a label with an unknown kind exits 2 and names it" '[ $code -eq 2 ] && grep -q "refusd" "$dir/err"'
 exit $fail

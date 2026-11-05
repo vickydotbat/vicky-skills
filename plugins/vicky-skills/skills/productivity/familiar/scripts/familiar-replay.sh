@@ -10,6 +10,8 @@ set -u
 transcript=${1:?usage: familiar-replay.sh <transcript> <labels file>}
 labels=${2:?usage: familiar-replay.sh <transcript> <labels file>}
 [ -r "$transcript" ] && [ -r "$labels" ] || { echo "familiar-replay: cannot read $transcript or $labels" >&2; exit 2; }
+bad=$(awk 'NF > 2 && $3 !~ /^(refused|skill|user|agent|none)$/ { print $3 }' "$labels" | head -n 1)
+[ -z "$bad" ] || { echo "familiar-replay: unknown label kind $bad, use refused, skill, user, agent or none" >&2; exit 2; }
 here=$(cd "$(dirname "$0")" && pwd)
 runs=3
 watch=$(FAMILIAR_WATCH_ONCE=1 timeout 120 bash "$here/familiar-watch.sh" "$transcript")
