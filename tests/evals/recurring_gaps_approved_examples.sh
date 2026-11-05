@@ -8,8 +8,8 @@ set -u
 . "$(dirname "$0")/lib.sh"
 fail=0
 # Each gap: its eval case, under evals/<skill>/<case>, and the commit that fixed it.
-gaps="examples/read-the-doc-first 0e36dca
-do/take-the-cheap-pick 21de49f
+gaps="examples/read-the-doc-first f590f66
+do/take-the-cheap-pick d598e3c
 over-to-you/scratch-in-session-folder be4263e
 red-pen/give-the-page-link 18fca20
 do/settled-by-a-stated-deferral 81db017"
