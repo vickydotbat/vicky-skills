@@ -102,7 +102,7 @@ if [ -z "$target" ]; then
   done < <(tr ';&|()\n' '\n' <<<"$command" | awk '{
     flag = 0
     for (i = 1; i <= NF; i++) { # mutant-ok: from 0, field 0 is the whole segment, never a file name, so it adds no candidate
-      if ($i ~ /^(timeout|run0|sudo|env|nice|nohup|exec|time|command|xargs|stdbuf|systemd-run|nix|develop|shell)$|^[0-9.]+[smhd]?$|^[A-Za-z_][A-Za-z0-9_]*=|#/) { flag = 0; continue }
+      if ($i ~ /^(timeout|run0|sudo|env|nice|nohup|exec|time|command|xargs|stdbuf|systemd-run|nix|develop|shell)$|^[0-9.]+[smhd]?$|^[A-Za-z_][A-Za-z0-9_]*=|^#|[A-Za-z0-9_.\/-]#/) { flag = 0; continue }
       if ($i ~ /^-/) { flag = 1; continue }
       if ($i ~ /^(bash|sh|zsh|source|\.|python3?|node|ruby|perl)$/) { i++; while ($i ~ /^-/) i++; print $i; break }
       print $i

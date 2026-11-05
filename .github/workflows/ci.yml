@@ -41,6 +41,8 @@ jobs:
         run: tests/familiar.test.sh
       - name: Approved-spec guard
         run: tests/approved-spec-guard.test.sh
+      - name: Approved-spec guard reads a quoted pattern as a pattern
+        run: tests/approved-spec-guard-grep.test.sh
       - name: Approved-spec guard frees a new test
         run: tests/guard_fresh_test_approved_examples.test.sh
       - name: Approved-spec guard reads a run as a read
