@@ -17,9 +17,10 @@ sk() { jq -nc --arg s "$1" '{type:"assistant",message:{content:[{type:"tool_use"
 say() { jq -nc --arg t "$1" '{type:"assistant",message:{content:[{type:"text",text:$t}]}}'; }
 # The guard's decision on an edit to production code, "allow" when it lets it through.
 edit() {
-  local out
+  local out code
   out=$(jq -n --arg f "$repo/src/app.py" --arg t "$1" '{tool_name:"Edit",tool_input:{file_path:$f},transcript_path:$t}' |
-    CLAUDE_PLUGIN_OPTION_STEP_GUARD=true bash "$hook")
+    CLAUDE_PLUGIN_OPTION_STEP_GUARD=true bash "$hook"); code=$?
+  [ "$code" = 0 ] || { echo "exit $code"; return; }
   jq -r '.hookSpecificOutput.permissionDecision // "allow"' <<<"${out:-{\}}"
 }
 # The user opens the examples page in the repo and ticks each approve box before Done.

@@ -38,6 +38,14 @@ $editor "$1" & pid=$!
 trap '[ -n "$lock" ] && rm -f "$lock"' EXIT
 wait "$pid"; status=$?
 [ -n "$lock" ] && [ -f "$1" ] || exit "$status"
+# A box the user ticked approves the examples for this branch. The record sits
+# in the checkout's shared git folder, so do-first-guard reads it from a later
+# session or another worktree on the same branch.
+ticks() { grep -c '^- \[[xX]\] approve'; }
+if [ "$(ticks < "$1")" -gt "$(ticks <<<"$before")" ] && branch=$(git symbolic-ref --short -q HEAD) &&
+  common=$(git rev-parse --path-format=absolute --git-common-dir); then
+  grep -qxF -- "$branch" "$common/examples-approved" 2>/dev/null || printf '%s\n' "$branch" >> "$common/examples-approved"
+fi
 # Each section on one line: its location's path, a tab, then its text. The
 # location is the first line after the heading that isn't blank, since an
 # editor may save a blank line under each heading. An unticked approve box is

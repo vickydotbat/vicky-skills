@@ -301,6 +301,10 @@ jobs:
         run: tests/drawing-board.test.sh
       - name: do-first-guard holds code edits until do starts
         run: tests/do-first-guard.test.sh
+      - name: do-first-guard lets code through only once the user ticked the examples
+        run: tests/do_first_guard_approved_examples.test.sh
+      - name: the page records a tick per branch in the shared git folder
+        run: tests/examples-approved-record.test.sh
       - name: sentinels-first-guard holds mutation passes until sentinels starts
         run: tests/sentinels-first-guard.test.sh
       - name: A fixed review finding gets a prevention verdict

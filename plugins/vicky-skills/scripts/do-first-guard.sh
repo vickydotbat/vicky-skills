@@ -4,14 +4,15 @@
 # test) until the session has started `do`, and then until that do build has
 # approved examples. Every build runs through `do`, a warp's stars included.
 # `spark-joy` passes on its own, since tests at its seam hold its behaviour,
-# but a `do` started later needs examples like any other. Examples count from
-# an examples or red-pen start after the latest do, or a reply line
-# "Examples: approved on <ticket>" or "Examples: none, because <reason>", whose
-# ticket or reason is real text, never a <placeholder>. shortcut: the reply
-# line is the agent's own word, and a resumed or subagent build has no other
-# way to show examples another session approved; a record the examples page
-# writes when the user ticks it would replace it. A missing transcript lets
-# the edit through. Off unless the plugin option step_guard is true.
+# but a `do` started later needs examples like any other. Examples count when
+# the user ticked them on a page for this branch: open-draft.sh writes the
+# branch to examples-approved in the checkout's shared git folder, so a later
+# session or another worktree on the branch reads it too. A reply line counts
+# only when it asks for no approval: "Examples: none, because found work:
+# <what>" followed by its drafted Given, When and Then lines, or "Examples:
+# none, because <reason>" for a test the user never decides. A reason is real
+# text, never a <placeholder>. A missing transcript lets the edit through. Off
+# unless the plugin option step_guard is true.
 case "${CLAUDE_PLUGIN_OPTION_STEP_GUARD:-}" in true|1) ;; *) exit 0 ;; esac
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
 payload=$(cat)
@@ -24,6 +25,12 @@ dir=$(dirname -- "$file")
 while [ ! -d "$dir" ]; do dir=$(dirname -- "$dir"); done
 top=$(git -C "$dir" rev-parse --show-toplevel 2>/dev/null) || exit 0
 rel=${file#"$top"/}
+ticked() { # the branch's examples were ticked on a page, in this session or an earlier one
+  local branch common # mutant-ok delete: no later line reads branch or common, so a global copy changes nothing
+  branch=$(git -C "$dir" symbolic-ref --short -q HEAD) &&
+    common=$(git -C "$dir" rev-parse --path-format=absolute --git-common-dir) &&
+    grep -qxF -- "$branch" "$common/examples-approved" 2>/dev/null
+}
 # A test is no production code: a test folder (IntegrationTests/ included), or
 # a name that says test or spec. A reply line counts in chat text or a
 # SendUserMessage, since brief mode sends every reply through the tool.
@@ -33,14 +40,17 @@ transcript=$(jq -r '.transcript_path // empty' <<<"$payload")
 marks=$(jq -r '
   if .type=="assistant" then .message.content[]? |
     if .type=="tool_use" and .name=="Skill" then (.input.skill // "" | sub(".*:";"")) |
-      if .=="do" then "D" elif .=="spark-joy" then "S" elif .=="examples" or .=="red-pen" then "E" else empty end
-    elif ((if .type=="text" then .text elif .type=="tool_use" and .name=="SendUserMessage" then .input.message else null end) // "" | test("(^|\\n)Examples: (approved on|none, because) [^<\\s]")) then "E"
+      if .=="do" then "D" elif .=="spark-joy" then "S" else empty end
+    elif ((if .type=="text" then .text elif .type=="tool_use" and .name=="SendUserMessage" then .input.message else null end) // "" |
+      test("(^|\\n)Examples: none, because (?!found work)[^<\\s]") or
+      (test("(^|\\n)Examples: none, because found work: [^<\\s]") and test("\\nGiven [^\\n]+\\nWhen [^\\n]+\\nThen [^\\n]+"))) then "E"
     else empty end
   elif .type=="user" and ((.message.content | if type=="string" then . else "" end) | test("<command-name>/(vicky-skills:)?do</command-name>")) then "D"
   else empty end' "$transcript" 2>/dev/null | tr -d '\n')
 case "$marks" in
   *D*) [[ ${marks##*D} == *E* ]] && exit 0
-       reason="this do build has no approved examples yet. Run the examples skill, which hands its drafts to the user through red-pen, and write code once each one comes back ticked. When the ticket already holds approved examples, write the line \"Examples: approved on <ticket>\" in a reply. For found work (a review finding, a bug a test caught) or a test the user never decides, write \"Examples: none, because <reason>\". Then make this edit again." ;;
+       ticked && exit 0
+       reason="this do build has no approved examples yet. Run the examples skill, which hands its drafts to the user through red-pen: the edit goes through once the user ticks them on the page, from a checkout on this branch. A line saying they are approved counts for nothing. For found work (a review finding, a bug a test caught), write \"Examples: none, because found work: <what>\" with its drafted Given, When and Then lines under it. For a test the user never decides, write \"Examples: none, because <reason>\". Then make this edit again." ;;
   *S*) exit 0 ;;
   *) reason="this session has not started the do skill. Every build runs through do, a warp's stars included: start do on the change now, and it writes the approved tests red before this edit." ;;
 esac
