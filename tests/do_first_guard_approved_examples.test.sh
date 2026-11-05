@@ -4,6 +4,7 @@
 # once the user ticked its examples on a page, or a found-work line carries
 # its drafted example. The agent's own claim of approval counts for nothing.
 set -u
+export VISUAL=true EDITOR=true
 root="$(cd "$(dirname "$0")/.." && pwd)"
 hook="$root/plugins/vicky-skills/scripts/do-first-guard.sh"
 opener="$root/plugins/vicky-skills/skills/productivity/interactive-page/scripts/open-draft.sh"

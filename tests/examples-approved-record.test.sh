@@ -2,8 +2,9 @@
 # The page opener records a branch as approved only when the user ticked a box,
 # once per branch, in the checkout's shared git folder, and never on a detached HEAD.
 set -u
+export VISUAL=true EDITOR=true
 root="$(cd "$(dirname "$0")/.." && pwd)"
-opener="$root/plugins/vicky-skills/skills/productivity/interactive-page/scripts/open-""draft.sh"
+opener="$root/plugins/vicky-skills/skills/productivity/interactive-page/scripts/open-draft.sh"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 repo="$dir/repo"
 git init -q -b main "$repo"
