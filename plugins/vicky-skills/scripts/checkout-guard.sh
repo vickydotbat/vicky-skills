@@ -48,6 +48,7 @@ rebasing=$(cat "$gitdir/rebase-merge/head-name" "$gitdir/rebase-apply/head-name"
 branch=${rebasing#refs/heads/}
 [ -n "$branch" ] || branch=$(git symbolic-ref --short -q HEAD || git rev-parse --short HEAD)
 now=$(date +%s)
+common=$(git rev-parse --path-format=absolute --git-common-dir)
 procstat() { # pid field -> that field of /proc/<pid>/stat, counted after the name
   sed 's/.*) //' "/proc/$1/stat" 2>/dev/null | awk -v n="$2" '{print $n}'
 }
@@ -133,6 +134,14 @@ if [ -n "$switch$writes" ]; then
     when=${line##*	}; theirs=$(cut -f2 <<<"$line")
     case "$when" in ''|*[!0-9]*) continue ;; esac
     [ $((now - when)) -lt 43200 ] || continue
+    # A session that has run git since in another checkout of this repository
+    # (its own worktree, say) has left this one: its old line claims nothing.
+    left=""
+    while IFS=$'\t' read -r there _ later; do
+      [ "$there" != "$top" ] && [ "$later" -gt "$when" ] 2>/dev/null || continue
+      [ "$(git -C "$there" rev-parse --path-format=absolute --git-common-dir 2>/dev/null)" = "$common" ] && left=yes
+    done < "$other"
+    [ -z "$left" ] || continue
     # A trunk repo takes every commit on main, from any session.
     [ -z "$switch" ] && [ "$theirs" = main ] && [ "$branch" = main ] && is_trunk "$top" && continue
     if [ -z "$switch" ]; then
