@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # PreToolUse hook (Bash): refuses a mutation-tool command (Stryker, a
-# mutate.sh, mutmut, cargo-mutants, PIT, tests/mutate-hooks.sh) until the
+# mutate.sh, mutmut, cargo-mutants, PIT, tests/mutate-hooks.sh, or an
+# agent-written mutate script) until the
 # session has started the sentinels skill, which scopes the pass to the changed
 # lines and the tests that reach them. Quoted text is no command, so a commit
 # message or a grep that names a tool passes, but a shell's -c script counts. No exceptions: a missing
@@ -14,7 +15,7 @@ cmd=$(jq -r '.tool_input.command // empty' <<<"$payload" 2>/dev/null)
 # Quoted text is no command, except the script a shell's -c runs.
 inner=$(grep -oE -- "-c[[:space:]]+('[^']*'|\"[^\"]*\")" <<<"$cmd" | sed -E "s/^-c[[:space:]]+.//; s/.$//")
 bare=$(sed -E "s/'[^']*'//g; s/\"[^\"]*\"//g" <<<"$cmd"; printf '%s\n' "$inner")
-grep -qE '(^|[[:space:];&|(/])(dotnet-stryker|stryker|mutate\.sh|mutate-hooks\.(sh|py)|mutmut|cargo-mutants|pitest[[:alnum:]:.-]*)([[:space:];&|)]|$)|(^|[[:space:];&|(])cargo[[:space:]]+mutants([[:space:];&|)]|$)|:pitest-maven' <<<"$bare" || exit 0
+grep -qE '(^|[[:space:];&|(/])(dotnet-stryker|stryker|mutate\.sh|mutate-hooks\.(sh|py)|mutmut|cargo-mutants|pitest[[:alnum:]:.-]*)([[:space:];&|)]|$)|(^|[[:space:];&|(])cargo[[:space:]]+mutants([[:space:];&|)]|$)|:pitest-maven|(^|[[:space:];&|(])((python3?|bash|sh|zsh|node|deno|bun|ruby|perl)([[:space:]]+-[^[:space:];&|]+)*([[:space:]]+run)?[[:space:]]+|\.?/)[^[:space:];&|]*mutan?t[[:alnum:]_.-]*\.(py|sh|js|ts|rb|pl)([[:space:];&|)]|$)' <<<"$bare" || exit 0
 transcript=$(jq -r '.transcript_path // empty' <<<"$payload")
 if [ -f "$transcript" ] && jq -r '
   if .type=="assistant" then .message.content[]? | select(.type=="tool_use" and .name=="Skill") | (.input.skill // "" | sub(".*:";""))

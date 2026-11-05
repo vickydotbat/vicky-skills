@@ -2,7 +2,8 @@
 # PreToolUse hook (Bash): refuses marking a pull request ready in a session
 # that started `warp` but never `do`, or `do` but never `sentinels` or
 # `review`, unless the body says "Skipped: <step>, because <reason>" for each
-# missing step. It also refuses a do build's pull request whose body has no
+# missing step. A written reason never skips sentinels, whose manual pass
+# covers any file type. It also refuses a do build's pull request whose body has no
 # "Plan check: <what it found>" line. On GitHub that is `gh pr ready`. On
 # Gitea it is `tea pr edit <n> -t <title>` with a title that has no "WIP:".
 # Reads the session transcript for Skill calls. A failed body lookup lets the
@@ -32,9 +33,17 @@ else
   json=$(timeout 10 tea pr "$pr" --output json </dev/null 2>/dev/null) || exit 0
   body=$(jq -r '.body // empty' <<<"$json" 2>/dev/null) || exit 0
 fi
-unmet=()
-for step in "${missing[@]}"; do grep -q "Skipped: $step, because " <<<"$body" || unmet+=("$step"); done
-[ ${#unmet[@]} -gt 0 ] && msg="this build never ran its ${unmet[*]} step. Run the ${unmet[*]} skill, or add 'Skipped: <step>, because <reason>' with its proof to the pull request body. A warp builds each star with do, and do runs sentinels on what it changed."
+unmet=(); skippable=(); never="" # mutant-ok delete: an unset array or variable reads the same as an empty one
+for step in "${missing[@]}"; do
+  if [ "$step" = sentinels ]; then unmet+=("$step"); never=yes; continue; fi
+  grep -q "Skipped: $step, because " <<<"$body" || { unmet+=("$step"); skippable+=("$step"); }
+done
+if [ ${#unmet[@]} -gt 0 ]; then
+  msg="this build never ran its ${unmet[*]} step. Run the ${unmet[*]} skill."
+  [ ${#skippable[@]} -gt 0 ] && msg+=" For ${skippable[*]}, add 'Skipped: <step>, because <reason>' with its proof to the pull request body instead."
+  [ -n "$never" ] && msg+=" Sentinels is never skipped: its manual pass covers any file type, and a 'Skipped: sentinels' line does not count."
+  msg+=" A warp builds each star with do, and do runs sentinels on what it changed."
+fi
 grep -qx do <<<"$skills" && ! grep -qE '(^|[[:space:]])Plan check: [^<[:space:]]' <<<"$body" &&
   msg="${msg:+$msg }This do build's pull request body has no Plan check line: add one line 'Plan check: <what the check found>', or 'Plan check: none found'."
 [ -n "$msg" ] || exit 0

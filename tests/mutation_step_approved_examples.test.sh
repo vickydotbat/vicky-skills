@@ -31,10 +31,10 @@ check "do without sentinels is refused" '[ $code = 2 ] && grep -q "sentinels" "$
 # Given a do build that never started sentinels
 # And a pull request body that says Skipped: sentinels, because the diff holds no decision logic
 # When the agent marks its pull request ready
-# Then the pull request goes ready
+# Then it is refused, and the refusal tells it to run sentinels, whose manual pass covers any file type
 printf 'Skipped: sentinels, because the diff holds no decision logic\nPlan check: none found\n' > "$dir/body"
 run "$dir/nosentinels.jsonl"; code=$?
-check "a written skip lets it through" '[ $code = 0 ]'
+check "a written sentinels skip is refused" '[ $code = 2 ] && grep -q "manual pass" "$dir/err"'
 : > "$dir/body"
 
 # Given a warp session that started do, sentinels and review
