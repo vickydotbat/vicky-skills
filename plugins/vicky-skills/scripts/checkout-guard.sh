@@ -12,7 +12,9 @@
 # session that came first keeps committing there, and a newcomer is sent to a
 # worktree of its own. Only a switch or a history write is recorded: a read
 # leaves no claim. A branch switch is refused while another session used
-# the checkout in the last 12 hours, and a session whose checkout moved to
+# the checkout in the last 12 hours, unless that session has since run git in
+# another checkout of the same repository (its own worktree, say): it has left
+# this one and claims nothing here. A session whose checkout moved to
 # another branch since its last git command is told once. A git command that
 # writes history there (commit, rebase, reset, merge, cherry-pick, stash,
 # pull) is refused like a switch, so the session works in its own worktree. On
@@ -48,7 +50,6 @@ rebasing=$(cat "$gitdir/rebase-merge/head-name" "$gitdir/rebase-apply/head-name"
 branch=${rebasing#refs/heads/}
 [ -n "$branch" ] || branch=$(git symbolic-ref --short -q HEAD || git rev-parse --short HEAD)
 now=$(date +%s)
-common=$(git rev-parse --path-format=absolute --git-common-dir)
 procstat() { # pid field -> that field of /proc/<pid>/stat, counted after the name
   sed 's/.*) //' "/proc/$1/stat" 2>/dev/null | awk -v n="$2" '{print $n}'
 }
@@ -125,6 +126,7 @@ if [ -n "$was" ] && [ "$was" != "$branch" ]; then
 fi
 
 if [ -n "$switch$writes" ]; then
+  common=$(git rev-parse --path-format=absolute --git-common-dir)
   for other in "$records"/*; do
     [ -f "$other" ] && [ "$other" != "$mine" ] || continue
     case "${other##*/}" in *.*) continue ;; esac # a session id holds no dot, so this is a side file

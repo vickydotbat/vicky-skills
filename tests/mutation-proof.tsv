@@ -5,7 +5,7 @@ approved-spec-guard.sh	5445203f4ce68c38	d5b7a60771441ff3	103/103
 approved-spec.sh	fe7edc3bc739cbeb	ddedce4429739032	8/8
 assign-expand.sh	a2d6f7ea568cb59e	8ad22f76fc60a87e	5/5
 auto-tidy.sh	8d1a5176faea2f7b	b7dd295770ad8ffa	57/57
-checkout-guard.sh	78b4ed6707ddefc4	ab539ec22e42e86c	114/114
+checkout-guard.sh	5aa54dfc7e188ea5	a5cb1fe3b842f59d	114/114
 do-confirm-hint.sh	d46ef43038108065	38b1dffcf11e6df9	19/19
 do-first-guard.sh	bca2eb1effd0a343	19014190162c648c	47/47
 draft-lock.sh	73f6a8cfd276f587	5659ad294559c172	75/75
