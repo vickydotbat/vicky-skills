@@ -26,7 +26,7 @@ run true "$dir/reviewed.jsonl" "gh pr ready 37"; code=$?
 check "E14 given a do build whose sentinels and review ran, and whose pull request body has no Plan check line, marking it ready is refused and names the Plan check line" \
   '[ $code = 2 ] && grep -q "Plan check" "$dir/err"'
 
-echo 'Plan check: one clash, the plan broke the trunk rule, so it changed' > "$dir/body"
+printf 'Plan check: one clash, the plan broke the trunk rule, so it changed\nExamples: approved on T-1\n' > "$dir/body"
 run true "$dir/reviewed.jsonl" "gh pr ready 37"; code=$?
 check "E15 given a do build whose sentinels and review ran, and whose pull request body says Plan check: followed by what it found, the pull request goes ready" '[ $code = 0 ]'
 
@@ -34,11 +34,11 @@ echo 'Plan check: <what it found>' > "$dir/body"
 run true "$dir/reviewed.jsonl" "gh pr ready 37"; code=$?
 check "a template Plan check line is no Plan check line" '[ $code = 2 ]'
 
-echo 'Plan check: none found' > "$dir/body"
+printf 'Plan check: none found\nExamples: approved on T-1\n' > "$dir/body"
 run true "$dir/reviewed.jsonl" "gh pr ready 37"; code=$?
 check "given a do build whose sentinels and review ran, and whose pull request body has a Plan check line, the pull request goes ready" '[ $code = 0 ]'
 
-printf 'Skipped: review, because the diff is one typo\nPlan check: none found\n' > "$dir/body"
+printf 'Skipped: review, because the diff is one typo\nPlan check: none found\nExamples: approved on T-1\n' > "$dir/body"
 run true "$dir/noreview.jsonl" "gh pr ready 37"; code=$?
 check "given a do build whose sentinels ran and whose pull request body says Skipped: review, because <reason>, and has a Plan check line, the pull request goes ready" '[ $code = 0 ]'
 : > "$dir/body"

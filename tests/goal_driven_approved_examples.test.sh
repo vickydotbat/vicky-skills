@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# approved-spec: the examples D1 to D8 approved for the goal-driven do, the
-# mutation proof guard and the hint where a rule applies. Each check is named
+# approved-spec: the examples D1 to D8 approved for the goal-driven do, and the hint where a rule applies. Each check is named
 # after its example. Agent behaviours read the skill text; hooks run.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
@@ -12,19 +11,6 @@ step() { awk -v n="$2" '$0 ~ "^"n"\\. " {p=1; print; next} p && /^[0-9]+\. |^## 
 
 check "given a do build with three approved examples, when the second example's test goes green, its mutation counts are in the report before work on the third starts" \
   'step "$do" 3 | grep -q "Mutate each example as its test goes green" && step "$do" 3 | grep -q "before you start the next example"'
-
-# A repo whose testing doc names a proof check, with stubs that pass or fail.
-guard="$p/scripts/mutation-proof-guard.sh"
-repo="$dir/repo"; git init -q "$repo"; mkdir -p "$repo/docs/agents"
-printf 'Mutation proof check: bash check.sh\nMutation proof refresh: python3 tests/mutate-hooks.py --record\n' > "$repo/docs/agents/testing.md"
-commit() { jq -n --arg d "$repo" '{tool_name: "Bash", tool_input: {command: "git commit -m x"}, cwd: $d}' |
-  CLAUDE_PLUGIN_OPTION_GUARD_MUTATION_PROOF=true bash "$guard" 2>"$dir/err" >/dev/null; }
-printf 'echo "stale: pr-guard.sh"; exit 1\n' > "$repo/check.sh"; commit; stale=$?
-check "given a repo whose testing doc names a mutation proof check, committing a hook change with the proof out of date is refused and names the refresh command" \
-  '[ $stale = 2 ] && grep -qF "python3 tests/mutate-hooks.py --record" "$dir/err"'
-printf 'exit 0\n' > "$repo/check.sh"; commit; current=$?
-rm "$repo/docs/agents/testing.md"; commit; none=$?
-check "given a mutation proof that is current, or a repo that names no proof check, the commit runs" '[ $current = 0 ] && [ $none = 0 ]'
 
 copy="$dir/copy"; mkdir "$copy"; cp -r "$root/plugins" "$root/tests" "$copy/"
 printf '#!/usr/bin/env bash\nexit 0\n' > "$copy/plugins/vicky-skills/scripts/brand-new.sh"

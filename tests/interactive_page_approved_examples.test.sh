@@ -8,7 +8,6 @@ set -u
 export VISUAL=true EDITOR=true BROWSER=true
 root="$(cd "$(dirname "$0")/.." && pwd)"
 open_page="$root/plugins/vicky-skills/skills/productivity/interactive-page/scripts/open-page.sh"
-draft_lock="$root/plugins/vicky-skills/scripts/draft-lock.sh"
 scratch=$(mktemp -d)
 # page.py hands the browser the desktop session's environment, read through
 # systemctl. This desktop names the fake browser, so a mutant that drops
@@ -116,19 +115,6 @@ start "$scratch/d3.md"
 done_with "${untouched[@]}" approve.1=on
 check "ticking one approved test's box opens that test file for edits, and no other" \
   'gone && grep -qx "tests/charm_approved_examples.test.sh" "$gitdir/approved-spec-grants" && ! grep -q "src/greet.txt" "$gitdir/approved-spec-grants"'
-
-lock_says() {
-  jq -nc --arg f "$repo/src/greet.txt" --arg d "$repo" '{tool_name: "Edit", cwd: $d, tool_input: {file_path: $f}}' |
-    CLAUDE_PLUGIN_OPTION_GUARD_DRAFT_LOCK=true bash "$draft_lock" >/dev/null 2>&1
-  echo $?
-}
-cp "$scratch/drafts.template" "$scratch/d4.md"
-start "$scratch/d4.md"
-while_open=$(lock_says)
-done_with "${untouched[@]}"
-after=$(lock_says)
-check "while the drafts page is open, an edit to the repo's code is refused until I press Done" \
-  '[ "$while_open" = 2 ] && [ "$after" = 0 ]'
 
 cp "$scratch/checklist.template" "$scratch/c1.md"
 start "$scratch/c1.md"

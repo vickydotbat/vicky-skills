@@ -33,7 +33,7 @@ blocked_by: ["[[<blocker note title>]]"]
 
 Ideas: a note in the `00_Inbox/` folder of the user's vault, named `YYYY-MM-DD-HHMMSS <Title>.md`
 
-A new behaviour that no approved example names is an idea, never a ticket or a build. The `no-v1` steer sends it to the place on the `Ideas:` line. A repo without the line keeps its ideas in an Ideas section of the pull request body.
+A new behaviour that no approved example names is an idea, never a ticket or a build. It goes to the place on the `Ideas:` line. A repo without the line keeps its ideas in an Ideas section of the pull request body.
 
 ## Waiting work
 

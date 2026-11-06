@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Opens a draft in the user's editor and waits for the close. While it is
 # open, a lock in the current checkout's git folder holds the editor's
-# process id, and the draft-lock hook refuses edits to the checkout. A section
+# process id, which the red-pen watch waits on. A section
 # whose text the user changed grants the file on its location line to the
 # approved-spec guard, which reads it for approved tests only.
 # open-page.sh runs this script with its page as the editor. The editor's exit
@@ -33,20 +33,11 @@ if gitdir=$(git rev-parse --absolute-git-dir 2>/dev/null); then lock="$gitdir/re
 before=$(cat "$1" 2>/dev/null)
 # shellcheck disable=SC2086 # the editor variable holds a command and its flags
 $editor "$1" & pid=$!
-# The third line tells draft-lock where the draft is open: open-page.sh sets DRAFT_PAGE.
+# The third line says where the draft is open: open-page.sh sets DRAFT_PAGE.
 [ -n "$lock" ] && printf '%s\n%s\n%s\n' "$pid" "$1" "${DRAFT_PAGE:+page}" > "$lock"
 trap '[ -n "$lock" ] && rm -f "$lock"' EXIT
 wait "$pid"; status=$?
 [ -n "$lock" ] && [ -f "$1" ] || exit "$status"
-# A box the user ticked on a page of examples (a Given line) approves the
-# examples for this branch. The record sits in the checkout's shared git
-# folder, so do-first-guard reads it from a later session or another worktree
-# on the same branch.
-ticks() { grep -c '^- \[[xX]\] approve'; }
-if grep -q '^Given ' "$1" && [ "$(ticks < "$1")" -gt "$(ticks <<<"$before")" ] && branch=$(git symbolic-ref --short -q HEAD) &&
-  common=$(git rev-parse --path-format=absolute --git-common-dir); then
-  grep -qxF -- "$branch" "$common/examples-approved" 2>/dev/null || printf '%s\n' "$branch" >> "$common/examples-approved"
-fi
 # Each section on one line: its location's path, a tab, then its text. The
 # location is the first line after the heading that isn't blank, since an
 # editor may save a blank line under each heading. An unticked approve box is

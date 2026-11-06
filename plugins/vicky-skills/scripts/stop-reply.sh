@@ -1,6 +1,6 @@
 # shellcheck shell=bash
-# Sourced by the Stop hooks that read the agent's last reply (take-pick,
-# no-v1, chat-approval-guard, hand-check-guard). Reads the hook's payload from stdin. Exits 0, letting the stop
+# Sourced by the Stop hooks that read the agent's last reply (chat-approval-guard,
+# hand-check-guard). Reads the hook's payload from stdin. Exits 0, letting the stop
 # through, on the second stop of a turn, so a misjudged reply never loops, and
 # when the transcript is missing. Leaves `said`, the agent's text since the
 # user's last typed message: its chat text and the messages it sent with
@@ -16,7 +16,5 @@ said=$(tail -n 400 "$transcript" | jq -rs '
   | .[(($u // -1) + 1):][] | select(.type == "assistant") | .message.content[]?
   | if .type == "text" then .text elif .type == "tool_use" and .name == "SendUserMessage" then .input.message else empty end' 2>/dev/null)
 prose() { sed 's/`[^`]*`//g' <<<"$said"; }
-# The user's last typed message, for a hook that weighs the reply against it.
+# The since-user helpers (skill_since_user), for a hook that weighs the reply against the user's last message.
 . "$(dirname "${BASH_SOURCE[0]}")/since-user.sh"
-# shellcheck disable=SC2034 # read by the hook that sources this
-asked=$(last_user_message "$transcript")

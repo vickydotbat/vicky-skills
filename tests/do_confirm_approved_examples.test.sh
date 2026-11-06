@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # approved-spec: the do confirmation examples, approved 2026-11-02. The hint
-# hook runs on a typed prompt the way Claude Code sends one, and take-pick
-# runs on a fixture transcript.
+# hook runs on a typed prompt the way Claude Code sends one.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills"
 hint="$root/scripts/do-confirm-hint.sh"
@@ -39,5 +38,5 @@ check "a ticket or a chart skips the confirmation" '[ -f "$hint" ] && [ $ok = 1 
 # Then it takes its pick and says "Going with", as usual
 { jq -nc '{type:"user",message:{content:"yes, zip them"}}'
   jq -nc '{type:"assistant",message:{content:[{type:"text",text:"Gzip or deflate? My pick is gzip."}]}}'; } > "$fx/t.jsonl"
-check "only the first question waits for you" 'typed do "zip every download" | said | grep -q "Going with" && jq -nc --arg t "$fx/t.jsonl" "{stop_hook_active:false,transcript_path:\$t}" | CLAUDE_PLUGIN_OPTION_GUARD_TAKE_PICK=true bash "$root/scripts/take-pick.sh" | grep -q block'
+check "only the first question waits for you" 'typed do "zip every download" | said | grep -q "Going with"'
 exit $fail

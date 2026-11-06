@@ -28,7 +28,7 @@ started vicky-skills:do > "$dir/do-only.jsonl"
 # Given a build session that never started sentinels, and a pull request body that says "Skipped: sentinels, because the change is shell scripts"
 # When the session marks the pull request ready
 # Then it is refused and told to run sentinels, whose manual pass covers any file type
-printf 'Skipped: sentinels, because the change is shell scripts\nSkipped: review, because one typo\nPlan check: none found\n' > "$dir/body"
+printf 'Skipped: sentinels, because the change is shell scripts\nSkipped: review, because one typo\nPlan check: none found\nExamples: approved on T-1\n' > "$dir/body"
 ready "$dir/do-only.jsonl"
 check "E1 with a build session that never started sentinels and a pull request body that says Skipped: sentinels, marking it ready is refused and told to run sentinels, whose manual pass covers any file type" \
   '[ $code = 2 ] && grep -q "sentinels" <<<"$err" && grep -q "manual pass" <<<"$err"'
@@ -36,14 +36,14 @@ check "E1 with a build session that never started sentinels and a pull request b
 # Given a build session that started sentinels and review, and a pull request body with no skip line
 # When the session marks the pull request ready
 # Then it runs
-printf 'Plan check: none found\n' > "$dir/body"
+printf 'Plan check: none found\nExamples: approved on T-1\n' > "$dir/body"
 ready "$dir/full.jsonl"
 check "E2 with a build session that started sentinels and review, and a pull request body with no skip line, marking it ready runs" '[ $code = 0 ]'
 
 # Given a build session that ran sentinels but never ran review, and a body that says "Skipped: review, because <reason>"
 # When the session marks the pull request ready
 # Then it runs
-printf 'Skipped: review, because one typo\nPlan check: none found\n' > "$dir/body"
+printf 'Skipped: review, because one typo\nPlan check: none found\nExamples: approved on T-1\n' > "$dir/body"
 ready "$dir/no-review.jsonl"
 check "E3 with a build session that ran sentinels but never ran review, and a body that says Skipped: review, marking it ready runs" '[ $code = 0 ]'
 

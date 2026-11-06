@@ -4,7 +4,8 @@
 # pull request just opened in a session that typed or Skill-called `warp` gets a steer to
 # finish it with make-it-so; any other draft gets a hint to finish only when
 # the ask needs a finished pull request, since a `do` the user started by hand
-# may get more steps from them. Only adds context; it never blocks. Needs jq;
+# may get more steps from them. A push from a branch with no open pull
+# request gets nothing. Only adds context; it never blocks. Needs jq;
 # without it, it stays silent.
 set -u
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
@@ -21,4 +22,12 @@ if [[ "$command" =~ (^|[[:space:];\&|])(gh[[:space:]]+pr[[:space:]]+create[[:spa
   exit 0
 fi
 [[ "$command" =~ (^|[[:space:];\&|])git[[:space:]]+push([[:space:]]|$) ]] || exit 0
+# A push with no open pull request has no body to make true.
+cwd=$(jq -r '.cwd // empty' <<<"$input" 2>/dev/null)
+[ -n "$cwd" ] && cd "$cwd" 2>/dev/null
+case "$(git remote get-url origin 2>/dev/null)" in
+  *github.com*) timeout 10 gh pr view --json number >/dev/null 2>&1 || exit 0 ;;
+  ?*) branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+      timeout 10 tea pr list --output simple </dev/null 2>/dev/null | grep -qF -- "$branch" || exit 0 ;;
+esac
 say "You pushed. Before you report done: reread the open pull request body (gh pr view <n> --comments, or tea pr <n> --comments) against the diff from the base branch, and rewrite any sentence the push made untrue with the ship-it skill, keeping its sections. Then give every work item the branch, commits or body names its verdict: a Closes line, a narrowed body, or the reference removed."

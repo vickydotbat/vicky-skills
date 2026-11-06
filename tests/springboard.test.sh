@@ -90,7 +90,7 @@ check "standing-orders keeps no lines when the setting is off" 'grep -q "standin
 gs="$root/plugins/vicky-skills/skills/engineering/gamma-shift/SKILL.md"
 check "standing-orders caps a line at one sentence of 80 characters, pointing at its star" 'grep -q "one sentence of at most 80 characters, and it points at the star, chart or ticket" "$so" && grep -q "A line the user wrote may run longer" "$so"'
 check "standing-orders jots unasked on todo, for later, or a park" 'grep -q "\"todo\", \"add to todo\" or \"for later\", or you would report something as parked" "$so" && grep -q "Ask first only when it is truly unclear" "$so" && grep -q "Never write \"parked:\"" "$so"'
-check "a line grows into a star and goes when its work closes" 'grep -q "rewrite the line to point at it" "$so" && grep -q "Delete a line once its work is done or what it points at closes" "$so"'
+check "a line grows into a star and goes when its work closes" 'grep -q "replace the line with one that points at it" "$so" && grep -q "Delete a line once its work is done or what it points at closes" "$so"'
 check "loose-ends strikes lines whose work closed" 'grep -q "Strike each \`.todo\` line whose work is done" "$le"'
 check "gamma-shift works each standing order whose wait is over" 'grep -q "one whose wait is over is built like a cleared ticket" "$gs"'
 check "gamma-shift files a bare line as a star before it builds" 'grep -q "A line that names no star or ticket becomes one first: file it as a star" "$gs"'

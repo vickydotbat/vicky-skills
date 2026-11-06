@@ -41,23 +41,6 @@ check "on a branch whose new approved test passed at the commit that added it, t
   '[ $green_code != 0 ] && grep -q "glow_approved_examples.test.sh" <<<"$green" && grep -q "$glow" <<<"$green"'
 check "on a branch whose new approved tests each failed at the commit that added them, the red-first check passes" '[ $red_code = 0 ]'
 
-# The draft lock: a stub editor that waits stands in for the user's.
-mkdir -p "$dir/scratch" "$dir/vault"
-printf '#!/bin/sh\nexec sleep 30\n' > "$dir/editor"; chmod +x "$dir/editor"
-(cd "$repo" && VISUAL="$dir/editor" bash "$opener" "$dir/scratch/draft.md") & opener_pid=$!
-lockfile="$(git -C "$repo" rev-parse --absolute-git-dir)/red-pen-open"
-for _ in $(seq 50); do [ -s "$lockfile" ] && break; sleep 0.1; done
-lock() { CLAUDE_PLUGIN_OPTION_GUARD_DRAFT_LOCK=true bash "$scripts/draft-lock.sh" 2>/dev/null >/dev/null; }
-edit() { jq -n --arg f "$1" --arg d "$repo" '{tool_name: "Edit", tool_input: {file_path: $f}, cwd: $d}' | lock; }
-shell() { jq -n --arg c "$1" --arg d "$repo" '{tool_name: "Bash", tool_input: {command: $c}, cwd: $d}' | lock; }
-edit "$repo/scripts/charm.sh"; e1=$?; shell "sed -i s/hi/ho/ scripts/charm.sh"; e2=$?; shell "echo x > scripts/charm.sh"; e3=$?
-check "while a draft is open in my editor through red-pen, an edit to a code file in the repo, by any tool, is refused" \
-  '[ $e1 = 2 ] && [ $e2 = 2 ] && [ $e3 = 2 ]'
-edit "$dir/scratch/notes.md"; s1=$?; edit "$dir/vault/note.md"; s2=$?; shell "echo x > $dir/scratch/notes.md"; s3=$?
-check "while a draft is open in my editor through red-pen, a write in the scratch folder or the vault runs" \
-  '[ $s1 = 0 ] && [ $s2 = 0 ] && [ $s3 = 0 ]'
-kill "$(head -1 "$lockfile" 2>/dev/null)" 2>/dev/null; wait $opener_pid 2>/dev/null
-
 out=$(bash "$root/tests/mutate-hooks.sh" 2>&1); mcode=$?
 covered=$(grep -c '^script ' <<<"$out"); hooks=$(ls "$scripts" | wc -l)
 check "a mutation pass over every hook script in the plugin leaves no mutant alive" \

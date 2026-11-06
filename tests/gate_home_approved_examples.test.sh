@@ -15,11 +15,6 @@ ok=1
 for s in engineering/do engineering/warp engineering/gamma-shift engineering/make-it-so productivity/red-pen; do
   grep -q '\.\./\.\./GATES\.md' "$root/skills/$s/SKILL.md" || { echo "     $s does not point at GATES.md"; ok=0; }
 done
-# take-pick's steer, as an agent reads it when the hook stops a pick asked with no gate.
-fx=$(mktemp -d); trap 'rm -rf "$fx"' EXIT
-{ jq -nc '{type:"user",message:{content:"go"}}'; jq -nc '{type:"assistant",message:{content:[{type:"text",text:"My pick is A. Which one?"}]}}'; } > "$fx/t.jsonl"
-jq -nc --arg t "$fx/t.jsonl" '{stop_hook_active:false,transcript_path:$t}' | CLAUDE_PLUGIN_OPTION_GUARD_TAKE_PICK=true bash "$root/scripts/take-pick.sh" |
-  jq -r '.reason // empty' | grep -q 'skills/GATES.md' || { echo "     take-pick's steer does not point at GATES.md"; ok=0; }
 check "every wait on you is a gate" '[ $ok = 1 ] && grep -qF "🚪 Waiting on you: <the one thing>" "$gates" && grep -q "watch.sh" "$gates" && [ "$(grep -rlF "🚪 Waiting on you: <the one thing>" "$root/skills" | wc -l)" = 1 ]'
 
 # Given a gate that asks you something with no pick attached

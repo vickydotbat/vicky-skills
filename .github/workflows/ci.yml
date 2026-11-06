@@ -39,32 +39,6 @@ jobs:
         run: tests/familiar_catchup_approved_examples.test.sh
       - name: Familiar scripts edge cases
         run: tests/familiar.test.sh
-      - name: Approved-spec guard
-        run: tests/approved-spec-guard.test.sh
-      - name: Approved-spec guard reads a quoted pattern as a pattern
-        run: tests/approved-spec-guard-grep.test.sh
-      - name: Approved-spec guard frees a new test
-        run: tests/guard_fresh_test_approved_examples.test.sh
-      - name: Approved-spec guard reads a run as a read
-        run: tests/approved-spec-runs.test.sh
-      - name: Approved-spec guard keeps real test tags locked
-        run: tests/approved-spec-tags.test.sh
-      - name: Approved-spec guard leaves a doc that shows the mark editable
-        run: tests/approved_spec_prose_approved_examples.test.sh
-      - name: Approved-spec guard reads quoted text as text
-        run: tests/approved_spec_quoted_pipe_approved_examples.test.sh
-      - name: Approved-spec guard keeps a quoted redirect target a write
-        run: tests/approved-spec-quoted.test.sh
-      - name: Approved-spec guard lets a script run by path read the guard
-        run: tests/approved_spec_runs_other_script_approved_examples.test.sh
-      - name: Approved-spec guard follows a leading cd
-        run: tests/approved_spec_guard_cd_approved_examples.test.sh
-      - name: Approved-spec guard follows a leading cd ~/
-        run: tests/guard_cd_home_approved_examples.test.sh
-      - name: Approved-spec guard lets a runner that names tests through
-        run: tests/guard_runner_approved_examples.test.sh
-      - name: Approved-spec guard locks
-        run: tests/guard-locks.test.sh
       - name: Step hints
         run: tests/step-hint.test.sh
       - name: Every skill that reads a ticket whole reads its star chart
@@ -103,10 +77,6 @@ jobs:
         run: tests/flatten-captions.test.sh
       - name: Sitting lessons
         run: tests/sitting-lessons.test.sh
-      - name: No-v1 ticket-offer examples
-        run: tests/no_v1_ticket_offer_approved_examples.test.sh
-      - name: Approved-spec steer for a new test
-        run: tests/approved-spec-new-test.test.sh
       - name: Git guard examples
         run: tests/git_guard_approved_examples.test.sh
       - name: Git guard decisions
@@ -159,24 +129,14 @@ jobs:
         run: tests/do-open-pr.test.sh
       - name: review finds the checkout the work sits in
         run: tests/review-checkout.test.sh
-      - name: Never a V1 examples
-        run: tests/no_v1_approved_examples.test.sh
       - name: conn examples
         run: tests/conn_approved_examples.test.sh
       - name: Session-start hooks stay quiet with no remote
         run: tests/no-remote-quiet.test.sh
       - name: over-to-you lints its checklist
         run: tests/over_to_you_lint_checklist.test.sh
-      - name: Never a V1 hook
-        run: tests/no-v1.test.sh
-      - name: Never a V1 sends new ideas to the Ideas place
-        run: tests/no_v1_ideas_approved_examples.test.sh
-      - name: Take the pick hook
-        run: tests/take-pick.test.sh
       - name: Hooks read SendUserMessage
         run: tests/sendusermessage-mode.test.sh
-      - name: Take the pick, chat gates
-        run: tests/take_pick_chat_gate_approved_examples.test.sh
       - name: Chat approval guard
         run: tests/chat-approval-guard.test.sh
       - name: Approval is a tick on a page
@@ -185,8 +145,6 @@ jobs:
         run: tests/hand-check-guard.test.sh
       - name: Live checks go through over-to-you
         run: tests/hand_check_guard_approved_examples.test.sh
-      - name: Staging an approved test file runs
-        run: tests/approved-spec-staging.test.sh
       - name: Stale-copy blame hook
         run: tests/stale-blame.test.sh
       - name: A comparison or a retelling is no stale claim
@@ -217,12 +175,10 @@ jobs:
         run: tests/skill-descriptions.test.sh
       - name: PR guard
         run: tests/pr-guard.test.sh
-      - name: Issue guard
-        run: tests/issue-guard.test.sh
       - name: Tea stdin guard
         run: tests/tea-stdin.test.sh
-      - name: Heavy-run guard
-        run: tests/heavy-run-guard.test.sh
+      - name: pkill guard
+        run: tests/pkill_guard_approved_examples.test.sh
       - name: Gate-state guard
         run: tests/gate-state-guard.test.sh
       - name: Local-path guard
@@ -293,22 +249,6 @@ jobs:
         run: tests/do_delegate_approved_examples.test.sh
       - name: Hook exit codes
         run: tests/hook-exits.test.sh
-      - name: Checkout guard decisions
-        run: tests/checkout-guard.test.sh
-      - name: Checkout guard keeps a rebase in progress on its branch
-        run: tests/checkout_guard_rebase_approved_examples.test.sh
-      - name: Checkout guard frees a checkout a session has left
-        run: tests/checkout_guard_left_approved_examples.test.sh
-      - name: Checkout guard edges of a session that moved on
-        run: tests/checkout_guard_left_edges.test.sh
-      - name: Draft lock
-        run: tests/draft-lock.test.sh
-      - name: Draft-lock lets reads and scratch writes run
-        run: tests/draft_lock_reads_approved_examples.test.sh
-      - name: Draft-lock lets read-only python3 run and names where the draft is open
-        run: tests/draft_lock_python_approved_examples.test.sh
-      - name: Draft-lock refuses interpreter code that writes in any common way
-        run: tests/draft-lock-writers.test.sh
       - name: open-draft marks a draft opened as a page
         run: tests/open-draft-page.test.sh
       - name: drawing-board fetches draw.io only at its pinned hash
@@ -317,12 +257,6 @@ jobs:
         run: tests/drawing_board_approved_examples.test.sh
       - name: drawing-board reads stretches and rules, and the page serves only draw.io's folder
         run: tests/drawing-board.test.sh
-      - name: do-first-guard holds code edits until do starts
-        run: tests/do-first-guard.test.sh
-      - name: do-first-guard lets code through only once the user ticked the examples
-        run: tests/do_first_guard_approved_examples.test.sh
-      - name: the page records a tick per branch in the shared git folder
-        run: tests/examples-approved-record.test.sh
       - name: eval-coverage names a skill with no eval case and a case with no grader
         run: tests/eval_coverage_approved_examples.test.sh
       - name: eval-coverage reads case.yaml graders and skips results
@@ -345,8 +279,6 @@ jobs:
         run: tests/rebase-monks-hint.test.sh
       - name: publish-guard keeps making a repository public with the user
         run: tests/publish-guard.test.sh
-      - name: A backup copy of an approved test is no approved test
-        run: tests/approved-backup-copies.test.sh
       - name: Warp hands every star to do
         run: tests/warp-do.test.sh
       - name: Windowed browser guard
@@ -365,32 +297,14 @@ jobs:
         run: tests/sentinels_never_skipped_approved_examples.test.sh
       - name: Metrics after mutation, presence before QA
         run: tests/metrics_step_approved_examples.test.sh
-      - name: Mutation proof guard
-        run: tests/mutation-proof-guard.test.sh
       - name: Plane block guard
         run: tests/plane_block_approved_examples.test.sh
       - name: plane-block-guard steers by ticket
         run: tests/plane-block-guard.test.sh
       - name: Goal-driven do, proof guard and hints
         run: tests/goal_driven_approved_examples.test.sh
-      - name: Approved tests change only with a yes
-        run: tests/approved_tests_yes_approved_examples.test.sh
-      - name: Checkout guard
-        run: tests/checkout_guard_approved_examples.test.sh
       - name: Red-first hooks and mutation proof
         run: tests/red_first_approved_examples.test.sh
-      - name: Guard lets reads through
-        run: tests/guard_reads_approved_examples.test.sh
-      - name: Guard lets reads of files outside a checkout through
-        run: tests/guard_outside_checkout_approved_examples.test.sh
-      - name: Guard lets new files through
-        run: tests/guard_new_file_approved_examples.test.sh
-      - name: Guard steers instead of asking
-        run: tests/guard_steers_approved_examples.test.sh
-      - name: Guard locks wording, not harness
-        run: tests/guard_locks_wording_approved_examples.test.sh
-      - name: Guard reads what an Edit would leave
-        run: tests/guard-wording.test.sh
       - name: Stale plugin copy hint
         run: tests/stale_copy_hint_approved_examples.test.sh
       - name: Stale plugin copy hint decisions
@@ -401,22 +315,14 @@ jobs:
         run: tests/do-confirm-hint.test.sh
       - name: Every wait on the user is a gate
         run: tests/gate_home_approved_examples.test.sh
-      - name: Red approved tests commit on their own
-        run: tests/mutation_proof_red_first_approved_examples.test.sh
       - name: A quoted loop is text to poll-pace
         run: tests/poll_pace_quoted_approved_examples.test.sh
-      - name: A fixture named like an approved test is not one
-        run: tests/approved_spec_fixture_names_approved_examples.test.sh
-      - name: Running a test with approved examples is never an edit
-        run: tests/approved-spec-runs-any.test.sh
       - name: Faster mutation runner
         run: tests/mutation_speed_approved_examples.test.sh
       - name: Mutation runner memory limit
         run: tests/mutate-hooks-memory.test.sh
       - name: Mutation test map names each script once
         run: tests/mutate-hooks-map.test.sh
-      - name: Worktree by default
-        run: tests/worktree_default_approved_examples.test.sh
       - name: Over-to-you stocks the test
         run: tests/over_to_you_stocks_approved_examples.test.sh
       - name: Lessons ledger
@@ -495,6 +401,32 @@ jobs:
         run: tests/viewscreen_summit_place.test.sh
       # The rule applies from the commit that added the check: an older
       # approved test was never asked to land red.
+      - name: Read an item whole through any tracker
+        run: tests/read_item_approved_examples.test.sh
+      - name: Approved wording and the Examples line at ready
+        run: tests/step_guard_wording_approved_examples.test.sh
+      - name: poll-pace lets Monitor and background waits through
+        run: tests/poll_pace_monitor_approved_examples.test.sh
+      - name: pr-guard judges at pr create
+        run: tests/pr_guard_create_approved_examples.test.sh
+      - name: .todo through todo.sh
+        run: tests/todo_script_approved_examples.test.sh
+      - name: Mutation proof checked by the suite
+        run: tests/mutation_proof_suite_approved_examples.test.sh
+      - name: A red-pen draft locks nothing
+        run: tests/draft_copy_approved_examples.test.sh
+      - name: Hints say it once
+        run: tests/hint_once_approved_examples.test.sh
+      - name: pkill guard decisions
+        run: tests/pkill-guard.test.sh
+      - name: read-item edges
+        run: tests/read-item.test.sh
+      - name: todo.sh edges
+        run: tests/todo-sh.test.sh
+      - name: Hook audit counts refusals
+        run: tests/hook-audit.test.sh
+      - name: Mutation proof is current
+        run: python3 tests/mutate-hooks.py --check
       - name: Red-first check
         if: github.event_name == 'pull_request'
         run: |
