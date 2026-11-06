@@ -117,7 +117,7 @@ TESTS = {
     "stale-blame.sh": ["stale-blame", "stale_blame_comparison_approved_examples"],
     "fetch-place-hint.sh": ["fetch-place-hint"],
     "adr-scope-hint.sh": ["adr-scope-hint"],
-    "step-guard.sh": ["step-guard", "mutation_step_approved_examples", "step_guard_approved_examples", "step_guard_gitea_approved_examples", "sentinels_never_skipped_approved_examples"],
+    "step-guard.sh": ["step-guard", "mutation_step_approved_examples", "step_guard_approved_examples", "step_guard_gitea_approved_examples", "sentinels_never_skipped_approved_examples", "step_guard_quotes_approved_examples"],
     "ticket-filing-guard.sh": ["ticket-filing-guard"],
     "step-hint.sh": ["step_guard_approved_examples", "mutation_step_approved_examples", "step-hint", "review-prevention", "do_imp_pass_approved_examples"],
     "scratch-guard.sh": ["scratch-guard", "refusal-note"],
