@@ -4,6 +4,7 @@
 # command in backticks runs it, with the id in place of <n>, <id> or <key>. A
 # row with no command is an instruction, printed with the id for the agent to
 # follow. So every tracker reads the same way, and no hook has to know them.
+# The doc is the repo's own and trusted like its scripts; only the id is quoted.
 set -u
 id=${1:?usage: read-item.sh <id>}
 doc="$(git rev-parse --show-toplevel 2>/dev/null || pwd)/docs/agents/issue-tracker.md"

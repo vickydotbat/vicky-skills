@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # open-draft.sh writes "page" on the lock's third line when open-page.sh opened
-# the draft in the browser, and leaves it blank for an editor, so draft-lock
-# can say where the draft is open.
+# the draft in the browser, and leaves it blank for an editor, so the lock
+# says where the draft is open.
 set -u
 # No test may reach the user's own editor or browser.
 export VISUAL=true EDITOR=true BROWSER=true

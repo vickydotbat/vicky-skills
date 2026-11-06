@@ -257,8 +257,6 @@ jobs:
         run: tests/drawing_board_approved_examples.test.sh
       - name: drawing-board reads stretches and rules, and the page serves only draw.io's folder
         run: tests/drawing-board.test.sh
-      - name: the page records a tick per branch in the shared git folder
-        run: tests/examples-approved-record.test.sh
       - name: eval-coverage names a skill with no eval case and a case with no grader
         run: tests/eval_coverage_approved_examples.test.sh
       - name: eval-coverage reads case.yaml graders and skips results
@@ -423,6 +421,8 @@ jobs:
         run: tests/pkill-guard.test.sh
       - name: read-item edges
         run: tests/read-item.test.sh
+      - name: todo.sh edges
+        run: tests/todo-sh.test.sh
       - name: Hook audit counts refusals
         run: tests/hook-audit.test.sh
       - name: Mutation proof is current

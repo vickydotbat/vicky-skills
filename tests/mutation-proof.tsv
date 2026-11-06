@@ -4,7 +4,7 @@ ai-credit.sh	ce9c03ae1de6bb7b	0cad03a79ac10979	1/1
 approved-spec.sh	4454b60a6d5a5aa6	e85bc95755e987cc	6/6
 assign-expand.sh	a2d6f7ea568cb59e	8547e39a0fb04205	5/5
 auto-tidy.sh	8d1a5176faea2f7b	fc67071cbbc1d949	57/57
-chat-approval-guard.sh	1fc5e530eb27504d	5b521507423df5d7	15/15
+chat-approval-guard.sh	9edfacf13750d8a4	5b521507423df5d7	15/15
 do-confirm-hint.sh	d46ef43038108065	9e984d1404eadc90	19/19
 familiar-voice.sh	5b61603631286b5a	318bf4827b10ddd3	21/21
 fetch-place-hint.sh	3573b2f17e94944d	2c5a05ab853546e0	12/12
@@ -21,7 +21,7 @@ lesson-ledger.sh	4c88dc2d0aebcfe6	4cb925598f2dbcc8	18/18
 local-path-guard.sh	d427caa9a875a87c	939f20348d896e77	29/29
 merge-point.sh	a19dbe9167831b34	9827ff76f5819e09	2/2
 merged-branch-guard.sh	eddb14559b662ad4	19120906bae20d5e	41/41
-pkill-guard.sh	27979bf452b23498	df4f81f9da2e04c4	7/7
+pkill-guard.sh	b7b411516636d988	d1e53bac8b554d6c	7/7
 plane-block-guard.sh	a94b231f3e488454	4b64610ab0e7043b	20/20
 plugin-data.sh	b183a483ba56dfc4	70f1bfb11afc42ce	3/3
 poll-pace.sh	acf53b82ae24c315	794edbe6bf1fb1fb	29/29
@@ -30,7 +30,7 @@ publickey-hint.sh	d3098ec01110850e	c6cb323d1b0fb2e5	13/13
 publish-guard.sh	425b226598ad0b9f	21915eedaedec1f2	13/13
 push-behind-guard.sh	716e28624109853a	aaade1d681e01706	45/45
 quote-mask.awk	b04578521f7edc95	b9964b4346c3b3d0	52/52
-read-item.sh	fa5d9bc66f94880c	bd22684b3898c04c	14/14
+read-item.sh	81e4d8d4ff057aba	bd22684b3898c04c	14/14
 rebase-monks-hint.sh	ae50ae1b8b9da4f0	5af0dc816ac56bf7	16/16
 red-first-check.sh	e585449df8cf7aee	378eaf5a3ef859f6	20/20
 red-first-guard.sh	ce1336cf1ab35246	71d58db6a8b49690	27/27

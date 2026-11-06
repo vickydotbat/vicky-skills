@@ -2,7 +2,8 @@
 # PreToolUse hook (Bash): refuses pkill -f. It matches every command line
 # holding the pattern, the shell running this very command among them, so it
 # stops the agent's own shell. Memory is the OS's job: the agent runs inside a
-# capped scope, so a heavy command needs no cap of its own.
+# capped scope, so a heavy command needs no cap of its own. Always on, with no
+# setting: it has no false positive to switch off, and a killed shell loses the turn.
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool the read below comes back empty, and no pkill matches
 cmd=$(jq -r '.tool_input.command // ""' 2>/dev/null)
 cmd=$(awk -v code=1 -f "$(dirname "$0")/heredoc-strip.awk" <<<"$cmd")

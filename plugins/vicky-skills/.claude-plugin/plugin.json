@@ -276,12 +276,6 @@
       "description": "When the agent ends its turn telling you to try or test something yourself in the game, the client or the browser, with no page link and no over-to-you started, it is sent back once to hand the checks over with a checklist page. On unless you turn it off.",
       "default": true
     },
-    "guard_no_v1": {
-      "type": "boolean",
-      "title": "Never a V1",
-      "description": "An effort ships complete. When the agent ends its turn offering found work as a follow-up pull request, a later ticket or a v2, or asking whether to fold it in, it is sent back once to fold the work in. Work that waits on someone, and a later version the user named, go through.",
-      "default": false
-    },
     "adr_scope_hint": {
       "type": "boolean",
       "title": "Remind agents what a decision record holds",

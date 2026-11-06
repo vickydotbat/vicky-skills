@@ -6,8 +6,8 @@
 # with a steer: hand the text over with `red-pen`. A reply with a page link, a
 # plain pick between options and the setting off go through. It steers once per
 # turn: with stop_hook_active set, the reply goes through, so a misjudged one
-# never loops. A pick is take-pick's, so a reply that names no examples, spec or
-# text is no business of this hook.
+# never loops. A reply that names no examples, spec or text is no business of
+# this hook.
 set -u
 case "${CLAUDE_PLUGIN_OPTION_GUARD_CHAT_APPROVAL:-}" in false|0) exit 0 ;; esac
 # shellcheck source=stop-reply.sh

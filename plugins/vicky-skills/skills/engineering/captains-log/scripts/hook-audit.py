@@ -18,6 +18,10 @@ import re
 import sys
 import time
 
+HEAD = 400  # characters of a tool result that hold the hook error
+SAME = 0.6  # similarity above which the next call is a retry of the refused one
+COMPARED = 600  # characters of each call input compared
+WINDOW = 12  # events after a refusal searched for the next call and its result
 HOOK = re.compile(r'hook error: \[\\?"[^\]]*scripts/([a-z0-9-]+)\.(?:sh|py)')
 
 
@@ -46,16 +50,16 @@ def events(path):
 
 def outcome(refused, seq, k):
     nxt = None
-    for e in seq[k + 1:k + 12]:
+    for e in seq[k + 1:k + WINDOW]:
         if e[0] == "user":
             break
         if e[0] == "use" and nxt is None:
             nxt = e[1]
         elif nxt and e[0] == "res" and e[1] == nxt["id"]:
-            again = bool(HOOK.search(e[2][:400]))
+            again = bool(HOOK.search(e[2][:HEAD]))
             if nxt["name"] == "Skill":
                 return "skill"
-            same = difflib.SequenceMatcher(None, json.dumps(refused["input"])[:600], json.dumps(nxt["input"])[:600]).ratio() > 0.6
+            same = difflib.SequenceMatcher(None, json.dumps(refused["input"])[:COMPARED], json.dumps(nxt["input"])[:COMPARED]).ratio() > SAME
             return ("retry-" if same else "other-") + ("refused" if again else "passed" if same else "call")
     return "skill" if nxt and nxt["name"] == "Skill" else "stopped"
 
@@ -72,7 +76,7 @@ def main():
         for k, e in enumerate(seq):
             if e[0] != "res":
                 continue
-            m = HOOK.search(e[2][:400])
+            m = HOOK.search(e[2][:HEAD])
             if not m:
                 continue
             counts[m.group(1)]["refusals"] += 1
