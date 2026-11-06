@@ -19,7 +19,21 @@ blame='\b(stale|old|older|outdated|out[ -]of[ -]date|update|updated|redownload|r
 # step follows, never blame, so that phrase is dropped before the blame match,
 # unless the sentence names "your" copy as the thing needing it.
 rule='\b(needs?|requires?|takes?)[[:space:]]+(a[[:space:]]+)?(full[[:space:]]+|fresh[[:space:]]+|client[[:space:]]+)?(restart|reload|rebuild|refresh|relaunch)\b'
-blamed=$(prose | sed -E 's/"[^"]*"//g; s/“[^”]*”//g' | tr '\n' ' ' | sed 's/\([.?!]\) /\1\n/g' | grep -iE "$copy" | sed -E "/\b[Yy]our\b/!s/$rule/RULE/Ig" | grep -iE "$blame" | grep -viE "\b(not|no|nothing|never|nor)\b")
+# A clause that says two builds match, or retells an earlier claim ("I told
+# you ..."), blames nothing: the comparison says they are alike, and the retelling
+# reports a claim, often to withdraw it. Each sentence is cut at a comma, a
+# semicolon, "but" and "so", and only the clauses holding such a phrase are
+# dropped, so a stale claim beside one in the same sentence still counts.
+alike='\b(looks?|is|are|was|were)[[:space:]]+(the[[:space:]]+)?(same|identical)\b|\b(matches|match|matched)\b'
+retold='\b(I|we)[[:space:]]+(told|said|claimed|called|blamed|wrote)\b|\bcorrection\b'
+without_alike() {
+  local line # mutant-ok delete: the name would only be global, and nothing else reads it
+  while IFS= read -r line; do
+    sed -E 's/(, | but |; | so )/\n/g' <<<"$line" | grep -viE "$alike|$retold" | tr '\n' ' '
+    echo
+  done
+}
+blamed=$(prose | sed -E 's/"[^"]*"//g; s/“[^”]*”//g' | tr '\n' ' ' | sed 's/\([.?!]\) /\1\n/g' | without_alike | grep -iE "$copy" | sed -E "/\b[Yy]our\b/!s/$rule/RULE/Ig" | grep -iE "$blame" | grep -viE "\b(not|no|nothing|never|nor)\b")
 [ -n "$blamed" ] || exit 0
 # The session's own skills lagging the installed plugin is the agent's copy,
 # not the user's: that notice comes from the plugin itself.

@@ -113,7 +113,7 @@ TESTS = {
     "stop-reply.sh": ["take-pick", "no-v1", "no_v1_approved_examples", "chat_approval_guard_approved_examples"],
     "chat-approval-guard.sh": ["chat-approval-guard", "chat_approval_guard_approved_examples"],
     "take-pick.sh": ["take-pick", "do_confirm_approved_examples", "gate_home_approved_examples", "no_v1_approved_examples", "take_pick_chat_gate_approved_examples"],
-    "stale-blame.sh": ["stale-blame"],
+    "stale-blame.sh": ["stale-blame", "stale_blame_comparison_approved_examples"],
     "fetch-place-hint.sh": ["fetch-place-hint"],
     "adr-scope-hint.sh": ["adr-scope-hint"],
     "step-guard.sh": ["step-guard", "mutation_step_approved_examples", "step_guard_approved_examples", "step_guard_gitea_approved_examples", "sentinels_never_skipped_approved_examples"],

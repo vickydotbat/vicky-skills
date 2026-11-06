@@ -185,6 +185,8 @@ jobs:
         run: tests/approved-spec-staging.test.sh
       - name: Stale-copy blame hook
         run: tests/stale-blame.test.sh
+      - name: A comparison or a retelling is no stale claim
+        run: tests/stale_blame_comparison_approved_examples.test.sh
       - name: Refusals say nothing ran
         run: tests/refusal-note.test.sh
       - name: Page writer
