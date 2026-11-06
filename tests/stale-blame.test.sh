@@ -97,4 +97,9 @@ done
 check "a real stale claim with no comparison word is still sent back" 'blocked'
 { user "go"; text "Correct me if wrong, but your build is stale."; } > "$fx/t.jsonl"
 check "the word correct alone is no retelling" 'blocked'
+# A stale claim in the same sentence as a comparison or a retelling still counts.
+for bad in "As I said, your client is stale." "Your build matches the old one, so your client is stale." "I told you your build was fine, but your client is stale." "Your build is stale, and the log matches that." "Your old build is the same as before; your client is out of date."; do
+  { user "go"; text "$bad"; } > "$fx/t.jsonl"
+  check "a stale claim beside a comparison or a retelling is sent back: $bad" 'blocked'
+done
 exit $fail
