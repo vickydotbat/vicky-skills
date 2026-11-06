@@ -7,7 +7,7 @@ s="$(dirname "$0")/../plugins/vicky-skills/skills/engineering"
 do="$s/do/SKILL.md"; ex="$s/examples/SKILL.md"; mu="$s/sentinels/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
-step() { awk -v n="$2" '$0 ~ "^"n"\\. " {p=1; print; next} p && /^[0-9]+\. |^## / {exit} p' "$1"; }
+. "$(dirname "$0")/lib/skill-step.sh"; step() { skill_step "$1" "$2"; }
 
 check "given a change asked in chat, examples open in the editor before any test or code is written" \
   'step "$do" 1 | grep -q "examples" && step "$do" 1 | grep -q "red-pen" && step "$do" 1 | grep -q "before any test or code"'

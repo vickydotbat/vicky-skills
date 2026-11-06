@@ -7,7 +7,7 @@ p="$root/plugins/vicky-skills"; do="$p/skills/engineering/do/SKILL.md"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
-step() { awk -v n="$2" '$0 ~ "^"n"\\. " {p=1; print; next} p && /^[0-9]+\. |^## / {exit} p' "$1"; }
+. "$(dirname "$0")/lib/skill-step.sh"; step() { skill_step "$1" "$2"; }
 
 check "given a do build with three approved examples, when the second example's test goes green, its mutation counts are in the report before work on the third starts" \
   'step "$do" 3 | grep -q "Mutate each example as its test goes green" && step "$do" 3 | grep -q "before you start the next example"'
