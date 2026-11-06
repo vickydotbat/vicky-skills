@@ -7,7 +7,7 @@ description: "Write or rewrite a pull request body in its one template. Use when
 
 > _Just the facts: every sentence of the body is true of the diff._
 
-A pull request body tells a reviewer what changed, the proof that it works, and what merging risks. Every body in a repo takes the one template below, so a reader finds the same thing in the same place. `pr-guard` refuses a body that lacks Status, Summary, Proof or Risk in a repo whose `docs/agents/issue-tracker.md` says `PR template: on`.
+A pull request body tells a reviewer what changed, the proof that it works, and what merging risks. Every body in a repo takes the one template below, so a reader finds the same thing in the same place. `pr-guard` refuses a body that lacks Status, Summary, Proof or Risk in a repo whose `docs/agents/issue-tracker.md` says `PR template: on`. `pr-body-hint` adds a reminder of this skill and `human-voice` before any `gh pr create` or `gh pr edit` that sends a body.
 
 ## Steps
 

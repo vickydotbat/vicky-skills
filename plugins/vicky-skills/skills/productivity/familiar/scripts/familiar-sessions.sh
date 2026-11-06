@@ -39,6 +39,12 @@ list() {
     printf '%s %s %s\n' "$id" "$f" "$cwd"
   done
 }
+if [ "${1:-}" = --id ]; then
+  id=${2:?usage: familiar-sessions.sh --id <id>}
+  all=$(list); hit=$(awk -v id="$id" '{ rest = $0; sub(/^OFF /, "", rest) } index(rest, id) == 1' <<<"$all")
+  [ -n "$hit" ] && { printf '%s\n' "$hit"; exit 0; }
+  echo "no session matches $2. Live sessions:"; printf '%s\n' "$all"; exit 1
+fi
 [ "${1:-}" = --new ] || { list; exit 0; }
 shift
 if [ $# -gt 0 ]; then seen=$(printf '%s\n' "$@"); else seen=$(list | sed 's/^OFF //' | cut -d' ' -f1); fi

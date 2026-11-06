@@ -13,7 +13,28 @@ from=0
 [ "${FAMILIAR_WATCH_FROM_START:-}" = 1 ] && from=+1
 # FAMILIAR_WATCH_ONCE=1 reads a saved transcript whole and ends, for the replay tools.
 if [ "${FAMILIAR_WATCH_ONCE:-}" = 1 ]; then exec 3< "$file"; tailer=; else exec 3< <(tail -n "$from" -F "$file" 2>/dev/null); tailer=$!; fi
-while IFS= read -r line <&3; do
+# A session entering a worktree moves its transcript to another project folder: follow it, or say LOST after three idle spells.
+projects=${FAMILIAR_PROJECTS_DIR:-$HOME/.claude/projects}
+idle=${FAMILIAR_WATCH_IDLE:-10}
+first=$(head -n 1 "$file" 2>/dev/null); seen=$(wc -l < "$file" 2>/dev/null || echo 0); [ "$from" = +1 ] && seen=0; gone=0
+follow() {
+  local moved
+  [ -e "$file" ] && { gone=0; return 0; }
+  moved=$(find "$projects" -mindepth 2 -maxdepth 2 -name "$(basename "$file")" 2>/dev/null | head -n 1)
+  if [ -z "$moved" ]; then gone=$((gone + 1)); [ "$gone" -lt 3 ]; return; fi
+  kill "$tailer" 2>/dev/null
+  file=$moved; gone=0
+  # A moved file keeps the lines already read: start after them.
+  if [ "$(head -n 1 "$file")" = "$first" ]; then start=$((seen + 1)); else start=1; fi
+  exec 3< <(tail -n "+$start" -F "$file" 2>/dev/null); tailer=$!
+}
+while :; do
+  if ! IFS= read -r -t "$idle" line <&3; then
+    [ -n "$tailer" ] || break
+    follow || { echo LOST; break; }
+    continue
+  fi
+  seen=$((seen + 1)); [ -n "$first" ] || first=$line
   out=$(jq -r --arg tag "${tag:+$tag }" '
     def cut: gsub("\n"; " ") | .[0:400];
     # An agent line that asks, picks or waits is never cut: its questions sit at the end.

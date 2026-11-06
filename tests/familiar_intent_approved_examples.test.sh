@@ -7,7 +7,7 @@ root="$(dirname "$0")/../plugins/vicky-skills"
 fam="$root/skills/productivity/familiar/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
-step() { awk -v n="$2" '$0 ~ "^"n"\\. "{on=1; print; next} /^[0-9]+\. /{on=0} /^## /{on=0} on' "$1"; }
+. "$(dirname "$0")/lib/skill-step.sh"; step() { skill_step "$1" "$2"; }
 close=$(step "$fam" 6)
 
 # Given a watched session hands off

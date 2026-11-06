@@ -6,7 +6,7 @@ root="$(cd "$(dirname "$0")/.." && pwd)"
 log="$root/plugins/vicky-skills/skills/engineering/captains-log/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
-step() { awk -v n="$1" '$0 ~ "^"n"\\. "{on=1; print; next} /^[0-9]+\. /{on=0} /^## /{on=0} on' "$log"; }
+. "$(dirname "$0")/lib/skill-step.sh"; step() { skill_step "$log" "$1"; }
 check "captains-log on a session where I answered permission prompts makes each prompt a finding, with the hook or context that would steer the agent so it never comes" \
   'step 3 | grep -q "\*\*Prompts\*\*" && step 3 | grep -q "each permission prompt the user answered" && step 3 | grep -q "so the prompt never comes"'
 check "a hook that would ask me is the last resort, marked as training wheels, with what would replace it" \
