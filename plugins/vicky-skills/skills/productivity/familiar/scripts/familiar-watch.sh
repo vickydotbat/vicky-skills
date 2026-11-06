@@ -13,10 +13,7 @@ from=0
 [ "${FAMILIAR_WATCH_FROM_START:-}" = 1 ] && from=+1
 # FAMILIAR_WATCH_ONCE=1 reads a saved transcript whole and ends, for the replay tools.
 if [ "${FAMILIAR_WATCH_ONCE:-}" = 1 ]; then exec 3< "$file"; tailer=; else exec 3< <(tail -n "$from" -F "$file" 2>/dev/null); tailer=$!; fi
-# A session that enters a worktree moves its transcript to another project
-# folder under the same name. When the file is gone after an idle spell, the
-# watch looks for it there and follows it on, and after three spells with no
-# file anywhere it prints LOST and ends.
+# A session entering a worktree moves its transcript to another project folder: follow it, or say LOST after three idle spells.
 projects=${FAMILIAR_PROJECTS_DIR:-$HOME/.claude/projects}
 idle=${FAMILIAR_WATCH_IDLE:-10}
 first=$(head -n 1 "$file" 2>/dev/null); seen=$(wc -l < "$file" 2>/dev/null || echo 0); [ "$from" = +1 ] && seen=0; gone=0

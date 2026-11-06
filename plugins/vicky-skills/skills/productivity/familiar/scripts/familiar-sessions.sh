@@ -40,7 +40,8 @@ list() {
   done
 }
 if [ "${1:-}" = --id ]; then
-  all=$(list); hit=$(grep -E "^(OFF )?${2:?usage: familiar-sessions.sh --id <id>}" <<<"$all")
+  id=${2:?usage: familiar-sessions.sh --id <id>}
+  all=$(list); hit=$(awk -v id="$id" '{ rest = $0; sub(/^OFF /, "", rest) } index(rest, id) == 1' <<<"$all")
   [ -n "$hit" ] && { printf '%s\n' "$hit"; exit 0; }
   echo "no session matches $2. Live sessions:"; printf '%s\n' "$all"; exit 1
 fi

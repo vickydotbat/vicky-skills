@@ -25,7 +25,7 @@ pkill-guard.sh	b7b411516636d988	d1e53bac8b554d6c	7/7
 plane-block-guard.sh	a94b231f3e488454	4b64610ab0e7043b	20/20
 plugin-data.sh	b183a483ba56dfc4	70f1bfb11afc42ce	3/3
 poll-pace.sh	acf53b82ae24c315	794edbe6bf1fb1fb	29/29
-pr-body-hint.sh	48279d88332f859e	d8d1b614b2bdc088	16/16
+pr-body-hint.sh	69a7e3e5efe170db	d8d1b614b2bdc088	16/16
 pr-guard.sh	496c79cfdaa06a5f	c81a25bd05637478	136/136
 publickey-hint.sh	d3098ec01110850e	c6cb323d1b0fb2e5	13/13
 publish-guard.sh	425b226598ad0b9f	21915eedaedec1f2	13/13
