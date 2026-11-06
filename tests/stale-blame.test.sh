@@ -88,4 +88,13 @@ check "a missing transcript goes through" 'out=$(jq -nc "{transcript_path:\"$fx/
 check "bad input goes through" 'out=$(echo "not json" | bash "$hook"); [ $? = 0 ] && [ -z "$out" ]'
 check "the session's own older skills is no blame" '{ user "why"; text "This session is still running an older copy of the skills. A restart picks up the version you have installed."; } > "$fx/t.jsonl"; passes'
 check "an older session blamed on the user's plugin still blocks" '{ user "why"; text "Your plugin is stale in this session."; } > "$fx/t.jsonl"; blocked'
+# A comparison that says two builds match, and a retelling of an earlier claim, blame nothing.
+for ok in "The old build looks the same as your current build." "The old and new caps are identical in your build." "That roof edge matches your current build, so the fault is in the code." "I told you your client was stale, and that was wrong." "I said your cache was old; correction, it was current." "We blamed your old build, which was wrong."; do
+  { user "go"; text "$ok"; } > "$fx/t.jsonl"
+  check "a comparison or a retelling goes through: $ok" 'passes'
+done
+{ user "go"; text "The old build is on your machine, so it looks stale."; } > "$fx/t.jsonl"
+check "a real stale claim with no comparison word is still sent back" 'blocked'
+{ user "go"; text "Correct me if wrong, but your build is stale."; } > "$fx/t.jsonl"
+check "the word correct alone is no retelling" 'blocked'
 exit $fail
