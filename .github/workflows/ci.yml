@@ -153,6 +153,8 @@ jobs:
         run: tests/refusal-note.test.sh
       - name: Page writer
         run: tests/write-page.test.sh
+      - name: An examples draft page always has its approve ticks
+        run: tests/page_needs_ticks_approved_examples.test.sh
       - name: Over-to-you checklist writer
         run: tests/over-to-you-checklist.test.sh
       - name: Fetch place hint hook

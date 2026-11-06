@@ -32,6 +32,14 @@ check "draft text holding a code fence is refused" 'out=$(write "{\"kind\": \"dr
 check "a section with no location is refused" 'out=$(write "{\"kind\": \"drafts\", \"effort\": \"e\", \"sections\": [{\"what\": \"w\", \"text\": \"t\"}]}"); [ $? = 1 ] && grep -q "no where" <<<"$out"'
 check "an unknown kind is refused" 'out=$(write "{\"kind\": \"poster\"}"); [ $? = 1 ] && grep -q "kind must be" <<<"$out"'
 check "a wrong call exits 2" 'python3 -I "$scripts/write-page.py" 2>/dev/null; [ $? = 2 ]'
+# An approved-examples section needs its tick box: the refusal names the section's number.
+two='{"kind":"drafts","effort":"x","sections":[{"what":"A","where":"docs/a.md:1","text":"t"},{"what":"B","where":"tests/b_approved_examples.test.sh:new","approve":true,"text":"t"},{"what":"C","where":"tests/c_approved_examples.test.sh:new","text":"t"}]}'
+check "only the approved-examples section without a tick is named, by number" 'out=$(write "$two"); [ $? = 1 ] && grep -q "section 3 (C)" <<<"$out" && grep -q "needs approve true" <<<"$out" && grep -q "no tick is recorded" <<<"$out" && ! grep -q "section 2" <<<"$out" && ! grep -q "section 1" <<<"$out"'
+one='{"kind":"drafts","effort":"x","sections":[{"what":"A","where":"docs/a.md:1","text":"t"},{"what":"B","where":"tests/b_approved_examples.test.sh:new","approve":true,"text":"t"}]}'
+check "an approved-examples section with its tick is written beside a plain one, with one tick box" 'write "$one" >/dev/null && [ "$(grep -c -- "- \[ \] approve" "$dir/out.md")" = 1 ]'
+named() { printf '{"kind":"drafts","effort":"x","sections":[{"what":"A","where":"%s","text":"t"}]}' "$1" > "$dir/s.json"; python3 -I "$scripts/write-page.py" "$dir/s.json" "$dir/o.md" >/dev/null; }
+check "approved_examples, approved-examples, ApprovedExamples and approvedexamples all name an approved-examples file" '(for w in a_approved_examples.py a-approved-examples.sh AApprovedExamples.cs aapprovedexamples.go; do named "$w"; [ $? = 1 ] || exit 1; done)'
+check "a name that only says approved or examples is not an approved-examples file" '(for w in approved.md examples_doc.md approved_notes.md; do named "$w"; [ $? = 0 ] || exit 1; done)'
 # A page file goes in the session's scratch folder, never loose in the shared temp folder.
 mkdir -p "$dir/tmp/s1"
 q='{"kind": "question", "questions": [{"q": "Which one?", "options": ["a", "b"], "pick": 1}]}'

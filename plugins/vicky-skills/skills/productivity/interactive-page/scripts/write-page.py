@@ -23,12 +23,15 @@ comes from its own checklist.py.
 """
 import json
 import os
+import re
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from scratch import loose_page
 
 FENCE = "```"
+# A location that names an approved-examples test file: approved_examples, approved-examples or ApprovedExamples.
+APPROVED_FILE = re.compile(r"approved[-_]?examples", re.IGNORECASE)
 
 
 def question(spec):
@@ -76,6 +79,8 @@ def drafts(spec):
         text = section.get("text", "")
         if FENCE in text:
             problems.append(f"section {n}'s text holds a code fence, which would end its block early")
+        if APPROVED_FILE.search(section.get("where", "")) and not section.get("approve"):
+            problems.append(f"section {n} ({section.get('what', '')}) is for an approved-examples test, so it needs approve true: without its tick box no tick is recorded")
         lines += [f"## {section.get('what', '')}", section.get("where", "")]
         if section.get("approve"):
             lines.append("- [ ] approve")
