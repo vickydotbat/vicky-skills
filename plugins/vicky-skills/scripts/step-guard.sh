@@ -16,8 +16,11 @@ cmd=$(jq -r '.tool_input.command // ""' <<<"$payload")
 forge=""
 # Text that only names the command is no command: heredoc bodies and quoted strings go before the gh match.
 # A string or heredoc a shell runs (bash -c "...", eval '...', bash <<EOF) is code, so it stays.
+# So does any command with a substitution ($( or a backtick) or a backslash, since quotes
+# cannot be told apart there: the guard then reads it all and errs toward refusing.
+# The tea branch below reads the whole command, since its title is a quoted string.
 code=$(awk -v code=1 -f "$(dirname "$0")/heredoc-strip.awk" <<<"$cmd")
-[[ $cmd =~ (^|[[:space:];\&\|\(])(bash|sh|zsh|eval)[[:space:]]+(-[A-Za-z]+[[:space:]]+)*[\"\'] ]] ||
+[[ $cmd =~ (^|[[:space:];\&\|\(])(bash|sh|zsh|eval)[[:space:]]+(-[A-Za-z]+[[:space:]]+)*[\"\'] || $cmd =~ (^|[[:space:];\&\|\(])(ssh|watch)[[:space:]][^\;\&\|]*[\"\'] || $cmd =~ [[:space:]]-c[[:space:]]+[\"\'] || $cmd == *'$('* || $cmd == *'`'* || $cmd == *'\'* ]] ||
   code=$(sed -E "s/\"[^\"]*\"//g; s/'[^']*'//g" <<<"$code")
 if [[ $code =~ gh[[:space:]]+pr[[:space:]]+ready([[:space:]]+([0-9]+))? ]]; then
   forge=gh pr=${BASH_REMATCH[2]}

@@ -60,4 +60,11 @@ expect "an eval string is read" 2 ok "$dir/noreview.jsonl" "eval 'gh pr ready 37
 expect "a heredoc fed to bash is read" 2 ok "$dir/noreview.jsonl" "$(printf 'bash <<EOF\ngh pr ready 37\nEOF')"
 expect "a heredoc fed to cat is not read" 0 ok "$dir/noreview.jsonl" "$(printf 'cat <<EOF\ngh pr ready 37\nEOF')"
 expect "the words in a single-quoted echo are not read" 0 ok "$dir/noreview.jsonl" "echo 'gh pr ready 37'"
+expect "an ssh string is read" 2 ok "$dir/noreview.jsonl" 'ssh host "gh pr ready 37"'
+expect "a watch string is read" 2 ok "$dir/noreview.jsonl" "watch 'gh pr ready 37'"
+expect "a python -c string is read" 2 ok "$dir/noreview.jsonl" "python3 -c 'import os; os.system(\"gh pr ready 37\")'"
+expect "a substitution inside double quotes is read" 2 ok "$dir/noreview.jsonl" 'echo "$(gh pr ready 37)"'
+expect "a backtick substitution is read" 2 ok "$dir/noreview.jsonl" 'echo "`gh pr ready 37`"'
+expect "a command with an escaped quote is read whole" 2 ok "$dir/noreview.jsonl" "echo it\\'s; gh pr ready 37; echo 'x'"
+expect "one shell string anywhere turns the stripping off, and the command is refused" 2 ok "$dir/noreview.jsonl" 'bash -c "ls" && gh pr comment 37 --body "gh pr ready"'
 exit $fail
