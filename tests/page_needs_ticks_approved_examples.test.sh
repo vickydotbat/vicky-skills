@@ -3,8 +3,12 @@
 # page always has its approve ticks" (R1 to R4). Each check is named after its
 # example. write-page.py writes the page, or refuses and writes nothing.
 set -u
+export VISUAL=true EDITOR=true BROWSER=true
 writer="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/productivity/interactive-page/scripts/write-page.py"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
+# The writer opens nothing; a fake desktop still stands first on PATH, as for every page test.
+mkdir -p "$dir/desktop"; printf '#!/usr/bin/env bash\necho "BROWSER=true"\n' >"$dir/desktop/systemctl"; chmod +x "$dir/desktop/systemctl"
+export PATH="$dir/desktop:$PATH"
 export CLAUDE_CODE_SESSION_ID=pt-test
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
