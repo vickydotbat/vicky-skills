@@ -7,7 +7,7 @@ skills="$(dirname "$0")/../plugins/vicky-skills/skills"
 log="$skills/engineering/captains-log/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
-step() { awk -v n="$1" '$0 ~ "^"n"\\. "{on=1; print; next} /^[0-9]+\. /{on=0} on' "$log"; }
+. "$(dirname "$0")/lib/skill-step.sh"; step() { skill_step "$log" "$1"; }
 high=$(step 4)
 
 check "a session where I said a result was exactly what I wanted is named a high point, with the agent-file line that caused it" \
