@@ -21,4 +21,6 @@ check "10 an id names its one session and transcript" '[ $code = 0 ] && [ "$(wc 
 # Then it says no session matches and lists the live ones
 out=$(bash "$sessions" --id cccc 2>&1); code=$?
 check "10 an unknown id says no session matches and lists the live ones" '[ $code = 1 ] && grep -q "no session matches cccc" <<<"$out" && grep -q aaaa1111-0000 <<<"$out" && grep -q bbbb2222-0000 <<<"$out"'
+out=$(bash "$sessions" --id 0000 2>&1); code=$?
+check "10 an id matches from its start only" '[ $code = 1 ] && grep -q "no session matches 0000" <<<"$out"'
 exit $fail

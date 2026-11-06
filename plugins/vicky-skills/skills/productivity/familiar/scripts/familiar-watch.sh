@@ -23,7 +23,7 @@ first=$(head -n 1 "$file" 2>/dev/null); seen=$(wc -l < "$file" 2>/dev/null || ec
 follow() {
   local moved
   [ -e "$file" ] && { gone=0; return 0; }
-  moved=$(find "$projects" -mindepth 2 -maxdepth 2 -name "$(basename "$file")" ! -path "$file" 2>/dev/null | head -n 1)
+  moved=$(find "$projects" -mindepth 2 -maxdepth 2 -name "$(basename "$file")" 2>/dev/null | head -n 1)
   if [ -z "$moved" ]; then gone=$((gone + 1)); [ "$gone" -lt 3 ]; return; fi
   kill "$tailer" 2>/dev/null
   file=$moved; gone=0

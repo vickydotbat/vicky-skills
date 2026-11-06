@@ -17,6 +17,7 @@ typed "before the move" > "$fx/projects/repo/s1.jsonl"
 timeout 20 bash "$watch" "$fx/projects/repo/s1.jsonl" > "$fx/out" 2>&1 & pid=$!
 sleep 2
 mv "$fx/projects/repo/s1.jsonl" "$fx/projects/repo-worktree/s1.jsonl"
+typed "between" >> "$fx/projects/repo-worktree/s1.jsonl"
 sleep 3
 typed "after the move" >> "$fx/projects/repo-worktree/s1.jsonl"
 sleep 4
@@ -24,7 +25,16 @@ jq -nc '{type:"cost-state"}' >> "$fx/projects/repo-worktree/s1.jsonl"
 wait "$pid"
 out=$(cat "$fx/out")
 check "8 the watch prints events from the moved transcript" 'grep -q "USER: after the move" <<<"$out"'
+check "8 each line before, during and after the move prints once" 'for w in "before the move" between "after the move"; do [ "$(grep -c "USER: $w$" <<<"$out")" = 1 ] || exit 1; done'
 check "8 the move itself is no HANDOFF" '[ "$(grep -c HANDOFF <<<"$out")" -le 1 ] && grep -B1 HANDOFF <<<"$out" | grep -q "after the move"'
+
+# A transcript gone for one idle spell and back at its place is followed on.
+typed "first" > "$fx/projects/repo/s3.jsonl"
+timeout 20 bash "$watch" "$fx/projects/repo/s3.jsonl" > "$fx/out3" 2>&1 & pid=$!
+sleep 1.5; rm "$fx/projects/repo/s3.jsonl"; sleep 1.2
+typed "back" > "$fx/projects/repo/s3.jsonl"; sleep 2.5
+jq -nc '{type:"cost-state"}' >> "$fx/projects/repo/s3.jsonl"; wait "$pid"
+check "8 a short gap is no LOST" '! grep -q LOST "$fx/out3" && grep -q "USER: back" "$fx/out3"'
 
 # Given the old transcript is gone and no new one with the same session id appears
 # When the watch looks for it
