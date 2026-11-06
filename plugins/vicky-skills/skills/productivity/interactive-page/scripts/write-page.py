@@ -30,7 +30,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from scratch import loose_page
 
 FENCE = "```"
-# A location that names an approved-examples test file: approved_examples, approved-examples or ApprovedExamples.
+# A location that names an approved-examples test file anywhere in it: approved_examples, approved-examples or ApprovedExamples.
 APPROVED_FILE = re.compile(r"approved[-_]?examples", re.IGNORECASE)
 
 

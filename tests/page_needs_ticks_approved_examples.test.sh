@@ -19,7 +19,7 @@ write() {
   local approve=""
   [ "$2" = none ] || approve=",\"approve\":$2"
   printf '{"kind":"drafts","effort":"x","sections":[{"what":"E1 a thing","where":"%s","text":"Given a\\nWhen b\\nThen c"%s}]}' "$1" "$approve" > "$dir/spec.json"
-  python3 "$writer" "$dir/spec.json" "$dir/out.md"
+  python3 -I "$writer" "$dir/spec.json" "$dir/out.md"
 }
 
 # Given a drafts spec with a section whose location names an approved-examples test file
