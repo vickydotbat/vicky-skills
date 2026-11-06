@@ -75,22 +75,10 @@
       "description": "The most open pull requests one session's stack holds.",
       "default": "3"
     },
-    "guard_issue_threads": {
-      "type": "boolean",
-      "title": "Read whole threads",
-      "description": "Refuse an issue or pull request view that leaves out its comments.",
-      "default": false
-    },
     "guard_tea_stdin": {
       "type": "boolean",
       "title": "Close tea's stdin",
       "description": "Refuse a tea command that leaves stdin open, since tea blocks on it and a retry can post twice.",
-      "default": true
-    },
-    "guard_heavy_run": {
-      "type": "boolean",
-      "title": "Cap the memory of heavy runs",
-      "description": "Refuse pkill -f, which also kills the shell running it. Refuse an image, video, render or build run (ImageMagick, Real-ESRGAN, ffmpeg, Blender, sd-cli, dotnet build or test, python on image work, nix develop -c) that no systemd-run MemoryMax= cap wraps, and give the command with the cap in place. Short reads such as magick identify pass. A repo lists scripts that cap themselves on a 'Bounded scripts:' line in docs/agents/.",
       "default": true
     },
     "guard_gate_state": {
@@ -141,28 +129,10 @@
       "description": "Refuse git worktree add outside the repo's own .claude/worktrees folder, and keep that folder out of git status. After a git merge, remove the merged branch's worktree and branch once every commit has landed and nothing is uncommitted.",
       "default": false
     },
-    "guard_checkout": {
-      "type": "boolean",
-      "title": "One session per checkout",
-      "description": "Refuse a branch switch, or a git command that writes history, in a checkout another session used in the last 12 hours, so the session works in its own worktree. Tell a session when its checkout moved to another branch under it. Each session's last git command per checkout is kept in the plugin's data folder until the session ends.",
-      "default": true
-    },
     "guard_red_first": {
       "type": "boolean",
       "title": "Approved tests land first",
       "description": "Refuse a commit that adds a new approved-examples test together with any other change, so the tests land red in a commit of their own.",
-      "default": false
-    },
-    "guard_mutation_proof": {
-      "type": "boolean",
-      "title": "No commit with a stale mutation proof",
-      "description": "Refuse a commit while the repo's mutation proof is out of date, in a repo whose docs/agents/testing.md names a 'Mutation proof check:' command.",
-      "default": false
-    },
-    "guard_draft_lock": {
-      "type": "boolean",
-      "title": "No code while a draft is open",
-      "description": "While red-pen has a draft open in your editor, refuse edits to the repo's files. Writes outside the repo, such as scratch files, still run.",
       "default": false
     },
     "gamma_shift": {
@@ -293,12 +263,6 @@
       "title": "Standing orders",
       "description": "Keep a .todo springboard: a hook lists at most five actions only you can take and opens each session on the first, and agents jot short .todo lines for later work without asking. Off: no .todo block, no jotted lines.",
       "default": true
-    },
-    "guard_take_pick": {
-      "type": "boolean",
-      "title": "Take the pick",
-      "description": "When the agent ends its turn asking a question it already has a pick for, with no gate behind it, it is sent back once to take the pick and say so, or to gate the question with a watch.",
-      "default": false
     },
     "guard_chat_approval": {
       "type": "boolean",

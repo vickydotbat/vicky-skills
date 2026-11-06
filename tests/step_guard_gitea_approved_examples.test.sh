@@ -28,7 +28,7 @@ check "given a do build on Gitea whose review never ran, dropping WIP: from its 
 # When the agent drops WIP: from its pull request title
 # Then the title changes
 { started vicky-skills:do; started vicky-skills:sentinels; started vicky-skills:review; } > "$dir/reviewed.jsonl"
-echo 'Plan check: none found' > "$dir/body"
+printf 'Plan check: none found\nExamples: approved on T-1\n' > "$dir/body"
 run "$dir/reviewed.jsonl" 'tea pr edit 12 -t "Step guard on Gitea" </dev/null'; code=$?
 check "given a do build on Gitea whose sentinels and review ran, dropping WIP: from its pull request title changes the title" '[ $code = 0 ]'
 exit $fail

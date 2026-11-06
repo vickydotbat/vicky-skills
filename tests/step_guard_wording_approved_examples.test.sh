@@ -30,7 +30,7 @@ check "E3 changed Then wording with no ticked page is refused" \
 # Given the same change, with the file ticked on a red-pen page
 # When the agent marks the pull request ready
 # Then it goes through
-echo tests/x_approved_examples.test.sh >> "$(git -C "$dir/w" rev-parse --path-format=absolute --git-common-dir)/approved-spec-grants"
+echo tests/x_approved_examples.test.sh >> "$(git -C "$dir/w" rev-parse --absolute-git-dir)/approved-spec-grants"
 check "E3 the same change ticked on a page goes through" '[ "$(run none.jsonl "")" = 0 ]'
 
 # Given a branch that changed only harness lines in an approved file

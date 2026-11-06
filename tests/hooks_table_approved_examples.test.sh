@@ -19,7 +19,7 @@ for script in $(jq -r '.hooks[][].hooks[].command' "$plugin/hooks/hooks.json" | 
   # A hook with no setting needs a line here naming its row.
   case "$script" in
     after-push.sh) name="After push" ;;
-    approved-spec-guard.sh) name="Approved examples guard" ;;
+    pkill-guard.sh) name='No `pkill -f`' ;;
     stale-copy-hint.sh) name="Stale copy" ;;
     do-confirm-hint.sh) name="Confirm the objective" ;;
     todo-reminder.sh) name="Todo reminder" ;;
@@ -36,12 +36,12 @@ short=$(awk -F'|' 'NF != 5 || $3 ~ /^ *$/ || $4 ~ /^ *$/' <<<"$rows")
 check "every hook the plugin registers is one row of the README table, with what it does and how to turn it on" \
   '[ -z "$missing" ] && [ -z "$short" ] && [ -n "$rows" ]' || echo "     missing:$missing"
 
-# Given a hook that only refuses, asks or warns, such as the checkout guard
+# Given a hook that only refuses, asks or warns, such as the push-behind guard
 # When I read its row
 # Then it says (recommended)
 untagged=$(grep -vc -e '(recommended)' -e '(experimental)' <<<"$rows")
-check "a hook that only refuses, asks or warns, such as the checkout guard, says (recommended)" \
-  'row "One session per checkout" | grep -q "(recommended)" && row "Whole threads" | grep -q "(recommended)" && [ "$untagged" = 0 ]'
+check "a hook that only refuses, asks or warns, such as the push-behind guard, says (recommended)" \
+  'row "No pushing behind main" | grep -q "(recommended)" && row "Short polls" | grep -q "(recommended)" && [ "$untagged" = 0 ]'
 
 # Given a hook that acts on its own, such as gamma shift, auto-tidy or the springboard
 # When I read its row

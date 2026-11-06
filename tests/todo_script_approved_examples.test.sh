@@ -22,7 +22,7 @@ check "E8 todo.sh done removes the matching line" \
 # Given an Edit, Write or sed aimed at .todo
 # When the agent runs it
 # Then it is refused with a steer to todo.sh, whatever else the command says
-refused() { bash "$guard" <<<"$1" 2>&1 >/dev/null | grep -q "todo.sh"; }
+refused() { bash "$guard" <<<"$1" 2>/dev/null | grep -q "todo.sh"; }
 check "E8 an Edit of .todo is refused toward todo.sh" \
   "refused '$(jq -nc --arg f "$dir/r/.todo" '{tool_name:"Edit",tool_input:{file_path:$f},cwd:"/"}')'"
 check "E8 a sed on .todo is refused toward todo.sh" \

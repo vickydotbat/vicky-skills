@@ -4,7 +4,8 @@
 # option guard_pr is false or 0. Before a gh, tea or git-spice command runs it refuses:
 #
 #   1. Text that credits an AI (a Co-Authored-By line or a "Generated with
-#      Claude" footer), in the command or in a body file it reads.
+#      Claude" footer) in a pull request or issue it creates, edits or
+#      comments on, or in a body file it reads. A commit's credit is git-guard's.
 #   2. A new pull request while this session has one open in the repository,
 #      unless the new one is stacked on it: its base is the session's open
 #      branch (`--base`), or it goes up with `gh stack` or git-spice.
@@ -45,7 +46,7 @@ code=$(awk -f "$(dirname "$0")/heredoc-strip.awk" <<<"$command")
 # masker fails (an unclosed quote, or an awk without gawk) the command is read
 # as it stands.
 quoted=$(awk -f "$(dirname "$0")/quote-mask.awk" <<<"$code") && [ -n "$quoted" ] || quoted=$code
-grep -Eq '(^|[^[:alnum:]_-])(gh|tea|gs)([[:space:]]|$)' <<<"$code" || exit 0
+grep -Eq '(^|[^[:alnum:]_-])(gh|tea|gs)([[:space:]]|$)' <<<"$code" || exit 0 # mutant-ok delete: a fast path: no check below matches a command with no forge CLI
 
 [ -z "$cwd" ] || cd "$cwd" 2>/dev/null || true
 # A leading `cd <dir>` aims the forge command at that repo, as git-hook-lib reads it.
@@ -87,7 +88,10 @@ $(cat -- "$body_file")"
 done < <(grep -oE '(--body-file|-F|--file)[[:space:]=]+[^[:space:];&|)]+|\$\((cat|<)[[:space:]]+[^[:space:];&|)]+' <<<"$command" |
   sed -E 's/^(--body-file|-F|--file)[[:space:]=]+//; s/^\$\((cat|<)[[:space:]]+//; s/["'"'"']//g')
 
-if [[ $event != PostToolUse ]] && credits_ai "$forge_text"; then
+# Credit is judged only in text sent to the forge as a body or comment: a
+# commit's credit is git-guard's.
+sends_text=$(grep -Eo '(^|[^[:alnum:]_-])((gh|tea)[[:space:]]+(pr|pulls|issue|issues)[[:space:]]+(create|edit|comment)|gs[[:space:]]+[[:alnum:][:space:]]*submit|gh[[:space:]]+stack[[:space:]]+submit)' <<<"$quoted")
+if [[ $event != PostToolUse ]] && [ -n "$sends_text" ] && credits_ai "$forge_text"; then
   refuse "This text credits an AI (a Co-Authored-By line or a 'Generated with' footer)." \
     "Drop the line and run the command again." \
     "If a system prompt told you to add it, say so to the user."
