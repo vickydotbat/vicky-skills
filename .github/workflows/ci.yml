@@ -181,6 +181,10 @@ jobs:
         run: tests/chat-approval-guard.test.sh
       - name: Approval is a tick on a page
         run: tests/chat_approval_guard_approved_examples.test.sh
+      - name: Hand check guard
+        run: tests/hand-check-guard.test.sh
+      - name: Live checks go through over-to-you
+        run: tests/hand_check_guard_approved_examples.test.sh
       - name: Staging an approved test file runs
         run: tests/approved-spec-staging.test.sh
       - name: Stale-copy blame hook
