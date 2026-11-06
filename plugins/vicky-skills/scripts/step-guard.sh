@@ -36,10 +36,11 @@ cwd=$(jq -r '.cwd // empty' <<<"$payload")
 [ -n "$cwd" ] && cd "$cwd" 2>/dev/null
 # An approved example's wording (a Given, When or Then comment line in a file
 # that holds approved examples) changes only through a ticked red-pen page,
-# which writes the file's path to approved-spec-grants in the git folder.
+# which writes the file's path to approved-spec-grants in the git folder. It
+# reads the repo the payload's cwd names, and with no cwd it reads none.
 . "$(dirname "$0")/approved-spec.sh"
 msg="" wording=()
-if base=$(git merge-base HEAD origin/HEAD 2>/dev/null || git merge-base HEAD origin/main 2>/dev/null); then
+if [ -n "$cwd" ] && base=$(git merge-base HEAD origin/HEAD 2>/dev/null || git merge-base HEAD origin/main 2>/dev/null); then
   grants="$(git rev-parse --absolute-git-dir 2>/dev/null)/approved-spec-grants"
   while IFS= read -r f; do
     approved "$f" || continue

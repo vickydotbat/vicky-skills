@@ -76,6 +76,8 @@ wrun() { jq -nc --arg d "$w/c" --arg t "$1" '{tool_input:{command:"gh pr ready 5
 sed -i 's/# Then b/# Then c/' "$w/c/tests/k_approved_examples.test.sh"; git -C "$w/c" -c user.name=t -c user.email=t@t commit -qam reword
 [ "$(wrun /nope)" = 2 ] && [ "$(grep -c 'step-guard:' "$w/err")" = 1 ] && ! grep -q sentinels "$w/err" &&
   echo "ok   reworded approval outside a build is refused once, naming no build step" || { echo "FAIL reworded approval outside a build: $(cat "$w/err")"; fail=1; }
+nocwd=$(cd "$w/c" && jq -nc '{tool_input:{command:"gh pr ready 5"},transcript_path:"/nope"}' | CLAUDE_PLUGIN_OPTION_STEP_GUARD=true bash "$guard" >/dev/null 2>&1; echo $?)
+[ "$nocwd" = 0 ] && echo "ok   with no cwd in the payload, no repo's wording is read" || { echo "FAIL with no cwd the guard read the process's repo"; fail=1; }
 printf '# approved-spec: tagged\n# Then t\n' > "$w/o/tests/tagged.test.sh"; git -C "$w/o" add -A; git -C "$w/o" -c user.name=t -c user.email=t@t commit -qm tag
 git -C "$w/c" checkout -q tests/k_approved_examples.test.sh 2>/dev/null; git -C "$w/c" reset -q --hard origin/main; git -C "$w/c" pull -q origin main 2>/dev/null
 sed -i 's/# Then t/# Then u/' "$w/c/tests/tagged.test.sh"; git -C "$w/c" -c user.name=t -c user.email=t@t commit -qam retag

@@ -1,7 +1,7 @@
 adr-scope-hint.sh	25667e321a3247e7	fc41582a951cf519	7/7
 after-push.sh	c6f949f0fa8098e1	75bd24ed906accd8	27/27
 ai-credit.sh	ce9c03ae1de6bb7b	0cad03a79ac10979	1/1
-approved-spec.sh	4454b60a6d5a5aa6	e85bc95755e987cc	6/6
+approved-spec.sh	4454b60a6d5a5aa6	091f90aaafffc5e2	6/6
 assign-expand.sh	a2d6f7ea568cb59e	8547e39a0fb04205	5/5
 auto-tidy.sh	8d1a5176faea2f7b	fc67071cbbc1d949	57/57
 chat-approval-guard.sh	9edfacf13750d8a4	5b521507423df5d7	15/15
@@ -44,7 +44,7 @@ spark-joy.sh	e88c476e7a612966	e307fe06c4392a7b	29/29
 springboard.sh	2b1a555e07899495	c9bbbbb2bb8adf29	53/53
 stale-blame.sh	dad90dd03817f75c	6286569f42698a5c	19/19
 stale-copy-hint.sh	6c278c5222834240	f9fc1903d947f3e4	27/27
-step-guard.sh	4b68db848225816b	7d80c6c8d13b959f	88/88
+step-guard.sh	b5c1d54bdabfc7d1	9c2dc7873125b86c	89/89
 step-hint.sh	ca4724c43d257d4e	998a239be08c3611	19/19
 stop-reply.sh	6d343f824e7fc2af	3c953e41cd4e43ef	16/16
 summit.sh	a7326a54e5ec3ae0	3a97a0da403c2002	53/53
