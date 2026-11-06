@@ -314,8 +314,8 @@
     },
     "guard_todo_next": {
       "type": "boolean",
-      "title": "A suggested next goes in .todo",
-      "description": "Refuse a write to .todo until the session has started standing-orders, and send back a reply that names what comes next when standing-orders has not run that turn.",
+      "title": ".todo writes go through todo.sh",
+      "description": "Refuse a write to .todo that does not go through standing-orders' todo.sh.",
       "default": true
     },
     "guard_publickey_hint": {

@@ -18,5 +18,5 @@ for name in $(grep -oE 'scripts/[a-z0-9-]+\.sh' "$root/plugins/vicky-skills/hook
   check "$name reads SendUserMessage bodies" 'grep -qE "stop-reply\.sh|SendUserMessage" "$f"'
   check "$name has a test that sends a case through SendUserMessage" '[ -f "$root/tests/$name.test.sh" ] && grep -q SendUserMessage "$root/tests/$name.test.sh"'
 done
-check "the scan found the hooks that read the agent's words" '[ "$readers" -ge 4 ]'
+check "the scan found the hooks that read the agent's words" '[ "$readers" -ge 3 ]'
 exit $fail

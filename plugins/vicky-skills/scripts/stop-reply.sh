@@ -16,5 +16,3 @@ said=$(tail -n 400 "$transcript" | jq -rs '
   | .[(($u // -1) + 1):][] | select(.type == "assistant") | .message.content[]?
   | if .type == "text" then .text elif .type == "tool_use" and .name == "SendUserMessage" then .input.message else empty end' 2>/dev/null)
 prose() { sed 's/`[^`]*`//g' <<<"$said"; }
-# The since-user helpers (skill_since_user), for a hook that weighs the reply against the user's last message.
-. "$(dirname "${BASH_SOURCE[0]}")/since-user.sh"

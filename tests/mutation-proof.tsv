@@ -38,7 +38,7 @@ rm-steer.sh	446e84a40f650cd3	044ab527f146e641	28/28
 same-refusal.sh	a028a5e2340561f9	054af9ee6eb6aed9	18/18
 scratch-guard.sh	c6e044c91bff4bfa	b8dad1fa0e5eb77a	32/32
 sentinels-first-guard.sh	abcde0850123596a	859af927d25626d5	22/22
-since-user.sh	ac2800c62dac64a8	7e05feb473f0a51f	33/33
+since-user.sh	32eda50d00adbb86	21915eedaedec1f2	6/6
 skill-ledger.sh	4f6f1ba436f648ca	87ac889713948c1a	22/22
 spark-joy.sh	e88c476e7a612966	e307fe06c4392a7b	29/29
 springboard.sh	2b1a555e07899495	c9bbbbb2bb8adf29	53/53
@@ -46,14 +46,13 @@ stale-blame.sh	dad90dd03817f75c	6286569f42698a5c	19/19
 stale-copy-hint.sh	6c278c5222834240	f9fc1903d947f3e4	27/27
 step-guard.sh	b5c1d54bdabfc7d1	9c2dc7873125b86c	89/89
 step-hint.sh	ca4724c43d257d4e	998a239be08c3611	19/19
-stop-reply.sh	6d343f824e7fc2af	3c953e41cd4e43ef	16/16
+stop-reply.sh	dfd82cb88bcfd924	a6733d4a58b5f66b	15/15
 summit.sh	a7326a54e5ec3ae0	3a97a0da403c2002	53/53
 tea-stdin.awk	ddfdfc5257c31b06	44ed4f52ffc9914a	70/70
 tea-stdin.sh	c631fcfccdb1abf0	19504a663d50406f	15/15
 ticket-drift.sh	1bc60db2e95d9227	cbdb7e2f644687db	36/36
 ticket-filing-guard.sh	52b8f97a561d1a0f	bc824559f7e2ae55	17/17
 todo-guard.sh	1834d21176d7ce4e	ef4e013394d002ec	19/19
-todo-next.sh	a7ae5fde4fb76b39	5bca6bc69df0ce81	30/30
 todo-reminder.sh	87bab188b0686e79	a8ca61c6f02f86c9	9/9
 watch.sh	5151329b7079b9ce	4f18953f73fc1d05	31/31
 windowed-browser-guard.sh	de7570951b5f6444	dd22fda33232f71d	12/12
