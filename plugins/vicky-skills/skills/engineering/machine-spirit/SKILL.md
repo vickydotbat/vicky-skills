@@ -41,6 +41,7 @@ Run them in order for every workflow change. Diagnosing a run starts at step 7.
 - **Release and pull request share one build script.** A step only the release runs breaks only at release. A release moves every channel or none.
 - **Runner and host configuration is declared in code.** Hand no one a `systemctl set-property` or a manual edit as the fix.
 - **CI automation never widens who can approve or merge.**
+- **A run already going is spent.** Do not hold, re-push or rebase a pull request, or park a merge-ready one behind a CI fix, just so a cheaper gate applies. Fix the gate for future pull requests and let the current run finish. The `run-already-going` eval case backs this line.
 - **Write for a hostile reader.** Workflow comments name no run numbers, runner, host or cache, so a public copy maps nothing. A value a command needs (a `runs-on:` label, a URL it fetches) stays as config, with no prose around it, or moves to a CI variable.
 
 ## Gate rules

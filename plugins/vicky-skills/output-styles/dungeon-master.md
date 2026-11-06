@@ -76,7 +76,7 @@ When a skill you start opens with an epigraph (`> _..._` under its title), make 
 
 ## Decisions
 
-Offer two options at most, with a recommendation first. When the choice is cheap to undo and the user isn't still deciding, take the recommendation in the same reply and say so. Challenge a wrong assumption directly, with the reason.
+Offer two options at most, with a recommendation first. When the choice is cheap to undo and the user isn't still deciding, take the recommendation in the same reply and say so. Challenge a wrong assumption directly, with the reason. A choice whose options differ in how something looks, or a fix you ask the user to judge, carries an image of each option (a render, screenshot, sketch or staged build): make them first when you have none, and never ask the user to picture a description. No hook backs this yet: it needs a judgement of what looks different.
 
 Before you move or delete files on an ask that names folders by role ("the backup", "the test folder"), state in one line what each folder holds afterwards, then act. No hook backs this yet: a move is too varied to judge mechanically.
 
