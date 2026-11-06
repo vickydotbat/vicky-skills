@@ -48,6 +48,7 @@ worktree_of() {
 drop_script() {
   local rel # mutant-ok delete: the name would only be global, and nothing else reads it
   rel=$(sed -n 's/^Drop worktree:[[:space:]]*//p' "$main/docs/agents/testing.md" 2>/dev/null | head -n1)
+  case "$rel" in /* | *..*) return 0 ;; esac # a path stays inside the main clone
   [ -n "$rel" ] && [ -f "$main/$rel" ] && [ -x "$main/$rel" ] && printf '%s' "$rel" # mutant-ok: a blank line names the main clone, a folder, and -f refuses it
 }
 
@@ -109,8 +110,11 @@ Land them, then remove the worktree with $how."
         tell "$GUARD: $branch has landed, but $drop could not remove $wt, so the worktree and branch stay: $out"
         continue
       fi
-      git branch -q -d "$branch" &&
+      if git branch -q -d "$branch" 2>/dev/null; then
         tell "$GUARD: $branch has landed, so $drop removed its worktree $wt and the branch is removed."
+      else
+        tell "$GUARD: $drop removed the worktree $wt, but the branch $branch is still there."
+      fi
       continue
     fi
     git worktree remove -- "$wt" && git branch -q -d "$branch" &&

@@ -5,6 +5,8 @@ How testing is done in this repo. Every testing skill reads this file first, and
 Test surface: <where tests and live checks run, such as a test module or a staging stack>
 Boot command: <the one command that starts the test surface>
 Test props: <where test props and throwaway scripts go>
+Dev stack: <any checkout, when the repo's dev entry point runs from any checkout; leave the line out otherwise>
+Drop worktree: <repo-relative script that removes a worktree with its data, when the repo has one; leave the line out otherwise>
 Never holds test props: <what ships, such as the live module or the content folder>
 Commit test cruft: no
 Test kinds: <unit, integration, live, visual: how to run each, and its limits>

@@ -137,4 +137,21 @@ g -C "$repo" merge -q --no-edit baddrop
 hook_on "git merge baddrop" "" PostToolUse >/dev/null
 yes "a drop script that failed leaves the worktree, says so once, and never claims a removal" \
   '[ -e "$repo/.claude/worktrees/baddrop/.git" ] && [ "$(jq -s length "$scratch/said")" = 1 ] && grep -q "could not remove" "$scratch/said" && ! grep -q "removed its worktree" "$scratch/said"'
+# A drop script path that leaves the main clone is never run or named.
+printf '#!/bin/sh\nexit 0\n' >"$scratch/outside.sh"; chmod +x "$scratch/outside.sh"
+for bad in "$scratch/outside.sh" "../outside.sh"; do
+  printf 'Drop worktree: %s\n' "$bad" >"$repo/docs/agents/testing.md"
+  git -C "$repo" worktree add -q -b "esc$((n = ${n:-0} + 1))" "$repo/.claude/worktrees/esc$n"
+  printf x >"$repo/.claude/worktrees/esc$n/dirty.txt"
+  hook_on "git merge esc$n" "" PostToolUse >/dev/null
+  yes "a drop script path outside the main clone ($bad) is ignored" 'grep -q "git worktree remove" "$scratch/said" && ! grep -q "outside.sh" "$scratch/said"'
+done
+printf 'Drop worktree: scripts/drop.sh\n' >"$repo/docs/agents/testing.md"
+printf '#!/bin/sh\nexit 0\n' >"$repo/scripts/drop.sh"
+git -C "$repo" worktree add -q -b keepbr "$repo/.claude/worktrees/keepbr"
+g -C "$repo/.claude/worktrees/keepbr" commit -q --allow-empty -m keepbr
+g -C "$repo" merge -q --no-edit keepbr
+hook_on "git merge keepbr" "" PostToolUse >/dev/null
+yes "a drop script that leaves the branch checked out is told so, once" \
+  '[ "$(jq -s length "$scratch/said")" = 1 ] && grep -q "keepbr is still there" "$scratch/said"'
 exit $fail
