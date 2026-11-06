@@ -5,7 +5,7 @@ approved-spec-guard.sh	5445203f4ce68c38	4e4d70e2547ba85a	103/103
 approved-spec.sh	fe7edc3bc739cbeb	ddedce4429739032	8/8
 assign-expand.sh	a2d6f7ea568cb59e	8ad22f76fc60a87e	5/5
 auto-tidy.sh	8d1a5176faea2f7b	b7dd295770ad8ffa	57/57
-chat-approval-guard.sh	1fc5e530eb27504d	f041bf8bd88a8d18	15/15
+chat-approval-guard.sh	1fc5e530eb27504d	55fb0338a9c979ab	15/15
 checkout-guard.sh	5aa54dfc7e188ea5	a5cb1fe3b842f59d	114/114
 do-confirm-hint.sh	d46ef43038108065	38b1dffcf11e6df9	19/19
 do-first-guard.sh	bca2eb1effd0a343	19014190162c648c	47/47
