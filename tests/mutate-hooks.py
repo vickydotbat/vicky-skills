@@ -103,7 +103,7 @@ TESTS = {
     "poll-pace.sh": ["poll-pace", "watch_approved_examples", "poll_pace_heredoc_approved_examples", "poll_pace_quoted_approved_examples", "refusal-note"],
     "watch.sh": ["watch", "watch_approved_examples"],
     "assign-expand.sh": ["pr-guard", "worktree-place"],
-    "worktree-place.sh": ["worktree-place", "worktree_place_approved_examples", "worktree_cleanup_approved_examples"],
+    "worktree-place.sh": ["worktree-place", "worktree_place_approved_examples", "worktree_cleanup_approved_examples", "worktree_drop_approved_examples"],
     "lesson-ledger.sh": ["lesson-ledger", "lesson_ledger_approved_examples"],
     "todo-reminder.sh": ["todo-reminder", "todo_reminder_approved_examples"],
     "springboard.sh": ["springboard", "springboard_approved_examples", "summit_approved_examples"],
