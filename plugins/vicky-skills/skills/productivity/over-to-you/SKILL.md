@@ -9,6 +9,8 @@ description: Hand the live checks only a person can do to the human, as a checkl
 
 Everything the agent can run, it runs, and only the rest goes **over to you**. A page the agent can look at itself goes through `by-eye` first; only a look a person must judge, such as whether it feels right, comes here. During a `council-of-elrond`, the list waits until Frodo has chosen the road.
 
+`hand-check-guard` sends back a reply that tells the user to try or test something in chat, with no page link, before this skill has run in the session.
+
 ## Steps
 
 Read the repo's `TESTING_STANDARDS.md` first: it wins over this skill's defaults.

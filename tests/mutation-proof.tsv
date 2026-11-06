@@ -17,6 +17,7 @@ gate-notify.sh	7ba893f680c5d672	42870013382a35b5	25/25
 gate-state-guard.sh	71c338f183976bce	5bd14148a9c2ece7	71/71
 git-guard.sh	f572d9231838f73d	147e8989b955e705	66/66
 git-hook-lib.sh	5b23f2ed23f960ca	751af0485b9a513a	51/51
+hand-check-guard.sh	858fa23e7db4e8fb	c66e7a072f7b2d68	19/19
 heavy-run-guard.sh	13841dd418b59007	1708b5a21f167abe	25/25
 heavy-run.awk	29bae3f6c7302160	1e566d742c22bf2c	90/90
 heredoc-strip.awk	6fa4caa108d2e5b7	d2d1b0f41b4ce7e7	6/6
@@ -52,7 +53,7 @@ stale-blame.sh	dad90dd03817f75c	b5adab20af777203	19/19
 stale-copy-hint.sh	6c278c5222834240	a78eb4ac5f140225	27/27
 step-guard.sh	a141014a868f7e7c	fd5a9867d997a423	58/58
 step-hint.sh	9bdcfa4360d2c63c	2bcc23b3ca355a4d	18/18
-stop-reply.sh	fff0fe89cce56914	488a8a0a1aa0a648	17/17
+stop-reply.sh	1b9509247f0aea5d	259bb1d9c12b48c3	17/17
 summit.sh	a7326a54e5ec3ae0	6f7066718f33e734	53/53
 take-pick.sh	542786086c44be3d	1b68306002aada14	37/37
 tea-stdin.awk	ddfdfc5257c31b06	71ac1cb1bc09c95f	70/70
