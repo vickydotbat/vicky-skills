@@ -6,7 +6,7 @@ set -u
 warp="$(dirname "$0")/../plugins/vicky-skills/skills/engineering/warp/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
-step() { awk -v n="$1" '$0 ~ "^"n"\\. "{on=1; print; next} /^[0-9]+\. /{on=0} /^## /{on=0} on' "$warp"; }
+. "$(dirname "$0")/lib/skill-step.sh"; step() { skill_step "$warp" "$1"; }
 section() { awk -v h="$1" '$0 == "## "h {on=1; next} /^## /{on=0} on' "$warp"; }
 check "a question or gate past pre-flight that the user leaves unanswered gets the agent's own pick, recorded, and the warp flies on" \
   'grep -q "\*\*Zero friction\.\*\*" "$warp" && section "Mid-flight questions" | grep -q "take your pick, record it" && section "Punch through" | grep -q "take your pick, record it"'

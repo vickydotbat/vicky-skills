@@ -6,7 +6,7 @@ set -u
 skill="$(dirname "$0")/../plugins/vicky-skills/skills/productivity/red-pen/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
-step() { awk -v n="$2" '$0 ~ "^"n"\\. "{on=1; print; next} /^[0-9]+\. /{on=0} /^## /{on=0} on' "$1"; }
+. "$(dirname "$0")/lib/skill-step.sh"; step() { skill_step "$1" "$2"; }
 open=$(step "$skill" 2)
 
 check "a fast unchanged close is approval as written, whatever the background-task notice says" \

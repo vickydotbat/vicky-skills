@@ -6,7 +6,7 @@ set -u
 s="$(dirname "$0")/../plugins/vicky-skills/skills/productivity/over-to-you/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
-step() { awk -v n="$1" '$0 ~ "^"n"\\. "{on=1; print; next} /^[0-9]+\. /{on=0} /^## /{on=0} on' "$s"; }
+. "$(dirname "$0")/lib/skill-step.sh"; step() { skill_step "$s" "$1"; }
 stage=$(step 2)
 check "a check that needs props I don't have gets them made, or one command that makes them, and I never build one by hand" \
   'grep -q "Stock every item" <<<"$stage" && grep -q "the one command that makes them" <<<"$stage" && grep -q "never builds a prop by hand" <<<"$stage"'
