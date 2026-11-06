@@ -45,6 +45,8 @@ Open it as the steps below say. A Done the user leaves unchanged takes your pick
 
 For a planning page, such as a warp's pre-flight or a council's next moves after Frodo has chosen the road, add what the caller names above the questions: each chart as an image line, and the course as one ticked box per ticket, `- [x] <key> <kind>: <title>. Needs: <what it needs from the user, or nothing>`. A question the user may answer in their own words ends its options with `- ( ) Other` and a `notes:` line.
 
+A drafts section whose location names an approved-examples test needs `"approve": true`: `write-page.py` refuses it otherwise, since a page with no tick box records no tick.
+
 ## Steps
 
 1. **Write the file** with a script, never by hand: `python3 <this skill's folder>/scripts/write-page.py <spec.json> <file>` for a question, a planning page or `red-pen`'s draft file (the script's header shows each spec), and `over-to-you`'s `checklist.py` for a checklist. Put a question's file in the session scratch folder, `/tmp/$CLAUDE_CODE_SESSION_ID`. Done when the script exits 0.
