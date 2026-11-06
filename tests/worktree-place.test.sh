@@ -102,4 +102,56 @@ g -C "$repo/.claude/worktrees/tell" commit -q --allow-empty -m tell
 g -C "$repo" merge -q --no-edit tell
 said=$(jq -nc --arg d "$repo" '{hook_event_name: "PostToolUse", tool_name: "Bash", cwd: $d, tool_input: {command: "git merge tell"}}' | bash "$hook" 2>/dev/null)
 yes "the agent is told what was removed" 'jq -e ".hookSpecificOutput.hookEventName == \"PostToolUse\"" <<<"$said" >/dev/null && grep -q "removed" <<<"$said"'
+# The drop script: a docs line that names a missing or non-executable file is ignored.
+printf 'Drop worktree: scripts/missing.sh\n' >"$scratch/testing.md"
+mkdir -p "$repo/docs/agents"
+cp "$scratch/testing.md" "$repo/docs/agents/testing.md"
+git -C "$repo" worktree add -q -b nodrop "$repo/.claude/worktrees/nodrop"
+printf x >"$repo/.claude/worktrees/nodrop/dirty.txt"
+g -C "$repo/.claude/worktrees/nodrop" add dirty.txt
+printf y >>"$repo/.claude/worktrees/nodrop/dirty.txt"
+hook_on "git merge nodrop" "" PostToolUse >/dev/null
+yes "a drop script line naming a missing file is ignored" 'grep -q "git worktree remove" "$scratch/said" && ! grep -q "missing.sh" "$scratch/said"'
+mkdir -p "$repo/scripts"
+printf '#!/bin/sh\n' >"$repo/scripts/missing.sh"
+hook_on "git merge nodrop" "" PostToolUse >/dev/null
+yes "a drop script that is not executable is ignored" 'grep -q "git worktree remove" "$scratch/said" && ! grep -q "missing.sh" "$scratch/said"'
+chmod +x "$repo/scripts/missing.sh"
+hook_on "git merge nodrop" "" PostToolUse >/dev/null
+yes "an executable drop script is named" 'grep -q "scripts/missing.sh" "$scratch/said"'
+# A drop script that removes a landed worktree gets one message, naming it; one that fails gets one, saying so.
+mkdir -p "$repo/scripts"
+printf '#!/bin/sh\ngit worktree remove --force "$1"\n' >"$repo/scripts/drop.sh"
+printf 'Drop worktree: scripts/drop.sh\n' >"$repo/docs/agents/testing.md"
+chmod +x "$repo/scripts/drop.sh"
+git -C "$repo" worktree add -q -b okdrop "$repo/.claude/worktrees/okdrop"
+g -C "$repo/.claude/worktrees/okdrop" commit -q --allow-empty -m okdrop
+g -C "$repo" merge -q --no-edit okdrop
+hook_on "git merge okdrop" "" PostToolUse >/dev/null
+yes "a drop script that worked is named in one message, with nothing else said" \
+  '[ "$(jq -s length "$scratch/said")" = 1 ] && grep -q "scripts/drop.sh removed" "$scratch/said"'
+printf '#!/bin/sh\necho stuck >&2\nexit 1\n' >"$repo/scripts/drop.sh"
+git -C "$repo" worktree add -q -b baddrop "$repo/.claude/worktrees/baddrop"
+g -C "$repo/.claude/worktrees/baddrop" commit -q --allow-empty -m baddrop
+g -C "$repo" merge -q --no-edit baddrop
+hook_on "git merge baddrop" "" PostToolUse >/dev/null
+yes "a drop script that failed leaves the worktree, says so once, and never claims a removal" \
+  '[ -e "$repo/.claude/worktrees/baddrop/.git" ] && [ "$(jq -s length "$scratch/said")" = 1 ] && grep -q "could not remove" "$scratch/said" && ! grep -q "removed its worktree" "$scratch/said"'
+# A drop script path that leaves the main clone is never run or named.
+printf '#!/bin/sh\nexit 0\n' >"$scratch/outside.sh"; chmod +x "$scratch/outside.sh"
+for bad in "$scratch/outside.sh" "../outside.sh"; do
+  printf 'Drop worktree: %s\n' "$bad" >"$repo/docs/agents/testing.md"
+  git -C "$repo" worktree add -q -b "esc$((n = ${n:-0} + 1))" "$repo/.claude/worktrees/esc$n"
+  printf x >"$repo/.claude/worktrees/esc$n/dirty.txt"
+  hook_on "git merge esc$n" "" PostToolUse >/dev/null
+  yes "a drop script path outside the main clone ($bad) is ignored" 'grep -q "git worktree remove" "$scratch/said" && ! grep -q "outside.sh" "$scratch/said"'
+done
+printf 'Drop worktree: scripts/drop.sh\n' >"$repo/docs/agents/testing.md"
+printf '#!/bin/sh\nexit 0\n' >"$repo/scripts/drop.sh"
+git -C "$repo" worktree add -q -b keepbr "$repo/.claude/worktrees/keepbr"
+g -C "$repo/.claude/worktrees/keepbr" commit -q --allow-empty -m keepbr
+g -C "$repo" merge -q --no-edit keepbr
+hook_on "git merge keepbr" "" PostToolUse >/dev/null
+yes "a drop script that leaves the branch checked out is told so, once" \
+  '[ "$(jq -s length "$scratch/said")" = 1 ] && grep -q "keepbr is still there" "$scratch/said"'
 exit $fail

@@ -3,7 +3,7 @@ after-push.sh	7230a82e949dfde8	41d87b1f53c3ed1b	16/16
 ai-credit.sh	ce9c03ae1de6bb7b	79336b44d2c41731	1/1
 approved-spec-guard.sh	5445203f4ce68c38	4e4d70e2547ba85a	103/103
 approved-spec.sh	fe7edc3bc739cbeb	ddedce4429739032	8/8
-assign-expand.sh	a2d6f7ea568cb59e	8ad22f76fc60a87e	5/5
+assign-expand.sh	a2d6f7ea568cb59e	cf190647697b5924	5/5
 auto-tidy.sh	8d1a5176faea2f7b	b7dd295770ad8ffa	57/57
 chat-approval-guard.sh	1fc5e530eb27504d	55fb0338a9c979ab	15/15
 checkout-guard.sh	5aa54dfc7e188ea5	a5cb1fe3b842f59d	114/114
@@ -51,7 +51,7 @@ springboard.sh	2b1a555e07899495	aa25977872a3c406	53/53
 stale-blame.sh	dad90dd03817f75c	b5adab20af777203	19/19
 stale-copy-hint.sh	6c278c5222834240	a78eb4ac5f140225	27/27
 step-guard.sh	a141014a868f7e7c	fd5a9867d997a423	58/58
-step-hint.sh	e2494ca8c42871eb	2bcc23b3ca355a4d	18/18
+step-hint.sh	9bdcfa4360d2c63c	2bcc23b3ca355a4d	18/18
 stop-reply.sh	fff0fe89cce56914	488a8a0a1aa0a648	17/17
 summit.sh	a7326a54e5ec3ae0	6f7066718f33e734	53/53
 take-pick.sh	542786086c44be3d	1b68306002aada14	37/37
@@ -64,4 +64,4 @@ todo-next.sh	a7ae5fde4fb76b39	1d6470dc2be2e6ca	30/30
 todo-reminder.sh	87bab188b0686e79	3b39171b71fca45a	9/9
 watch.sh	5151329b7079b9ce	ff43a3661537f92a	31/31
 windowed-browser-guard.sh	de7570951b5f6444	c160af4169e77fb5	12/12
-worktree-place.sh	d6a2c6434609dc7f	48a408fb3a6fa406	60/60
+worktree-place.sh	019f7c975eb4a099	c8db732402812c20	71/71

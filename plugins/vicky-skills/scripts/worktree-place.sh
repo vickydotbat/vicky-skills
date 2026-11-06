@@ -13,6 +13,13 @@
 # commit has landed and nothing is uncommitted. Otherwise the worktree stays,
 # and the agent is told what is left: the commits still to land, or the
 # uncommitted changes. A pull request merged on the forge is marie-kondo's.
+#
+# A repo that names its own removal script on a "Drop worktree: <path>" line of
+# docs/agents/testing.md (the path is relative to the main clone, and the file
+# must be executable) has it named in place of git worktree remove, and run
+# with the worktree's path for a landed branch. git worktree remove leaves
+# untracked files behind, and files a container owns. A script that fails
+# leaves the worktree and branch, and the agent is told its output.
 GUARD=worktree-place
 OPTION=${CLAUDE_PLUGIN_OPTION_GUARD_WORKTREE_PLACE:-}
 # shellcheck source=git-hook-lib.sh
@@ -35,6 +42,14 @@ worktree_of() {
   git worktree list --porcelain | awk -v ref="refs/heads/$1" -v main="$main" '
     /^worktree / { path = substr($0, 10) }
     $0 == "branch " ref && path != main { print path; exit }'
+}
+
+# The repo's own worktree removal script, or nothing.
+drop_script() {
+  local rel # mutant-ok delete: the name would only be global, and nothing else reads it
+  rel=$(sed -n 's/^Drop worktree:[[:space:]]*//p' "$main/docs/agents/testing.md" 2>/dev/null | head -n1)
+  case "$rel" in /* | *..*) return 0 ;; esac # a path stays inside the main clone
+  [ -n "$rel" ] && [ -f "$main/$rel" ] && [ -x "$main/$rel" ] && printf '%s' "$rel" # mutant-ok: a blank line names the main clone, a folder, and -f refuses it
 }
 
 check_add() {
@@ -65,7 +80,8 @@ check_add() {
 }
 
 check_merge() {
-  local words=(${1#*merge}) i branch wt left dirty
+  local words=(${1#*merge}) i branch wt left dirty drop out how
+  drop=$(drop_script)
   [ -e "$(git rev-parse --git-dir)/MERGE_HEAD" ] && return 0
   for ((i = 0; i < ${#words[@]}; i++)); do
     case "${words[i]}" in
@@ -75,16 +91,30 @@ check_merge() {
     branch=${words[i]}
     wt=$(worktree_of "$branch")
     [ -n "$wt" ] || continue
+    how="git worktree remove $wt and git branch -d $branch"
+    [ -z "$drop" ] || how="$drop $wt, then git branch -d $branch"
     dirty=$(git -C "$wt" status --porcelain)
     if [ -n "$dirty" ]; then
-      tell "$GUARD: $wt, the worktree of $branch, has uncommitted changes, so it stays. Commit or move them, then remove it with git worktree remove $wt and git branch -d $branch."
+      tell "$GUARD: $wt, the worktree of $branch, has uncommitted changes, so it stays. Commit or move them, then remove it with $how."
       continue
     fi
     left=$(git log --format='%h %s' "HEAD..refs/heads/$branch")
     if [ -n "$left" ]; then
       tell "$GUARD: $wt stays: these commits of $branch have not landed on $(git rev-parse --abbrev-ref HEAD):
 $left
-Land them, then remove the worktree with git worktree remove $wt and git branch -d $branch."
+Land them, then remove the worktree with $how."
+      continue
+    fi
+    if [ -n "$drop" ]; then
+      if ! out=$(cd "$main" && "$main/$drop" "$wt" 2>&1); then
+        tell "$GUARD: $branch has landed, but $drop could not remove $wt, so the worktree and branch stay: $out"
+        continue
+      fi
+      if git branch -q -d "$branch" 2>/dev/null; then
+        tell "$GUARD: $branch has landed, so $drop removed its worktree $wt and the branch is removed."
+      else
+        tell "$GUARD: $drop removed the worktree $wt, but the branch $branch is still there."
+      fi
       continue
     fi
     git worktree remove -- "$wt" && git branch -q -d "$branch" &&

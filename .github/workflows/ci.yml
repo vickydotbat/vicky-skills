@@ -461,6 +461,8 @@ jobs:
         run: tests/worktree_place_approved_examples.test.sh
       - name: A merged worktree is cleaned up
         run: tests/worktree_cleanup_approved_examples.test.sh
+      - name: A repo's own drop script removes a worktree
+        run: tests/worktree_drop_approved_examples.test.sh
       - name: Worktree-place
         run: tests/worktree-place.test.sh
       - name: Interactive page
