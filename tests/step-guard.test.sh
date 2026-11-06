@@ -54,4 +54,10 @@ says "a refusal reminds the agent that a warp builds each star with do, and do r
 { started vicky-skills:do; started vicky-skills:review; } > "$dir/nosent.jsonl"
 printf 'Plan check: none found\n' > "$dir/body"
 says "a missing sentinels is told it is never skipped, with its manual pass, and no written skip is offered" "$dir/nosent.jsonl" "manual pass" "Skipped: <step>, because"
+# Text a shell runs is code, so it is read; text that only names the command is not.
+expect "a bash -c string is read" 2 ok "$dir/noreview.jsonl" 'bash -c "gh pr ready 37"'
+expect "an eval string is read" 2 ok "$dir/noreview.jsonl" "eval 'gh pr ready 37'"
+expect "a heredoc fed to bash is read" 2 ok "$dir/noreview.jsonl" "$(printf 'bash <<EOF\ngh pr ready 37\nEOF')"
+expect "a heredoc fed to cat is not read" 0 ok "$dir/noreview.jsonl" "$(printf 'cat <<EOF\ngh pr ready 37\nEOF')"
+expect "the words in a single-quoted echo are not read" 0 ok "$dir/noreview.jsonl" "echo 'gh pr ready 37'"
 exit $fail

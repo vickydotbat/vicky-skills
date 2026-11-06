@@ -6,6 +6,7 @@
 # covers any file type. It also refuses a do build's pull request whose body has no
 # "Plan check: <what it found>" line. On GitHub that is `gh pr ready`. On
 # Gitea it is `tea pr edit <n> -t <title>` with a title that has no "WIP:".
+# Text that only names the command (a quoted string, a heredoc body) is no command.
 # Reads the session transcript for Skill calls. A failed body lookup lets the
 # command through. Off unless the plugin option step_guard is true.
 case "${CLAUDE_PLUGIN_OPTION_STEP_GUARD:-}" in true|1) ;; *) exit 0 ;; esac
@@ -13,7 +14,12 @@ command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every la
 payload=$(cat)
 cmd=$(jq -r '.tool_input.command // ""' <<<"$payload")
 forge=""
-if [[ $cmd =~ gh[[:space:]]+pr[[:space:]]+ready([[:space:]]+([0-9]+))? ]]; then
+# Text that only names the command is no command: heredoc bodies and quoted strings go before the gh match.
+# A string or heredoc a shell runs (bash -c "...", eval '...', bash <<EOF) is code, so it stays.
+code=$(awk -v code=1 -f "$(dirname "$0")/heredoc-strip.awk" <<<"$cmd")
+[[ $cmd =~ (^|[[:space:];\&\|\(])(bash|sh|zsh|eval)[[:space:]]+(-[A-Za-z]+[[:space:]]+)*[\"\'] ]] ||
+  code=$(sed -E "s/\"[^\"]*\"//g; s/'[^']*'//g" <<<"$code")
+if [[ $code =~ gh[[:space:]]+pr[[:space:]]+ready([[:space:]]+([0-9]+))? ]]; then
   forge=gh pr=${BASH_REMATCH[2]}
 elif [[ $cmd =~ tea[[:space:]]+(pulls|pull|pr)[[:space:]]+edit[[:space:]]+([0-9]+).*[[:space:]](-t|--title)[[:space:]=]+(\"[^\"]*\"|\'[^\']*\'|[^[:space:]]+) ]] &&
      [[ ${BASH_REMATCH[4]} != *WIP:* ]]; then

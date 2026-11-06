@@ -231,6 +231,8 @@ jobs:
         run: tests/push-behind-guard.test.sh
       - name: Step guard
         run: tests/step_guard_approved_examples.test.sh
+      - name: Step guard reads commands, not text that names them
+        run: tests/step_guard_quotes_approved_examples.test.sh
       - name: Lesson hint
         run: tests/lesson-hint.test.sh
       - name: Token savings
