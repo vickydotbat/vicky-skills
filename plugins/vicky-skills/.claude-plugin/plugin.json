@@ -300,6 +300,12 @@
       "description": "When the agent ends its turn asking a question it already has a pick for, with no gate behind it, it is sent back once to take the pick and say so, or to gate the question with a watch.",
       "default": false
     },
+    "guard_chat_approval": {
+      "type": "boolean",
+      "title": "Approval is a tick on a page",
+      "description": "When the agent ends its turn asking you to approve examples, a spec or text for an audience in chat, with no page link, it is sent back once to hand the text over with a page you tick. On unless you turn it off.",
+      "default": true
+    },
     "guard_no_v1": {
       "type": "boolean",
       "title": "Never a V1",

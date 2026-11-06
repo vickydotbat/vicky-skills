@@ -177,6 +177,12 @@ jobs:
         run: tests/sendusermessage-mode.test.sh
       - name: Take the pick, chat gates
         run: tests/take_pick_chat_gate_approved_examples.test.sh
+      - name: Chat approval guard
+        run: tests/chat-approval-guard.test.sh
+      - name: Approval is a tick on a page
+        run: tests/chat_approval_guard_approved_examples.test.sh
+      - name: Staging an approved test file runs
+        run: tests/approved-spec-staging.test.sh
       - name: Stale-copy blame hook
         run: tests/stale-blame.test.sh
       - name: Refusals say nothing ran
