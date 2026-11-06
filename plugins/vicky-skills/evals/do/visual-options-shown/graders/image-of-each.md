@@ -1,5 +1,6 @@
 ---
 type: regex
-pattern: 'render|screenshot|sketch|image|picture|staged build'
+target: last_message
+pattern: 'render|screenshot|sketch|image of each|staged build|make the images'
 flags: i
 ---
