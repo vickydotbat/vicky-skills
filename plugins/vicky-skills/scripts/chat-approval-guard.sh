@@ -12,9 +12,9 @@ set -u
 case "${CLAUDE_PLUGIN_OPTION_GUARD_CHAT_APPROVAL:-}" in false|0) exit 0 ;; esac
 # shellcheck source=stop-reply.sh
 . "$(dirname "$0")/stop-reply.sh"
-# The page is where the tick is asked.
-grep -qE "https?://" <<<"$said" && exit 0
+# The page is where the tick is asked: a link to a page on this machine. Any other link is no page.
+grep -qE "https?://(127\.0\.0\.1|localhost)[:/]" <<<"$said" && exit 0
 words=$(prose)
-grep -qiE '\b(approve|confirm)\b|\byour (ok|approval)\b|\b(reply|say) (ok|yes|go)\b|\btick\b' <<<"$words" || exit 0
-grep -qiE '\b(examples?|spec|wording|draft|text|row|copy|notes)\b' <<<"$words" || exit 0
+grep -qiE '\bapprove\b|\bconfirm (the|these|this|it|them)\b|\byour (ok|approval)\b|\b(reply|say) (ok|yes|go)\b|\btick (the|these|this|it|them|each)\b' <<<"$words" || exit 0
+grep -qiE '\b(examples?|spec|wording|drafts?|text for|credits row|release notes)\b' <<<"$words" || exit 0
 jq -n '{decision:"block", reason:"You asked the user to approve examples, a spec or text for an audience in chat. Approval is a tick on a page, never a chat reply, however small a formality it looks. Write the text into a red-pen draft file with its approve ticks, open it, give the page link, and wait at the gate with a watch."}'

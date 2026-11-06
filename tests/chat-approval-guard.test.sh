@@ -31,17 +31,26 @@ check "a missing transcript goes through" 'TRANSCRIPT="$fx/none.jsonl" passes'
 for ask in "Please approve the examples." "Can you confirm the examples?" "I need your ok on the examples." "I need your approval on the examples." "Reply ok to take the examples." "Say yes to take the examples." "Tick the examples."; do
   reply "$ask"; check "each approval ask counts: $ask" 'blocked'
 done
-for subject in examples example spec wording draft text row copy notes; do
+for subject in examples example spec wording draft "text for the page" "credits row" "release notes"; do
   reply "Please approve the $subject."; check "each subject counts: $subject" 'blocked'
 done
+for innocent in "I will confirm the row count." "No copy needed, tick." "The notes are in the file." "Please approve the plan." "Tick off the done items."; do
+  reply "$innocent"; check "an ordinary reply goes through: $innocent" 'passes'
+done
+reply "Please approve the examples, see https://example.invalid/docs for the rule."
+check "a link to another page is no page" 'blocked'
+reply "Please approve the examples at http://localhost:8080/page."
+check "a localhost page link goes through" 'passes'
+reply "Just confirm the one-line spec tweak: reply ok."
+check "a formality is no exemption: a one-line spec tweak asked in chat is sent back" 'blocked'
 reply "Please approve the plan."
 check "an approval ask with no examples, spec or text goes through" 'passes'
 reply "Here are the examples I wrote."
 check "a subject with no approval ask goes through" 'passes'
 reply "Please approve the examples at http://127.0.0.1:40415/ and press Done."
 check "a page link goes through" 'passes'
-reply "Please approve the examples at https://example.invalid/page and press Done."
-check "an https link goes through" 'passes'
+reply "Please approve the examples at https://127.0.0.1:9000/page and press Done."
+check "an https page link goes through" 'passes'
 reply "Run \`approve the examples\` to start it."
 check "quoted code is no ask" 'passes'
 { user "go"; sent "Please approve the examples: reply ok."; } > "$fx/t.jsonl"
