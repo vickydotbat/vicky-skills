@@ -277,6 +277,12 @@
       "description": "When the agent ends a turn that did work with no gate line, no done line and nothing running in the background, it is sent back once to make its next step's tool call, so work you left it on keeps going. On unless you turn it off.",
       "default": true
     },
+    "guard_find_ledger": {
+      "type": "boolean",
+      "title": "Close every over-to-you find",
+      "description": "When the agent ends a turn while its over-to-you ledger has an open find, it is sent back once to close each one. On unless you turn it off.",
+      "default": true
+    },
     "guard_hand_check": {
       "type": "boolean",
       "title": "Live checks go through over-to-you",
