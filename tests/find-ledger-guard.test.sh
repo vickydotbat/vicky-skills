@@ -28,6 +28,10 @@ reply "🚪 Waiting on you: the page." > "$fx/t.jsonl"
 check "a gate line with open lines passes" 'passes'
 reply "Working on F1." > "$fx/t.jsonl"
 check "a plain reply with open lines passes" 'passes'
+printf 'F1 | open | a\n' > "$L"
+jq -nc --arg t "🏁 Done: finished." '{type:"assistant",message:{content:[{type:"tool_use",name:"SendUserMessage",input:{message:$t}}]}}' > "$fx/t.jsonl"
+check "a done reply sent through SendUserMessage with an open line is sent back" 'blocked'
+reply "🏁 Done: finished." > "$fx/t.jsonl"
 printf 'F1 | fixed | a\nF2 | handed on | GAME-1\n' > "$L"
 reply "🏁 Done: finished." > "$fx/t.jsonl"
 check "a done reply with every line closed passes" 'passes'
