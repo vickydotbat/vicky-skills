@@ -105,6 +105,7 @@ TESTS = {
     "plugin-data.sh": ["summit", "lesson-ledger"],
     "stop-reply.sh": ["chat_approval_guard_approved_examples", "hand_check_guard_approved_examples", "chat-approval-guard", "hand-check-guard"],
     "chat-approval-guard.sh": ["chat-approval-guard", "chat_approval_guard_approved_examples"],
+    "idle-stop-guard.sh": ["idle-stop-guard"],
     "hand-check-guard.sh": ["hand-check-guard", "hand_check_guard_approved_examples"],
     "stale-blame.sh": ["stale-blame", "stale_blame_comparison_approved_examples"],
     "fetch-place-hint.sh": ["fetch-place-hint"],

@@ -15,6 +15,7 @@ git-guard.sh	f572d9231838f73d	172dca2895093e8e	49/49
 git-hook-lib.sh	5b23f2ed23f960ca	e46d7b39621cf9cb	51/51
 hand-check-guard.sh	858fa23e7db4e8fb	252a2f6d34df0976	19/19
 heredoc-strip.awk	6fa4caa108d2e5b7	2f9ac206e1afb932	6/6
+idle-stop-guard.sh	249b6b0ec390b7d7	cb8969a7e9b6d99f	35/35
 keep-awake.sh	64e8be754351199c	ecfc01b8cf98bd99	25/25
 lesson-hint.sh	7a82ca13330f28fd	896afa1fc4881f91	11/11
 lesson-ledger.sh	4c88dc2d0aebcfe6	4cb925598f2dbcc8	18/18
