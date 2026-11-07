@@ -49,6 +49,14 @@ done
 check "a foreground Bash call is no background job" 'blocked'
 { user "go"; tool Bash '{"command":"ls"}'; sent "🏁 Done: x"; user "thanks"; sent "You're welcome."; } > "$fx/t.jsonl"
 check "only the turn since the user's last message counts" 'passes'
+# Boundaries of the silent end, approved with it on 2026-11-07 and already true
+# before it: a reply with no gate or done line, and a silent turn after a typed
+# message, are still sent back.
+notice() { jq -nc '{type:"user",origin:{kind:"task-notification",producer:"session-task"},message:{content:"<task-notification>\n<task-id>b1</task-id>\n</task-notification>"}}'; }
+{ user "go"; notice; tool Read '{"file_path":"x"}'; text "Looked at it, all fine."; } > "$fx/t.jsonl"
+check "a reply with no gate or done line after a background notice is sent back" 'blocked'
+{ user "go"; tool Read '{"file_path":"x"}'; } > "$fx/t.jsonl"
+check "a silent turn after a typed message is sent back" 'blocked'
 root="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills"
 check "warp's Zero friction line says a side ask or report never ends the turn" 'grep -q "never ends the turn: the same response carries the next course step.s tool call" "$root/skills/engineering/warp/SKILL.md"'
 check "the style says a named next step carries its tool call" 'grep -q "carries that step.s tool call in the same response" "$root/output-styles/dungeon-master.md"'
