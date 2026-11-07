@@ -8,7 +8,7 @@ chat-approval-guard.sh	9edfacf13750d8a4	5b521507423df5d7	15/15
 do-confirm-hint.sh	d46ef43038108065	9e984d1404eadc90	19/19
 familiar-voice.sh	5b61603631286b5a	318bf4827b10ddd3	21/21
 fetch-place-hint.sh	3573b2f17e94944d	2c5a05ab853546e0	12/12
-find-ledger-guard.sh	fa3cc521aa09429b	83fa262344a01683	32/32
+find-ledger-guard.sh	64b09c9094ab1d72	99ea12faf67606e6	35/35
 gamma-shift.sh	bf7b0a15b596e9fc	105151370ead9c2f	12/12
 gate-notify.sh	7ba893f680c5d672	f5838b34f16e7992	25/25
 gate-state-guard.sh	71c338f183976bce	8a8a8a438ed67e88	71/71

@@ -8,7 +8,7 @@ fx=$(mktemp -d); sid="flg-$$"; mkdir -p "/tmp/$sid"; trap 'rm -rf "$fx" "/tmp/$s
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 reply() { jq -nc --arg t "$1" '{type:"assistant",message:{content:[{type:"text",text:$t}]}}'; }
-run() { jq -nc --arg s "${SID:-$sid}" --arg t "${TR:-$fx/t.jsonl}" --argjson a "${2:-false}" '{session_id:$s,stop_hook_active:$a,transcript_path:$t}' |
+run() { jq -nc --arg s "${SID-$sid}" --arg t "${TR:-$fx/t.jsonl}" --argjson a "${2:-false}" '{session_id:$s,stop_hook_active:$a,transcript_path:$t}' |
   env -u CLAUDE_PLUGIN_OPTION_GUARD_FIND_LEDGER ${1:+CLAUDE_PLUGIN_OPTION_GUARD_FIND_LEDGER=$1} bash "$hook" 2>/dev/null; }
 blocked() { [ "$(run "${1:-}" "${2:-false}" | jq -r '.decision // empty' 2>/dev/null)" = block ]; }
 passes() { local o; o=$(run "${1:-}" "${2:-false}"); [ $? = 0 ] && [ -z "$o" ]; }
@@ -68,4 +68,9 @@ check "a no-bug line with a reason passes" 'passes'
 printf 'F1 | open | a\n' > "$L"
 reply "🏁 Done: finished." > "$fx/t.jsonl"
 check "a block exits 0, so Claude Code reads its decision" 'run >/dev/null; [ $? = 0 ]'
+printf 'F1 | open\n' > "$L"
+check "a bare open line with no ref is open" 'blocked'
+printf 'F1|open\n' > "$L"
+check "an open line with no spaces is open" 'blocked'
+check "an empty session id passes" 'SID= passes'
 exit $fail

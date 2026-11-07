@@ -280,7 +280,7 @@
     "guard_find_ledger": {
       "type": "boolean",
       "title": "Close every over-to-you find",
-      "description": "When the agent reports an over-to-you read-back as done while its ledger still has an open find, it is sent back once to close each one. On unless you turn it off.",
+      "description": "When the agent ends a turn while its over-to-you ledger has an open find, it is sent back once to close each one. On unless you turn it off.",
       "default": true
     },
     "guard_hand_check": {
