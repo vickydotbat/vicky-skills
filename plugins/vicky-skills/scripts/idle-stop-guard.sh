@@ -12,14 +12,8 @@
 set -u
 case "${CLAUDE_PLUGIN_OPTION_GUARD_IDLE_STOP:-}" in false|0) exit 0 ;; esac
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
-payload=$(cat)
-[ "$(jq -r '.stop_hook_active // false' <<<"$payload" 2>/dev/null)" = false ] || exit 0
-transcript=$(jq -r '.transcript_path // ""' <<<"$payload" 2>/dev/null)
-[ -f "$transcript" ] || exit 0 # mutant-ok delete: tail reads nothing from a missing file, the turn reads as [] and the hook exits 0 the same way
-# The turn: every assistant entry since the user's last typed message.
-turn=$(tail -n 400 "$transcript" | jq -cs '
-  (map(.type == "user" and (.isMeta | not) and ((.message.content | type) == "string" or any(.message.content[]?; .type == "text"))) | rindex(true)) as $u
-  | [.[(($u // -1) + 1):][] | select(.type == "assistant") | .message.content[]?]' 2>/dev/null) || exit 0
+# shellcheck source=stop-reply.sh
+. "$(dirname "$0")/stop-reply.sh"
 # A turn that only replied did no work, so it may end.
 jq -e 'any(.[]; .type == "tool_use" and .name != "SendUserMessage")' <<<"$turn" >/dev/null || exit 0
 # A question asked or something left running that wakes the session.

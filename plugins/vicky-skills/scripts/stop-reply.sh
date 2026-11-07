@@ -2,7 +2,7 @@
 # Sourced by the Stop hooks that read the agent's last reply (chat-approval-guard,
 # hand-check-guard). Reads the hook's payload from stdin. Exits 0, letting the stop
 # through, on the second stop of a turn, so a misjudged reply never loops, and
-# when the transcript is missing. Leaves `said`, the agent's text since the
+# when the transcript is missing. Leaves `turn` and `said`, the agent's text since the
 # user's last typed message: its chat text and the messages it sent with
 # SendUserMessage. `prose` prints it with code in backticks dropped, since
 # quoted code is text the reply talks about, never its own words.
@@ -10,9 +10,10 @@ payload=$(cat)
 [ "$(jq -r '.stop_hook_active // false' <<<"$payload" 2>/dev/null)" = false ] || exit 0
 transcript=$(jq -r '.transcript_path // ""' <<<"$payload" 2>/dev/null)
 [ -f "$transcript" ] || exit 0 # mutant-ok delete: tail reads nothing from a missing file, so the reply reads empty and each hook exits 0
-# shellcheck disable=SC2034 # read by the hook that sources this
-said=$(tail -n 400 "$transcript" | jq -rs '
+# `turn` is the JSON array of the agent's content blocks since that message.
+turn=$(tail -n 400 "$transcript" | jq -cs '
   (map(.type == "user" and (.isMeta | not) and ((.message.content | type) == "string" or any(.message.content[]?; .type == "text"))) | rindex(true)) as $u
-  | .[(($u // -1) + 1):][] | select(.type == "assistant") | .message.content[]?
-  | if .type == "text" then .text elif .type == "tool_use" and .name == "SendUserMessage" then .input.message else empty end' 2>/dev/null)
+  | [.[(($u // -1) + 1):][] | select(.type == "assistant") | .message.content[]?]' 2>/dev/null) || exit 0
+# shellcheck disable=SC2034 # read by the hook that sources this
+said=$(jq -r '.[] | if .type == "text" then .text elif .type == "tool_use" and .name == "SendUserMessage" then .input.message else empty end' <<<"$turn" 2>/dev/null)
 prose() { sed 's/`[^`]*`//g' <<<"$said"; }

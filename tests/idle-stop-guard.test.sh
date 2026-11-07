@@ -49,4 +49,8 @@ done
 check "a foreground Bash call is no background job" 'blocked'
 { user "go"; tool Bash '{"command":"ls"}'; sent "🏁 Done: x"; user "thanks"; sent "You're welcome."; } > "$fx/t.jsonl"
 check "only the turn since the user's last message counts" 'passes'
+root="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills"
+check "warp's Zero friction line says a side ask or report never ends the turn" 'grep -q "never ends the turn: the same response carries the next course step.s tool call" "$root/skills/engineering/warp/SKILL.md"'
+check "the style says a named next step carries its tool call" 'grep -q "carries that step.s tool call in the same response" "$root/output-styles/dungeon-master.md"'
+check "the style says finished work opens with the done line" 'grep -q "open with \`🏁 Done:\`" "$root/output-styles/dungeon-master.md"'
 exit $fail

@@ -103,7 +103,7 @@ TESTS = {
     "springboard.sh": ["springboard", "springboard_approved_examples", "summit_approved_examples"],
     "summit.sh": ["summit", "summit_approved_examples"],
     "plugin-data.sh": ["summit", "lesson-ledger"],
-    "stop-reply.sh": ["chat_approval_guard_approved_examples", "hand_check_guard_approved_examples", "chat-approval-guard", "hand-check-guard"],
+    "stop-reply.sh": ["chat_approval_guard_approved_examples", "hand_check_guard_approved_examples", "chat-approval-guard", "hand-check-guard", "idle-stop-guard"],
     "chat-approval-guard.sh": ["chat-approval-guard", "chat_approval_guard_approved_examples"],
     "idle-stop-guard.sh": ["idle-stop-guard"],
     "hand-check-guard.sh": ["hand-check-guard", "hand_check_guard_approved_examples"],
