@@ -270,6 +270,12 @@
       "description": "When the agent ends its turn asking you to approve examples, a spec or text for an audience in chat, with no page link, it is sent back once to hand the text over with a page you tick. On unless you turn it off.",
       "default": true
     },
+    "guard_idle_stop": {
+      "type": "boolean",
+      "title": "Never sit idle outside a gate",
+      "description": "When the agent ends a turn that did work with no gate line, no done line and nothing running in the background, it is sent back once to make its next step's tool call, so work you left it on keeps going. On unless you turn it off.",
+      "default": true
+    },
     "guard_hand_check": {
       "type": "boolean",
       "title": "Live checks go through over-to-you",

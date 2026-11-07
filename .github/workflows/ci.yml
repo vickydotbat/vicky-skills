@@ -141,6 +141,8 @@ jobs:
         run: tests/chat-approval-guard.test.sh
       - name: Approval is a tick on a page
         run: tests/chat_approval_guard_approved_examples.test.sh
+      - name: Idle stop guard
+        run: tests/idle-stop-guard.test.sh
       - name: Hand check guard
         run: tests/hand-check-guard.test.sh
       - name: Live checks go through over-to-you

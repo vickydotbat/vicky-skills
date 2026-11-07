@@ -380,6 +380,11 @@
           },
           {
             "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/idle-stop-guard.sh\"",
+            "timeout": 10
+          },
+          {
+            "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/hand-check-guard.sh\"",
             "timeout": 10
           },
