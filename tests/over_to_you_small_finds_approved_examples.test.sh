@@ -14,7 +14,7 @@ step5=$(grep '^5\. \*\*Read it back' "$s")
 # When the agent reads the page back
 # Then the agent fixes it in that session and its report says so
 check "SF1 a small find is fixed in place" \
-  'grep -q "small.*one file.*one test" <<<"$sized" && grep -q "small find.*fix it in that session" <<<"$sized" && grep -q "Size the finds" <<<"$step5"'
+  'grep -q "small\*\* find has a fix in one file that needs one test" <<<"$sized" && grep -q "small find.*fix it in that session" <<<"$sized" && grep -q "Size the finds" <<<"$step5"'
 
 # Given a failed item whose fix touches more than one file, or needs more than one test
 # When the agent reads the page back
