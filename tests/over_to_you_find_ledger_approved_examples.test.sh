@@ -41,4 +41,37 @@ reply "🏁 Done: read-back finished." > "$fx/t.jsonl"
 out=$(run)
 check "FL4 a done reply with an open line is sent back naming it" \
   '[ "$(jq -r .decision <<<"$out" 2>/dev/null)" = block ] && grep -q "F2" <<<"$out" && ! grep -q "F1" <<<"$out"'
+
+# Given the session started over-to-you and the user closed its page with items not marked [x]
+# And the agent never wrote a ledger
+# When the agent reports a Done reply
+# Then a hook sends the turn back asking for the ledger
+rm -f "/tmp/$sid/over-to-you-ledger.md"
+printf '# Over to you\n1. [x] a\n2. [-] b\n' > "/tmp/$sid/over-to-you-test.md"
+reply "🏁 Done: finished." > "$fx/t.jsonl"
+out=$(run)
+check "FL5 skipping the ledger is caught" \
+  '[ "$(jq -r .decision <<<"$out" 2>/dev/null)" = block ] && grep -q "ledger" <<<"$out"'
+rm -f "/tmp/$sid/over-to-you-test.md"
+
+# Given a ledger with an open line
+# When the agent ends its turn with a reply that claims the work is finished without a Done line
+# Then the turn is still held
+printf 'F1 | open | a\n' > "/tmp/$sid/over-to-you-ledger.md"
+reply "All fixed, nothing left." > "$fx/t.jsonl"
+out=$(run)
+check "FL6 a done claim without a Done line is still held" \
+  '[ "$(jq -r .decision <<<"$out" 2>/dev/null)" = block ] && grep -q "F1" <<<"$out"'
+
+# Given a ledger line closed as no bug with a reason
+# Then it counts as closed
+# Given a ledger line closed as no bug with no reason
+# Then the hook holds the done reply and names it
+printf 'F1 | no bug | the item was identified\n' > "/tmp/$sid/over-to-you-ledger.md"
+reply "🏁 Done: finished." > "$fx/t.jsonl"
+check "FL7 a no-bug line with a reason is closed" '[ -z "$(run)" ]'
+printf 'F1 | no bug | the item was identified\nF2 | no bug |\n' > "/tmp/$sid/over-to-you-ledger.md"
+out=$(run)
+check "FL7 a no-bug line with no reason is held and named" \
+  '[ "$(jq -r .decision <<<"$out" 2>/dev/null)" = block ] && grep -q "F2" <<<"$out" && ! grep -q "F1" <<<"$out"'
 exit $fail
