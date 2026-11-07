@@ -33,7 +33,7 @@ check "SF3 a big find goes to a subagent with a clean context" \
 # When the agent hands it on
 # Then it asks the user to type /conn, names the ticket, and starts no fix
 check "SF4 with no subagent to start, the agent asks for /conn" \
-  'grep -q "cannot start a subagent.*ask the user to type \`/conn\`" <<<"$sized" && grep -q "name the ticket" <<<"$sized"'
+  'grep -q "cannot start a subagent.*ask the user to type \`/conn\`" <<<"$sized" && grep -q "ask the user to type \`/conn\`, name the ticket and start no fix" <<<"$sized"'
 
 # Given a quick note tagged IDEA, RULE, WIP or QUESTION
 # When the agent reads the page back
