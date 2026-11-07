@@ -62,6 +62,7 @@ TESTS = {
     "auto-tidy.sh": ["auto-tidy", "auto-tidy-clone", "clone_takeover_approved_examples"],
     "stale-copy-hint.sh": ["stale_copy_hint_approved_examples", "stale-copy-hint", "hint_once_approved_examples"],
     "do-confirm-hint.sh": ["do_confirm_approved_examples", "do-confirm-hint"],
+    "screenshot-intake-hint.sh": ["screenshot_intake_approved_examples", "screenshot-intake-hint"],
     "approved-spec.sh": ["open-draft", "step_guard_wording_approved_examples", "step-guard"],
     "git-guard.sh": ["git-guard", "git_guard_approved_examples"],
     "gamma-shift.sh": ["gamma-shift"],
