@@ -57,6 +57,19 @@ notice() { jq -nc '{type:"user",origin:{kind:"task-notification",producer:"sessi
 check "a reply with no gate or done line after a background notice is sent back" 'blocked'
 { user "go"; tool Read '{"file_path":"x"}'; } > "$fx/t.jsonl"
 check "a silent turn after a typed message is sent back" 'blocked'
+# The 2026-11-07 snag: a task started in an earlier turn still runs, so the
+# session will wake, and the stop goes through until a notice ends that task.
+res() { jq -nc --arg t "$1" '{type:"user",message:{content:[{type:"tool_result",tool_use_id:"t1",content:$t}]}}'; }
+done_notice() { jq -nc --arg i "$1" '{type:"user",origin:{kind:"task-notification"},message:{content:("<task-notification>\n<task-id>"+$i+"</task-id>\n<tool-use-id>t1</tool-use-id>\n<status>completed</status>\n</task-notification>")}}'; }
+for start in 'Async agent launched successfully.\nagentId: a1b2 (internal ID)' 'Command running in background with ID: b3c4. Output is being written' 'Monitor started (task d5e6, expires in 30m)'; do
+  id=$(grep -oE 'agentId: [a-z0-9]+|ID: [a-z0-9]+|task [a-z0-9]+' <<<"$start" | grep -oE '[a-z0-9]+$')
+  { user "go"; tool Agent '{}'; res "$start"; user "next"; tool Bash '{"command":"ls"}'; text "Still reading."; } > "$fx/t.jsonl"
+  check "a task from an earlier turn still running lets the stop through: $id" 'passes'
+  { user "go"; tool Agent '{}'; res "$start"; done_notice "$id"; user "next"; tool Bash '{"command":"ls"}'; text "Still reading."; } > "$fx/t.jsonl"
+  check "once a notice ends that task, the stop is sent back: $id" 'blocked'
+done
+{ user "go"; tool Agent '{}'; res "agentId: a1b2"; res "agentId: f7f8"; done_notice a1b2; user "next"; tool Bash '{"command":"ls"}'; text "Still reading."; } > "$fx/t.jsonl"
+check "one of two tasks still running lets the stop through" 'passes'
 root="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills"
 check "warp's Zero friction line says a side ask or report never ends the turn" 'grep -q "never ends the turn: the same response carries the next course step.s tool call" "$root/skills/engineering/warp/SKILL.md"'
 check "the style says a named next step carries its tool call" 'grep -q "carries that step.s tool call in the same response" "$root/output-styles/dungeon-master.md"'
