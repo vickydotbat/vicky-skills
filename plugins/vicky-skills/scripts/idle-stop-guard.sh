@@ -5,7 +5,8 @@
 # "🏁 Done:" (the work is finished), when it asked through AskUserQuestion, or
 # when it left something running that wakes the session: a background Agent,
 # a Bash call with run_in_background, or a Monitor. A turn that only replied
-# ends as usual. Any other stop is sent back once with a steer to make the
+# ends as usual, and so does a turn woken by a background notice that wrote no
+# reply. Any other stop is sent back once with a steer to make the
 # next step's tool call. It reads declared state (the reply's first line and
 # the turn's tool calls), never what the words seem to mean. With
 # stop_hook_active set, the stop goes through, so a misjudged one never loops.
@@ -19,6 +20,10 @@ jq -e 'any(.[]; .type == "tool_use" and .name != "SendUserMessage")' <<<"$turn" 
 # A question asked or something left running that wakes the session.
 jq -e 'any(.[]; .type == "tool_use" and (.name == "AskUserQuestion" or .name == "Monitor" or .name == "Agent" or .input.run_in_background == true))' <<<"$turn" >/dev/null && exit 0
 last=$(jq -r '[.[] | if .type == "text" then .text elif .type == "tool_use" and .name == "SendUserMessage" then .input.message else empty end | select(test("\\S"))] | last // ""' <<<"$turn")
+# A turn woken by a background notice (a monitor event or a subagent result)
+# that wrote no reply has nothing to report, so it ends silent.
+began=$(tail -n 400 "$transcript" | jq -rs '(map(.type == "user" and (.isMeta | not) and ((.message.content | type) == "string" or any(.message.content[]?; .type == "text"))) | rindex(true)) as $u | if $u == null then "" else (.[$u].origin.kind // "") end' 2>/dev/null)
+[[ "$began" == task-notification && -z "$last" ]] && exit 0
 first=$(sed -n '/[^[:space:]]/{p;q}' <<<"$last")
 first="${first#"${first%%[![:space:]]*}"}"
 [[ "$first" == '🚪 Waiting on you:'* || "$first" == '🏁 Done:'* ]] && exit 0
