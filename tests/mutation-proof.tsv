@@ -50,7 +50,7 @@ stale-blame.sh	dad90dd03817f75c	6286569f42698a5c	19/19
 stale-copy-hint.sh	6c278c5222834240	f9fc1903d947f3e4	27/27
 step-guard.sh	b5c1d54bdabfc7d1	9c2dc7873125b86c	89/89
 step-hint.sh	ca4724c43d257d4e	998a239be08c3611	19/19
-stop-reply.sh	876db46ea21c24f9	6aaa8f8eb6649241	17/17
+stop-reply.sh	876db46ea21c24f9	1723725d41fd1265	17/17
 summit.sh	a7326a54e5ec3ae0	3a97a0da403c2002	53/53
 tea-stdin.awk	ddfdfc5257c31b06	44ed4f52ffc9914a	70/70
 tea-stdin.sh	c631fcfccdb1abf0	19504a663d50406f	15/15
