@@ -36,8 +36,8 @@ The sitting is a checkpoint, and a long session's context is already full. Size 
 
 A read-back drops finds unless every one is written down first. Before you fix anything, write one line per item not marked `[x]`, per quick note and per Other line, as `F<n> | open | <the find>` in `over-to-you-ledger.md` in the session scratch folder, and post the same lines to the effort's ticket.
 
-- Close each line as `fixed` with its commit, or `handed on` with its ticket or subagent. A find you judge no bug still gets a closing word and the reason, never silence.
-- The read-back is done only when no line is open. `find-ledger-guard` sends back a "🏁 Done:" reply while one is.
+- Close each line as `fixed` with its commit, or `handed on` with its ticket or subagent. A find you judge no bug closes as `no bug | <the reason>`, never in silence.
+- The read-back is done only when no line is open. `find-ledger-guard` holds a reply while one is open, and holds a "🏁 Done:" reply when a page of this session closed with an unmarked item and no ledger exists.
 - When you write the next checklist, give every line closed as `fixed` an item that retests it, and name each `handed on` line on the page with where it stands.
 
 ## Kits

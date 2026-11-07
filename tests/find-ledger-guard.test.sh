@@ -27,7 +27,16 @@ check "an empty payload passes" 'echo "" | bash "$hook" >/dev/null 2>&1'
 reply "🚪 Waiting on you: the page." > "$fx/t.jsonl"
 check "a gate line with open lines passes" 'passes'
 reply "Working on F1." > "$fx/t.jsonl"
-check "a plain reply with open lines passes" 'passes'
+check "a plain reply with open lines is held too" 'blocked'
+tooluse() { jq -nc --arg n "$1" '{type:"assistant",message:{content:[{type:"text",text:"Waiting."},{type:"tool_use",name:$n,input:{}}]}}'; }
+tooluse Monitor > "$fx/t.jsonl"
+check "a turn that left a Monitor running passes" 'passes'
+tooluse Agent > "$fx/t.jsonl"
+check "a turn that left an Agent running passes" 'passes'
+tooluse AskUserQuestion > "$fx/t.jsonl"
+check "a question asked passes" 'passes'
+jq -nc '{type:"assistant",message:{content:[{type:"tool_use",name:"Bash",input:{command:"x",run_in_background:true}}]}}' > "$fx/t.jsonl"
+check "a background command left running passes" 'passes'
 printf 'F1 | open | a\n' > "$L"
 jq -nc --arg t "🏁 Done: finished." '{type:"assistant",message:{content:[{type:"tool_use",name:"SendUserMessage",input:{message:$t}}]}}' > "$fx/t.jsonl"
 check "a done reply sent through SendUserMessage with an open line is sent back" 'blocked'
@@ -37,4 +46,26 @@ reply "🏁 Done: finished." > "$fx/t.jsonl"
 check "a done reply with every line closed passes" 'passes'
 printf 'F1 | opened later | a\n' > "$L"
 check "a word that only starts with open is no open line" 'passes'
+rm -f "$L"
+reply "🏁 Done: finished." > "$fx/t.jsonl"
+printf '1. [x] a\n2. [ ] b\n' > "/tmp/$sid/over-to-you-p.md"
+check "a done reply with no ledger after a page with an unmarked item is held" 'blocked'
+reply "Working." > "$fx/t.jsonl"
+check "no ledger and no done line passes" 'passes'
+reply "🏁 Done: finished." > "$fx/t.jsonl"
+printf '1. [x] a\n2. [x] b\n' > "/tmp/$sid/over-to-you-p.md"
+check "a page with every item marked passes" 'passes'
+printf '1. [~] a\n' > "/tmp/$sid/over-to-you-p.md"
+check "a changed item counts as unmarked" 'blocked'
+printf '1. [-] a\n' > "/tmp/$sid/over-to-you-p.md"
+check "a failed item counts as unmarked" 'blocked'
+rm -f "/tmp/$sid/over-to-you-p.md"
+check "no page and no ledger passes" 'passes'
+printf 'F1 | no bug | identified\nF2 | no bug |\n' > "$L"
+check "a no-bug line with no reason is held" 'blocked'
+printf 'F1 | no bug | identified\n' > "$L"
+check "a no-bug line with a reason passes" 'passes'
+printf 'F1 | open | a\n' > "$L"
+reply "🏁 Done: finished." > "$fx/t.jsonl"
+check "a block exits 0, so Claude Code reads its decision" 'run >/dev/null; [ $? = 0 ]'
 exit $fail
