@@ -327,6 +327,8 @@ jobs:
         run: tests/screenshot_intake_approved_examples.test.sh
       - name: Screenshot intake hint decisions
         run: tests/screenshot-intake-hint.test.sh
+      - name: never-lupus checks the peripheral
+        run: tests/never_lupus_peripheral_approved_examples.test.sh
       - name: Every wait on the user is a gate
         run: tests/gate_home_approved_examples.test.sh
       - name: A quoted loop is text to poll-pace
