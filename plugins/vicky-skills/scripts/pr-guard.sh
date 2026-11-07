@@ -113,10 +113,14 @@ if [[ $event != PostToolUse ]] && [ -f "$tracker" ] && ! grep -qix 'PR template:
     printf -v list '%s, ' "${missing[@]}"
     [ ${#missing[@]} = 0 ] || [ -z "${unread:-}" ] || refuse "The body file $unread names a variable this command does not set, so its sections can't be read." \
       "Pass the body with --body-file and the file's full path written out."
-    [ ${#missing[@]} = 0 ] || refuse "This pull request body has no ${list%, } section." \
-      "Write the body with the ship-it skill, whose template holds every section, and pass it with --body-file."
     # shortcut: any human-voice start in the session counts, not one after this body was written; a record ship-it writes per body would replace it.
-    if [ -r "$transcript" ] && ! jq -r 'select(.type=="assistant") | .message.content[]? | select(.type=="tool_use" and .name=="Skill") | .input.skill' "$transcript" 2>/dev/null | sed 's/.*://' | grep -qx human-voice; then
+    unvoiced=
+    [ -r "$transcript" ] && ! jq -r 'select(.type=="assistant") | .message.content[]? | select(.type=="tool_use" and .name=="Skill") | .input.skill' "$transcript" 2>/dev/null | sed 's/.*://' | grep -qx human-voice && unvoiced=1
+    # One refusal names every fault, so one rewrite clears them all.
+    [ ${#missing[@]} = 0 ] || refuse "This pull request body has no ${list%, } section${unvoiced:+, and it never went through human-voice}." \
+      "Write the body with the ship-it skill, whose template holds every section, and pass it with --body-file." \
+      ${unvoiced:+"Start the human-voice skill and run its steps on the body file before you send it."}
+    if [ -n "$unvoiced" ]; then
       refuse "This pull request body never went through human-voice, which ship-it step 2 runs on every body." \
         "Start the human-voice skill, run its steps on the body file, then send the body again."
     fi
