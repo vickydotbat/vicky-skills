@@ -8,7 +8,7 @@ chat-approval-guard.sh	9edfacf13750d8a4	5b521507423df5d7	15/15
 do-confirm-hint.sh	d46ef43038108065	9e984d1404eadc90	19/19
 familiar-voice.sh	5b61603631286b5a	318bf4827b10ddd3	21/21
 fetch-place-hint.sh	3573b2f17e94944d	2c5a05ab853546e0	12/12
-find-ledger-guard.sh	5b874d3d488b3ae8	3f4cb488dd99c41a	14/14
+find-ledger-guard.sh	901d313d4006c1cb	3f4cb488dd99c41a	14/14
 gamma-shift.sh	bf7b0a15b596e9fc	105151370ead9c2f	12/12
 gate-notify.sh	7ba893f680c5d672	f5838b34f16e7992	25/25
 gate-state-guard.sh	71c338f183976bce	8a8a8a438ed67e88	71/71
@@ -50,7 +50,7 @@ stale-blame.sh	dad90dd03817f75c	6286569f42698a5c	19/19
 stale-copy-hint.sh	6c278c5222834240	f9fc1903d947f3e4	27/27
 step-guard.sh	b5c1d54bdabfc7d1	9c2dc7873125b86c	89/89
 step-hint.sh	ca4724c43d257d4e	998a239be08c3611	19/19
-stop-reply.sh	876db46ea21c24f9	9d77b8fc47e2ffe7	17/17
+stop-reply.sh	876db46ea21c24f9	6aaa8f8eb6649241	17/17
 summit.sh	a7326a54e5ec3ae0	3a97a0da403c2002	53/53
 tea-stdin.awk	ddfdfc5257c31b06	44ed4f52ffc9914a	70/70
 tea-stdin.sh	c631fcfccdb1abf0	19504a663d50406f	15/15

@@ -13,6 +13,6 @@ command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every la
 sid=$(jq -r '.session_id // ""' <<<"$payload" 2>/dev/null)
 ledger="/tmp/$sid/over-to-you-ledger.md"
 grep -q '^🏁 Done:' <<<"$said" || exit 0
-open=$(grep -E '^F[0-9]+[[:space:]]*\|[[:space:]]*open([[:space:]]|\|)' "$ledger" 2>/dev/null | cut -c1-120)
+open=$(grep -E '^F[0-9]+[[:space:]]*\|[[:space:]]*open([[:space:]]|\|)' "$ledger" 2>/dev/null)
 [[ -n "$open" ]] || exit 0
 jq -n --arg o "$open" '{decision:"block", reason:("The over-to-you read-back is not done: these ledger lines are still open. Close each as fixed (with its commit) or handed on (with its ticket or subagent), then report.\n" + $o)}'
