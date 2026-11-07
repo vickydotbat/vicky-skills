@@ -10,5 +10,6 @@ What the whole workflow is for. Every skill names the lines it serves on its `Ch
 - **C6** Finish, don't file. Found work is done now, and the backlog shrinks.
 - **C7** The user's machine, data and secrets stay safe, and nothing private leaves.
 - **C8** It works in any repo.
+- **C9** Work enters the tracker through its one door: a ticket is filed only by the skill built to file it, never by hand, so the same premise is searched for first.
 
 A line changes only after the user approves its new text on a `red-pen` page. A code is never reused for a different line.
