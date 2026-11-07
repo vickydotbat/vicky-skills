@@ -25,6 +25,13 @@ expect "the refusal names mission-brief and its three checks" 2 "$dir/none.jsonl
 grep -q "mission-brief" "$dir/err" && grep -q "codebase" "$dir/err" && grep -q "tracker" "$dir/err" && echo "ok   the steer names the three checks" || { echo "FAIL the steer names the three checks"; fail=1; }
 expect "plane file after mission-brief started runs" 0 "$dir/briefed.jsonl" 'bin/plane file GAME T'
 expect "tea issues create after mission-brief started runs" 0 "$dir/briefed.jsonl" 'tea issues create --title T </dev/null'
+jq -nc '{type:"user",message:{content:"<command-message>mission-brief</command-message>\n<command-name>/vicky-skills:mission-brief</command-name>"}}' > "$dir/slash.jsonl"
+jq -nc '{type:"user",message:{content:"<command-name>/vicky-skills:do</command-name>"}}' > "$dir/slash-other.jsonl"
+expect "plane file after the mission-brief slash command runs" 0 "$dir/slash.jsonl" 'bin/plane file GAME T'
+expect "plane file after a different slash command is refused" 2 "$dir/slash-other.jsonl" 'bin/plane file GAME T'
+expect "plane file --help is no filing" 0 "$dir/none.jsonl" 'bin/plane file --help'
+expect "tea issues create --help is no filing" 0 "$dir/none.jsonl" 'tea issues create --help </dev/null'
+expect "plane file with a title that is not --help is refused" 2 "$dir/none.jsonl" 'bin/plane file GAME T --body-file h.md'
 expect "plane comment is no filing" 0 "$dir/none.jsonl" 'bin/plane comment GAME-12 "text"'
 expect "gh issue list is no filing" 0 "$dir/none.jsonl" 'gh issue list'
 expect "tea issues list is no filing" 0 "$dir/none.jsonl" 'tea issues list </dev/null'
