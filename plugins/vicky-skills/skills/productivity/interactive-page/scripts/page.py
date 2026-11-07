@@ -15,7 +15,7 @@ answers:
   each ```text block        a comment box under it  (comment.N)
   "- ( ) option" lines       one choice per run of them (choice.N)
   the end of the page        a comment box           (note)
-  two or more approve boxes  "approve all" beside Done, ticking every one (approve_all)
+  any approve box            "approve all" beside Done, ticking every one (approve_all)
 
 When the user presses Done, the answers are written back into the file in
 its own form, and the script exits 0. A comment lands as a "Comment: ..."
@@ -279,9 +279,9 @@ def page(name, parts):
             out.append(f'<label><input type=radio name="choice.{part[1]}" value="{e(part[3])}"{ticked}> {inline(part[3])}</label><br>')
     close()
     out.append('<h2>Anything else</h2><textarea name="note" placeholder="Comment"></textarea>')
-    # Two or more approve boxes get one more beside Done that ticks them all.
+    # Any approve box gets one more beside Done that ticks them all.
     approve_all = ('<label><input type=checkbox name="approve_all"> approve all</label> '
-                   if sum(part[0] == "approve" for part in parts) > 1 else "")
+                   if any(part[0] == "approve" for part in parts) else "")
     out.append(f"<p>{approve_all}<button type=submit>Done</button></p></form>")
     return "\n".join(out)
 

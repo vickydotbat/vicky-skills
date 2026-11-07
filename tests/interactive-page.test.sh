@@ -164,8 +164,14 @@ printf '## A\na:1\n- [ ] approve\n' >"$scratch/one-box.md"
 printf '## A\na:1\n- [ ] approve\n\n## B\nb:1\n- [ ] approve\n' >"$scratch/two-box.md"
 start "$scratch/one-box.md"; one_box=$(curl -s "$url"); post /done >/dev/null; finish
 start "$scratch/two-box.md"; two_box=$(curl -s "$url"); post /done >/dev/null; finish
-check "approve all shows on a page with two approve boxes, and not on a page with one" \
-  'grep -q "name=\"approve_all\"" <<<"$two_box" && ! grep -q "approve_all" <<<"$one_box"'
+printf '## A\na:1\n\n```text\nA\n```\n' >"$scratch/no-box.md"
+start "$scratch/no-box.md"; no_box=$(curl -s "$url"); post /done >/dev/null; finish
+check "approve all shows on a page with one approve box and on a page with two, and not on a page with none" \
+  'grep -q "name=\"approve_all\"" <<<"$two_box" && grep -q "name=\"approve_all\"" <<<"$one_box" && ! grep -q "approve_all" <<<"$no_box"'
+printf '## A\na:1\n- [ ] approve\n' >"$scratch/one-tick.md"
+start "$scratch/one-tick.md"; post /done approve_all=on >/dev/null; finish
+check "approve all on a page with one approve box brings that box back approved" \
+  'grep -qx -- "- \[x\] approve" "$scratch/one-tick.md"'
 
 printf '#!/usr/bin/env bash\necho "${LD_LIBRARY_PATH-unset}" >"%s/libpath"\necho "$1" >"%s/url"\n' "$scratch" "$scratch" >"$scratch/env-browser"
 chmod +x "$scratch/env-browser"
