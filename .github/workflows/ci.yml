@@ -331,6 +331,8 @@ jobs:
         run: tests/never_lupus_peripheral_approved_examples.test.sh
       - name: A notice-woken turn may end silent
         run: tests/idle_silent_approved_examples.test.sh
+      - name: Approve all shows on a one-box page
+        run: tests/approve_all_approved_examples.test.sh
       - name: Every wait on the user is a gate
         run: tests/gate_home_approved_examples.test.sh
       - name: A quoted loop is text to poll-pace
