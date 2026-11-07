@@ -20,7 +20,7 @@ has "each expected result is checked against the stated rules" $oty "3. **Write 
 has "a feel item with a measurable proxy is measured first" $oty "1. **Pick the human-only checks" "measurable proxy"
 has "a retest's test reaches the layer that failed, or names the gap" $oty "1. **Pick the human-only checks" "the layer the user saw fail"
 has "an item failed twice goes to never-lupus before a third sitting" $oty "5. **Read it back.**" "fails a second time"
-has "a platform limit report gives the headroom" engineering/never-lupus/SKILL.md "4. **Test one prediction" "headroom under normal use"
+has "a platform limit report gives the headroom" engineering/never-lupus/SKILL.md "5. **Test one prediction" "headroom under normal use"
 has "engrave takes a platform limit unasked" engineering/engrave/SKILL.md - "platform limit"
 has "a workbench proof becomes a test in the shipping repo" engineering/do/SKILL.md "5. **Run the checks" "outside the repo that ships"
 has "a recommendation on a store's state reads the store first" engineering/do/SKILL.md "- **Questions**" "reads that store first"
