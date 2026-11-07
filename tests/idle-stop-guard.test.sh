@@ -70,6 +70,14 @@ for start in 'Async agent launched successfully.\nagentId: a1b2 (internal ID)' '
 done
 { user "go"; tool Agent '{}'; res "agentId: a1b2"; res "agentId: f7f8"; done_notice a1b2; user "next"; tool Bash '{"command":"ls"}'; text "Still reading."; } > "$fx/t.jsonl"
 check "one of two tasks still running lets the stop through" 'passes'
+event() { jq -nc --arg i "$1" '{type:"user",origin:{kind:"task-notification"},message:{content:("<task-notification>\n<task-id>"+$i+"</task-id>\n<summary>Monitor event: \"ci\"</summary>\n<event>poll 2</event>\n</task-notification>")}}'; }
+{ user "go"; tool Monitor '{}'; res "Monitor started (task d5e6, expires in 30m)"; event d5e6; user "next"; tool Bash '{"command":"ls"}'; text "Still reading."; } > "$fx/t.jsonl"
+check "a watch event with no status leaves the watch running" 'passes'
+long() { jq -nc --arg i "$1" '{type:"user",origin:{kind:"task-notification"},message:{content:("<task-notification>\n<task-id>"+$i+"</task-id>\n<tool-use-id>t1</tool-use-id>\n<output-file>/x/out</output-file>\n<status>completed</status>\n<summary>Agent \"x\" finished</summary>\n</task-notification>")}}'; }
+{ user "go"; tool Agent '{}'; res "agentId: a1b2"; long a1b2; user "next"; tool Bash '{"command":"ls"}'; text "Still reading."; } > "$fx/t.jsonl"
+check "a notice with other tags before its status still ends the task" 'blocked'
+{ user "go"; tool Agent '{}'; res "agentId: a1b2"; for _ in $(seq 400); do text "filler"; done; user "next"; tool Bash '{"command":"ls"}'; text "Still reading."; } > "$fx/t.jsonl"
+check "a start older than the 400-line window is forgotten, and the stop is sent back" 'blocked'
 root="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills"
 check "warp's Zero friction line says a side ask or report never ends the turn" 'grep -q "never ends the turn: the same response carries the next course step.s tool call" "$root/skills/engineering/warp/SKILL.md"'
 check "the style says a named next step carries its tool call" 'grep -q "carries that step.s tool call in the same response" "$root/output-styles/dungeon-master.md"'
