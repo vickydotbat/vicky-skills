@@ -237,6 +237,10 @@ voiced() { # <transcript> <command>
     '{hook_event_name: "PreToolUse", tool_name: "Bash", cwd: $d, session_id: "s-hub", transcript_path: $t, tool_input: {command: $c}}' |
     env CLAUDE_PLUGIN_OPTION_GUARD_PR=true CLAUDE_PLUGIN_DATA="$scratch/data" OPEN="" PATH="$scratch/hubbin:$PATH" bash "$hook" 2>&1 >/dev/null
 }
+# One refusal names every fault: a body short of sections and of a voice pass hears both at once.
+thin="$scratch/thin.md"; printf '## Summary\nx\n' >"$thin"
+out=$(voiced "$scratch/t-novoice.jsonl" "gh pr edit 7 --body-file $thin"); grep -q "no ## Status, ## Proof, ## Risk section, and it never went through human-voice" <<<"$out" && grep -q "Start the human-voice skill" <<<"$out" && echo "ok   a body short of sections and voice hears both faults in one refusal" || { echo "FAIL a body short of sections and voice hears both faults in one refusal"; fail=1; }
+out=$(voiced "$scratch/t-voice.jsonl" "gh pr edit 7 --body-file $thin"); grep -q "Risk section\.$" <<<"$out" && ! grep -q "human-voice" <<<"$out" && echo "ok   a voiced body short of sections hears only the sections" || { echo "FAIL a voiced body short of sections hears only the sections"; fail=1; }
 out=$(voiced "$scratch/t-novoice.jsonl" "gh pr edit 7 --body-file $good"); grep -q "never went through human-voice" <<<"$out" && echo "ok   a body with no human-voice pass is refused" || { echo "FAIL a body with no human-voice pass is refused"; fail=1; }
 grep -q "Start the human-voice skill" <<<"$out" && echo "ok   the refusal steers to human-voice" || { echo "FAIL the refusal steers to human-voice"; fail=1; }
 [ -z "$(voiced "$scratch/t-voice.jsonl" "gh pr edit 7 --body-file $good")" ] && echo "ok   a body after a human-voice pass goes through" || { echo "FAIL a body after a human-voice pass goes through"; fail=1; }
