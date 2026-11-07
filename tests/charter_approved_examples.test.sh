@@ -31,15 +31,15 @@ check "E1 every skill names at least one charter line it serves" \
   '[ -z "$out" ]'
 [ -z "$out" ] || echo "$out" | sed 's/^/     /'
 
-# Given a skill that names charter line C9, which the charter does not hold
+# Given a skill that names charter line C99, which the charter does not hold
 # When the tests run
-# Then they fail, naming the skill and C9
+# Then they fail, naming the skill and C99
 fx=$(mktemp -d); trap 'rm -rf "$fx"' EXIT
 mkdir -p "$fx/engineering/stray"
 cp "$root/CHARTER.md" "$fx/CHARTER.md"
-printf -- '---\nname: stray\n---\n# Stray\n\nCharter: C1, C9.\n' > "$fx/engineering/stray/SKILL.md"
-check "E2 a skill naming C9, which the charter lacks, fails naming the skill and C9" \
-  'charter_check "$fx" | grep -q "stray/SKILL.md names C9" && [ "$(charter_check "$fx" | wc -l)" -eq 1 ]'
+printf -- '---\nname: stray\n---\n# Stray\n\nCharter: C1, C99.\n' > "$fx/engineering/stray/SKILL.md"
+check "E2 a skill naming C99, which the charter lacks, fails naming the skill and C99" \
+  'charter_check "$fx" | grep -q "stray/SKILL.md names C99" && [ "$(charter_check "$fx" | wc -l)" -eq 1 ]'
 
 fam="$root/productivity/familiar/SKILL.md"
 # Given the familiar sees a snag in a watched session
