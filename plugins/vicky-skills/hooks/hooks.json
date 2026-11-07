@@ -352,6 +352,11 @@
           },
           {
             "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/screenshot-intake-hint.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/keep-awake.sh\"",
             "timeout": 5
           }

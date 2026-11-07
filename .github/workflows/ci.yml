@@ -323,6 +323,10 @@ jobs:
         run: tests/do_confirm_approved_examples.test.sh
       - name: do confirm hint decisions
         run: tests/do-confirm-hint.test.sh
+      - name: Screenshots get taken in
+        run: tests/screenshot_intake_approved_examples.test.sh
+      - name: Screenshot intake hint decisions
+        run: tests/screenshot-intake-hint.test.sh
       - name: Every wait on the user is a gate
         run: tests/gate_home_approved_examples.test.sh
       - name: A quoted loop is text to poll-pace
