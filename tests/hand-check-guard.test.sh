@@ -49,6 +49,39 @@ check "a session that already ran over-to-you goes through" 'passes'
 { user "go"; skill "vicky-skills:do"; text "You can try it in game now."; } > "$fx/t.jsonl"
 check "another skill is no over-to-you" 'sent_back'
 
+says "🚪 Waiting on you: log in on the dev server and check that stack counts update live.
+
+1. Drink one potion.
+2. Watch the count in the inventory window."
+check "a gate that hands a live client check as steps is sent back" 'sent_back'
+
+says "🚪 Waiting on you: drink a potion in the client and watch the count."
+check "a gate that hands a check in the client is sent back" 'sent_back'
+
+for reply in \
+  "🚪 Waiting on you: check the counts on the dev server." \
+  "🚪 Waiting on you: log in and check the counts." \
+  "🚪 Waiting on you: check the counts.
+
+1. Press I."; do
+  says "$reply"
+  check "a gate that names a server, a log-in or steps is sent back: $reply" 'sent_back'
+done
+
+says "🚪 Waiting on you: pick O1 or O2. Going with O1 if you have no view."
+check "a gate that asks only for a decision goes through" 'passes'
+
+says "🚪 Waiting on you: check the pull request description and approve it."
+check "a gate that asks for a review with no client or steps goes through" 'passes'
+
+says "🚪 Waiting on you: open http://127.0.0.1:8123/ and tick each line.
+
+1. Drink one potion in the client."
+check "a gate with its page link goes through" 'passes'
+
+{ user "go"; skill "vicky-skills:over-to-you"; text "🚪 Waiting on you: log in on the dev server and check the counts."; } > "$fx/t.jsonl"
+check "a gate after over-to-you ran goes through" 'passes'
+
 says "You can try it in game now."
 check "the second stop of a turn goes through" 'passes true'
 
