@@ -60,8 +60,8 @@ Every other line a turn needs belongs to a seat:
    A rotating seat with nothing new gives its place to the next. When a probe, a measurement or a mock-up would settle a point faster than talk, Elrond offers it as the point's pick. Done when Elrond and Gandalf have spoken, no seat has sat out two rounds running, one seat has answered another by name, every open point has options and a pick, and the round fits on one screen.
 3. **Hand the table to the user** and stop. The open points stay in the round, in chat. Done when the reply ends on Elrond's numbered open points.
 4. **Next round.** React to what the user said, in the round form. Build on an idea they adopted, never re-argue it. When they call the proposal a spiderweb, Gimli cuts it back to its core before anyone adds more. When they are still musing, the council talks and settles nothing. Go back to step 3, or to step 5 when the user calls the close or no open point is left. Done when the reply is a round in the seats' voices that answers every point the user raised.
-5. **Frodo chooses the road.** This reply concludes the council. Elrond sums up, and Frodo chooses one road for what was settled:
-   - **Too big for one session**: a star chart. his line asks the user to type `/lay-course`, and the chart starts from the settled points.
+5. **Offer the road, then Frodo takes it.** The road is the user's to choose, so it takes two replies. First, Elrond sums up, offers the road below that fits with his pick, and stops. A reply to the user's last open-point answer is this offer, never Frodo's line. Frodo speaks only in the reply after the user's own message confirms that road or names another. The roads:
+   - **Too big for one session**: a star chart. His line asks the user to type `/lay-course`, and the chart starts from the settled points.
    - **One build for a later session**: a star, written by `examples` through its Record step.
    - **Fits this session**: a star, then a build, by `warp` to it.
 
@@ -80,7 +80,7 @@ Every other line a turn needs belongs to a seat:
    Next: <the next moves, each with its pick, in plain prose>
    ```
 
-   Done when Frodo's line names one road, every settled and parked item is written down, and cerebro has proposed or found nothing.
-6. **Decide the next moves.** Only now may a page open, and only for the next moves: the road's first step, a parked idea's home, an unapproved example to approve. With three or more next moves, open them as an answer page with `interactive-page`, one question per move with its pick. Otherwise ask in chat. Take the road the user confirms, or the one they name instead. When the user is tired, ask them to type `/conn` for a handoff. Done when the user has taken the road or named another.
+   Done when the user's message confirmed or named the road before Frodo's line, Frodo's line names that road, every settled and parked item is written down, and cerebro has proposed or found nothing.
+6. **Decide the next moves.** Only now may a page open, and only for the next moves: the road's first step, a parked idea's home, an unapproved example to approve. With three or more next moves, open them as an answer page with `interactive-page`, one question per move with its pick. Otherwise ask in chat, and stop: no next move starts, `mission-brief` included, before the user answers. Take the road the user confirms, or the one they name instead. When the user is tired, ask them to type `/conn` for a handoff. Done when the user has taken the road or named another.
 
 Charter: C1, C5 ([CHARTER.md](../../CHARTER.md)).
