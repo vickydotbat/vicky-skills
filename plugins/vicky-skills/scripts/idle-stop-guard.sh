@@ -10,11 +10,16 @@
 # next step's tool call. It reads declared state (the reply's first line and
 # the turn's tool calls), never what the words seem to mean. With
 # stop_hook_active set, the stop goes through, so a misjudged one never loops.
+# Once /conn ran in this transcript, the session is handoff-only until the
+# user clears (a clear starts a new transcript), so every stop goes through:
+# pushing for a next tool call there pushes the agent back into building.
 set -u
 case "${CLAUDE_PLUGIN_OPTION_GUARD_IDLE_STOP:-}" in false|0) exit 0 ;; esac
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
 # shellcheck source=stop-reply.sh
 . "$(dirname "$0")/stop-reply.sh"
+# A session past /conn is handoff-only, so its turns end where they stop.
+grep -qE '<command-name>/(vicky-skills:)?conn</command-name>' "$transcript" && exit 0
 # A turn that only replied did no work, so it may end.
 jq -e 'any(.[]; .type == "tool_use" and .name != "SendUserMessage")' <<<"$turn" >/dev/null || exit 0
 # A question asked or something left running that wakes the session.

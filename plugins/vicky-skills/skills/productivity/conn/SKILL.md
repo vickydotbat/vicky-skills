@@ -20,6 +20,8 @@ A **handoff** is a short comment a fresh agent reads first, after the user clear
 5. **Name the skills** the next session should call. Done when each skill is named with its reason in a few words.
 6. **Post it.** Open it with a `**Handoff**` line, so `sup` finds it. It names no path outside the repo: commit scratch work it needs, or name it by what it holds. Run `loose-lips` on it before you post. Post it as a comment on the effort's open pull request or ticket, with the "Comment" action in `docs/agents/issue-tracker.md`. With no tracker, write it as a note where the user's own agent instructions keep that project's notes. Done when the comment's link is in your reply, or the note's path is in your reply when there is no tracker, with the line the user types after the clear to pick it up: `/sup`.
 
+After the post, the session is handoff-only until the user clears. A new fact or ask from the user goes into the handoff comment and the records step 1 names, and nothing else: no test, no run, no code, no debug logging. Edit the handoff comment in place, then end the turn with its link. `idle-stop-guard` lets every stop through once conn has run, so nothing pushes for a next step.
+
 Done when a stranger could start from the handoff and the links alone.
 
 Charter: C5 ([CHARTER.md](../../CHARTER.md)).

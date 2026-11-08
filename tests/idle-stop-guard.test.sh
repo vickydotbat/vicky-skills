@@ -82,4 +82,17 @@ root="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills"
 check "warp's Zero friction line says a side ask or report never ends the turn" 'grep -q "never ends the turn: the same response carries the next course step.s tool call" "$root/skills/engineering/warp/SKILL.md"'
 check "the style says a named next step carries its tool call" 'grep -q "carries that step.s tool call in the same response" "$root/output-styles/dungeon-master.md"'
 check "the style says finished work opens with the done line" 'grep -q "open with \`🏁 Done:\`" "$root/output-styles/dungeon-master.md"'
+# The 2026-11-08 snag: after /conn posted the handoff, a new fact from the
+# user led to more building, and the guard pushed for a next tool call. Once
+# conn ran in this transcript, the session is handoff-only and a stop goes through.
+conn() { jq -nc --arg t "<command-message>vicky-skills:conn</command-message>\n<command-name>/${1:-vicky-skills:conn}</command-name>" '{type:"user",message:{content:$t}}'; }
+{ conn; tool Bash '{"command":"gh pr comment"}'; text "Posted."; user "it is a log-in merge"; tool Bash '{"command":"gh pr comment"}'; text "Folded into the handoff."; } > "$fx/t.jsonl"
+check "after /conn, a stop with no done line goes through" 'passes'
+{ conn conn; tool Bash '{"command":"ls"}'; text "Posted."; } > "$fx/t.jsonl"
+check "the short /conn form counts too" 'passes'
+{ user "/connect the dots"; tool Bash '{"command":"ls"}'; text "Posted."; } > "$fx/t.jsonl"
+check "a message that only mentions conn is no conn run" 'blocked'
+{ conn "vicky-skills:connx"; tool Bash '{"command":"ls"}'; text "Posted."; } > "$fx/t.jsonl"
+check "another command starting with conn is no conn run" 'blocked'
+check "conn's steps say a fact after the post goes into the handoff only" 'grep -q "handoff-only" "$root/skills/productivity/conn/SKILL.md"'
 exit $fail
