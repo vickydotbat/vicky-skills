@@ -12,7 +12,7 @@ user() { jq -nc --arg t "$1" '{type:"user",message:{content:$t}}'; }
 text() { jq -nc --arg t "$1" '{type:"assistant",message:{content:[{type:"text",text:$t}]}}'; }
 sent() { jq -nc --arg t "$1" '{type:"assistant",message:{content:[{type:"tool_use",name:"SendUserMessage",input:{message:$t}}]}}'; }
 tool() { jq -nc --arg n "$1" --argjson i "${2:-{\}}" '{type:"assistant",message:{content:[{type:"tool_use",name:$n,input:$i}]}}'; }
-stop() { jq -nc --arg t "${TRANSCRIPT:-$fx/t.jsonl}" --argjson a "${2:-false}" '{stop_hook_active:$a,transcript_path:$t}' |
+stop() { jq -nc --arg t "${TRANSCRIPT:-$fx/t.jsonl}" --argjson a "${2:-false}" --arg m "${LAST:-}" '{stop_hook_active:$a,transcript_path:$t} + (if $m == "" then {} else {last_assistant_message:$m} end)' |
   env -u CLAUDE_PLUGIN_OPTION_GUARD_IDLE_STOP ${1:+CLAUDE_PLUGIN_OPTION_GUARD_IDLE_STOP=$1} bash "$hook" 2>/dev/null; }
 blocked() { [ "$(stop "${1:-}" "${2:-false}" | jq -r '.decision // empty' 2>/dev/null)" = block ]; }
 passes() { local out; out=$(stop "${1:-}" "${2:-false}"); [ $? = 0 ] && [ -z "$out" ]; }
@@ -41,6 +41,17 @@ check "a done line goes through, in chat text too" 'passes'
 check "only the last reply counts: a recap after the done line is sent back" 'blocked'
 { user "go"; tool Read '{"file_path":"x"}'; sent "Shipped. 🏁 Done: landed."; } > "$fx/t.jsonl"
 check "a done line must open the reply" 'blocked'
+# The 2026-11-08 snag: the Stop hook ran before the final reply reached the
+# transcript, so the guard read the turn's tool call and no reply. The payload's
+# last_assistant_message carries that reply.
+{ user "go"; tool SendMessage '{"to":"x","message":"y"}'; } > "$fx/t.jsonl"
+check "a done line only the payload carries goes through" 'LAST="🏁 Done: the false alarm is reported to \`x\`." passes'
+check "a gate line only the payload carries goes through" 'LAST="🚪 Waiting on you: tick it" passes'
+check "a payload reply with no done line or gate is sent back" 'LAST="Reported it." blocked'
+{ user "go"; tool Read '{"file_path":"x"}'; text "Recap: ADR written."; } > "$fx/t.jsonl"
+check "the payload reply outranks an older transcript reply" 'LAST="🏁 Done: landed." passes'
+{ user "go"; tool Read '{"file_path":"x"}'; text "🏁 Done: landed."; } > "$fx/t.jsonl"
+check "a blank payload reply leaves the transcript reply in charge" 'LAST="  " passes'
 for t in 'AskUserQuestion {}' 'Monitor {}' 'Agent {}' 'Bash {"command":"make","run_in_background":true}'; do
   { user "go"; tool Read '{"file_path":"x"}'; tool ${t%% *} "${t#* }"; sent "Waiting."; } > "$fx/t.jsonl"
   check "something that wakes the session goes through: ${t%% *}" 'passes'

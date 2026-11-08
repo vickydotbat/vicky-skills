@@ -34,6 +34,10 @@ started=$(grep -oE 'agentId: [a-z0-9]+|running in background with ID: [a-z0-9]+|
 ended=$(grep -oE '<task-id>[a-z0-9]+</task-id>(\\n|[^<])*(<[a-z-]+>[^<]*</[a-z-]+>(\\n|[^<])*)*<status>' <<<"$recent" | grep -oE '<task-id>[a-z0-9]+' | cut -d'>' -f2 | sort -u)
 comm -23 <(printf '%s\n' "$started") <(printf '%s\n' "$ended") | grep -q . && exit 0
 last=$(jq -r '[.[] | if .type == "text" then .text elif .type == "tool_use" and .name == "SendUserMessage" then .input.message else empty end | select(test("\\S"))] | last // ""' <<<"$turn")
+# The Stop hook can run before the final reply reaches the transcript, so the
+# reply the payload carries, when it has one, is the last reply.
+now=$(jq -r '.last_assistant_message // "" | strings' <<<"$payload" 2>/dev/null)
+[[ "$now" =~ [^[:space:]] ]] && last="$now"
 # A turn woken by a background notice (a monitor event or a subagent result)
 # that wrote no reply has nothing to report, so it ends silent.
 began=$(tail -n 400 "$transcript" | jq -rs '(map(.type == "user" and (.isMeta | not) and ((.message.content | type) == "string" or any(.message.content[]?; .type == "text"))) | rindex(true)) as $u | if $u == null then "" else (.[$u].origin.kind // "") end' 2>/dev/null)
