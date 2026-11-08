@@ -3,7 +3,9 @@
 # goes to them through `over-to-you`, never as steps in chat. When the agent's
 # last reply tells the user to try, test or check something themselves in the
 # game, the client or the browser, holds no link to a page on this machine, and
-# the session never started `over-to-you` in any turn, the stop is blocked once with a steer
+# the session never started `over-to-you` in any turn, or when a
+# "🚪 Waiting on you:" gate asks for an action in a client or server or
+# lists steps under it, with the same two conditions, the stop is blocked once with a steer
 # to hand the checks over with it. A reply that reports tests, a reply with a
 # page link, a session that already ran `over-to-you` and the setting off go
 # through. It steers once per turn: with stop_hook_active set, the reply goes
@@ -14,7 +16,15 @@ case "${CLAUDE_PLUGIN_OPTION_GUARD_HAND_CHECK:-}" in false|0) exit 0 ;; esac
 . "$(dirname "$0")/stop-reply.sh"
 grep -qE "https?://(127\.0\.0\.1|localhost)[:/]" <<<"$said" && exit 0
 words=$(prose)
-grep -qiE '\b(you (can|could|should)|please|now) (try|test|check|play)\b|\b(try|test|check) (it|this|that|them) (out|yourself|in)\b' <<<"$words" || exit 0
-grep -qiE '\bin[- ]game\b|\bthe (game )?client\b|\byour browser\b|\bin the (game|browser)\b|\breal (client|browser)\b' <<<"$words" || exit 0
+place='\bin[- ]game\b|\bthe (game )?client\b|\byour browser\b|\bin the (game|browser)\b|\breal (client|browser)\b'
+gate=$(grep -iE '🚪 *waiting on you:.*\b(try|test|check|log ?in|press|drink|open|play)\b' <<<"$words")
+if [ -n "$gate" ]; then
+  # A gate line with an action is a hand-off when it names a client or server,
+  # or the reply lists numbered steps under it.
+  grep -qiE "$place|\blog ?in\b|\bserver\b" <<<"$gate" || grep -qE '^[[:space:]]*[0-9]+\.[[:space:]]' <<<"$words" || exit 0
+else
+  grep -qiE '\b(you (can|could|should)|please|now) (try|test|check|play)\b|\b(try|test|check) (it|this|that|them) (out|yourself|in)\b' <<<"$words" || exit 0
+  grep -qiE "$place" <<<"$words" || exit 0
+fi
 grep -q '"skill":"[^"]*over-to-you"' "$transcript" && exit 0
 jq -n '{decision:"block", reason:"You told the user to try or test something themselves in chat. A check only a person can do goes to them through the over-to-you skill: a checklist page with its kits, its stage proven up, and the page link in your reply. Start over-to-you now."}'
