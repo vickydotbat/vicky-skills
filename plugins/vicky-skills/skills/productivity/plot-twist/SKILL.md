@@ -1,6 +1,6 @@
 ---
 name: plot-twist
-description: Carry a change of direction into every place that still holds the old one: repo text, tickets, pull requests, decision records. Use when the user says "actually", "instead" or "forget that", when a decision you built on is replaced, when a test or live check overturns a rule the repo records, and when a ticket records a decision (an answered anomaly or away team) that an earlier plan or doc contradicts.
+description: Carry a change of direction into every place that still holds the old one: repo text, tickets, pull requests, decision records. Use when the user says "actually", "instead" or "forget that", when a decision you built on is replaced, when a test overturns a recorded rule, and when a ticket records a decision (an answered anomaly or away team) that an earlier plan or doc contradicts.
 ---
 
 # Plot twist
