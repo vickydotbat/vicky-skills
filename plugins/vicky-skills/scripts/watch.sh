@@ -23,6 +23,12 @@ while [ $# -gt 0 ]; do
 done
 case "$every$rounds" in *[!0-9]*|'') usage >&2; exit 2 ;; esac
 [ -n "$check" ] || { usage >&2; exit 2; }
+# pgrep -f reads every command line, this watch's own included, and the
+# check text sits in it, so a pattern from the check always finds a match.
+if grep -Eq '(^|[^[:alnum:]_-])pgrep[[:space:]]+(-[[:alnum:]]*[[:space:]]+)*-[[:alnum:]]*f' <<<"$check"; then
+  echo "watch: pgrep -f matches this watch's own command line, so the check never sees the process end. Save the process id when you start it and check it with 'kill -0 <pid>', or match by name with 'pgrep -x <name>'." >&2
+  exit 2
+fi
 last=""
 for ((round = 1; round <= rounds; round++)); do
   out=$(bash -c "$check" 2>&1); status=$?

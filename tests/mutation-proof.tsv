@@ -4,7 +4,7 @@ ai-credit.sh	ce9c03ae1de6bb7b	c24d63d154290445	1/1
 approved-spec.sh	4454b60a6d5a5aa6	091f90aaafffc5e2	6/6
 assign-expand.sh	a2d6f7ea568cb59e	e4142541c0f8acbd	5/5
 auto-tidy.sh	8d1a5176faea2f7b	fc67071cbbc1d949	57/57
-chat-approval-guard.sh	9edfacf13750d8a4	5b521507423df5d7	15/15
+chat-approval-guard.sh	8ab9ae14c8cfa397	802a4a608b43e3d7	10/10
 do-confirm-hint.sh	d46ef43038108065	9e984d1404eadc90	19/19
 familiar-voice.sh	5b61603631286b5a	318bf4827b10ddd3	21/21
 fetch-place-hint.sh	3573b2f17e94944d	2c5a05ab853546e0	12/12
@@ -24,7 +24,7 @@ local-path-guard.sh	d427caa9a875a87c	939f20348d896e77	29/29
 merge-point.sh	a19dbe9167831b34	9827ff76f5819e09	2/2
 merged-branch-guard.sh	eddb14559b662ad4	19120906bae20d5e	41/41
 pkill-guard.sh	b7b411516636d988	d1e53bac8b554d6c	7/7
-plane-block-guard.sh	a94b231f3e488454	4b64610ab0e7043b	20/20
+plane-block-guard.sh	233812567c67b857	e4bbb2e73e731ba1	20/20
 plugin-data.sh	b183a483ba56dfc4	70f1bfb11afc42ce	3/3
 poll-pace.sh	acf53b82ae24c315	794edbe6bf1fb1fb	29/29
 pr-body-hint.sh	69a7e3e5efe170db	d8d1b614b2bdc088	16/16
@@ -50,7 +50,7 @@ stale-blame.sh	dad90dd03817f75c	6286569f42698a5c	19/19
 stale-copy-hint.sh	6c278c5222834240	f9fc1903d947f3e4	27/27
 step-guard.sh	b5c1d54bdabfc7d1	9c2dc7873125b86c	89/89
 step-hint.sh	ca4724c43d257d4e	998a239be08c3611	19/19
-stop-reply.sh	876db46ea21c24f9	5fbb5e56387873da	17/17
+stop-reply.sh	20ce3a1e988039f6	aeab93ebadfa18c0	17/17
 summit.sh	a7326a54e5ec3ae0	3a97a0da403c2002	53/53
 tea-stdin.awk	ddfdfc5257c31b06	44ed4f52ffc9914a	70/70
 tea-stdin.sh	c631fcfccdb1abf0	19504a663d50406f	15/15
@@ -58,6 +58,6 @@ ticket-drift.sh	1bc60db2e95d9227	cbdb7e2f644687db	36/36
 ticket-filing-guard.sh	2b83311b2c89deae	1f352ba321a4ccf9	20/20
 todo-guard.sh	1834d21176d7ce4e	ef4e013394d002ec	19/19
 todo-reminder.sh	87bab188b0686e79	a8ca61c6f02f86c9	9/9
-watch.sh	5151329b7079b9ce	4f18953f73fc1d05	31/31
+watch.sh	8361b0cd96435e12	71328523424bed3b	33/33
 windowed-browser-guard.sh	de7570951b5f6444	dd22fda33232f71d	12/12
 worktree-place.sh	019f7c975eb4a099	e332e7a8fba90fe7	71/71

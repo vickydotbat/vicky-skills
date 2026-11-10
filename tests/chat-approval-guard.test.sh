@@ -57,4 +57,8 @@ check "quoted code is no ask" 'passes'
 check "a reply sent through SendUserMessage is read too" 'blocked'
 { user "go"; text "Please approve the examples."; user "again"; text "Done, nothing to ask."; } > "$fx/t.jsonl"
 check "only the reply since the user's last message counts" 'passes'
+{ user "go"; text "Render the views to confirm the walls shade right."; text "Find what the 2 in the spec row does."; } > "$fx/t.jsonl"
+check "an ask word and a subject in different notes make no ask" 'passes'
+reply "$(printf 'Render it to confirm the walls shade right.\n\nThe spec row holds a 2.')"
+check "an ask word and a subject in different paragraphs make no ask" 'passes'
 exit $fail
