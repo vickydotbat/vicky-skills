@@ -53,4 +53,19 @@ check "a started sentinels lets a script of its own through" "" "$(run "python3 
 check "a script not named for mutation passes" "" "$(run "python3 summarise.py" "$dir/none.jsonl")"
 check "a script named for mutation, quoted, passes" "" "$(run "cat 'mutate_loop.py'" "$dir/none.jsonl")"
 check "a mutation word with no script extension passes" "" "$(run "python3 mutate_notes.txt" "$dir/none.jsonl")"
+# A hand mutation: an in-place edit run with the tests, or a backup copy taken before breaking a file.
+for c in "sed -i 's/a/b/' lib/x.js && npm test" "sed -i.tmp 's/a/b/' x.sh; bash tests/x.test.sh" "perl -pi -e 's/a/b/' x.py && pytest" \
+  "sed -i 's/>/>=/' src/a.go && go test ./..." "sed -E -i 's/a/b/' x.sh && tests/run-all.sh" "cp lib/wiki-links.js lib/wiki-links.js.bak" \
+  "cp -p x.sh /tmp/s/x.sh.orig" "mv src/a.rs src/a.rs.backup" "sed -i 's/a/b/' x && cargo test" "sed -i 's/a/b/' x && dotnet test" \
+  "sed -i 's/a/b/' x && npx vitest" "sed -i 's/a/b/' x && just test" "sed -i 's/a/b/' x && mvn test" "sed -i 's/a/b/' x && bats t" \
+  "sed -i 's/a/b/' x && pnpm run test" "sed -i 's/a/b/' x && jest"; do
+  check "no sentinels refuses a hand mutation: $c" deny "$(run "$c" "$dir/none.jsonl")"
+done
+check "a started sentinels lets a hand mutation through" "" "$(run "cp x.js x.js.bak" "$dir/sent.jsonl")"
+check "a restore from the backup passes" "" "$(run "cp lib/x.js.bak lib/x.js" "$dir/none.jsonl")"
+check "an in-place edit with no test passes" "" "$(run "sed -i 's/a/b/' x.js" "$dir/none.jsonl")"
+check "a test with no in-place edit passes" "" "$(run "sed 's/a/b/' x.js && npm test" "$dir/none.jsonl")"
+check "a plain copy passes" "" "$(run "cp a.js b.js" "$dir/none.jsonl")"
+check "a backup name inside quotes passes" "" "$(run "echo 'cp a a.bak'" "$dir/none.jsonl")"
+check "a .bak word that is no copy passes" "" "$(run "cat a.bak" "$dir/none.jsonl")"
 exit $fail

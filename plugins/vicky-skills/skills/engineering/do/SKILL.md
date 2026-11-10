@@ -41,7 +41,7 @@ The user may be away once the examples are approved, and a question or an open e
 
 ## Receipts
 
-Each time an approved example goes green, show its receipt in chat before you start the next example: each prediction above its run, the red run, the green run and the mutation result, each as the command and the line that shows its outcome. A receipt is for the user to see, and it asks nothing. An example only a person can check gets a receipt that says `unchecked` and names the `over-to-you` checklist that holds it.
+Each time an approved example goes green, show its receipt in chat before you start the next example: each prediction above its run, the red run, the green run and the mutation result from `sentinels`, each as the command and the line that shows its outcome. A receipt is for the user to see, and it asks nothing. An example only a person can check gets a receipt that says `unchecked` and names the `over-to-you` checklist that holds it.
 
 ```text
 <example name>
