@@ -57,4 +57,5 @@ curl -s -o /dev/null --data-urlencode "xml=<mxGraphModel>latest</mxGraphModel>" 
 check "the page holds its scroll while the draw.io frames load" 'curl -s "$url" | grep -q "scrollTo(0,userY)"'
 curl -s -o /dev/null --data-urlencode "note=" "${url}done"; sleep 0.3
 check "Done keeps the latest drawing" 'grep -q "<mxGraphModel>latest</mxGraphModel>" "$dir/page.md"'
+check "a sketch ends in a newline, so a fence written after it stays on its own line" '[ "$(tail -c1 "$dir/a.drawio" | od -An -c | tr -d " ")" = "\\n" ]'
 exit $fail

@@ -94,7 +94,10 @@ else if(m.event==="export"){png.value=m.data;if(--left===0)finish()}});
 // user who pressed Done would think it never landed: clear the flag and drop
 // each frame before the form goes.
 function finish(){Object.keys(frames).forEach(n=>{send(n,{action:"status",modified:false});document.getElementById("dio"+n).remove()});document.forms[0].submit()}
-function done(ev){const ns=Object.keys(frames);if(!ns.length||left<0)return true;ev.preventDefault();left=ns.length;
+// Done exports only the frames whose drawing loaded, and sends the form after
+// five seconds whatever answers: a frame that failed to load never answers.
+function done(ev){if(left<0)return true;const ns=Object.keys(frames).filter(n=>frames[n]===2);
+if(!ns.length){finish();return false}ev.preventDefault();left=ns.length;setTimeout(()=>{if(left>0){left=0;finish()}},5000);
 ns.forEach(n=>send(n,{action:"export",format:"png",xml:document.getElementsByName("drawing_xml."+n)[0].value}));return false}"""
 
 
@@ -127,6 +130,24 @@ def fence_end(lines, start):
     while end < len(lines) and lines[end] != "```":
         end += 1
     return end
+
+
+def unglue(text):
+    """The text with each drawio block's closing fence on its own line. Output
+    with no final newline, written out and followed by a fence, glues the fence
+    to the last XML line, and the block then runs on to the next fence."""
+    lines, inside = text.split("\n"), False
+    out = []
+    for line in lines:
+        if not inside:
+            inside = line == "```drawio"
+        elif line != "```" and line.endswith("```"):
+            out.append(line[:-3])
+            line, inside = "```", False
+        else:
+            inside = line != "```"
+        out.append(line)
+    return "\n".join(out)
 
 
 def parse(text, folder):
@@ -453,6 +474,10 @@ def serve_form(text, path, on_post, timeout, on_drawing=None):
 def serve(path, timeout):
     with open(path) as handle:
         original = handle.read()
+    if (fixed := unglue(original)) != original:
+        with open(path, "w") as handle:
+            handle.write(fixed)
+        original = fixed
     parts = parse(original, os.path.dirname(os.path.abspath(path)))
 
     latest = {}

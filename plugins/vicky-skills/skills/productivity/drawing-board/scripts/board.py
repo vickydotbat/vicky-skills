@@ -95,6 +95,9 @@ def new(args):
         props = dict(f.split("=", 1) for f in fields[4:])
         add(root, f"box{i}", label, x, y, w, h, "rounded=0;whiteSpace=wrap;", parent="window", props=props)
     ET.ElementTree(wrapper).write(out, encoding="unicode")
+    # A final newline, so a fence written after the sketch stays on its own line.
+    with open(out, "a") as handle:
+        handle.write("\n")
 
 
 def boxes(path):
