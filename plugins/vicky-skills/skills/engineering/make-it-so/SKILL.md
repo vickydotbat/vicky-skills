@@ -48,7 +48,7 @@ Measured by one read:
 
 - **Q8 Title.** The title says what the change does, in the repo's title style, with no `WIP:` once ready.
 - **Q9 What and why.** The body's first paragraph says what the change does and why. Every sentence is true of `git diff origin/<base>...HEAD`.
-- **Q10 How tested.** The body names the approved examples and the tests that prove them, the mutation counts, or `unrun, because <the log line or reason>`, and anything left unchecked. When `TESTING_STANDARDS.md` has a `Metrics:` line that isn't `none`, each rule the change sets with a written target has its metrics on its ticket, or a `Metrics owed: <rule>` line in the body. This item reads only that they are there, never what they found.
+- **Q10 How tested.** The body names the approved examples and the tests that prove them, the mutation counts from `sentinels` (a hand-broken line counts as a pass and goes through it too), or `unrun, because <the log line or reason>`, and anything left unchecked. When `TESTING_STANDARDS.md` has a `Metrics:` line that isn't `none`, each rule the change sets with a written target has its metrics on its ticket, or a `Metrics owed: <rule>` line in the body. This item reads only that they are there, never what they found.
 
 Measured after the push:
 
