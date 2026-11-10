@@ -15,5 +15,5 @@ turn=$(tail -n 400 "$transcript" | jq -cs '
   (map(.type == "user" and (.isMeta | not) and ((.message.content | type) == "string" or any(.message.content[]?; .type == "text"))) | rindex(true)) as $u
   | [.[(($u // -1) + 1):][] | select(.type == "assistant") | .message.content[]?]' 2>/dev/null) || exit 0
 # shellcheck disable=SC2034 # read by the hook that sources this
-said=$(jq -r '.[] | if .type == "text" then .text elif .type == "tool_use" and .name == "SendUserMessage" then .input.message else empty end' <<<"$turn" 2>/dev/null)
+said=$(jq -r '.[] | if .type == "text" then .text elif .type == "tool_use" and .name == "SendUserMessage" then .input.message else empty end | . + "\n"' <<<"$turn" 2>/dev/null)
 prose() { sed 's/`[^`]*`//g' <<<"$said"; }
