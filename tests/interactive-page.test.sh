@@ -236,4 +236,10 @@ check "quick notes fold into a block that opens when a note is filled" 'grep -q 
 blank=$(sed 's/^- IDEA: later$/- IDEA:/' "$scratch/cards.md" | render)
 check "a quick-notes block with no note stays closed" 'grep -q "<details class=quick><summary>" <<<"$blank"'
 check "a no-op Done writes the checklist back byte for byte" 'python3 -I -c "import sys; sys.path.insert(0, sys.argv[1]); import page; t=open(sys.argv[2]).read(); sys.exit(page.answered(page.parse(t, \"/\"), {}) != t)" "$(dirname "$page")" "$scratch/cards.md"'
+# A sketch written with no final newline glues the closing fence to its last
+# line. The page splits it off, so each block holds only its own XML.
+printf '# Sketch\n\n```drawio\n<mxfile>a</mxfile>```\n\n## Two\n\n```drawio\n<mxfile>b</mxfile>\n```\n' >"$scratch/glued.md"
+unglued=$(python3 -I -c "import sys; sys.path.insert(0, sys.argv[1]); import page; print(page.unglue(open(sys.argv[2]).read()), end='')" "$(dirname "$page")" "$scratch/glued.md")
+check "a fence glued to a sketch's last line closes that sketch, and only it" \
+  '[ "$unglued" = "$(printf "# Sketch\n\n\`\`\`drawio\n<mxfile>a</mxfile>\n\`\`\`\n\n## Two\n\n\`\`\`drawio\n<mxfile>b</mxfile>\n\`\`\`\n")" ]'
 exit $fail
