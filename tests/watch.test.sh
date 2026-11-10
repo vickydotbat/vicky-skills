@@ -15,4 +15,8 @@ expect "the last round ends without a sleep" 1 "$(( $(date +%s) - start < 3 ))"
 start=$(date +%s)
 bash "$watch" false --every 1 --rounds 2 >/dev/null
 expect "rounds before the last one sleep" 1 "$(( $(date +%s) - start >= 1 ))"
+expect "a pgrep -f check is refused, since it matches the watch itself" 2 "$(bash "$watch" '! pgrep -f blender' --rounds 1 2>/dev/null; echo $?)"
+expect "a pgrep -af check is refused too" 2 "$(bash "$watch" 'pgrep -af x' --rounds 1 2>/dev/null; echo $?)"
+expect "the refusal names kill -0" 1 "$(bash "$watch" 'pgrep -f x' 2>&1 | grep -c 'kill -0')"
+expect "a pgrep -x check runs" 0 "$(bash "$watch" '! pgrep -x no-such-proc-zz' --rounds 1 >/dev/null 2>&1; echo $?)"
 exit $fail
