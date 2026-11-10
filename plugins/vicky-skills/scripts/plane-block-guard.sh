@@ -8,7 +8,9 @@
 case "${CLAUDE_PLUGIN_OPTION_GUARD_PLANE_BLOCK:-}" in true|1) ;; *) exit 0 ;; esac
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
 command=$(jq -r '.tool_input.command // empty')
-[[ $command =~ (^|[[:space:]\;\&\|\(])(\./)?(bin/)?plane[[:space:]]+block[[:space:]]+([^[:space:]\;\&\|]+)[[:space:]]+([^[:space:]\;\&\|#]+) ]] || exit 0
+# A flag such as -h or --help asks for usage and links nothing, and a token
+# that holds a redirect (2>&1) names no ticket: neither counts as an item.
+[[ $command =~ (^|[[:space:]\;\&\|\(])(\./)?(bin/)?plane[[:space:]]+block[[:space:]]+([^-[:space:]\;\&\|<>][^[:space:]\;\&\|<>]*)[[:space:]]+([^-[:space:]\;\&\|#<>][^[:space:]\;\&\|#<>]*)([[:space:]\;\&\|#\)]|$) ]] || exit 0
 item=${BASH_REMATCH[4]} blocker=${BASH_REMATCH[5]}
 grep -Eq '#[[:space:]]*hard:[[:space:]]*[^[:space:]]' <<<"$command" && exit 0
 # A key built from a shell variable (a loop's GAME-$t) names no ticket, so the
