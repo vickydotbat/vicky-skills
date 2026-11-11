@@ -29,6 +29,12 @@ jq -nc '{type:"user",message:{content:"<command-message>mission-brief</command-m
 jq -nc '{type:"user",message:{content:"<command-name>/vicky-skills:do</command-name>"}}' > "$dir/slash-other.jsonl"
 expect "plane file after the mission-brief slash command runs" 0 "$dir/slash.jsonl" 'bin/plane file GAME T'
 expect "plane file after a different slash command is refused" 2 "$dir/slash-other.jsonl" 'bin/plane file GAME T'
+expect "a familiar debt note filed on a tracker is refused, even after mission-brief" 2 "$dir/briefed.jsonl" 'bin/plane file GAME "Familiar debt: sow-codebase session 8624" --body-file d.md'
+grep -q "local" "$dir/err" && echo "ok   the debt steer names the local note" || { echo "FAIL the debt steer names the local note"; fail=1; }
+expect "a debt note filed through gh is refused" 2 "$dir/briefed.jsonl" 'gh issue create --title "familiar DEBT - e9" --body b'
+expect "a debt note filed through tea is refused" 2 "$dir/briefed.jsonl" "tea issues create --title 'Familiar debt: 62' </dev/null"
+expect "a debt note with the guard off lets it through" 0 "$dir/none.jsonl" 'bin/plane file GAME "Familiar debt: x"' CLAUDE_PLUGIN_OPTION_GUARD_TICKET_FILING=false
+expect "a comment that names a familiar debt note is no filing" 0 "$dir/none.jsonl" 'bin/plane comment GAME-12 "Familiar debt: moved"'
 expect "plane file --help is no filing" 0 "$dir/none.jsonl" 'bin/plane file --help'
 expect "tea issues create --help is no filing" 0 "$dir/none.jsonl" 'tea issues create --help </dev/null'
 expect "plane file with a title that is not --help is refused" 2 "$dir/none.jsonl" 'bin/plane file GAME T --body-file h.md'
