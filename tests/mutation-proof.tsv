@@ -26,7 +26,7 @@ merged-branch-guard.sh	eddb14559b662ad4	19120906bae20d5e	41/41
 pkill-guard.sh	b7b411516636d988	d1e53bac8b554d6c	7/7
 plane-block-guard.sh	233812567c67b857	e4bbb2e73e731ba1	20/20
 plugin-data.sh	b183a483ba56dfc4	70f1bfb11afc42ce	3/3
-poll-pace.sh	acf53b82ae24c315	794edbe6bf1fb1fb	29/29
+poll-pace.sh	d417f1db9f8dcef2	2c3051c7fb9e9c6e	32/32
 pr-body-hint.sh	69a7e3e5efe170db	d8d1b614b2bdc088	16/16
 pr-guard.sh	04e4f7d1ddf090a2	75065c52361ed9e3	139/139
 publickey-hint.sh	d3098ec01110850e	c6cb323d1b0fb2e5	13/13

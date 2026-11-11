@@ -193,6 +193,16 @@
             "timeout": 5
           }
         ]
+      },
+      {
+        "matcher": "Monitor",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/poll-pace.sh\"",
+            "timeout": 10
+          }
+        ]
       }
     ],
     "PostToolUse": [

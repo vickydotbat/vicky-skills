@@ -232,7 +232,7 @@
     "guard_poll_pace": {
       "type": "boolean",
       "title": "Short polls",
-      "description": "Refuse a wait that sleeps more than 30 seconds at a time, polls more than 60 times, or loops in the foreground instead of using watch.sh.",
+      "description": "Refuse a wait that sleeps more than 30 seconds at a time, polls more than 60 times, or loops in the foreground instead of using watch.sh, and any wait on a subagent's output file.",
       "default": false
     },
     "lesson_hint": {

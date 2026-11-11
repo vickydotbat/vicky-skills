@@ -7,6 +7,9 @@ case "${CLAUDE_PLUGIN_OPTION_GUARD_POLL_PACE:-}" in true|1) ;; *) exit 0 ;; esac
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
 payload=$(cat)
 cmd=$(jq -r '.tool_input.command // ""' <<<"$payload")
+# A subagent's output file is its transcript, and the subagent reports back on
+# its own when it ends, so a wait on that file, in any form, waits on nothing.
+grep -Eq 'tasks/a[0-9a-f]{16}\.output' <<<"$cmd" && { echo "poll-pace: this waits on a subagent's output file. A subagent reports back on its own: its hand-back message and a task notification arrive when it ends, and its file never holds the text a check would grep for. Nothing in this command ran: work on what doesn't wait on it, or end the turn with a line saying which agent is still running." >&2; exit 2; }
 # A heredoc body is text, unless the heredoc feeds a shell.
 cmd=$(awk -v code=1 -f "$(dirname "$0")/heredoc-strip.awk" <<<"$cmd")
 # A quoted string is text, unless a shell runs it (bash -c, eval, watch.sh):
