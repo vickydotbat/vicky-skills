@@ -147,6 +147,8 @@ jobs:
         run: tests/hand-check-guard.test.sh
       - name: Review fresh guard
         run: tests/review-fresh-guard.test.sh
+      - name: Read before asking
+        run: tests/read-before-asking.test.sh
       - name: Live checks go through over-to-you
         run: tests/hand_check_guard_approved_examples.test.sh
       - name: Stale-copy blame hook
