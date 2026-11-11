@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # The find ledger guard sends back a done reply while the ledger has an open
-# line, and lets through: no ledger, no done line, a closed ledger, a second
+# line, holds any reply after a read-back that does not ask for /conn, and lets through: no ledger, no done line, a closed ledger, a second
 # stop, the setting off, a missing transcript and an empty payload.
 set -u
 hook="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/scripts/find-ledger-guard.sh"
@@ -40,9 +40,8 @@ check "a background command left running passes" 'passes'
 printf 'F1 | open | a\n' > "$L"
 jq -nc --arg t "🏁 Done: finished." '{type:"assistant",message:{content:[{type:"tool_use",name:"SendUserMessage",input:{message:$t}}]}}' > "$fx/t.jsonl"
 check "a done reply sent through SendUserMessage with an open line is sent back" 'blocked'
-reply "🏁 Done: finished." > "$fx/t.jsonl"
 printf 'F1 | fixed | a\nF2 | handed on | GAME-1\n' > "$L"
-reply "🏁 Done: finished." > "$fx/t.jsonl"
+reply "🏁 Done: finished. Type /conn." > "$fx/t.jsonl"
 check "a done reply with every line closed passes" 'passes'
 printf 'F1 | opened later | a\n' > "$L"
 check "a word that only starts with open is no open line" 'passes'
@@ -51,10 +50,21 @@ reply "🏁 Done: finished." > "$fx/t.jsonl"
 printf '1. [x] a\n2. [ ] b\n' > "/tmp/$sid/over-to-you-p.md"
 check "a done reply with no ledger after a page with an unmarked item is held" 'blocked'
 reply "Working." > "$fx/t.jsonl"
-check "no ledger and no done line passes" 'passes'
+check "a read-back reply that never asks for /conn is held" 'blocked'
+check "the hold names /conn" '[[ "$(run)" == */conn* ]]'
+reply "Type /conn to start fresh." > "$fx/t.jsonl"
+check "no ledger and no done line, asking for /conn, passes" 'passes'
 reply "🏁 Done: finished." > "$fx/t.jsonl"
 printf '1. [x] a\n2. [x] b\n' > "/tmp/$sid/over-to-you-p.md"
-check "a page with every item marked passes" 'passes'
+check "a page with every item marked still ends the session" 'blocked'
+reply "🏁 Done: recorded. Type /conn." > "$fx/t.jsonl"
+check "a page with every item marked passes once the reply asks for /conn" 'passes'
+{ jq -nc '{type:"user",message:{content:"<command-name>/vicky-skills:conn</command-name>"}}'; reply "Handoff posted."; } > "$fx/t.jsonl"
+check "once the user typed /conn, a reply needs no ask" 'passes'
+printf '1. [ ] a\n' > "/tmp/$sid/over-to-you-p.md"
+reply "Working." > "$fx/t.jsonl"
+check "a page nobody marked yet is no read-back" 'passes'
+reply "🏁 Done: finished." > "$fx/t.jsonl"
 printf '1. [~] a\n' > "/tmp/$sid/over-to-you-p.md"
 check "a changed item counts as unmarked" 'blocked'
 printf '1. [-] a\n' > "/tmp/$sid/over-to-you-p.md"
@@ -64,6 +74,7 @@ check "no page and no ledger passes" 'passes'
 printf 'F1 | no bug | identified\nF2 | no bug |\n' > "$L"
 check "a no-bug line with no reason is held" 'blocked'
 printf 'F1 | no bug | identified\n' > "$L"
+reply "🏁 Done: finished. Type /conn." > "$fx/t.jsonl"
 check "a no-bug line with a reason passes" 'passes'
 printf 'F1 | open | a\n' > "$L"
 reply "🏁 Done: finished." > "$fx/t.jsonl"

@@ -1,6 +1,6 @@
 ---
 name: conn
-description: Write a thin handoff so a fresh session can pick up this work after a clear. Use when the context is near its limit or the user ends a session mid-effort.
+description: Write a thin handoff so a fresh session can pick up this work after a clear. Use when the context is near its limit, the user ends a session mid-effort, or an over-to-you read-back ends one.
 argument-hint: "What will the next session do?"
 disable-model-invocation: true
 ---

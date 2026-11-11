@@ -54,6 +54,14 @@ says "a refusal reminds the agent that a warp builds each star with do, and do r
 { started vicky-skills:do; started vicky-skills:review; } > "$dir/nosent.jsonl"
 printf 'Plan check: none found\nExamples: approved on T-1\n' > "$dir/body"
 says "a missing sentinels is told it is never skipped, with its manual pass, and no written skip is offered" "$dir/nosent.jsonl" "manual pass" "Skipped: <step>, because"
+{ started vicky-skills:do; started vicky-skills:sentinels; started vicky-skills:review; } > "$dir/full.jsonl"
+printf 'Plan check: none found\nExamples: approved on T-1\n\n## Check these\n\n- Look at it with two clients.\n\n## Status\n\n- done\n' > "$dir/body"
+expect "a Check these line the user has not answered is refused" 2 ok "$dir/full.jsonl" 'tea pr edit 12 -t "Step guard" </dev/null'
+says "the refusal names make-it-so step 3 and over-to-you" "$dir/full.jsonl" "over-to-you"
+printf 'Plan check: none found\nExamples: approved on T-1\n\n## Check these\n\n- Deploy look. Waits on: the host admin.\n\n## Status\n\n- done\n' > "$dir/body"
+expect "a Check these line that waits on someone else lets it through" 0 ok "$dir/full.jsonl" 'gh pr ready 37'
+printf 'Plan check: none found\nExamples: approved on T-1\n\n## Check these\n\n## Status\n\n- done\n' > "$dir/body"
+expect "an empty Check these and bullets under another heading let it through" 0 ok "$dir/full.jsonl" 'gh pr ready 37'
 # Text a shell runs is code, so it is read; text that only names the command is not.
 expect "a bash -c string is read" 2 ok "$dir/noreview.jsonl" 'bash -c "gh pr ready 37"'
 expect "an eval string is read" 2 ok "$dir/noreview.jsonl" "eval 'gh pr ready 37'"
