@@ -68,7 +68,7 @@ check "FL6 a done claim without a Done line is still held" \
 # Given a ledger line closed as no bug with no reason
 # Then the hook holds the done reply and names it
 printf 'F1 | no bug | the item was identified\n' > "/tmp/$sid/over-to-you-ledger.md"
-reply "🏁 Done: finished." > "$fx/t.jsonl"
+reply "🏁 Done: finished. Type /conn." > "$fx/t.jsonl"
 check "FL7 a no-bug line with a reason is closed" '[ -z "$(run)" ]'
 printf 'F1 | no bug | the item was identified\nF2 | no bug |\n' > "/tmp/$sid/over-to-you-ledger.md"
 out=$(run)
