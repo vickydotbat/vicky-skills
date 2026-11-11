@@ -75,6 +75,8 @@ printf 'F1 | no bug | identified\nF2 | no bug |\n' > "$L"
 check "a no-bug line with no reason is held" 'blocked'
 printf 'F1 | no bug | identified\n' > "$L"
 reply "🏁 Done: finished. Type /conn." > "$fx/t.jsonl"
+check "a closed ledger with no page still ends the session" 'reply "🏁 Done: finished." > "$fx/t.jsonl"; blocked'
+reply "🏁 Done: finished. Type /conn." > "$fx/t.jsonl"
 check "a no-bug line with a reason passes" 'passes'
 printf 'F1 | open | a\n' > "$L"
 reply "🏁 Done: finished." > "$fx/t.jsonl"
