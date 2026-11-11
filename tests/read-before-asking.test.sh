@@ -10,7 +10,7 @@ user() { jq -nc --arg t "$1" '{type:"user",message:{content:$t}}'; }
 text() { jq -nc --arg t "$1" '{type:"assistant",message:{content:[{type:"text",text:$t}]}}'; }
 sendmsg() { jq -nc --arg t "$1" '{type:"assistant",message:{content:[{type:"tool_use",name:"SendUserMessage",input:{message:$t}}]}}'; }
 bash_() { jq -nc --arg c "$1" '{type:"assistant",message:{content:[{type:"tool_use",name:"Bash",input:{command:$c}}]}}'; }
-run() { jq -nc --arg t "$fx/t.jsonl" --argjson a "${1:-false}" '{stop_hook_active:$a,transcript_path:$t}' | bash "$hook" 2>/dev/null; }
+run() { jq -nc --arg t "$fx/t.jsonl" --argjson a "${1:-false}" '{stop_hook_active:$a,transcript_path:$t,cwd:"/repo"}' | bash "$hook" 2>/dev/null; }
 sent_back() { [ "$(run | jq -r '.decision // empty' 2>/dev/null)" = block ]; }
 passes() { local out; out=$(run "${1:-false}"); [ $? = 0 ] && [ -z "$out" ]; }
 ask="🚪 Waiting on you: O1 or O2 for chat. One word is enough."
@@ -22,11 +22,22 @@ check "an options gate sent with SendUserMessage is sent back" 'sent_back'
 { user "go"; bash_ "git status"; text "$ask"; } > "$fx/t.jsonl"
 check "another command is no ticket read" 'sent_back'
 
-for c in "bash scripts/read-item.sh GAME-716" "gh issue view 12 --comments" "gh pr view 201 --comments" "tea issues 33 --comments </dev/null" "bin/plane get GAME-716"; do
+for c in "bash scripts/read-item.sh GAME-716" "gh issue view 12 --comments" "gh pr view 201 --comments" "tea issues 33 --comments </dev/null" "tea issue 33" "tea issues view 33" "bin/plane get GAME-716" "gh -R o/r issue view 3"; do
   { user "go"; bash_ "$c"; text "$ask"; } > "$fx/t.jsonl"
   check "a ticket read lets the gate through: $c" 'passes'
 done
 
+{ user "start"; bash_ "bash scripts/read-item.sh GAME-716"; user "now pick"; text "$ask"; } > "$fx/t.jsonl"
+check "a ticket read in an earlier turn of the session counts" 'passes'
+readf() { jq -nc --arg f "$1" '{type:"assistant",message:{content:[{type:"tool_use",name:"Read",input:{file_path:$f}}]}}'; }
+{ user "go"; readf "/vault/proj/Council decisions.md"; text "$ask"; } > "$fx/t.jsonl"
+check "a Read of a note outside the repo counts as a ticket read" 'passes'
+{ user "go"; readf "/repo/README.md"; text "$ask"; } > "$fx/t.jsonl"
+check "a Read of a Markdown file in the repo is no ticket read" 'sent_back'
+{ user "go"; readf "/vault/proj/data.json"; text "$ask"; } > "$fx/t.jsonl"
+check "a Read of a file that is no note is no ticket read" 'sent_back'
+{ user "go"; bash_ "tea issues list"; text "$ask"; } > "$fx/t.jsonl"
+check "a tracker list is no ticket read" 'sent_back'
 { user "go"; text "🚪 Waiting on you: log in and press Save."; } > "$fx/t.jsonl"
 check "a gate with no options goes through" 'passes'
 { user "go"; text "O1 is built. Next I push."; } > "$fx/t.jsonl"
