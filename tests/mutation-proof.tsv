@@ -15,7 +15,7 @@ gate-state-guard.sh	71c338f183976bce	8a8a8a438ed67e88	71/71
 git-guard.sh	f572d9231838f73d	172dca2895093e8e	49/49
 git-hook-lib.sh	5b23f2ed23f960ca	e46d7b39621cf9cb	51/51
 hand-check-guard.sh	168b7d11cdba8ea9	9bf30758853f8798	24/24
-heredoc-strip.awk	6fa4caa108d2e5b7	e1e0ce97af194cc3	6/6
+heredoc-strip.awk	6fa4caa108d2e5b7	a5b6f849523685fe	6/6
 idle-stop-guard.sh	7a82d4613ded451f	f39f1adb2b023f67	42/42
 keep-awake.sh	64e8be754351199c	ecfc01b8cf98bd99	25/25
 lesson-hint.sh	7a82ca13330f28fd	896afa1fc4881f91	11/11
