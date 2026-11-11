@@ -289,6 +289,12 @@
       "description": "When the agent ends its turn telling you to try or test something yourself in the game, the client or the browser, with no page link and no over-to-you started, it is sent back once to hand the checks over with a checklist page. On unless you turn it off.",
       "default": true
     },
+    "guard_review_fresh": {
+      "type": "boolean",
+      "title": "Review before hand-off",
+      "description": "When the agent ends its turn with a Done report or a Waiting on you gate, and the session changed files after its last review, it is sent back once to run the review skill first. On unless you turn it off.",
+      "default": true
+    },
     "adr_scope_hint": {
       "type": "boolean",
       "title": "Remind agents what a decision record holds",
