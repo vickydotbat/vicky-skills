@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # The find ledger guard sends back a done reply while the ledger has an open
-# line, holds any reply after a read-back that does not ask for /conn, and lets through: no ledger, no done line, a closed ledger, a second
+# line, and holds any reply after a read-back that does not ask for /conn.
+# It lets through: no ledger, no done line, a closed ledger, a second
 # stop, the setting off, a missing transcript and an empty payload.
 set -u
 hook="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/scripts/find-ledger-guard.sh"
@@ -74,8 +75,8 @@ check "no page and no ledger passes" 'passes'
 printf 'F1 | no bug | identified\nF2 | no bug |\n' > "$L"
 check "a no-bug line with no reason is held" 'blocked'
 printf 'F1 | no bug | identified\n' > "$L"
-reply "🏁 Done: finished. Type /conn." > "$fx/t.jsonl"
-check "a closed ledger with no page still ends the session" 'reply "🏁 Done: finished." > "$fx/t.jsonl"; blocked'
+reply "🏁 Done: finished." > "$fx/t.jsonl"
+check "a closed ledger with no page still ends the session" 'blocked'
 reply "🏁 Done: finished. Type /conn." > "$fx/t.jsonl"
 check "a no-bug line with a reason passes" 'passes'
 printf 'F1 | open | a\n' > "$L"

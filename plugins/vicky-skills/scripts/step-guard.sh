@@ -10,8 +10,8 @@
 # Reads the session transcript for Skill calls. A failed body lookup lets the
 # command through. It also refuses one whose branch changed an approved
 # example's Given, When or Then line with no ticked red-pen page for that
-# file, a do build whose body has no "Examples:" line, and a do build whose
-# body's "## Check these" list still holds a line with no "Waits on". Off unless the
+# file, a do build whose body has no "Examples:" line, and a do or warp
+# build whose body's "## Check these" list still holds a line with no "Waits on". Off unless the
 # plugin option step_guard is true.
 case "${CLAUDE_PLUGIN_OPTION_STEP_GUARD:-}" in true|1) ;; *) exit 0 ;; esac
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
@@ -86,7 +86,7 @@ grep -qx do <<<"$skills" && ! grep -qE '(^|[[:space:]])Plan check: [^<[:space:]]
   msg="${msg:+$msg }This do build's pull request body has no Plan check line: add one line 'Plan check: <what the check found>', or 'Plan check: none found'."
 # make-it-so step 3 hands the Check these list to the user before step 5 marks it
 # ready. A line still there is unanswered, unless it names who else it waits on.
-open=$(awk '/^## /{on=($0 ~ /^## Check these[[:space:]]*$/); next} on && /^[[:space:]]*([-*]|[0-9]+[.)])[[:space:]]/ && !/Waits on/' <<<"$body" | wc -l)
+open=$(awk '/^## /{on=($0 ~ /^## Check these[[:space:]]*$/); next} on && /^[[:space:]]*([-*]|[0-9]+[.)])[[:space:]]/ && tolower($0) !~ /waits on/' <<<"$body" | wc -l)
 [ "$open" -gt 0 ] &&
   msg="${msg:+$msg }The body's Check these list still holds $open line(s) the user has not answered. Run make-it-so step 3 first: hand each line to the user (over-to-you for a live check), settle it, and delete it, or mark it 'Waits on: <who else>'."
 [ -n "$msg" ] || exit 0

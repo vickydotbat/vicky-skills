@@ -60,6 +60,14 @@ expect "a Check these line the user has not answered is refused" 2 ok "$dir/full
 says "the refusal names make-it-so step 3 and over-to-you" "$dir/full.jsonl" "over-to-you"
 printf 'Plan check: none found\nExamples: approved on T-1\n\n## Check these\n\n- Deploy look. Waits on: the host admin.\n\n## Status\n\n- done\n' > "$dir/body"
 expect "a Check these line that waits on someone else lets it through" 0 ok "$dir/full.jsonl" 'gh pr ready 37'
+printf 'Plan check: none found\nExamples: approved on T-1\n\n## Check these\n\n* Look at it.\n' > "$dir/body"
+expect "a star item in Check these is read" 2 ok "$dir/full.jsonl" 'gh pr ready 37'
+printf 'Plan check: none found\nExamples: approved on T-1\n\n## Check these\n\n1. Look at it.\n' > "$dir/body"
+expect "a numbered item in Check these is read" 2 ok "$dir/full.jsonl" 'gh pr ready 37'
+printf 'Plan check: none found\nExamples: approved on T-1\n\n## Check these\n\n- Deploy. waits on the admin.\n- Look at it.\n' > "$dir/body"
+expect "one waiting line does not excuse the line beside it" 2 ok "$dir/full.jsonl" 'gh pr ready 37'
+printf 'Plan check: none found\nExamples: approved on T-1\n\n## Check these\n\n- Deploy. waits on the admin.\n' > "$dir/body"
+expect "a waits-on line in lower case lets it through" 0 ok "$dir/full.jsonl" 'gh pr ready 37'
 printf 'Plan check: none found\nExamples: approved on T-1\n\n## Check these\n\n## Status\n\n- done\n' > "$dir/body"
 expect "an empty Check these and bullets under another heading let it through" 0 ok "$dir/full.jsonl" 'gh pr ready 37'
 # Text a shell runs is code, so it is read; text that only names the command is not.
