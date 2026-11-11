@@ -22,8 +22,8 @@ else
 fi
 # One jq pass over the candidate lines prints "<line> change" or "<line> review".
 # A *-reviewer agent counts, since the review skill reviews through those three.
-# shortcut: any ">" left after the /tmp, /dev and >& redirects are cut counts as
-# a write, so a quoted ">" asks for one extra review; parse the shell if it nags.
+# shortcut: shell writes are a text match. A quoted ">" costs one extra review,
+# and dd, install or a script that writes goes unseen; parse the shell if either bites.
 marks=$(grep -nE '"name":"(Edit|Write|MultiEdit|NotebookEdit|Bash|Skill|Agent)"|<command-name>/' "$transcript" 2>/dev/null | jq -Rr '
   capture("^(?<n>[0-9]+):(?<j>.*)$") | .n as $n | (.j | fromjson? // empty) as $d
   | if ($d.type == "user") then
@@ -35,7 +35,7 @@ marks=$(grep -nE '"name":"(Edit|Write|MultiEdit|NotebookEdit|Bash|Skill|Agent)"|
           (if ((($i.file_path // $i.notebook_path) // "") | startswith("/tmp/")) then empty else "\($n) change" end)
         elif $t == "Bash" then
           (($i.command // "") | gsub("[0-9]?>>? */(tmp|dev)/[^ ;|&]*"; "") | gsub("[0-9]?>&[0-9]"; "")
-           | if test("\\bgit\\b[^|;&]*\\s(commit|apply|am|merge|rebase|cherry-pick|pull|revert)(\\s|$)|\\bsed\\s+(-[a-zA-Z]*\\s+)*-i|\\btee\\b|(^|[;&|]\\s*)(cp|mv|patch)\\s|>") then "\($n) change" else empty end)
+           | if test("\\bgit\\b[^|;&]*\\s(commit|apply|am|merge|rebase|cherry-pick|pull|revert|restore|reset|checkout\\s+--|stash\\s+(pop|apply))(\\s|$)|\\b(sed|perl)\\s+(-[a-zA-Z]*\\s+)*-[a-z]*i|\\bsed\\s+--in-place|\\btee\\b|\\bdd\\b[^|;&]*\\bof=|(^|[;&|]\\s*|\\b(sudo|run0|env)\\s+([A-Za-z_]+=\\S*\\s+)*)(cp|mv|rm|ln|install|truncate|patch)\\s|>") then "\($n) change" else empty end)
         elif $t == "Skill" then
           (if (($i.skill // "") | test("(^|:)review$")) then "\($n) review" else empty end)
         elif $t == "Agent" then

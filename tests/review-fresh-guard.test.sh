@@ -65,7 +65,7 @@ check "the second stop of a turn goes through" 'passes true'
 check "the setting off lets it through" 'CLAUDE_PLUGIN_OPTION_GUARD_REVIEW_FRESH=false passes'
 check "the setting at 0 lets it through" 'CLAUDE_PLUGIN_OPTION_GUARD_REVIEW_FRESH=0 passes'
 
-for c in "sed -i s/a/b/ src/a.cs" "cat > src/a.cs <<'X'" "echo x | tee src/a.cs" "cp a b" "git apply fix.patch" "git rebase origin/main"; do
+for c in "sed -i s/a/b/ src/a.cs" "cat > src/a.cs <<'X'" "echo x | tee src/a.cs" "cp a b" "git apply fix.patch" "git rebase origin/main" "perl -pi -e s/a/b/ f" "sed --in-place s/a/b/ f" "rm src/a.cs" "run0 cp a b" "env X=1 mv a b" "dd if=a of=b" "git restore f" "git stash pop"; do
   { user "go"; bash_ "$c"; text "$done_"; } > "$fx/t.jsonl"
   check "a shell write with no review is sent back: $c" 'sent_back'
 done
@@ -84,6 +84,8 @@ denied() { [ "$(pre "$1" | jq -r '.hookSpecificOutput.permissionDecision // empt
 { user "go"; edit /repo/a.cs; } > "$fx/t.jsonl"
 check "over-to-you after an unreviewed change is refused" 'denied vicky-skills:over-to-you'
 check "another skill after an unreviewed change runs" '[ -z "$(pre vicky-skills:review)" ]'
+check "a skill whose name only holds over-to-you runs" '[ -z "$(pre my-over-to-you-x)" ]'
+check "over-to-you with the setting off runs" '[ -z "$(CLAUDE_PLUGIN_OPTION_GUARD_REVIEW_FRESH=false pre vicky-skills:over-to-you)" ]'
 { user "go"; edit /repo/a.cs; skill vicky-skills:review; } > "$fx/t.jsonl"
 check "over-to-you after a review runs" '[ -z "$(pre vicky-skills:over-to-you)" ]'
 check "over-to-you with a missing transcript runs" 'out=$(jq -nc "{hook_event_name:\"PreToolUse\",tool_input:{skill:\"over-to-you\"},transcript_path:\"$fx/none\"}" | bash "$hook"); [ -z "$out" ]'
