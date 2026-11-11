@@ -33,6 +33,7 @@ publickey-hint.sh	d3098ec01110850e	c6cb323d1b0fb2e5	13/13
 publish-guard.sh	425b226598ad0b9f	21915eedaedec1f2	13/13
 push-behind-guard.sh	716e28624109853a	aaade1d681e01706	45/45
 quote-mask.awk	b04578521f7edc95	55256f8df03f0510	52/52
+read-before-asking.sh	ecf3d5154a3c9ca6	0db3e83abcb263cd	21/21
 read-item.sh	81e4d8d4ff057aba	bd22684b3898c04c	14/14
 rebase-monks-hint.sh	ae50ae1b8b9da4f0	5af0dc816ac56bf7	16/16
 red-first-check.sh	e585449df8cf7aee	378eaf5a3ef859f6	20/20
@@ -51,7 +52,7 @@ stale-blame.sh	dad90dd03817f75c	6286569f42698a5c	19/19
 stale-copy-hint.sh	6c278c5222834240	f9fc1903d947f3e4	27/27
 step-guard.sh	47f4ab7db85b362c	dcdbd32aa0ade393	94/94
 step-hint.sh	ca4724c43d257d4e	998a239be08c3611	19/19
-stop-reply.sh	20ce3a1e988039f6	d5ae3a3ef902a4fe	17/17
+stop-reply.sh	20ce3a1e988039f6	2bd3c158178ff631	17/17
 summit.sh	a7326a54e5ec3ae0	3a97a0da403c2002	53/53
 tea-stdin.awk	ddfdfc5257c31b06	44ed4f52ffc9914a	70/70
 tea-stdin.sh	c631fcfccdb1abf0	19504a663d50406f	15/15

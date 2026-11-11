@@ -295,6 +295,12 @@
       "description": "When the agent ends its turn with a Done report or a Waiting on you gate, and the session changed files after its last review, it is sent back once to run the review skill first. On unless you turn it off.",
       "default": true
     },
+    "guard_read_before_asking": {
+      "type": "boolean",
+      "title": "Read the ticket before asking a decision",
+      "description": "When the agent ends its turn asking you to pick between coded options (O1, O2) and has read no ticket in the session, it is sent back once to read the ticket and its chart, where an earlier answer may settle it. On unless you turn it off.",
+      "default": true
+    },
     "adr_scope_hint": {
       "type": "boolean",
       "title": "Remind agents what a decision record holds",
