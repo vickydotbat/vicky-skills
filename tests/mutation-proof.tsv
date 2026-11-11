@@ -15,7 +15,7 @@ gate-state-guard.sh	71c338f183976bce	8a8a8a438ed67e88	71/71
 git-guard.sh	f572d9231838f73d	172dca2895093e8e	49/49
 git-hook-lib.sh	5b23f2ed23f960ca	e46d7b39621cf9cb	51/51
 hand-check-guard.sh	168b7d11cdba8ea9	9bf30758853f8798	24/24
-heredoc-strip.awk	6fa4caa108d2e5b7	e1e0ce97af194cc3	6/6
+heredoc-strip.awk	6fa4caa108d2e5b7	a5b6f849523685fe	6/6
 idle-stop-guard.sh	7a82d4613ded451f	f39f1adb2b023f67	42/42
 keep-awake.sh	64e8be754351199c	ecfc01b8cf98bd99	25/25
 lesson-hint.sh	7a82ca13330f28fd	896afa1fc4881f91	11/11
@@ -26,7 +26,7 @@ merged-branch-guard.sh	eddb14559b662ad4	19120906bae20d5e	41/41
 pkill-guard.sh	b7b411516636d988	d1e53bac8b554d6c	7/7
 plane-block-guard.sh	233812567c67b857	e4bbb2e73e731ba1	20/20
 plugin-data.sh	b183a483ba56dfc4	70f1bfb11afc42ce	3/3
-poll-pace.sh	acf53b82ae24c315	794edbe6bf1fb1fb	29/29
+poll-pace.sh	d417f1db9f8dcef2	2c3051c7fb9e9c6e	32/32
 pr-body-hint.sh	69a7e3e5efe170db	d8d1b614b2bdc088	16/16
 pr-guard.sh	04e4f7d1ddf090a2	75065c52361ed9e3	139/139
 publickey-hint.sh	d3098ec01110850e	c6cb323d1b0fb2e5	13/13

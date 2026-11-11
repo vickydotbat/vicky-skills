@@ -23,6 +23,12 @@ got=$(jq -nc '{tool_name:"Bash", tool_input:{command:"for i in 1 2; do echo x; s
 expect 0 true "a 30-second poll, 60 rounds, in the background passes" 'for i in $(seq 1 60); do test -f x && exit; sleep 30; done' true
 expect 2 true "the same poll in the foreground is refused" 'for i in $(seq 1 60); do test -f x && exit; sleep 30; done'
 expect 0 true "a single short sleep passes" 'sleep 5'
+w='bash watch.sh "grep -q end_turn /tmp/x/tasks/a15f2707f785bbbc2.output"'
+expectm 2 "a Monitor watch on a subagent's output file is refused" "$w"
+expect 2 true "a background watch on a subagent's output file is refused" "$w" true
+expect 2 true "a read of a subagent's output file is refused" 'tail -3 /tmp/x/tasks/a15f2707f785bbbc2.output'
+expect 0 true "a watch on a background command's output file passes" 'bash watch.sh "grep -q exit= /tmp/x/tasks/b8aqlwi7h.output"' true
+expect 0 false "a watch on a subagent's output file passes with the setting off" "$w"
 expect 2 true "a 31-second sleep is refused" 'sleep 31'
 expect 0 true "a 60-second poll in the background goes through" 'for i in $(seq 1 60); do sleep 60; done' true
 expect 0 true "a background loop of 61 rounds goes through" 'for i in $(seq 1 61); do sleep 30; done' true
