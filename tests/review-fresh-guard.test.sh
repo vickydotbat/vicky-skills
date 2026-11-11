@@ -29,7 +29,12 @@ check "a gate after a commit with no review is sent back" 'sent_back'
 { user "go"; skill vicky-skills:review; bash_ "git commit -m late"; sendmsg "$done_"; } > "$fx/t.jsonl"
 check "a commit after the review, handed over with SendUserMessage, is sent back" 'sent_back'
 
-for r in "skill vicky-skills:review" "skill review" "agent vicky-skills:spec-reviewer" "user '<command-name>/vicky-skills:review</command-name>'"; do
+for c in Write MultiEdit; do
+  { user "go"; tool "$c" '{"file_path":"/repo/b.cs"}'; text "$done_"; } > "$fx/t.jsonl"
+  check "a change with no review is sent back: $c" 'sent_back'
+done
+
+for r in "user '<command-name>/review</command-name>'" "skill vicky-skills:review" "skill review" "agent vicky-skills:spec-reviewer" "user '<command-name>/vicky-skills:review</command-name>'"; do
   { user "go"; edit /repo/a.cs; eval "$r"; text "$done_"; } > "$fx/t.jsonl"
   check "a review after the last change lets the hand-off through: $r" 'passes'
 done
@@ -59,6 +64,29 @@ check "a session with no change goes through" 'passes'
 check "the second stop of a turn goes through" 'passes true'
 check "the setting off lets it through" 'CLAUDE_PLUGIN_OPTION_GUARD_REVIEW_FRESH=false passes'
 check "the setting at 0 lets it through" 'CLAUDE_PLUGIN_OPTION_GUARD_REVIEW_FRESH=0 passes'
+
+for c in "sed -i s/a/b/ src/a.cs" "cat > src/a.cs <<'X'" "echo x | tee src/a.cs" "cp a b" "git apply fix.patch" "git rebase origin/main"; do
+  { user "go"; bash_ "$c"; text "$done_"; } > "$fx/t.jsonl"
+  check "a shell write with no review is sent back: $c" 'sent_back'
+done
+for c in "ls 2>/dev/null" "cat a > /tmp/s/out" "make 2>&1 | tail" "git status"; do
+  { user "go"; bash_ "$c"; text "$done_"; } > "$fx/t.jsonl"
+  check "a shell command that writes no repo file goes through: $c" 'passes'
+done
+{ user "go"; tool NotebookEdit '{"notebook_path":"/repo/n.ipynb"}'; text "$done_"; } > "$fx/t.jsonl"
+check "a notebook edit with no review is sent back" 'sent_back'
+{ jq -nc '{type:"user",message:{content:[{type:"text",text:"<command-name>/review</command-name>"}]}}'; } > "$fx/u.jsonl"
+{ user "go"; edit /repo/a.cs; cat "$fx/u.jsonl"; text "$done_"; } > "$fx/t.jsonl"
+check "a typed /review in block form counts as a review" 'passes'
+
+pre() { jq -nc --arg t "$fx/t.jsonl" --arg s "$1" '{hook_event_name:"PreToolUse",tool_name:"Skill",tool_input:{skill:$s},transcript_path:$t}' | bash "$hook" 2>/dev/null; }
+denied() { [ "$(pre "$1" | jq -r '.hookSpecificOutput.permissionDecision // empty' 2>/dev/null)" = deny ]; }
+{ user "go"; edit /repo/a.cs; } > "$fx/t.jsonl"
+check "over-to-you after an unreviewed change is refused" 'denied vicky-skills:over-to-you'
+check "another skill after an unreviewed change runs" '[ -z "$(pre vicky-skills:review)" ]'
+{ user "go"; edit /repo/a.cs; skill vicky-skills:review; } > "$fx/t.jsonl"
+check "over-to-you after a review runs" '[ -z "$(pre vicky-skills:over-to-you)" ]'
+check "over-to-you with a missing transcript runs" 'out=$(jq -nc "{hook_event_name:\"PreToolUse\",tool_input:{skill:\"over-to-you\"},transcript_path:\"$fx/none\"}" | bash "$hook"); [ -z "$out" ]'
 
 check "a missing transcript goes through" 'out=$(jq -nc "{stop_hook_active:false,transcript_path:\"$fx/none\"}" | bash "$hook"); [ -z "$out" ]'
 check "bad input goes through" 'out=$(echo "not json" | bash "$hook" 2>/dev/null); [ -z "$out" ]'
