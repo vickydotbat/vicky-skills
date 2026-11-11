@@ -14,7 +14,7 @@ has() {
   if grep -qiF -- "$4" <<<"$text"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi
 }
 oty=productivity/over-to-you/SKILL.md
-has "a hand check opens its page in the turn the code lands" engineering/do/SKILL.md "5. **Run the checks" "start \`over-to-you\` in the same turn"
+has "a hand check opens its page in the turn its review ends" engineering/do/SKILL.md "6. **Review**" "start \`over-to-you\` in the same turn"
 has "a sitting opens in the turn its code lands" $oty "4. **Open it**" "in the same turn the code it checks lands"
 has "each expected result is checked against the stated rules" $oty "3. **Write the checklist**" "against the rules the user stated"
 has "a feel item with a measurable proxy is measured first" $oty "1. **Pick the human-only checks" "measurable proxy"
