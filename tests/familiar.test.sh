@@ -20,6 +20,8 @@ check "E21 no familiar, no voice" '[ -z "$(voice "and the tests?" "$fx/plain.jso
 jq -nc '{type:"assistant",message:{content:[{type:"tool_use",name:"Bash",input:{command:"echo <command-name>/vicky-skills:familiar</command-name>"}}]}}' > "$fx/quoted.jsonl"
 check "a tool call that quotes /familiar starts nothing" '[ -z "$(voice "go" "$fx/quoted.jsonl")" ]'
 check "a missing transcript starts nothing" '[ -z "$(voice "go")" ]'
+jq -nc '{type:"user",message:{content:"<command-name>/vicky-skills:familiar</command-name>"}}' > "$fx/started.jsonl"
+check "a later turn in a familiar session gets no second copy of the voice" '[ -z "$(voice "and now?" "$fx/started.jsonl")" ]'
 check "/familiar typed with words after it counts" 'voice "/familiar watch closely" | grep -q "owl familiar"'
 check "a word that starts with familiar is no command" '[ -z "$(voice "/familiarity")" ]'
 for k in imp:hiss quasit:pest raven:croak parrot:SQUAWK pseudodragon:hoard cat:aloof spider:threads owl:quiet; do

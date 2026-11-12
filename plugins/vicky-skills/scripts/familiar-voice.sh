@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
-# UserPromptSubmit hook: once the user has typed /familiar in a session, every
-# later turn gets the familiar kind's voice as context, so the session stays in
-# character until it ends. The plugin option familiar_kind picks the kind, the
-# owl by default. A session where /familiar was never typed gets nothing.
+# UserPromptSubmit hook: the turn where the user types /familiar gets the
+# familiar kind's voice as context, once, and the voice line asks the session to
+# keep it until it ends. Sending it on every later turn cost about 250
+# injections a session. The plugin option familiar_kind picks the kind, the owl
+# by default. Any other prompt gets nothing.
 set -u
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
 payload=$(cat)
 prompt=$(jq -r '.prompt // ""' <<<"$payload")
-transcript=$(jq -r '.transcript_path // ""' <<<"$payload")
-# Only a message the user typed counts, never a tool call that quotes the command.
-grep -qE '^/(vicky-skills:)?familiar([[:space:]]|$)' <<<"$prompt" || jq -ne --arg p '<command-name>/(vicky-skills:)?familiar</command-name>' 'first(inputs | select(.type == "user" and (.message.content | type) == "string" and (.message.content | test($p)))) | true' "$transcript" >/dev/null 2>&1 || exit 0
+# Only the message the user typed counts, never a tool call that quotes the command.
+grep -qE '^/(vicky-skills:)?familiar([[:space:]]|$)' <<<"$prompt" || exit 0
 kind=${CLAUDE_PLUGIN_OPTION_FAMILIAR_KIND:-owl}
 case "$kind" in
   imp) voice='hiss, laugh and mock.' ;;

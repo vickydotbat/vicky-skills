@@ -217,8 +217,8 @@
     },
     "step_guard": {
       "type": "boolean",
-      "title": "No skipped do steps",
-      "description": "Refuse an edit to production code until the session has started do and that do build has approved examples, refuse to mark a do or warp build's pull request ready when do, sentinels or review never ran and the body gives no reason, and remind the agent at do's and warp's start what each step needs.",
+      "title": "Step hints",
+      "description": "When do, warp, examples, review, sentinels, over-to-you, make-it-so, council-of-elrond or gamma-shift starts, add one line of context naming what its steps need.",
       "default": false
     },
     "lesson_hint": {

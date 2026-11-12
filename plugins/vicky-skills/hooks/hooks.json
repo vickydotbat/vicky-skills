@@ -49,11 +49,6 @@
           },
           {
             "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/step-guard.sh\"",
-            "timeout": 15
-          },
-          {
-            "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/ticket-filing-guard.sh\"",
             "timeout": 10
           },

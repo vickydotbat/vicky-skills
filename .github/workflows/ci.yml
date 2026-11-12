@@ -177,10 +177,6 @@ jobs:
         run: tests/local-path-guard.test.sh
       - name: Push-behind guard
         run: tests/push-behind-guard.test.sh
-      - name: Step guard
-        run: tests/step_guard_approved_examples.test.sh
-      - name: Step guard reads commands, not text that names them
-        run: tests/step_guard_quotes_approved_examples.test.sh
       - name: Lesson hint
         run: tests/lesson-hint.test.sh
       - name: Token savings
@@ -263,12 +259,8 @@ jobs:
         run: tests/warp-do.test.sh
       - name: Red-first decisions
         run: tests/red-first.test.sh
-      - name: Step guard decisions
-        run: tests/step-guard.test.sh
       - name: Ticket filing guard decisions
         run: tests/ticket-filing-guard.test.sh
-      - name: Step guard on Gitea
-        run: tests/step_guard_gitea_approved_examples.test.sh
       - name: Warp reaches do, do reaches sentinels
         run: tests/mutation_step_approved_examples.test.sh
       - name: Sentinels is never skipped by hand
@@ -381,8 +373,6 @@ jobs:
       # approved test was never asked to land red.
       - name: Read an item whole through any tracker
         run: tests/read_item_approved_examples.test.sh
-      - name: Approved wording and the Examples line at ready
-        run: tests/step_guard_wording_approved_examples.test.sh
       - name: pr-guard judges at pr create
         run: tests/pr_guard_create_approved_examples.test.sh
       - name: .todo through todo.sh
