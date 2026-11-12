@@ -19,8 +19,7 @@
 #   6. A body that opens or replaces a pull request without ship-it's Status,
 #      Summary, Proof and Risk sections, and a body filled from the commits
 #      (--fill), in a repo with docs/agents/issue-tracker.md, unless that
-#      file says "PR template: off". There, a body also waits until the
-#      session has started human-voice; a missing transcript lets it through.
+#      file says "PR template: off".
 #
 # Each refusal says what to do instead and never hands the user a command.
 # After a command that printed a pull request's address, the PostToolUse pass
@@ -37,7 +36,6 @@ command=$(jq -r '.tool_input.command // ""' <<<"$payload" 2>/dev/null)
 cwd=$(jq -r '.cwd // ""' <<<"$payload" 2>/dev/null)
 event=$(jq -r '.hook_event_name // "PreToolUse"' <<<"$payload" 2>/dev/null)
 session_id=$(jq -r '.session_id // ""' <<<"$payload" 2>/dev/null)
-transcript=$(jq -r '.transcript_path // ""' <<<"$payload" 2>/dev/null)
 
 # Only the forge CLIs and git-spice send text to the forge. The command
 # without heredoc bodies decides what runs; the credit check reads it all.
@@ -113,17 +111,8 @@ if [[ $event != PostToolUse ]] && [ -f "$tracker" ] && ! grep -qix 'PR template:
     printf -v list '%s, ' "${missing[@]}"
     [ ${#missing[@]} = 0 ] || [ -z "${unread:-}" ] || refuse "The body file $unread names a variable this command does not set, so its sections can't be read." \
       "Pass the body with --body-file and the file's full path written out."
-    # shortcut: any human-voice start in the session counts, not one after this body was written; a record ship-it writes per body would replace it.
-    unvoiced=
-    [ -r "$transcript" ] && ! jq -r 'select(.type=="assistant") | .message.content[]? | select(.type=="tool_use" and .name=="Skill") | .input.skill' "$transcript" 2>/dev/null | sed 's/.*://' | grep -qx human-voice && unvoiced=1
-    # One refusal names every fault, so one rewrite clears them all.
-    [ ${#missing[@]} = 0 ] || refuse "This pull request body has no ${list%, } section${unvoiced:+, and it never went through human-voice}." \
-      "Write the body with the ship-it skill, whose template holds every section, and pass it with --body-file." \
-      ${unvoiced:+"Start the human-voice skill and run its steps on the body file before you send it."}
-    if [ -n "$unvoiced" ]; then
-      refuse "This pull request body never went through human-voice, which ship-it step 2 runs on every body." \
-        "Start the human-voice skill, run its steps on the body file, then send the body again."
-    fi
+    [ ${#missing[@]} = 0 ] || refuse "This pull request body has no ${list%, } section." \
+      "Write the body with the ship-it skill, whose template holds every section, and pass it with --body-file."
   done < <(grep -Eo '(^|[^[:alnum:]_-])(gh|tea)[[:space:]]+(pr|pulls)[[:space:]]+(create|edit)[^;&|]*' <<<"$quoted")
 fi
 

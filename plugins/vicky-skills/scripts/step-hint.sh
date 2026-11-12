@@ -8,8 +8,7 @@
 # the seats until Frodo speaks. When `review` starts, it asks for a prevention
 # verdict on each finding fixed. Off unless the plugin option
 # step_guard is true. When do, warp, examples, away-team or lay-course starts,
-# it first says to read the repo's docs before stating a rule. When ship-it
-# starts, it says to run human-voice on the body before sending it. When do,
+# it first says to read the repo's docs before stating a rule. When do,
 # warp or gamma-shift starts, it points at read-item.sh.
 case "${CLAUDE_PLUGIN_OPTION_STEP_GUARD:-}" in true|1) ;; *) exit 0 ;; esac
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
@@ -24,7 +23,6 @@ case "$skill" in
   away-team|lay-course) hint='' ;;
   gamma-shift) hint='' ;;
   sentinels) hint='Before the pass runs, write its estimate (mutants x the time of the tests that reach them / workers) and the test filter that narrows it to those tests: a pass over the whole suite can time out with nothing written.' ;;
-  ship-it) hint='Run human-voice on the body file before the gh or tea command that sends it: pr-guard refuses a body human-voice never saw.' ;;
   examples) hint='The drafts open on a page through red-pen, never in the chat, and nothing is built until the user closes them.' ;;
   *) exit 0 ;;
 esac

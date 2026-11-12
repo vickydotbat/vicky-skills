@@ -163,10 +163,6 @@ jobs:
         run: tests/skill-descriptions.test.sh
       - name: PR guard
         run: tests/pr-guard.test.sh
-      - name: PR body hint
-        run: tests/pr-body-hint.test.sh
-      - name: PR body hint examples
-        run: tests/pr_guard_hint_approved_examples.test.sh
       - name: Familiar watch follows a moved transcript
         run: tests/familiar_watch_moves_approved_examples.test.sh
       - name: Familiar handoff by session id
