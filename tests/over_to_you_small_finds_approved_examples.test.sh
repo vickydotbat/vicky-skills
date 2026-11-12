@@ -2,11 +2,10 @@
 # approved-spec: the examples approved for "an over-to-you read-back fixes
 # nothing and ends the session with /conn", ticked on a drafts page. Each
 # check is named after its example. The behaviour is the agent's, so each
-# check reads the instruction that drives it, or runs the hook that holds it.
+# check reads the instruction that drives it.
 set -u
 here="$(cd "$(dirname "$0")" && pwd)"
 s="$here/../plugins/vicky-skills/skills/productivity/over-to-you/SKILL.md"
-hook="$here/../plugins/vicky-skills/scripts/find-ledger-guard.sh"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 sized=$(sed -n '/^## Size the finds/,/^## Keep the ledger/p' "$s")
@@ -30,17 +29,6 @@ check "SF2 a big find goes on the ticket" \
 # Then it writes the pull request's Status, asks the user to type /conn and start a fresh session, and starts no fix and no subagent
 check "SF3 the read-back ends the session" \
   'grep -q "Status section" <<<"$step6" && grep -q "type \`/conn\` and start a fresh session" <<<"$step6" && grep -q "Start no test, fix or build" <<<"$step6" && ! grep -q "subagent" <<<"$sized"'
-
-# Given a page the user has marked
-# And the user has not typed /conn
-# When the agent ends a turn without asking for /conn
-# Then a hook sends the turn back
-sid="sf-$$"; fx=$(mktemp -d); mkdir -p "/tmp/$sid"; trap 'rm -rf "$fx" "/tmp/$sid"' EXIT
-printf '1. [x] a\n' > "/tmp/$sid/over-to-you-p.md"
-jq -nc '{type:"assistant",message:{content:[{type:"text",text:"Fixing F1 now."}]}}' > "$fx/t.jsonl"
-out=$(jq -nc --arg s "$sid" --arg t "$fx/t.jsonl" '{session_id:$s,stop_hook_active:false,transcript_path:$t}' | env -u CLAUDE_PLUGIN_OPTION_GUARD_FIND_LEDGER bash "$hook" 2>/dev/null)
-check "SF4 a reply that skips /conn is sent back" \
-  '[ "$(jq -r .decision <<<"$out" 2>/dev/null)" = block ] && grep -q "/conn" <<<"$out"'
 
 # Given a quick note tagged IDEA, RULE, WIP or QUESTION
 # When the agent reads the page back

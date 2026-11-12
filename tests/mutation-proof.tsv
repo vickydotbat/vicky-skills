@@ -4,18 +4,14 @@ ai-credit.sh	ce9c03ae1de6bb7b	c24d63d154290445	1/1
 approved-spec.sh	4454b60a6d5a5aa6	5e49bb9cee14ba4a	6/6
 assign-expand.sh	a2d6f7ea568cb59e	e4142541c0f8acbd	5/5
 auto-tidy.sh	8d1a5176faea2f7b	fc67071cbbc1d949	57/57
-chat-approval-guard.sh	8ab9ae14c8cfa397	802a4a608b43e3d7	10/10
 familiar-voice.sh	5b61603631286b5a	318bf4827b10ddd3	21/21
 fetch-place-hint.sh	3573b2f17e94944d	2c5a05ab853546e0	12/12
-find-ledger-guard.sh	d4d8ce98ddd1e49d	7b0aa903d3e41074	30/30
 gamma-shift.sh	bf7b0a15b596e9fc	105151370ead9c2f	12/12
 gate-notify.sh	7ba893f680c5d672	f5838b34f16e7992	25/25
 gate-state-guard.sh	71c338f183976bce	8a8a8a438ed67e88	71/71
 git-guard.sh	f572d9231838f73d	172dca2895093e8e	49/49
 git-hook-lib.sh	5b23f2ed23f960ca	e46d7b39621cf9cb	51/51
-hand-check-guard.sh	168b7d11cdba8ea9	9bf30758853f8798	24/24
 heredoc-strip.awk	6fa4caa108d2e5b7	a5b6f849523685fe	6/6
-idle-stop-guard.sh	7a82d4613ded451f	f39f1adb2b023f67	42/42
 keep-awake.sh	64e8be754351199c	ecfc01b8cf98bd99	25/25
 lesson-hint.sh	7a82ca13330f28fd	896afa1fc4881f91	11/11
 lesson-ledger.sh	4c88dc2d0aebcfe6	4cb925598f2dbcc8	18/18
@@ -44,7 +40,6 @@ since-user.sh	32eda50d00adbb86	21915eedaedec1f2	6/6
 skill-ledger.sh	4f6f1ba436f648ca	87ac889713948c1a	22/22
 spark-joy.sh	e88c476e7a612966	e307fe06c4392a7b	29/29
 springboard.sh	2b1a555e07899495	c9bbbbb2bb8adf29	53/53
-stale-blame.sh	dad90dd03817f75c	6286569f42698a5c	19/19
 stale-copy-hint.sh	6c278c5222834240	f9fc1903d947f3e4	27/27
 step-guard.sh	47f4ab7db85b362c	dcdbd32aa0ade393	94/94
 step-hint.sh	ca4724c43d257d4e	998a239be08c3611	19/19

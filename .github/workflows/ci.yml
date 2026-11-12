@@ -137,24 +137,10 @@ jobs:
         run: tests/over_to_you_lint_checklist.test.sh
       - name: Hooks read SendUserMessage
         run: tests/sendusermessage-mode.test.sh
-      - name: Chat approval guard
-        run: tests/chat-approval-guard.test.sh
-      - name: Approval is a tick on a page
-        run: tests/chat_approval_guard_approved_examples.test.sh
-      - name: Idle stop guard
-        run: tests/idle-stop-guard.test.sh
-      - name: Hand check guard
-        run: tests/hand-check-guard.test.sh
       - name: Review fresh guard
         run: tests/review-fresh-guard.test.sh
       - name: Read before asking
         run: tests/read-before-asking.test.sh
-      - name: Live checks go through over-to-you
-        run: tests/hand_check_guard_approved_examples.test.sh
-      - name: Stale-copy blame hook
-        run: tests/stale-blame.test.sh
-      - name: A comparison or a retelling is no stale claim
-        run: tests/stale_blame_comparison_approved_examples.test.sh
       - name: Refusals say nothing ran
         run: tests/refusal-note.test.sh
       - name: Page writer
@@ -317,8 +303,6 @@ jobs:
         run: tests/stale-copy-hint.test.sh
       - name: never-lupus checks the peripheral
         run: tests/never_lupus_peripheral_approved_examples.test.sh
-      - name: A notice-woken turn may end silent
-        run: tests/idle_silent_approved_examples.test.sh
       - name: Approve all shows on a one-box page
         run: tests/approve_all_approved_examples.test.sh
       - name: Every wait on the user is a gate
@@ -349,8 +333,6 @@ jobs:
         run: tests/over_to_you_small_finds_approved_examples.test.sh
       - name: Over-to-you find ledger
         run: tests/over_to_you_find_ledger_approved_examples.test.sh
-      - name: Find ledger guard
-        run: tests/find-ledger-guard.test.sh
       - name: Testing standards
         run: tests/testing_standards_approved_examples.test.sh
       - name: Cerebro mid-effort

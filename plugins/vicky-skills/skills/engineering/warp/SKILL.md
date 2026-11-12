@@ -11,7 +11,7 @@ A **warp** clears a whole star chart in one run, or the stars the user names: it
 
 A warp is one effort: every star it builds goes on one branch and one pull request. **A warp never drops out.** Everything on the course that needs the user is taken with them in **pre-flight**, before engaging. A question that turns up mid-flight gets a seam or a stop at an asteroid belt ("Mid-flight questions" below). Every other approval and refusal on the way is an **obstacle**, and "Punch through" says what to do with each.
 
-**Zero friction.** Pre-flight is the one stop, and it stays small. After it, the user may be gone: anything you ask carries your pick, and an ask left unanswered gets that pick. A reply with no tool call ends the run, so a message that names the next step carries that step's tool call with it. Answering a side ask, or reading a background agent's or away team's report, never ends the turn: the same response carries the next course step's tool call (`idle-stop-guard` sends back a turn that ends without one).
+**Zero friction.** Pre-flight is the one stop, and it stays small. After it, the user may be gone: anything you ask carries your pick, and an ask left unanswered gets that pick. A reply with no tool call ends the run, so a message that names the next step carries that step's tool call with it. Answering a side ask, or reading a background agent's or away team's report, never ends the turn: the same response carries the next course step's tool call.
 
 ## Steps
 
