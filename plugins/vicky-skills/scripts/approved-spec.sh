@@ -1,5 +1,5 @@
 # shellcheck shell=bash
-# Sourced by red-first-guard.sh and interactive-page's open-draft.sh: whether a file holds approved examples.
+# Sourced by interactive-page's open-draft.sh: whether a file holds approved examples.
 # A file named for approved examples, or one holding a marked test, is the
 # contract. A file that does not exist yet holds no approved text.
 # The mark is a test framework's tag, never a mention in prose: a comment
@@ -12,7 +12,7 @@ approved() {
   # A backup copy (.new, .bak, .orig, a trailing ~) is scratch, never the contract.
   # red-first-guard.sh keeps the same list as an awk pattern: change both.
   case "$1" in *.new | *.bak | *.orig | *~) return 1 ;; esac
-  # The guard's own script, this helper and the guard's regression tests name the mark in their text, so they are judged by name, never by mention.
+  # This helper names the mark in its own text, so it is judged by name, never by mention.
   case "$(basename -- "$1")" in approved-spec.sh) return 1 ;; esac
   # A file outside every git checkout, such as a session log quoting a test,
   # is no contract: approved tests are in a repo.
