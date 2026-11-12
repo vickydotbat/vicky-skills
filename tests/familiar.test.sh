@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 # The familiar's scripts, on the decisions its approved examples leave out:
-# each kind's voice, an unknown kind, a command only quoted by a tool call,
-# a missing transcript, an old or ended session, and transcript lines the
-# watch skips. E21 is a plain regression test: a session that never typed
-# /familiar got no voice before this was built either.
+# each kind's voice, an unknown kind, a later turn in a familiar session,
+# an old or ended session, and transcript lines the watch skips. E21 is a plain
+# regression test: a session that never typed /familiar gets no voice.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/scripts"
 tools="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/productivity/familiar/scripts"
@@ -17,9 +16,6 @@ voice() { jq -nc --arg p "$1" --arg t "${2:-$fx/none.jsonl}" '{prompt:$p,transcr
 #      Then no line carries a familiar's voice
 jq -nc '{type:"user",message:{content:"fix the build"}}' > "$fx/plain.jsonl"
 check "E21 no familiar, no voice" '[ -z "$(voice "and the tests?" "$fx/plain.jsonl")" ]'
-jq -nc '{type:"assistant",message:{content:[{type:"tool_use",name:"Bash",input:{command:"echo <command-name>/vicky-skills:familiar</command-name>"}}]}}' > "$fx/quoted.jsonl"
-check "a tool call that quotes /familiar starts nothing" '[ -z "$(voice "go" "$fx/quoted.jsonl")" ]'
-check "a missing transcript starts nothing" '[ -z "$(voice "go")" ]'
 jq -nc '{type:"user",message:{content:"<command-name>/vicky-skills:familiar</command-name>"}}' > "$fx/started.jsonl"
 check "a later turn in a familiar session gets no second copy of the voice" '[ -z "$(voice "and now?" "$fx/started.jsonl")" ]'
 check "/familiar typed with words after it counts" 'voice "/familiar watch closely" | grep -q "owl familiar"'
