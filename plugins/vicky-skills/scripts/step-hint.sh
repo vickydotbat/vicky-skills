@@ -10,7 +10,7 @@
 # step_guard is true. When do, warp, examples, away-team or lay-course starts,
 # it first says to read the repo's docs before stating a rule. When ship-it
 # starts, it says to run human-voice on the body before sending it. When do,
-# warp, gamma-shift or loose-ends starts, it points at read-item.sh.
+# warp or gamma-shift starts, it points at read-item.sh.
 case "${CLAUDE_PLUGIN_OPTION_STEP_GUARD:-}" in true|1) ;; *) exit 0 ;; esac
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
 skill=$(jq -r '.tool_input.skill // ""' | sed 's/.*://')
@@ -22,14 +22,14 @@ case "$skill" in
   council-of-elrond) hint='Until Frodo speaks, every line the user sees comes from a seat: each chat message and each SendUserMessage, acks, checkpoints and summaries included, opens with a seat'"'"'s name. Once Frodo has chosen the road, the seats are done: write plain prose from then on.' ;;
   review) hint='Each finding you fix, from a person or a review agent, also gets a prevention verdict: engrave the cheapest check, hook or standard line that makes the mistake impossible, or write one line saying why not.' ;;
   away-team|lay-course) hint='' ;;
-  gamma-shift|loose-ends) hint='' ;;
+  gamma-shift) hint='' ;;
   sentinels) hint='Before the pass runs, write its estimate (mutants x the time of the tests that reach them / workers) and the test filter that narrows it to those tests: a pass over the whole suite can time out with nothing written.' ;;
   ship-it) hint='Run human-voice on the body file before the gh or tea command that sends it: pr-guard refuses a body human-voice never saw.' ;;
   examples) hint='The drafts open on a page through red-pen, never in the chat, and nothing is built until the user closes them.' ;;
   *) exit 0 ;;
 esac
 # A ticket is read whole, body and comments, through the repo's own tracker doc.
-case "$skill" in do|warp|gamma-shift|loose-ends) hint="Read each ticket whole with \${CLAUDE_PLUGIN_ROOT}/scripts/read-item.sh <id>, which runs the repo's Read, whole operation.${hint:+ $hint}" ;; esac
+case "$skill" in do|warp|gamma-shift) hint="Read each ticket whole with \${CLAUDE_PLUGIN_ROOT}/scripts/read-item.sh <id>, which runs the repo's Read, whole operation.${hint:+ $hint}" ;; esac
 # The docs come first for every skill that builds, plans or researches.
 docs="Read the repo's docs on what you touch before you state a rule about it: its agent guide, glossary, decision records and rules docs. A claim the docs contradict is corrected before it reaches a ticket, a comment or code."
 case "$skill" in do|warp|examples|away-team|lay-course) hint="$docs${hint:+ $hint}" ;; esac

@@ -327,10 +327,6 @@ jobs:
         run: tests/do_confirm_approved_examples.test.sh
       - name: do confirm hint decisions
         run: tests/do-confirm-hint.test.sh
-      - name: Screenshots get taken in
-        run: tests/screenshot_intake_approved_examples.test.sh
-      - name: Screenshot intake hint decisions
-        run: tests/screenshot-intake-hint.test.sh
       - name: never-lupus checks the peripheral
         run: tests/never_lupus_peripheral_approved_examples.test.sh
       - name: A notice-woken turn may end silent

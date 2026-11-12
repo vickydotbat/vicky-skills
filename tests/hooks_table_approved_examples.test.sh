@@ -22,7 +22,6 @@ for script in $(jq -r '.hooks[][].hooks[].command' "$plugin/hooks/hooks.json" | 
     pkill-guard.sh) name='No `pkill -f`' ;;
     stale-copy-hint.sh) name="Stale copy" ;;
     do-confirm-hint.sh) name="Confirm the objective" ;;
-    screenshot-intake-hint.sh) name="Screenshots get taken in" ;;
     todo-reminder.sh) name="Todo reminder" ;;
     *) name="" ;;
   esac

@@ -42,7 +42,6 @@ review-fresh-guard.sh	385bab25df63aae7	6e9369299d42623f	47/47
 rm-steer.sh	446e84a40f650cd3	044ab527f146e641	28/28
 same-refusal.sh	a028a5e2340561f9	054af9ee6eb6aed9	18/18
 scratch-guard.sh	c6e044c91bff4bfa	b8dad1fa0e5eb77a	32/32
-screenshot-intake-hint.sh	9dd8a15461cf6bfc	3d78c62653dbda57	12/12
 sentinels-first-guard.sh	61b3a4b4bcd37182	1ce5297ec55d2001	32/32
 since-user.sh	32eda50d00adbb86	21915eedaedec1f2	6/6
 skill-ledger.sh	4f6f1ba436f648ca	87ac889713948c1a	22/22

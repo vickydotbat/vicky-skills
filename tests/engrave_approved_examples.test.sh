@@ -32,7 +32,7 @@ check "given the agent works in a project's repo, I can push to the plugin's rep
 check "given the lesson is about the repo the agent works in, when it engraves the lesson, then the law lands in that repo, in a test, a standard or its agent docs, on the current effort's branch" \
   'grep -q "a test, a standard or its agent docs, on the current effort'"'"'s branch" "$s"'
 
-le="$root/skills/engineering/loose-ends/SKILL.md"
+le="$root/skills/engineering/make-it-so/SETTLE.md"
 check "given an effort hit a snag: a red check, a crash, a retry, or a correction from me, when the agent calls the effort done, then its report names each snag with the law built for it, or says why it needs none" \
   'grep -q "a red check, a crash, a retry, or a correction from the user" "$le" && grep -q "names each snag with the law built for it, or says why it needs none" "$le" && grep -q "engrave" "$le"'
 

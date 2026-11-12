@@ -25,10 +25,10 @@ check "E1 a Read, whole command runs with the id" \
 check "E1 a Read, whole row with no command prints its instruction" \
   'out=$(cd "$dir/note" && bash "$reader" "Some note" 2>&1); grep -q "Read the note, frontmatter" <<<"$out" && grep -q "Some note" <<<"$out"'
 
-# Given a session that starts do, gamma-shift, warp or loose-ends
+# Given a session that starts do, gamma-shift or warp
 # When the skill starts
 # Then the agent is told to read each ticket with read-item.sh
-for s in do gamma-shift warp loose-ends; do
+for s in do gamma-shift warp; do
   check "E2 $s points at read-item.sh" \
     "jq -nc --arg s vicky-skills:$s '{tool_input:{skill:\$s}}' | CLAUDE_PLUGIN_OPTION_STEP_GUARD=true bash \"$hint\" | grep -q 'read-item.sh'"
 done

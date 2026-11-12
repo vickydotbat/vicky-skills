@@ -13,7 +13,7 @@ A **handoff** is a short comment a fresh agent reads first, after the user clear
 
 ## Steps
 
-1. **Write the state where it lives first.** Rewrite the Status section of each open pull request the work touched, as `ship-it` says, and move each ticket's state and `Waits on:` line, as `loose-ends` says. Put each small item for later in `.todo` with `standing-orders`. Done when a fresh session could read where the work stands from those records alone.
+1. **Write the state where it lives first.** Rewrite the Status section of each open pull request the work touched, as `ship-it` says, and move each ticket's state and `Waits on:` line, as `make-it-so`'s SETTLE.md says. Put each small item for later in `.todo` with `standing-orders`. Done when a fresh session could read where the work stands from those records alone.
 2. **Name the goal** in one sentence, shaped by the user's argument when they gave one. Done when the sentence names one outcome.
 3. **Point, don't copy.** Link each ticket, pull request, decision record, commit and file the work rests on. Restate nothing those already hold: no done, next or waits-on lines. Done when every item the work rests on has a link.
 4. **Name the mid-work**: what this session was in the middle of that no record holds yet, such as uncommitted edits, a half-run check or a theory being tested. Beside each line, write the command that shows it, or `unchecked`. Done when each line has its command or `unchecked`.

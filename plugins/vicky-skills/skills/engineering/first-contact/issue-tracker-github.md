@@ -24,7 +24,7 @@ A bare `#42` can be an issue or a pull request. Try `gh pr view 42 --comments` f
 
 ## Waiting work
 
-A waiting ticket can't go on until the thing its `Waits on:` line names is done. It waits on you when that line names you: your decision, answer or merge. Every agent acts as your account, so the assignee can't tell your move from an agent's. `loose-ends` parks one, and `gamma-shift` works through them.
+A waiting ticket can't go on until the thing its `Waits on:` line names is done. It waits on you when that line names you: your decision, answer or merge. Every agent acts as your account, so the assignee can't tell your move from an agent's. `make-it-so`'s SETTLE.md parks one, and `gamma-shift` works through them.
 
 - **List waiting tickets**: `gh issue list --state open --search '"Waits on:" in:body' --json number,title,body`.
 - **List tickets waiting on you**: `gh issue list --state open --search '"Waits on:" in:body' --json number,title,body`, keeping each whose `Waits on:` line names you: your decision, answer or merge.

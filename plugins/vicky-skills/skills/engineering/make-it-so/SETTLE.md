@@ -1,11 +1,6 @@
----
-name: loose-ends
-description: Settle every ticket an effort touched, make the pull request body true of the final diff, and engrave each snag the effort hit. Use before calling an effort done, after every push to an open pull request, and after a merge.
----
+# Settle the loose ends
 
-# Loose ends
-
-> _Every ticket you touched tells the truth before you leave._
+Read this before calling an effort done, after every push to an open pull request, and after a merge. `make-it-so` step 4 runs it, and `warp`, `gamma-shift`, `ship-it` and `power-word-fix` point here.
 
 New developers pick work from the tracker and trust what a ticket says. So an effort isn't done until every ticket it touched says the truth. A **touched** ticket is one the branch name, a commit or the pull request body names, or one the work proved wrong.
 
@@ -33,5 +28,3 @@ New developers pick work from the tracker and trust what a ticket says. So an ef
 A ticket whose state lags the work moves now: one the pull request names moves to the started state while the pull request is open, a parked one through the tracker's "Park a ticket" action, and the report names each move.
 
 Repeat step 3 after every push.
-
-Charter: C3, C6 ([CHARTER.md](../../CHARTER.md)).

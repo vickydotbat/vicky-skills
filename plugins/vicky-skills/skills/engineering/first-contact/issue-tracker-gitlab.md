@@ -21,7 +21,7 @@ Tickets are GitLab issues in this repo. Work them with [`glab`](https://gitlab.c
 
 ## Waiting work
 
-A waiting ticket can't go on until the thing its `Waits on:` line names is done. It waits on you when that line names you: your decision, answer or merge. Every agent acts as your account, so the assignee can't tell your move from an agent's. `loose-ends` parks one, and `gamma-shift` works through them.
+A waiting ticket can't go on until the thing its `Waits on:` line names is done. It waits on you when that line names you: your decision, answer or merge. Every agent acts as your account, so the assignee can't tell your move from an agent's. `make-it-so`'s SETTLE.md parks one, and `gamma-shift` works through them.
 
 - **List waiting tickets**: `glab issue list --search "Waits on:" --in description`.
 - **List tickets waiting on you**: `glab issue list --search "Waits on:" --in description`, keeping each whose `Waits on:` line names you: your decision, answer or merge.

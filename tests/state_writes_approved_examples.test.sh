@@ -33,8 +33,8 @@ check "a parked slice moves its ticket back" \
   '(for s in do gamma-shift warp; do grep -q "park its ticket with the tracker.s \"Park a ticket\" action, with a \`Waits on:\` line" "$skills/$s/SKILL.md" || exit 1; done)'
 
 # Given a ticket the branch names that still shows not-started while its pull request is open
-# When loose-ends runs
+# When make-it-so settles the tickets
 # Then the ticket shows In Progress, and the report names the move
-check "loose-ends fixes a state that lags" \
-  'grep -q "A ticket whose state lags the work moves now" "$skills/loose-ends/SKILL.md" && grep -q "the report names each move" "$skills/loose-ends/SKILL.md"'
+check "settling fixes a state that lags" \
+  'grep -q "A ticket whose state lags the work moves now" "$skills/make-it-so/SETTLE.md" && grep -q "the report names each move" "$skills/make-it-so/SETTLE.md"'
 exit $fail

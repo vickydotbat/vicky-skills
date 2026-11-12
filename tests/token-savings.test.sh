@@ -22,11 +22,11 @@ check "a peer session's message teaches no lesson" \
 
 # Given you correct the agent, and the mistake cost no retry
 # When the effort ends
-# Then engrave runs on it once, in the loose-ends batch, not on the spot
+# Then engrave runs on it once, in the ticket-settling batch, not on the spot
 engrave="$plugin/skills/engineering/engrave/SKILL.md"
-loose="$plugin/skills/engineering/loose-ends/SKILL.md"
+loose="$plugin/skills/engineering/make-it-so/SETTLE.md"
 check "an ordinary correction waits for the batch" \
-  '! grep -q "when the user corrects the agent" "$engrave" && grep -q "Any other correction waits for \`loose-ends\`" "$engrave" && grep -q "a correction from the user. Run \`engrave\` on each one" "$loose"'
+  '! grep -q "when the user corrects the agent" "$engrave" && grep -q "Any other correction waits for that settling" "$engrave" && grep -q "a correction from the user. Run \`engrave\` on each one" "$loose"'
 
 # Given a repo with no tracker doc, such as your machine config
 # When a session starts there
