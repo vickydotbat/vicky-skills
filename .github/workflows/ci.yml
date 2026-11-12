@@ -31,6 +31,12 @@ jobs:
           fetch-depth: 0
       - name: Plugin layout
         run: tests/plugin-layout.test.sh
+      - name: approved-spec decides what holds approved examples
+        run: tests/approved-spec.test.sh
+      - name: heredoc-strip keeps only shell-fed bodies in code mode
+        run: tests/heredoc-strip.test.sh
+      - name: stop-reply reads only the reply since the user spoke
+        run: tests/stop-reply.test.sh
       - name: Familiar watch script
         run: tests/familiar_watch_approved_examples.test.sh
       - name: Familiar skill and voice
