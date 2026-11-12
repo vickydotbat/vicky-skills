@@ -1,6 +1,6 @@
 ---
 name: engrave
-description: Engrave a lesson: turn a snag, mistake or correction into a law (a check, hook or skill line) in its repo. Use when the user says "codify", "lesson", "for the future", "from now on", "make sure we know" or "prevent this", when a fixed snag cost a retry or its root cause is a platform limit, and for each finding the ticket settling in `make-it-so`'s SETTLE.md or `captains-log` hands over. Any other correction waits for that settling.
+description: Engrave a lesson: turn a snag, mistake or correction into a law (a check, hook or skill line) in its repo. Use when the user says "codify", "lesson", "for the future", "from now on", "make sure we know" or "prevent this", when a fixed snag cost a retry or its root cause is a platform limit, and for each finding settling or `captains-log` hands over. Any other correction waits for that settling.
 ---
 
 # Engrave

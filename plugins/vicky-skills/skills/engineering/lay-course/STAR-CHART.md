@@ -27,7 +27,7 @@ The reference `lay-course` and `warp` both read: the words, the chart body, the 
 
 A person reads every chart and ticket before an agent does. Write them with the `human-voice` skill, in the plain register:
 
-- A body states the present. History goes in comments. A lasting broad rule goes in a decision record (`true-names`' ADR-FORMAT.md Scope), and the chart keeps one line pointing at it.
+- A body states the present. History goes in comments. A lasting broad rule goes in a decision record (`first-contact`'s ADR-FORMAT.md Scope), and the chart keeps one line pointing at it.
 - Refer to a ticket by its title, with the key inside the link.
 - One line per item in every list. Rewrite a line in place when it changes, and delete it when it stops being true.
 
@@ -116,7 +116,7 @@ Every ticket also carries the labels the repo's tracker docs require of any tick
 <one question>
 ```
 
-An anomaly or a probe resolves only through the human's own answer. Call `true-names` in the council or interrogation that answers an anomaly.
+An anomaly or a probe resolves only through the human's own answer.
 
 A star carries no `starchart:` label. Its body has these parts and nothing else:
 

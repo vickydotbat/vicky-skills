@@ -21,7 +21,7 @@ A plan that says where work lands (a side branch, a stack, a pull request base, 
 The user brings a loose idea. When they bring the result of a council or an interrogation instead, start at step 4.
 
 1. **Pick the method.** Ask once: "Council, where we argue ideas, or interrogation, where you answer questions?" The council is `council-of-elrond`, the easy mode. Interrogation is `interrogation`, the hard mode, which makes the user say what they want. Done when the user has picked one.
-2. **Name the mission** with that method and `true-names`. Done when the user agrees to a mission of at most three sentences.
+2. **Name the mission** with that method, and write each settled word into the repo's glossary. Done when the user agrees to a mission of at most three sentences.
 3. **Find the frontier** with that method, breadth-first across the whole idea. Done when every open question can be stated as a ticket or is a nebula.
 4. **Place the stars.** Propose one, and wait for the user's yes:
    - **A nebula, or more than one session of work**: a star chart. Go on to step 5.
@@ -39,7 +39,7 @@ The user brings a star chart, and maybe a ticket. Resolve one anomaly per sessio
 1. **Load the chart body.** Read other tickets only when the work needs them. Done when you can state the mission.
 2. **Pick the ticket**: the user's, or the first on the frontier, where an open line under Knowns keeps a star off it. Claim it with the tracker's Claim operation, or "Claim a waiting ticket" for one with a `Waits on:` line, before any other work. Done when the tracker shows the claim.
 3. **Resolve it** with the skills its kind names. For an anomaly, ask the method first (Start an effort, step 1). A council resolves every ticket its settled points answer. Done when the question has an answer the human gave or the evidence supports.
-4. **Record it.** Post the answer as a comment and close the ticket. Write a decision record when the answer is a broad rule that will outlast the chart, as `true-names`' ADR-FORMAT.md Scope defines it. Write both with `human-voice`. Add its line under Decisions, with the method that answered it. Then run `cerebro` as a forecast on what the decision makes due. Done when the ticket is closed, the chart holds its line and cerebro has proposed or found nothing.
+4. **Record it.** Post the answer as a comment and close the ticket. Write a decision record when the answer is a broad rule that will outlast the chart, as `first-contact`'s ADR-FORMAT.md Scope defines it. Write both with `human-voice`. Add its line under Decisions, with the method that answered it. Then run `cerebro` as a forecast on what the decision makes due. Done when the ticket is closed, the chart holds its line and cerebro has proposed or found nothing.
 5. **Move the chart forward.** Turn a nebula that is now sharp into tickets. When a decision makes a star specifiable, file it through "Filing a star". An anomaly whose answer "ends with the build items filed" files them the same way, never straight from its own design. Close a ticket the answer puts past the mission, with its line under Neutral zone. Update or close any ticket the answer makes wrong. Redraw the chart. Done when every line of the chart body is true.
 
 Other sessions may work the same chart, so read the tracker again before each write.
