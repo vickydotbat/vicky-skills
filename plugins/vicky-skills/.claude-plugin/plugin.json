@@ -218,7 +218,7 @@
     "step_guard": {
       "type": "boolean",
       "title": "Step hints",
-      "description": "When do, warp, examples, review, sentinels, over-to-you, make-it-so, council-of-elrond or gamma-shift starts, add one line of context naming what its steps need.",
+      "description": "When do, warp, examples, review, sentinels, over-to-you, make-it-so, council-of-elrond, gamma-shift, away-team or lay-course starts, add one line of context naming what its steps need.",
       "default": false
     },
     "lesson_hint": {
