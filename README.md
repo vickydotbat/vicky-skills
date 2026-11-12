@@ -53,7 +53,6 @@ No skill here shares a name with one of Matt's, so both plugins load without cla
 | **`nwn-model-tooling`** | When working on Neverwinter Nights models, HAK files or headless Blender scripts | Points to the Blender with Neverblender, `cleanmodels` and the neverwinter.nim tools, and how to call each. Its plugin settings name your Blender commands and the folder of unpacked stock resources. |
 | **`video-captions`** | When a task links a video or asks what one says | Reads a video through its captions. |
 | **`codex-image-gen`** | When a task says "use codex" for an image, or a `codex exec` call looks stuck | Makes or edits an image through the Codex CLI's image tool. |
-| **`is-this-a-meme`** | When you type it | `/is-this-a-meme <thing>` explains it, then lands it with a meme. The `dungeon-master` style memes on its own, and nothing else does. |
 
 The `dungeon-master` output style is relaxed, focused and exact: the answer first, the next action last, a register per topic, and memes when an idea needs to land. Pick it with `/output-style vicky-skills:dungeon-master`.
 
