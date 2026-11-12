@@ -1,15 +1,8 @@
 #!/usr/bin/env bash
-# PostToolUse hook (Skill): when `warp` starts, adds one line saying each star
-# is built by starting `do`, which runs `sentinels`. When `do` starts, adds one line of context saying
-# each step needs its proof, and when `examples` starts, that its drafts open
-# in the editor. When `do`, `over-to-you` or `make-it-so` starts, it sends new
-# player-facing text to the red-pen draft file. When `do` starts it also asks
-# for the plan check, and when `council-of-elrond` starts it keeps every line in
-# the seats until Frodo speaks. When `review` starts, it asks for a prevention
-# verdict on each finding fixed. Off unless the plugin option
-# step_guard is true. When do, warp, examples, away-team or lay-course starts,
-# it first says to read the repo's docs before stating a rule. When do,
-# warp or gamma-shift starts, it points at read-item.sh.
+# PostToolUse hook (Skill): when a skill in the case below starts, adds one line
+# of context naming what its steps need. Off unless the plugin option step_guard
+# is true; the option keeps that name, from when it also drove step-guard, so
+# settings that already turn it on keep working.
 case "${CLAUDE_PLUGIN_OPTION_STEP_GUARD:-}" in true|1) ;; *) exit 0 ;; esac
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
 skill=$(jq -r '.tool_input.skill // ""' | sed 's/.*://')
