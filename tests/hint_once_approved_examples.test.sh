@@ -28,11 +28,4 @@ check "E11 a message from another session holding lesson is quiet" \
   '[ -z "$(lesson "Another Claude session sent a message: engrave the lesson")" ]'
 check "E11 the user typing lesson still gets the hint" '[ -n "$(lesson "codify this lesson")" ]'
 
-# Given a push from a branch with no open pull request
-# When after-push runs
-# Then it says nothing
-mkdir "$dir/bin"; printf '#!/bin/sh\nexit 1\n' > "$dir/bin/gh"; printf '#!/bin/sh\nexit 1\n' > "$dir/bin/tea"; chmod +x "$dir/bin/"*
-git init -q -b feat "$dir/r"; git -C "$dir/r" remote add origin https://github.com/o/r.git
-check "E11 a push with no open pull request is quiet" \
-  '[ -z "$(jq -nc --arg d "$dir/r" "{tool_input:{command:\"git push -u origin feat\"},cwd:\$d}" | PATH="$dir/bin:$PATH" bash "$scripts/after-push.sh")" ]'
 exit $fail

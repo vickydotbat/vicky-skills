@@ -27,7 +27,7 @@ The reference `lay-course` and `warp` both read: the words, the chart body, the 
 
 A person reads every chart and ticket before an agent does. Write them with the `human-voice` skill, in the plain register:
 
-- A body states the present. History goes in comments. A lasting broad rule goes in a decision record (`true-names`' ADR-FORMAT.md Scope), and the chart keeps one line pointing at it.
+- A body states the present. History goes in comments. A lasting broad rule goes in a decision record (`first-contact`'s ADR-FORMAT.md Scope), and the chart keeps one line pointing at it.
 - Refer to a ticket by its title, with the key inside the link.
 - One line per item in every list. Rewrite a line in place when it changes, and delete it when it stops being true.
 
@@ -100,7 +100,7 @@ Every chart sorts what its stars rest on into the four boxes of the Rumsfeld mat
 - **Known knowns**: facts with a source. Each goes in the Sensor log with its source line quoted, so the box only points there. A fact every star rests on says "behind every star".
 - **Known unknowns**: open questions you can state. Each is an anomaly or an away team ticket that blocks the stars behind it. A question too loose to ticket stays under Nebulae until it sharpens.
 - **Unknown knowns**: facts that likely sit in a record or in the user's head but were never written down, such as a rule the user always applies or how the work crosses an existing feature. Each gets an away team to find the record, or a `Confirm:` line the user answers in one word, before any star rests on it. Take the `Confirm:` line when no record is likely. Once the user confirms, the fact moves to the Sensor log, quoting the user, and its star loses that unknown at the next redraw.
-- **Unknown unknowns**: these can't be listed. Name the riskiest star and the timebox or probe that covers it. Then search the tracker's earlier charts for their `Surfaced:` lines, and name each kind of surprise seen before on a `Seen before:` line, with the check that covers it here. `loose-ends` adds a `Surfaced:` line for each asteroid belt a build hit.
+- **Unknown unknowns**: these can't be listed. Name the riskiest star and the timebox or probe that covers it. Then search the tracker's earlier charts for their `Surfaced:` lines, and name each kind of surprise seen before on a `Seen before:` line, with the check that covers it here. `make-it-so`'s SETTLE.md adds a `Surfaced:` line for each asteroid belt a build hit.
 
 A box is never left empty without saying why: a box with nothing in it holds one line with the reason, such as "None: the spec answers every question."
 
@@ -116,7 +116,7 @@ Every ticket also carries the labels the repo's tracker docs require of any tick
 <one question>
 ```
 
-An anomaly or a probe resolves only through the human's own answer. Call `true-names` in the council or interrogation that answers an anomaly.
+An anomaly or a probe resolves only through the human's own answer.
 
 A star carries no `starchart:` label. Its body has these parts and nothing else:
 

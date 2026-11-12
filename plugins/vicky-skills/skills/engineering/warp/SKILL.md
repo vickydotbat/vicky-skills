@@ -11,7 +11,7 @@ A **warp** clears a whole star chart in one run, or the stars the user names: it
 
 A warp is one effort: every star it builds goes on one branch and one pull request. **A warp never drops out.** Everything on the course that needs the user is taken with them in **pre-flight**, before engaging. A question that turns up mid-flight gets a seam or a stop at an asteroid belt ("Mid-flight questions" below). Every other approval and refusal on the way is an **obstacle**, and "Punch through" says what to do with each.
 
-**Zero friction.** Pre-flight is the one stop, and it stays small. After it, the user may be gone: anything you ask carries your pick, and an ask left unanswered gets that pick. A reply with no tool call ends the run, so a message that names the next step carries that step's tool call with it. Answering a side ask, or reading a background agent's or away team's report, never ends the turn: the same response carries the next course step's tool call (`idle-stop-guard` sends back a turn that ends without one).
+**Zero friction.** Pre-flight is the one stop, and it stays small. After it, the user may be gone: anything you ask carries your pick, and an ask left unanswered gets that pick. A reply with no tool call ends the run, so a message that names the next step carries that step's tool call with it. Answering a side ask, or reading a background agent's or away team's report, never ends the turn: the same response carries the next course step's tool call.
 
 ## Steps
 
@@ -32,11 +32,11 @@ A warp is one effort: every star it builds goes on one branch and one pull reque
    - **Probe**: make it and show it. The user's reaction is its answer.
    - **Task**: do it. A task that needs another person, an account or a deploy is an obstacle.
    - **Anomaly** or **probe**: answered in pre-flight. One left for mid-flight is a mid-flight question.
-   - **Star**, a target included: start the `do` skill on it with the Skill tool, one `do` run per star, on the warp's branch. `do` is the build: a warp never writes a star's code itself, and `step-guard` refuses a pull request at ready whose do build names no examples. Open pre-flight's pages from a checkout on the warp's branch. Its steps 1 and 2 find the examples approved and the red tests committed by pre-flight, and it goes on at step 3, so its `sentinels` pass and `review` run. Close the star once `do` ends.
+   - **Star**, a target included: start the `do` skill on it with the Skill tool, one `do` run per star, on the warp's branch. `do` is the build: a warp never writes a star's code itself. Open pre-flight's pages from a checkout on the warp's branch. Its steps 1 and 2 find the examples approved and the red tests committed by pre-flight, and it goes on at step 3, so its `sentinels` pass and `review` run. Close the star once `do` ends.
 
    Done when every ticket on the course is closed.
 6. **Finish the build.** Run `review` over the whole branch, then `make-it-so`. A warp through several stars passes `make-it-so`'s size item with the body line "A warp through <n> stars, one pull request per effort." Done when the pull request's required checks are green.
-7. **Land.** Redraw each chart the course crossed, without the course. Run `loose-ends`. Open the landing report with one sign-off line that drops out of warp, in the voice the session's output style sets ("🖖 Dropped out of warp. <n> stars are Done."). Then give the pull request, each target still open with what keeps it out of reach, and what is left. Done when every ticket the warp touched is settled and the landing report is sent.
+7. **Land.** Redraw each chart the course crossed, without the course. Settle the tickets with `make-it-so`'s [SETTLE.md](../make-it-so/SETTLE.md). Open the landing report with one sign-off line that drops out of warp, in the voice the session's output style sets ("🖖 Dropped out of warp. <n> stars are Done."). Then give the pull request, each target still open with what keeps it out of reach, and what is left. Done when every ticket the warp touched is settled and the landing report is sent.
 
 **State at every stop.** At every stop, write the pull request body's Status section, as `ship-it` says: a draft opened, a slice parked, a gate reached, the run ended. A ticket whose slice is parked: park its ticket with the tracker's "Park a ticket" action, with a `Waits on:` line, as "Waiting work" in `docs/agents/issue-tracker.md` says.
 
@@ -44,7 +44,7 @@ A warp is one effort: every star it builds goes on one branch and one pull reque
 
 A question only the user can answer that turns up after pre-flight never stops the build. Ask it once, with your pick. When no answer comes before the work needs it, take your pick, record it in the pull request's Check these, and fly on. A pick too costly to undo takes one of two courses:
 
-- **Carve a seam** when the target ships without the part the question holds. File that part as its own ticket on the chart, parked on the user with a `Waits on:` line, and narrow the target's body to what remains, the way `loose-ends` narrows a ticket. Build the rest.
+- **Carve a seam** when the target ships without the part the question holds. File that part as its own ticket on the chart, parked on the user with a `Waits on:` line, and narrow the target's body to what remains, the way `make-it-so`'s SETTLE.md narrows a ticket. Build the rest.
 - **Stop at an asteroid belt** when the question is one ([STAR-CHART.md](../lay-course/STAR-CHART.md), "Words"). Build around it, gather every such question, and at the end of the course drop out once, among the rocks, to take readings: one round of questions, each with your pick. Their answers re-engage the warp.
 
 ## Punch through

@@ -2,6 +2,8 @@
 
 ## Scope
 
+This is the format a repo takes when the `ADR format:` line of its `docs/agents/domain.md` says `ADR-FORMAT.md`, says `true-names`, which repos set up by an older `first-contact` still hold, or is missing. Write a record only for a decision that is hard to reverse, would surprise a reader without context, and came from a real trade-off. A record changes only when its decision does. The `adr-scope-hint` hook repeats this scope when you edit a record.
+
 A record holds an architecture rule, macro and never micro: a broad, reusable why that many decisions rest on and the code can't show. Think top-down: a record is a why that later decisions extend from. Before you write one, state its rule in one sentence and name the later decisions it will govern. When you can't name any, it is a code comment. A rule that names one class, subclass, spell, feat, item, race, window or value is one feature's why: write it as a comment at the code that builds it, or in the project's system design docs, and write no record. Keep documentation to what the code can't explain. A record and a why comment both exist so the team doesn't drift from a model that works without a reason: a change against either follows the review principles' "No drift from a recorded why" ([PRINCIPLES.md](../review/PRINCIPLES.md)).
 
 ## Shape

@@ -20,8 +20,7 @@ has "history-monks writes its rebase note with ship-it" "$skills/engineering/his
 has "a gamma-shift builder adds its ticket with ship-it" "$skills/engineering/gamma-shift/SKILL.md" "2. Read the agent file" "add this ticket to its body with ship-it"
 has "a stack writes each new body with ship-it" "$skills/engineering/stacked-branches/SKILL.md" - 'write each new pull request'"'"'s body with `ship-it`'
 has "make-it-so rewrites the body to the template" "$skills/engineering/make-it-so/SKILL.md" "4. **Make it true.**" 'Rewrite the body to `ship-it`'"'"'s template'
-has "loose-ends keeps the template's sections" "$skills/engineering/loose-ends/SKILL.md" "3. **Make the body true.**" 'keep `ship-it`'"'"'s sections'
-has "the push hint names ship-it" "$root/plugins/vicky-skills/scripts/after-push.sh" - "with the ship-it skill"
+has "settling keeps the template's sections" "$skills/engineering/make-it-so/SETTLE.md" "3. **Make the body true.**" 'keep `ship-it`'"'"'s sections'
 has "ship-it has steps" "$skills/engineering/ship-it/SKILL.md" - "## Steps"
 has "ship-it's template has the plan check line" "$skills/engineering/ship-it/SKILL.md" - "Plan check: <what it found>"
 for f in "$skills"/engineering/first-contact/issue-tracker-*.md "$root/docs/agents/issue-tracker.md"; do

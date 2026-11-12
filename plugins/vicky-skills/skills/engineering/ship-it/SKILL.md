@@ -7,7 +7,7 @@ description: "Write or rewrite a pull request body in its one template. Use when
 
 > _Just the facts: every sentence of the body is true of the diff._
 
-A pull request body tells a reviewer what changed, the proof that it works, and what merging risks. Every body in a repo takes the one template below, so a reader finds the same thing in the same place. `pr-guard` refuses a body that lacks Status, Summary, Proof or Risk in a repo whose `docs/agents/issue-tracker.md` says `PR template: on`. `pr-body-hint` adds a reminder of this skill and `human-voice` before any `gh pr create` or `gh pr edit` that sends a body.
+A pull request body tells a reviewer what changed, the proof that it works, and what merging risks. Every body in a repo takes the one template below, so a reader finds the same thing in the same place. `pr-guard` refuses a body that lacks Status, Summary, Proof or Risk in a repo whose `docs/agents/issue-tracker.md` says `PR template: on`.
 
 ## Steps
 
@@ -56,6 +56,6 @@ Closes <ticket>
 - **Status says where the work stands**, so a fresh session can pick it up from the body alone. A skill that stops rewrites it in place, true at that moment. `Next:` names what the next session does. With nothing waiting, write `Waits on: nobody`. A waiting line names a person, a merge, a ticket or a check `gamma-shift` can read. A wait on the user starts `Waits on: you`, so the `.todo` springboard lists it. The `Plan check:` line is `do` step 2's; a body no `do` build wrote leaves it out.
 - **The smallest picture.** Pick one: a `diff` of a call tree, file tree or state flow for a change to something that exists, a plain tree for something new, pseudocode for logic, or a Mermaid diagram for data passing between parts. Keep only the calls, files and states the reviewer needs.
 - **Status, Summary, Proof and Risk always stay.** Leave out an optional section with nothing in it: no approved examples, no Examples section. Check these comes from `do` and is gone by the time the pull request is ready.
-- **Settle the tickets** with the `loose-ends` skill after every push, and keep this template while it rewrites the body. A body whose branch, commits and tickets name no ticket drops the `Closes` line.
+- **Settle the tickets** with `make-it-so`'s [SETTLE.md](../make-it-so/SETTLE.md) after every push, and keep this template while it rewrites the body. A body whose branch, commits and tickets name no ticket drops the `Closes` line.
 
 Charter: C3, C4 ([CHARTER.md](../../CHARTER.md)).

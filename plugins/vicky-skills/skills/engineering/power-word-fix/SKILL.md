@@ -17,7 +17,7 @@ The user names something broken. Sort it, run the skills its kind calls for, and
 2. **Sort it** into one kind from the table. A problem of two kinds is two fixes, done in the table's order. Done when each part has a kind.
 3. **Run the skills** for its kind, in order. Done when each skill's own last step is done.
 4. **Prove it.** Rerun the loop that showed the problem and see it pass. For what only a person can see, hand it over with `over-to-you`. Done when the proof is in your reply: the command and its result, or the human's verdict.
-5. **Close the loop.** Commit on the effort's branch, and run `loose-ends` when a ticket or pull request is involved. Done when nothing about the fix lives only in the chat.
+5. **Close the loop.** Commit on the effort's branch, and settle the tickets with `make-it-so`'s [SETTLE.md](../make-it-so/SETTLE.md) when a ticket or pull request is involved. Done when nothing about the fix lives only in the chat.
 
 ## Kinds
 

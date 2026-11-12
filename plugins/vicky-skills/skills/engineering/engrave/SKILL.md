@@ -1,13 +1,13 @@
 ---
 name: engrave
-description: Engrave a lesson: turn a snag, mistake or correction into a law (a check, hook or skill line) in its repo. Use when the user says "codify", "lesson", "for the future", "from now on", "make sure we know" or "prevent this", when a fixed snag cost a retry or its root cause is a platform limit, and for each finding `loose-ends` or `captains-log` hands over. Any other correction waits for `loose-ends`.
+description: Engrave a lesson: turn a snag, mistake or correction into a law (a check, hook or skill line) in its repo. Use when the user says "codify", "lesson", "for the future", "from now on", "make sure we know" or "prevent this", when a fixed snag cost a retry or its root cause is a platform limit, and for each finding settling or `captains-log` hands over. Any other correction waits for that settling.
 ---
 
 # Engrave
 
 > _So let it be written, so let it be done. A lesson leaves as a law, never as a promise._
 
-A **snag** is one thing that went wrong: a red check, a crash, a retry, a wrong claim, or a correction from the user. A correction that cost no retry is engraved in `loose-ends`' batch, not on the spot. A **law** is what stops it next time, in the cheapest container that holds it. An apology or "I'll remember" is no law: the next session never reads it.
+A **snag** is one thing that went wrong: a red check, a crash, a retry, a wrong claim, or a correction from the user. A correction that cost no retry is engraved in the batch `make-it-so`'s SETTLE.md runs, not on the spot. A **law** is what stops it next time, in the cheapest container that holds it. An apology or "I'll remember" is no law: the next session never reads it.
 
 ## Steps
 

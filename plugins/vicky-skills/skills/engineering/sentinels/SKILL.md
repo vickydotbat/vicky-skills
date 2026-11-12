@@ -1,6 +1,6 @@
 ---
 name: sentinels
-description: Mutation-test changed code inside an hour, under a memory cap. Use when `do`, `placebo` or a review asks for a mutation pass, before any hand mutation (a mutant, breaking code on purpose, a positive control, proving a test can fail), when a mutation run is killed, dies with no results or runs out of memory, and before reporting mutation counts or skipping a pass.
+description: Mutation-test changed code inside an hour, under a memory cap. Use when `do` or a review asks for a mutation pass, before any hand mutation (a mutant, breaking code on purpose, a positive control, proving a test can fail), when a mutation run is killed, dies with no results or runs out of memory, and before reporting mutation counts or skipping a pass.
 ---
 
 # Sentinels
@@ -11,7 +11,7 @@ Your tests are the **sentinels**, and a **mutant** is a small deliberate bug: a 
 
 A pass always ends in counts or in "unrun, because <the log line>". It never ends in silence.
 
-A mutation loop you write yourself never replaces this skill, whatever the language or file kind (shell, workflow YAML, config). Code no tool fits takes "The manual pass" below. No `Skipped: sentinels` line in a pull request body counts: `step-guard` refuses it, and `sentinels-first-guard` refuses a script of your own named for mutation, and a hand mutation (an in-place `sed -i` run with the tests, or a `.bak` copy taken before breaking a file), until this skill has started. An Edit-tool break the guard can't see starts this skill all the same.
+A mutation loop you write yourself never replaces this skill, whatever the language or file kind (shell, workflow YAML, config). Code no tool fits takes "The manual pass" below. No `Skipped: sentinels` line in a pull request body counts. A script of your own named for mutation, or a hand mutation (an in-place `sed -i` run with the tests, a `.bak` copy taken before breaking a file, or an Edit-tool break), starts this skill first.
 
 **A pass ends within an hour, in the worst case, and usually within minutes.** A slow pass means it mutates too much or runs the wrong tests. Fix the scope or the tests, never the budget. The cuts, largest first ([SPEED.md](SPEED.md) has the flags and sources):
 
@@ -22,7 +22,7 @@ A mutation loop you write yourself never replaces this skill, whatever the langu
 - Skip code no test can see: log calls and messages to a person.
 - Time each mutant out at its tests' baseline time x 1.5 plus a few seconds. A higher timeout hides an endless loop as slowness.
 
-Every mutation pass starts here, no exceptions: `sentinels-first-guard` refuses a mutation-tool command (Stryker, a `mutate.sh`, mutmut, cargo-mutants, PIT, `tests/mutate-hooks.sh`) until this skill has started in the session.
+Every mutation pass starts here, no exceptions: run a mutation-tool command (Stryker, a `mutate.sh`, mutmut, cargo-mutants, PIT, `tests/mutate-hooks.sh`) only after this skill has started in the session.
 
 Read the repo's `TESTING_STANDARDS.md` first: it wins over this skill's defaults.
 

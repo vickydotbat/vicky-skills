@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 # approved-spec: the examples approved on the star "One watch script for every
-# wait". Each check is named after its example. The watch and the hook are
-# run; the skill checks read the instruction that drives the agent.
+# wait". Each check is named after its example. The watch is run; the skill
+# checks read the instruction that drives the agent.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
 watch="$root/plugins/vicky-skills/scripts/watch.sh"
-pace="$root/plugins/vicky-skills/scripts/poll-pace.sh"
 skills="$root/plugins/vicky-skills/skills"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 fail=0
@@ -31,13 +30,6 @@ check "a check whose output changes once in five rounds prints a line for the fi
   '[ "$(grep -c first "$dir/c.out")" = 1 ] && [ "$(grep -c second "$dir/c.out")" = 1 ] && [ "$(wc -l < "$dir/c.out")" = 2 ]'
 check "a watch with no --every or --rounds checks every 30 seconds, at most 60 times" \
   'bash "$watch" --help | grep -q "every 30 seconds" && bash "$watch" --help | grep -q "at most 60 times"'
-decide() { jq -n --arg c "$1" --argjson bg "${2:-false}" '{tool_name: "Bash", tool_input: {command: $c, run_in_background: $bg}}' | CLAUDE_PLUGIN_OPTION_GUARD_POLL_PACE=true bash "$pace" 2>"$dir/why"; echo $?; }
-check "with the poll-pace guard on, a foreground loop that sleeps and checks is refused, and the refusal names watch.sh and the Monitor call that runs it" \
-  '[ "$(decide "while true; do gh pr status; sleep 10; done")" = 2 ] && grep -q "watch.sh" "$dir/why" && grep -q "Monitor" "$dir/why" && [ "$(decide "for i in \$(seq 1 5); do curl -s x && break; sleep 5; done")" = 2 ]'
-check "with the poll-pace guard on, one blocking watch such as gh pr checks --watch, or watch.sh itself, runs" \
-  '[ "$(decide "gh pr checks 5 --watch --required")" = 0 ] && [ "$(decide "bash scripts/watch.sh \"gh pr status\" --every 30")" = 0 ]'
-check "with the poll-pace guard on, a sleeping loop run as a background command runs" \
-  '[ "$(decide "while true; do gh pr status; sleep 10; done" true)" = 0 ]'
 ok=0
 for f in engineering/warp engineering/make-it-so productivity/red-pen productivity/codex-image-gen engineering/gamma-shift; do
   s="$skills/$f/SKILL.md"

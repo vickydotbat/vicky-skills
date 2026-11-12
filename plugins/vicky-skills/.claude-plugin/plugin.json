@@ -17,22 +17,18 @@
     "./skills/engineering/gamma-shift",
     "./skills/engineering/history-monks",
     "./skills/engineering/lay-course",
-    "./skills/engineering/loose-ends",
     "./skills/engineering/machine-spirit",
     "./skills/engineering/make-it-so",
     "./skills/engineering/marie-kondo",
     "./skills/engineering/mission-brief",
     "./skills/engineering/never-lupus",
     "./skills/engineering/nwn-model-tooling",
-    "./skills/engineering/placebo",
     "./skills/engineering/power-word-fix",
     "./skills/engineering/review",
     "./skills/engineering/sentinels",
     "./skills/engineering/ship-it",
     "./skills/engineering/spark-joy",
     "./skills/engineering/stacked-branches",
-    "./skills/engineering/true-names",
-    "./skills/engineering/ui-design-101",
     "./skills/engineering/warp",
     "./skills/productivity/cerebro",
     "./skills/productivity/council-of-elrond",
@@ -40,17 +36,13 @@
     "./skills/productivity/human-voice",
     "./skills/productivity/drawing-board",
     "./skills/productivity/familiar",
-    "./skills/productivity/fireside-chat",
     "./skills/productivity/interactive-page",
     "./skills/productivity/interrogation",
-    "./skills/productivity/is-this-a-meme",
     "./skills/productivity/loose-lips",
     "./skills/productivity/over-to-you",
     "./skills/productivity/plot-twist",
     "./skills/productivity/red-pen",
-    "./skills/productivity/retcon",
     "./skills/productivity/robot-voice",
-    "./skills/productivity/screenshot-intake",
     "./skills/productivity/standing-orders",
     "./skills/productivity/summit",
     "./skills/productivity/sup",
@@ -225,14 +217,8 @@
     },
     "step_guard": {
       "type": "boolean",
-      "title": "No skipped do steps",
-      "description": "Refuse an edit to production code until the session has started do and that do build has approved examples, refuse to mark a do or warp build's pull request ready when do, sentinels or review never ran and the body gives no reason, and remind the agent at do's and warp's start what each step needs.",
-      "default": false
-    },
-    "guard_poll_pace": {
-      "type": "boolean",
-      "title": "Short polls",
-      "description": "Refuse a wait that sleeps more than 30 seconds at a time, polls more than 60 times, or loops in the foreground instead of using watch.sh, and any wait on a subagent's output file.",
+      "title": "Step hints",
+      "description": "When do, warp, examples, review, sentinels, over-to-you, make-it-so, council-of-elrond, gamma-shift, away-team or lay-course starts, add one line of context naming what its steps need.",
       "default": false
     },
     "lesson_hint": {
@@ -247,46 +233,10 @@
       "description": "Refuse a commit or push on a branch whose remote branch is gone, and name the fresh branch to move to and the commits to carry over.",
       "default": true
     },
-    "guard_scratch": {
-      "type": "boolean",
-      "title": "A scratch folder per subagent",
-      "description": "Give each subagent its own scratch folder under /tmp/<session id>/, and refuse a subagent's write to the session folder its siblings share.",
-      "default": false
-    },
-    "guard_rm_steer": {
-      "type": "boolean",
-      "title": "Spell out the path rm removes",
-      "description": "Refuse rm -r or rm -f on a path built from a shell variable, and tell the agent to spell the path out, so Claude Code's removal check never stops to ask you.",
-      "default": false
-    },
     "standing_orders": {
       "type": "boolean",
       "title": "Standing orders",
       "description": "Keep a .todo springboard: a hook lists at most five actions only you can take and opens each session on the first, and agents jot short .todo lines for later work without asking. Off: no .todo block, no jotted lines.",
-      "default": true
-    },
-    "guard_chat_approval": {
-      "type": "boolean",
-      "title": "Approval is a tick on a page",
-      "description": "When the agent ends its turn asking you to approve examples, a spec or text for an audience in chat, with no page link, it is sent back once to hand the text over with a page you tick. On unless you turn it off.",
-      "default": true
-    },
-    "guard_idle_stop": {
-      "type": "boolean",
-      "title": "Never sit idle outside a gate",
-      "description": "When the agent ends a turn that did work with no gate line, no done line and nothing running in the background, it is sent back once to make its next step's tool call, so work you left it on keeps going. On unless you turn it off.",
-      "default": true
-    },
-    "guard_find_ledger": {
-      "type": "boolean",
-      "title": "Close every over-to-you find",
-      "description": "When the agent ends a turn while its over-to-you ledger has an open find, it is sent back once to close each one. On unless you turn it off.",
-      "default": true
-    },
-    "guard_hand_check": {
-      "type": "boolean",
-      "title": "Live checks go through over-to-you",
-      "description": "When the agent ends its turn telling you to try or test something yourself in the game, the client or the browser, with no page link and no over-to-you started, it is sent back once to hand the checks over with a checklist page. On unless you turn it off.",
       "default": true
     },
     "guard_review_fresh": {
@@ -307,22 +257,10 @@
       "description": "When an agent writes or edits a decision record (adr/NNNN-*.md), add a reminder that a record holds a broad architecture rule, and that one feature's reason goes in a comment at its code.",
       "default": true
     },
-    "guard_windowed_browser": {
-      "type": "boolean",
-      "title": "No browser windows for local pages",
-      "description": "Refuse the windowed Playwright browser for a page on this machine, so a by-eye check uses the headless server instead of opening a window on your desktop.",
-      "default": true
-    },
     "fetch_place_hint": {
       "type": "boolean",
       "title": "Fetched data in a lasting place",
       "description": "When a command downloads or unpacks into /tmp, remind the agent that data kept outside git goes in one lasting place every checkout of the project shares.",
-      "default": true
-    },
-    "guard_stale_blame": {
-      "type": "boolean",
-      "title": "No stale-copy blame without proof",
-      "description": "When the agent ends its turn blaming your build, client, cache or package as stale, or telling you to update or restart it, with no hash or logged version quoted, it is sent back once to keep tracing the code.",
       "default": true
     },
     "keep_awake": {
@@ -331,34 +269,10 @@
       "description": "Hold a sleep lock while any Claude Code session on this machine has a turn running, and release it when every turn has ended. Needs systemd-inhibit.",
       "default": false
     },
-    "guard_sentinels_first": {
-      "type": "boolean",
-      "title": "Mutation passes start with sentinels",
-      "description": "Refuse a mutation-tool command (Stryker, mutate.sh, mutmut, cargo-mutants, PIT) until the session has started the sentinels skill, which scopes the pass to the changed lines first.",
-      "default": true
-    },
-    "guard_todo_next": {
-      "type": "boolean",
-      "title": ".todo writes go through todo.sh",
-      "description": "Refuse a write to .todo that does not go through standing-orders' todo.sh.",
-      "default": true
-    },
     "guard_publickey_hint": {
       "type": "boolean",
       "title": "A refused key is checked before it is blamed",
       "description": "After a push or fetch fails with Permission denied (publickey), tell the agent to compare your keys with the forge's and read its status page before it sends you to add a key.",
-      "default": true
-    },
-    "guard_same_refusal": {
-      "type": "boolean",
-      "title": "A refused call is not repeated unchanged",
-      "description": "Refuse a tool call identical to the one just before it, when a hook refused that one, so the agent acts on the refusal instead of firing the same call again.",
-      "default": true
-    },
-    "guard_rebase_monks_hint": {
-      "type": "boolean",
-      "title": "A rebase conflict goes through history-monks",
-      "description": "When a git rebase stops on a conflict and the session has not started history-monks, tell the agent to abort and rebase again under it.",
       "default": true
     },
     "guard_publish": {

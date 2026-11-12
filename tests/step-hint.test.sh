@@ -14,7 +14,6 @@ has "make-it-so checks player text went through the draft file" vicky-skills:mak
 has "do keeps its proof hint" do "ends with its proof"
 has "sentinels writes its estimate before a pass" sentinels "write its estimate"
 has "do reads a star's chart first" do "read the chart whole first"
-has "ship-it runs human-voice before it sends the body" ship-it "Run human-voice on the body file"
 for s in do warp examples away-team vicky-skills:lay-course; do has "$s reads the repo's docs first" "$s" "Read the repo's docs on what you touch"; done
 has "away-team gets only the docs line" away-team "corrected before it reaches a ticket, a comment or code."
 [ "$(hint away-team | tail -c 6)" = "code." ] && echo "ok   away-team hint ends at the docs line" || { echo "FAIL away-team hint has a trailing part"; fail=1; }
@@ -37,4 +36,9 @@ for s in vicky-skills:sup; do
   [ -z "$(hint "$s")" ] && echo "ok   no hint for $s" || { echo "FAIL hint for $s"; fail=1; }
 done
 [ -z "$(hint vicky-skills:over-to-you false)" ] && echo "ok   off when the option is off" || { echo "FAIL hint while off"; fail=1; }
+# Every skill the script speaks at is named in the README's Step hints row, so the row can't drift from the script.
+row=$(grep -F '| **Step hints**' "$(dirname "$0")/../README.md")
+for s in $(sed -n 's/^  \([a-z|-]*\)).*/\1/p' "$(dirname "$0")/../plugins/vicky-skills/scripts/step-hint.sh" | tr '|' '\n'); do
+  grep -qF "\`$s\`" <<<"$row" && echo "ok   the README row names $s" || { echo "FAIL the README row leaves out $s"; fail=1; }
+done
 exit $fail

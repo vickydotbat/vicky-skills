@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Approved examples for the familiar skill (S2 to S5). The plugin owns three
-# seams: the session lister, the voice hook that speaks into every turn of a
-# familiar session, and the skill text the agent follows. What the agent does
+# seams: the session lister, the voice hook that sets the voice on the turn
+# /familiar is typed, and the skill text the agent follows. What the agent does
 # with a watch line is model behaviour no shell test can run, so those
 # examples are held by the skill's own words.
 set -u
@@ -20,7 +20,6 @@ sessions() { CLAUDE_CODE_SESSION_ID=self FAMILIAR_PROJECTS_DIR="$fx/projects" ba
 # The voice hook, given what the user typed and the transcript so far.
 voice() { printf '%s\n' "$2" > "$fx/t.jsonl"
   jq -nc --arg p "$1" --arg t "$fx/t.jsonl" '{prompt:$p,transcript_path:$t}' | env ${KIND:+CLAUDE_PLUGIN_OPTION_FAMILIAR_KIND=$KIND} bash "$root/scripts/familiar-voice.sh" | jq -r '.hookSpecificOutput.additionalContext // empty'; }
-started=$(jq -nc '{type:"user",message:{content:"<command-name>/vicky-skills:familiar</command-name>"}}')
 
 # Given other sessions are live on the machine
 # When you type /familiar
@@ -32,23 +31,23 @@ check "E16 the voice holds from the /familiar turn on" '[ -n "$(voice "/familiar
 # Given no familiar kind is set
 # When the familiar speaks to you
 # Then it speaks as the owl: quietly, with a tip or a debt line only
-check "E17 the owl by default" 'voice "go" "$started" | grep -qF "You are the owl familiar: quiet. Speak to the user only with a tip or a debt line."'
+check "E17 the owl by default" 'voice "/familiar" "" | grep -qF "You are the owl familiar: quiet. Speak to the user only with a tip or a debt line."'
 
 # Given the familiar kind is set to the imp
 # When the familiar speaks to you
 # Then it hisses, laughs and mocks, and it logs the same snags the owl would
-check "E18 the imp hisses, laughs and mocks, and logs the same snags" 'KIND=imp voice "go" "$started" | grep -qF "You are the imp familiar: hiss, laugh and mock." \
-  && KIND=imp voice "go" "$started" | grep -qF "The kind changes your voice only: log every snag, whatever the kind."'
+check "E18 the imp hisses, laughs and mocks, and logs the same snags" 'KIND=imp voice "/familiar" "" | grep -qF "You are the imp familiar: hiss, laugh and mock." \
+  && KIND=imp voice "/familiar" "" | grep -qF "The kind changes your voice only: log every snag, whatever the kind."'
 
 # Given this session is the familiar
 # When it sends a message to another session
 # Then the message is plain agent language, with no voice
-check "E19 plain words to other agents" 'voice "go" "$started" | grep -qF "To another session or agent, write plain agent language, with no voice."'
+check "E19 plain words to other agents" 'voice "/familiar" "" | grep -qF "To another session or agent, write plain agent language, with no voice."'
 
 # Given you typed /familiar earlier in this session
 # When any later line reaches you
 # Then it is in the familiar's voice, until the session ends
-check "E20 the voice comes back on every later turn" 'voice "and now?" "$started" | grep -qF "Every line the user sees stays in this voice until the session ends."'
+check "E20 the voice holds until the session ends" 'voice "/familiar" "" | grep -qF "Every line the user sees stays in this voice until the session ends."'
 
 # Given the familiar is watching
 # When a watched session shows a flow you could run smoother, such as a command you type often or a prompt a setting would spare

@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# true-names checks a decision record: what, category, when, then a Brief and a
+# check-adr checks a decision record: what, category, when, then a Brief and a
 # Rationale section of one paragraph each, in at most 100 words; or the older
 # four-line shape with a Because line, in at most 55. Both take an optional
 # Superseded line and nothing else. A missing, repeated or extra line or
 # section, the wrong order, a mix of the two shapes, a category off the list,
 # a code name or a word past the limit fails it.
 set -u
-script="$(dirname "$0")/../plugins/vicky-skills/skills/engineering/true-names/scripts/check-adr.sh"
+script="$(dirname "$0")/../plugins/vicky-skills/skills/engineering/first-contact/scripts/check-adr.sh"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 what='# ADR-0007: Sound occlusion uses the physics raycasts'
 cat='Category: Architecture.'

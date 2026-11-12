@@ -8,13 +8,13 @@ fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 body() { awk '/^## The chart/{on=1} /^## Tickets/{on=0} on' "$chart"; }
 box() { body | awk -v h="### $1" '$0 == h {on=1; next} /^##/ {on=0} on'; }
-# The loose-ends step that logs the surprises.
-step() { grep -E "^[0-9]+\. \*\*Log the surprises" loose-ends/SKILL.md; }
+# The settling step that logs the surprises.
+step() { grep -E "^[0-9]+\. \*\*Log the surprises" make-it-so/SETTLE.md; }
 
 # Given an asteroid belt found during a build, an unknown unknown that surfaced
-# When loose-ends closes the effort
+# When make-it-so's settling closes the effort
 # Then it is logged on the chart as an unknown unknown that became known, with what it cost
-check "an asteroid belt found during a build is logged on the chart by loose-ends as an unknown unknown that became known, with what it cost" \
+check "an asteroid belt found during a build is logged on the chart by the settling as an unknown unknown that became known, with what it cost" \
   'step | grep -q "asteroid belt" && step | grep -q "Surfaced:" && step | grep -q "cost" \
    && box "Unknown unknowns" | grep -q "^- Surfaced: .*cost"'
 # Given a surprise of a kind seen before
