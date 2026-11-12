@@ -64,11 +64,6 @@
           },
           {
             "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/poll-pace.sh\"",
-            "timeout": 5
-          },
-          {
-            "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/git-guard.sh\"",
             "timeout": 10
           },
@@ -115,26 +110,6 @@
         ]
       },
       {
-        "matcher": "Bash|Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/scratch-guard.sh\"",
-            "timeout": 5
-          }
-        ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/rm-steer.sh\"",
-            "timeout": 5
-          }
-        ]
-      },
-      {
         "matcher": "SendUserMessage",
         "hooks": [
           {
@@ -163,27 +138,12 @@
             "timeout": 5
           }
         ]
-      },
-      {
-        "matcher": "Monitor",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/poll-pace.sh\"",
-            "timeout": 10
-          }
-        ]
       }
     ],
     "PostToolUse": [
       {
         "matcher": "Bash",
         "hooks": [
-          {
-            "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/after-push.sh\"",
-            "timeout": 5
-          },
           {
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/pr-guard.sh\"",
@@ -328,18 +288,6 @@
           {
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/keep-awake.sh\"",
-            "timeout": 5
-          }
-        ]
-      }
-    ],
-    "SubagentStart": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/scratch-guard.sh\"",
             "timeout": 5
           }
         ]

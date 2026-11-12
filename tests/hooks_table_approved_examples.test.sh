@@ -18,7 +18,6 @@ for script in $(jq -r '.hooks[][].hooks[].command' "$plugin/hooks/hooks.json" | 
   opts=$(grep -o 'CLAUDE_PLUGIN_OPTION_[A-Z0-9_]*' "$plugin/scripts/$script" | sort -u | sed 's/CLAUDE_PLUGIN_OPTION_//' | tr 'A-Z' 'a-z')
   # A hook with no setting needs a line here naming its row.
   case "$script" in
-    after-push.sh) name="After push" ;;
     pkill-guard.sh) name='No `pkill -f`' ;;
     stale-copy-hint.sh) name="Stale copy" ;;
     todo-reminder.sh) name="Todo reminder" ;;
@@ -40,7 +39,7 @@ check "every hook the plugin registers is one row of the README table, with what
 # Then it says (recommended)
 untagged=$(grep -vc -e '(recommended)' -e '(experimental)' <<<"$rows")
 check "a hook that only refuses, asks or warns, such as the push-behind guard, says (recommended)" \
-  'row "No pushing behind main" | grep -q "(recommended)" && row "Short polls" | grep -q "(recommended)" && [ "$untagged" = 0 ]'
+  'row "No pushing behind main" | grep -q "(recommended)" && row "Read before asking" | grep -q "(recommended)" && [ "$untagged" = 0 ]'
 
 # Given a hook that acts on its own, such as gamma shift, auto-tidy or the springboard
 # When I read its row

@@ -45,10 +45,6 @@ jobs:
         run: tests/chart-read.test.sh
       - name: Do runs its plan check first
         run: tests/do_imp_pass_approved_examples.test.sh
-      - name: Scratch guard
-        run: tests/scratch-guard.test.sh
-      - name: Rm steer decisions
-        run: tests/rm-steer.test.sh
       - name: Skill steps
         run: tests/skill-steps.test.sh
       - name: Familiar intent and repo examples
@@ -159,8 +155,6 @@ jobs:
         run: tests/check-adr.test.sh
       - name: ADR scope hint
         run: tests/adr-scope-hint.test.sh
-      - name: After-push hook
-        run: tests/after-push.test.sh
       - name: Skill links
         run: tests/skill-links.test.sh
       - name: A recorded decision reaches the docs
@@ -207,10 +201,6 @@ jobs:
         run: tests/sup_lessons_approved_examples.test.sh
       - name: Engrave routing approved examples
         run: tests/engrave_route_approved_examples.test.sh
-      - name: Poll pace
-        run: tests/poll-pace.test.sh
-      - name: Poll-pace reads a heredoc as text
-        run: tests/poll_pace_heredoc_approved_examples.test.sh
       - name: Gamma-shift hook
         run: tests/gamma-shift.test.sh
       - name: Gamma shift builds one batch a session
@@ -307,8 +297,6 @@ jobs:
         run: tests/approve_all_approved_examples.test.sh
       - name: Every wait on the user is a gate
         run: tests/gate_home_approved_examples.test.sh
-      - name: A quoted loop is text to poll-pace
-        run: tests/poll_pace_quoted_approved_examples.test.sh
       - name: Faster mutation runner
         run: tests/mutation_speed_approved_examples.test.sh
       - name: Mutation runner memory limit
@@ -359,8 +347,6 @@ jobs:
         run: tests/training_wheels_approved_examples.test.sh
       - name: Over-to-you covers the whole branch
         run: tests/over_to_you_whole_branch_approved_examples.test.sh
-      - name: Rm steer
-        run: tests/rm_steer_approved_examples.test.sh
       - name: Pr-guard refuses AI credit, and stacks pass
         run: tests/pr_guard_ai_credit_approved_examples.test.sh
       - name: Pr-guard keeps an effort to one pull request
@@ -401,8 +387,6 @@ jobs:
         run: tests/read_item_approved_examples.test.sh
       - name: Approved wording and the Examples line at ready
         run: tests/step_guard_wording_approved_examples.test.sh
-      - name: poll-pace lets Monitor and background waits through
-        run: tests/poll_pace_monitor_approved_examples.test.sh
       - name: pr-guard judges at pr create
         run: tests/pr_guard_create_approved_examples.test.sh
       - name: .todo through todo.sh

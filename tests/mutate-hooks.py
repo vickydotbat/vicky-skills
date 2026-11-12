@@ -57,7 +57,6 @@ SURVIVORS = os.path.join(ROOT, "tests", ".mutation-survivors")
 MUTANT_MEMORY = 2**30
 GIT_GUARDS = ["git-guard", "git_guard_approved_examples", "push-behind-guard", "merged-branch-guard", "local-path-guard", "red_first_approved_examples"]
 TESTS = {
-    "after-push.sh": ["after-push", "hint_once_approved_examples"],
     "familiar-voice.sh": ["familiar_approved_examples", "familiar"],
     "auto-tidy.sh": ["auto-tidy", "auto-tidy-clone", "clone_takeover_approved_examples"],
     "stale-copy-hint.sh": ["stale_copy_hint_approved_examples", "stale-copy-hint", "hint_once_approved_examples"],
@@ -72,7 +71,7 @@ TESTS = {
     "keep-awake.sh": ["keep-awake", "keep-awake-crash", "sleep_lock_approved_examples"],
     "git-hook-lib.sh": GIT_GUARDS,
     "ai-credit.sh": ["git-guard", "git_guard_approved_examples", "pr-guard", "pr_guard_ai_credit_approved_examples"],
-    "heredoc-strip.awk": GIT_GUARDS + ["pr-guard", "poll-pace", "poll_pace_heredoc_approved_examples", "pkill_guard_approved_examples"],
+    "heredoc-strip.awk": GIT_GUARDS + ["pr-guard", "pkill_guard_approved_examples"],
     "quote-mask.awk": ["pr-guard", "pr-body-hint"],
     "pr-body-hint.sh": ["pr-body-hint", "pr_guard_hint_approved_examples"],
     "local-path-guard.sh": ["local-path-guard"],
@@ -89,7 +88,6 @@ TESTS = {
     "gate-state-guard.sh": ["gate-state-guard"],
     "ticket-drift.sh": ["ticket_drift_approved_examples", "no-remote-quiet"],
     "plane-block-guard.sh": ["plane_block_approved_examples", "plane-block-guard", "refusal-note"],
-    "poll-pace.sh": ["poll-pace", "watch_approved_examples", "poll_pace_heredoc_approved_examples", "poll_pace_quoted_approved_examples", "refusal-note", "poll_pace_monitor_approved_examples"],
     "watch.sh": ["watch", "watch_approved_examples"],
     "assign-expand.sh": ["pr-guard", "worktree-place"],
     "worktree-place.sh": ["worktree-place", "worktree_place_approved_examples", "worktree_cleanup_approved_examples", "worktree_drop_approved_examples"],
@@ -106,8 +104,6 @@ TESTS = {
     "step-guard.sh": ["step-guard", "mutation_step_approved_examples", "step_guard_approved_examples", "step_guard_gitea_approved_examples", "sentinels_never_skipped_approved_examples", "step_guard_quotes_approved_examples", "step_guard_wording_approved_examples"],
     "ticket-filing-guard.sh": ["ticket-filing-guard"],
     "step-hint.sh": ["step_guard_approved_examples", "mutation_step_approved_examples", "step-hint", "review-prevention", "do_imp_pass_approved_examples", "read_item_approved_examples"],
-    "scratch-guard.sh": ["scratch-guard", "refusal-note"],
-    "rm-steer.sh": ["rm-steer", "rm_steer_approved_examples", "refusal-note"],
     "lesson-hint.sh": ["lesson-hint", "engrave_approved_examples", "hint_once_approved_examples"],
     "merged-branch-guard.sh": ["merged-branch-guard", "merged_branch_approved_examples"],
     "merge-point.sh": ["merged-branch-guard", "merged_branch_approved_examples", "auto-tidy-clone", "clone_takeover_approved_examples"],

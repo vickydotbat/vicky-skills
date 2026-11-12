@@ -1,5 +1,4 @@
 adr-scope-hint.sh	25667e321a3247e7	fc41582a951cf519	7/7
-after-push.sh	c6f949f0fa8098e1	75bd24ed906accd8	27/27
 ai-credit.sh	ce9c03ae1de6bb7b	c24d63d154290445	1/1
 approved-spec.sh	4454b60a6d5a5aa6	5e49bb9cee14ba4a	6/6
 assign-expand.sh	a2d6f7ea568cb59e	e4142541c0f8acbd	5/5
@@ -21,7 +20,6 @@ merged-branch-guard.sh	eddb14559b662ad4	19120906bae20d5e	41/41
 pkill-guard.sh	b7b411516636d988	d1e53bac8b554d6c	7/7
 plane-block-guard.sh	233812567c67b857	e4bbb2e73e731ba1	20/20
 plugin-data.sh	b183a483ba56dfc4	70f1bfb11afc42ce	3/3
-poll-pace.sh	d417f1db9f8dcef2	2c3051c7fb9e9c6e	32/32
 pr-body-hint.sh	69a7e3e5efe170db	d8d1b614b2bdc088	16/16
 pr-guard.sh	04e4f7d1ddf090a2	75065c52361ed9e3	139/139
 publickey-hint.sh	d3098ec01110850e	c6cb323d1b0fb2e5	13/13
@@ -33,8 +31,6 @@ read-item.sh	81e4d8d4ff057aba	bd22684b3898c04c	14/14
 red-first-check.sh	e585449df8cf7aee	378eaf5a3ef859f6	20/20
 red-first-guard.sh	ce1336cf1ab35246	71d58db6a8b49690	27/27
 review-fresh-guard.sh	385bab25df63aae7	6e9369299d42623f	47/47
-rm-steer.sh	446e84a40f650cd3	044ab527f146e641	28/28
-scratch-guard.sh	c6e044c91bff4bfa	b8dad1fa0e5eb77a	32/32
 sentinels-first-guard.sh	61b3a4b4bcd37182	1ce5297ec55d2001	32/32
 since-user.sh	32eda50d00adbb86	21915eedaedec1f2	6/6
 skill-ledger.sh	4f6f1ba436f648ca	87ac889713948c1a	22/22

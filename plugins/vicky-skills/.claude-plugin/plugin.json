@@ -221,12 +221,6 @@
       "description": "Refuse an edit to production code until the session has started do and that do build has approved examples, refuse to mark a do or warp build's pull request ready when do, sentinels or review never ran and the body gives no reason, and remind the agent at do's and warp's start what each step needs.",
       "default": false
     },
-    "guard_poll_pace": {
-      "type": "boolean",
-      "title": "Short polls",
-      "description": "Refuse a wait that sleeps more than 30 seconds at a time, polls more than 60 times, or loops in the foreground instead of using watch.sh, and any wait on a subagent's output file.",
-      "default": false
-    },
     "lesson_hint": {
       "type": "boolean",
       "title": "Lesson hint",
@@ -238,18 +232,6 @@
       "title": "No commits on a merged branch",
       "description": "Refuse a commit or push on a branch whose remote branch is gone, and name the fresh branch to move to and the commits to carry over.",
       "default": true
-    },
-    "guard_scratch": {
-      "type": "boolean",
-      "title": "A scratch folder per subagent",
-      "description": "Give each subagent its own scratch folder under /tmp/<session id>/, and refuse a subagent's write to the session folder its siblings share.",
-      "default": false
-    },
-    "guard_rm_steer": {
-      "type": "boolean",
-      "title": "Spell out the path rm removes",
-      "description": "Refuse rm -r or rm -f on a path built from a shell variable, and tell the agent to spell the path out, so Claude Code's removal check never stops to ask you.",
-      "default": false
     },
     "standing_orders": {
       "type": "boolean",
