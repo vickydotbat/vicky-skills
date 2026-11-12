@@ -37,7 +37,7 @@ Each of these is a snag, whatever the line's tone:
 - An approved example retired, reworded or replaced without the user's tick on a page.
 - A review over a shorter range than its skill names, or a step reported as done that its skill never ran (a SKILL line that never came).
 - A check, an answer or a fact the user already gave, asked for again.
-- A refused command run again unchanged. The `same-refusal` hook stops a back-to-back repeat; log the ones it misses.
+- A refused command run again unchanged.
 - A claim, ticket post or build that contradicts the repo's own docs (agent guide, glossary, decision records, rules docs). It goes to the user at once, like a leak, once it reaches a ticket.
 - A gate left open: a "Waiting on you" with no watch behind it, or a wait with no ask.
 - A hook that refused or sent back work that was right: a false positive. The fix lands in that hook and its test.

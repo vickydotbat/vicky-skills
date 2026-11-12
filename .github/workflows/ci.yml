@@ -281,22 +281,14 @@ jobs:
         run: tests/sentinels-first-guard.test.sh
       - name: A fixed review finding gets a prevention verdict
         run: tests/review-prevention.test.sh
-      - name: todo-guard sends .todo writes through standing-orders
-        run: tests/todo-guard.test.sh
       - name: Every default-on guard is named in a skill
         run: tests/guard-pointers.test.sh
       - name: publickey-hint checks a refused key before blaming it
         run: tests/publickey-hint.test.sh
-      - name: same-refusal stops a refused call repeated unchanged
-        run: tests/same-refusal.test.sh
-      - name: rebase-monks-hint sends a rebase conflict to history-monks
-        run: tests/rebase-monks-hint.test.sh
       - name: publish-guard keeps making a repository public with the user
         run: tests/publish-guard.test.sh
       - name: Warp hands every star to do
         run: tests/warp-do.test.sh
-      - name: Windowed browser guard
-        run: tests/windowed-browser-guard.test.sh
       - name: Red-first decisions
         run: tests/red-first.test.sh
       - name: Step guard decisions
@@ -323,10 +315,6 @@ jobs:
         run: tests/stale_copy_hint_approved_examples.test.sh
       - name: Stale plugin copy hint decisions
         run: tests/stale-copy-hint.test.sh
-      - name: do confirms a chat objective
-        run: tests/do_confirm_approved_examples.test.sh
-      - name: do confirm hint decisions
-        run: tests/do-confirm-hint.test.sh
       - name: never-lupus checks the peripheral
         run: tests/never_lupus_peripheral_approved_examples.test.sh
       - name: A notice-woken turn may end silent

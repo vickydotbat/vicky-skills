@@ -303,12 +303,6 @@
       "description": "When an agent writes or edits a decision record (adr/NNNN-*.md), add a reminder that a record holds a broad architecture rule, and that one feature's reason goes in a comment at its code.",
       "default": true
     },
-    "guard_windowed_browser": {
-      "type": "boolean",
-      "title": "No browser windows for local pages",
-      "description": "Refuse the windowed Playwright browser for a page on this machine, so a by-eye check uses the headless server instead of opening a window on your desktop.",
-      "default": true
-    },
     "fetch_place_hint": {
       "type": "boolean",
       "title": "Fetched data in a lasting place",
@@ -333,28 +327,10 @@
       "description": "Refuse a mutation-tool command (Stryker, mutate.sh, mutmut, cargo-mutants, PIT) until the session has started the sentinels skill, which scopes the pass to the changed lines first.",
       "default": true
     },
-    "guard_todo_next": {
-      "type": "boolean",
-      "title": ".todo writes go through todo.sh",
-      "description": "Refuse a write to .todo that does not go through standing-orders' todo.sh.",
-      "default": true
-    },
     "guard_publickey_hint": {
       "type": "boolean",
       "title": "A refused key is checked before it is blamed",
       "description": "After a push or fetch fails with Permission denied (publickey), tell the agent to compare your keys with the forge's and read its status page before it sends you to add a key.",
-      "default": true
-    },
-    "guard_same_refusal": {
-      "type": "boolean",
-      "title": "A refused call is not repeated unchanged",
-      "description": "Refuse a tool call identical to the one just before it, when a hook refused that one, so the agent acts on the refusal instead of firing the same call again.",
-      "default": true
-    },
-    "guard_rebase_monks_hint": {
-      "type": "boolean",
-      "title": "A rebase conflict goes through history-monks",
-      "description": "When a git rebase stops on a conflict and the session has not started history-monks, tell the agent to abort and rebase again under it.",
       "default": true
     },
     "guard_publish": {

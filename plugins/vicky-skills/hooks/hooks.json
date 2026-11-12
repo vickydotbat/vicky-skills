@@ -145,41 +145,11 @@
         ]
       },
       {
-        "matcher": "mcp__playwright__browser_navigate",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/windowed-browser-guard.sh\"",
-            "timeout": 5
-          }
-        ]
-      },
-      {
         "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/sentinels-first-guard.sh\"",
-            "timeout": 5
-          }
-        ]
-      },
-      {
-        "matcher": "Edit|Write|MultiEdit|Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/todo-guard.sh\"",
-            "timeout": 5
-          }
-        ]
-      },
-      {
-        "matcher": "Bash|Edit|Write|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/same-refusal.sh\"",
             "timeout": 5
           }
         ]
@@ -232,11 +202,6 @@
           {
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/publickey-hint.sh\"",
-            "timeout": 5
-          },
-          {
-            "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/rebase-monks-hint.sh\"",
             "timeout": 5
           }
         ]
@@ -358,11 +323,6 @@
           {
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/stale-copy-hint.sh\"",
-            "timeout": 5
-          },
-          {
-            "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/do-confirm-hint.sh\"",
             "timeout": 5
           },
           {
