@@ -38,7 +38,7 @@ done
 [ -z "$(hint vicky-skills:over-to-you false)" ] && echo "ok   off when the option is off" || { echo "FAIL hint while off"; fail=1; }
 # Every skill the script speaks at is named in the README's Step hints row, so the row can't drift from the script.
 row=$(grep -F '| **Step hints**' "$(dirname "$0")/../README.md")
-for s in $(sed -n 's/^  \([a-z|-]*\)).*/\1/p' "$(dirname "$0")/../plugins/vicky-skills/scripts/step-hint.sh" | tr '|' '\n' | grep -v '^\*$'); do
+for s in $(sed -n 's/^  \([a-z|-]*\)).*/\1/p' "$(dirname "$0")/../plugins/vicky-skills/scripts/step-hint.sh" | tr '|' '\n'); do
   grep -qF "\`$s\`" <<<"$row" && echo "ok   the README row names $s" || { echo "FAIL the README row leaves out $s"; fail=1; }
 done
 exit $fail
