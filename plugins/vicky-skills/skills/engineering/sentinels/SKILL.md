@@ -1,6 +1,6 @@
 ---
 name: sentinels
-description: Mutation-test changed code inside an hour, under a memory cap. Use when `do`, `placebo` or a review asks for a mutation pass, before any hand mutation (a mutant, breaking code on purpose, a positive control, proving a test can fail), when a mutation run is killed, dies with no results or runs out of memory, and before reporting mutation counts or skipping a pass.
+description: Mutation-test changed code inside an hour, under a memory cap. Use when `do` or a review asks for a mutation pass, before any hand mutation (a mutant, breaking code on purpose, a positive control, proving a test can fail), when a mutation run is killed, dies with no results or runs out of memory, and before reporting mutation counts or skipping a pass.
 ---
 
 # Sentinels

@@ -73,7 +73,7 @@ Keep the build loop in the main thread: each run turns up what the next step nee
 
 - A test goes through a public interface and survives a refactor that keeps behaviour.
 - Mock only at the system's edges: the network, the clock, randomness, a service you don't own. Your own modules run for real.
-- A test that can only go red on a refactor, a content edit or a library upgrade proves nothing (`placebo` lists the shapes).
+- A test that can only go red on a refactor, a content edit or a library upgrade proves nothing ([PLACEBO.md](PLACEBO.md) lists the shapes).
 - Refactor during review, never inside the red-to-green loop.
 
 ## Build a whole star chart
