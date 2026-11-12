@@ -66,6 +66,7 @@ TESTS = {
     "sentinels-first-guard.sh": ["sentinels-first-guard", "sentinels_never_skipped_approved_examples"],
     "publickey-hint.sh": ["publickey-hint"],
     "publish-guard.sh": ["publish-guard"],
+    "since-user.sh": ["publish-guard"],
     "gate-notify.sh": ["gate-notify"],
     "keep-awake.sh": ["keep-awake", "keep-awake-crash", "sleep_lock_approved_examples"],
     "git-hook-lib.sh": GIT_GUARDS,
