@@ -30,7 +30,6 @@ read-item.sh	81e4d8d4ff057aba	e9dc2de4d74f9ea4	14/14
 red-first-check.sh	e585449df8cf7aee	378eaf5a3ef859f6	20/20
 red-first-guard.sh	ce1336cf1ab35246	71d58db6a8b49690	27/27
 review-fresh-guard.sh	385bab25df63aae7	6e9369299d42623f	47/47
-sentinels-first-guard.sh	61b3a4b4bcd37182	e04c757763783819	32/32
 since-user.sh	32eda50d00adbb86	21915eedaedec1f2	6/6
 skill-ledger.sh	4f6f1ba436f648ca	87ac889713948c1a	22/22
 spark-joy.sh	e88c476e7a612966	e307fe06c4392a7b	29/29

@@ -63,7 +63,6 @@ TESTS = {
     "approved-spec.sh": ["approved-spec", "open-draft"],
     "git-guard.sh": ["git-guard", "git_guard_approved_examples"],
     "gamma-shift.sh": ["gamma-shift"],
-    "sentinels-first-guard.sh": ["sentinels-first-guard", "sentinels_never_skipped_approved_examples"],
     "publickey-hint.sh": ["publickey-hint"],
     "publish-guard.sh": ["publish-guard"],
     "since-user.sh": ["publish-guard"],

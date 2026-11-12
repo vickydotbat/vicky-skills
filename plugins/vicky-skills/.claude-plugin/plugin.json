@@ -269,12 +269,6 @@
       "description": "Hold a sleep lock while any Claude Code session on this machine has a turn running, and release it when every turn has ended. Needs systemd-inhibit.",
       "default": false
     },
-    "guard_sentinels_first": {
-      "type": "boolean",
-      "title": "Mutation passes start with sentinels",
-      "description": "Refuse a mutation-tool command (Stryker, mutate.sh, mutmut, cargo-mutants, PIT) until the session has started the sentinels skill, which scopes the pass to the changed lines first.",
-      "default": true
-    },
     "guard_publickey_hint": {
       "type": "boolean",
       "title": "A refused key is checked before it is blamed",

@@ -251,8 +251,6 @@ jobs:
         run: tests/eval_coverage_approved_examples.test.sh
       - name: eval-coverage reads case.yaml graders and skips results
         run: tests/eval-coverage.test.sh
-      - name: sentinels-first-guard holds mutation passes until sentinels starts
-        run: tests/sentinels-first-guard.test.sh
       - name: A fixed review finding gets a prevention verdict
         run: tests/review-prevention.test.sh
       - name: Every default-on guard is named in a skill
@@ -269,8 +267,6 @@ jobs:
         run: tests/ticket-filing-guard.test.sh
       - name: Warp reaches do, do reaches sentinels
         run: tests/mutation_step_approved_examples.test.sh
-      - name: Sentinels is never skipped by hand
-        run: tests/sentinels_never_skipped_approved_examples.test.sh
       - name: Metrics after mutation, presence before QA
         run: tests/metrics_step_approved_examples.test.sh
       - name: Plane block guard
