@@ -47,6 +47,7 @@ skills/productivity/familiar/scripts/familiar-watch.sh	11dc76c55896e285	6cd71614
 skills/productivity/human-voice/scripts/lint-tells.py	d51373996ad8ae9c	e41ef127438c966f	47/47
 skills/productivity/interactive-page/scripts/open-draft.sh	2e92cdecf5c30dff	c82ae5429fdc77a7	45/45
 skills/productivity/interactive-page/scripts/open-page.sh	9da7be591b0eb684	d1f8ddbaf947f5e7	9/9
+skills/productivity/interactive-page/scripts/write-page.py	a938fb35f036f46f	2adf3339ca9c116e	68/68
 skills/productivity/over-to-you/scripts/checklist.py	27a211cc5c115d95	5e8ad86500d05d33	56/56
 skills/productivity/over-to-you/scripts/lint-checklist.py	c2a58fb7adf00fa2	a016ed89ff022dc7	54/54
 skills/productivity/standing-orders/scripts/todo.sh	8b469102d3f5fa91	2406d378210ca155	32/32
