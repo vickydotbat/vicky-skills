@@ -35,6 +35,7 @@ review-fresh-guard.sh	be771addbe844bd0	760ee062ae153231	47/47
 since-user.sh	32eda50d00adbb86	21915eedaedec1f2	6/6
 skill-ledger.sh	4f6f1ba436f648ca	87ac889713948c1a	22/22
 skill-started.sh	efccf28986c36af3	3494157313d20506	5/5
+skills/engineering/captains-log/scripts/hook-audit.py	e42dd2a80904c2c8	ab1d672eeff3a141	64/64
 skills/engineering/captains-log/scripts/idle-skills.py	a2b8bf6588ba88a3	3bc8262a62dcdffe	29/29
 skills/engineering/decision-record/scripts/check-adr.sh	4fbf2b2911f030a6	b047bac5ebbee26e	75/75
 skills/productivity/drawing-board/scripts/fetch-drawio.sh	e69344201d3866d9	e8e138b40ea6e9d8	24/24
