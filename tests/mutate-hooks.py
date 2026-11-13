@@ -176,6 +176,16 @@ def string_lines(text):
     return inside
 
 
+def code_tokens(text):
+    """The file's tokens with string and comment text blanked: what a mutant must change to change code."""
+    import io, tokenize
+    try:
+        return [(t.type, "" if t.type in (tokenize.STRING, tokenize.COMMENT) else t.string)
+                for t in tokenize.generate_tokens(io.StringIO(text).readline)]
+    except (tokenize.TokenError, SyntaxError):
+        return None
+
+
 def compiles(text, n, line):
     lines = text.split("\n")
     lines[n] = line
@@ -188,10 +198,15 @@ def compiles(text, n, line):
 
 def mutants(text, lines_wanted, awk=False, py=False):
     if py:
-        skip = string_lines(text)
+        skip, code = string_lines(text), code_tokens(text)
+        lines = text.split("\n")
         for n, line in shell_mutants(text, lines_wanted, awk, py):
-            if n not in skip and compiles(text, n, line):
-                yield n, line
+            if n in skip or not compiles(text, n, line):
+                continue
+            # A swap that lands only in a string or a comment changes no code.
+            if line.strip() != "pass" and code_tokens("\n".join(lines[:n] + [line] + lines[n + 1:])) == code:
+                continue
+            yield n, line
     else:
         yield from shell_mutants(text, lines_wanted, awk, py)
 
