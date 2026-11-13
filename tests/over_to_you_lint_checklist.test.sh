@@ -72,4 +72,13 @@ check "an off item for some other thing does not turn the toggle off" 'python3 "
 mkdir -p "$dir/optout/docs/agents"; echo "Checklist lint: basic" > "$dir/optout/docs/agents/testing.md"
 check "a repo that says Checklist lint: basic keeps only the basic checks" '(cd "$dir/optout" && python3 "$lint" "$dir/grep.md" >/dev/null)'
 check "without the line the same file is refused" '(cd "$dir" && python3 "$lint" "$dir/grep.md" | grep -q "terminal read")'
+cat > "$dir/heading.md" <<'MD'
+# Over to you, Bob!
+proven by: integration.sh --branch, 15 fixtures green
+## Pack
+1. [ ] Open the hub → the grid draws
+## Notes
+   person: look
+MD
+check "an item's lines end at the next heading" 'python3 "$lint" "$dir/heading.md" | grep -q "^4: item has no \`person:\` line"'
 exit $fail

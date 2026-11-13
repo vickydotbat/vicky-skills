@@ -40,7 +40,7 @@ def watch_minutes(transcript):
         out = subprocess.run(["bash", str(WATCH), str(transcript)], env=env,
                              capture_output=True, text=True, timeout=120).stdout
     except subprocess.TimeoutExpired:
-        sys.exit(f"familiar-visibility: the watch ran past 120 seconds on {transcript}")
+        sys.exit(f"familiar-visibility: the watch ran past 120 seconds on {transcript}")  # mutant-ok delete: only a watch hung 120 s reaches it
     return {(int(m[1]) * 60 + int(m[2]), m[3].lower()) for m in map(EVENT.match, out.splitlines()) if m}
 
 def main(notes, corpus):

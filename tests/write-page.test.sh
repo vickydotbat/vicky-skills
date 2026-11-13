@@ -53,4 +53,33 @@ f="$dir/tmp/open.md"; scratch >/dev/null
 check "with no session id the shared temp folder is allowed" '[ -s "$f" ]'
 f="$dir/elsewhere.md"; scratch CLAUDE_CODE_SESSION_ID=s1 >/dev/null
 check "a page outside the temp folder is allowed" '[ -s "$f" ]'
+# The whole page for a full question spec: a title, an unticked course line with no kind or needs, and two questions.
+write '{"kind": "question", "title": "Pick a road", "course": [{"key": "T-1", "title": "Fix it", "ticked": false}, {"key": "T-2", "kind": "Bug", "title": "Mend it", "needs": "T-1"}], "questions": [{"q": "Which colour?", "options": ["gray", "red"], "pick": 1}, {"q": "Which size?", "options": ["small", "big"]}]}' >/dev/null
+cat > "$dir/want.md" <<'WANT'
+# Pick a road
+
+- [ ] T-1 Task: Fix it. Needs: nothing
+- [x] T-2 Bug: Mend it. Needs: T-1
+
+## Q1: Which colour?
+- ( ) gray
+- (x) red
+
+## Q2: Which size?
+- (x) small
+- ( ) big
+WANT
+check "a full question spec writes exactly this page" 'diff "$dir/want.md" "$dir/out.md" >/dev/null'
+write '{"kind": "question", "questions": [{"q": "x", "options": ["a", "b"]}]}' >/dev/null
+check "a page with no title asks a question for you" 'head -1 "$dir/out.md" | grep -qx "# A question for you"'
+refused() { out=$(write "$1"); [ $? = 1 ] && grep -qxF "$2" <<<"$out" && [ ! -e "$dir/out.md" ]; }
+check "a course line with no key is refused" 'refused "{\"kind\": \"question\", \"course\": [{\"title\": \"x\"}]}" "a course line needs a key and a title"'
+check "a course line with no title is refused" 'refused "{\"kind\": \"question\", \"course\": [{\"key\": \"T-1\"}]}" "a course line needs a key and a title"'
+check "a page with nothing to ask is refused" 'refused "{\"kind\": \"question\"}" "no questions and no course"'
+check "a question with no text is refused" 'refused "{\"kind\": \"question\", \"questions\": [{\"options\": [\"a\", \"b\"]}]}" "question 1 has no text"'
+check "a draft file with no effort is refused" 'refused "{\"kind\": \"drafts\", \"sections\": [{\"what\": \"w\", \"where\": \"a:1\", \"text\": \"t\"}]}" "missing effort"'
+check "a draft file with no sections is refused" 'refused "{\"kind\": \"drafts\", \"effort\": \"e\"}" "no sections"'
+check "an unknown kind is refused" 'refused "{\"kind\": \"poem\"}" "kind must be one of: question, drafts"'
+check "a wrong call names its usage" 'python3 -I "$scripts/write-page.py" 2>&1 | grep -qx "usage: write-page.py <spec.json> <out.md>"'
+check "an unknown kind stops with no traceback" 'printf "{\"kind\": \"poem\"}" > "$dir/spec.json"; [ -z "$(python3 -I "$scripts/write-page.py" "$dir/spec.json" "$dir/out.md" 2>&1 >/dev/null)" ]'
 exit $fail

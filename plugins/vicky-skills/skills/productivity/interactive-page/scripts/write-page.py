@@ -108,7 +108,7 @@ def main(argv):
         return 1
     with open(argv[2], "w", encoding="utf-8") as f:
         f.write("\n".join(lines).rstrip("\n") + "\n")
-    return 0
+    return 0  # mutant-ok delete: sys.exit(None) also exits 0
 
 
 if __name__ == "__main__":

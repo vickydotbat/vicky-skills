@@ -72,8 +72,9 @@ check "a stopped watch leaves no tail running" '! pgrep -f "tail -n 0 -F $fx/liv
 check "the watch needs a transcript" '! bash "$tools/familiar-watch.sh" 2>/dev/null'
 
 mkdir -p "$fx/p2/-r"
+# Ten rounds take about 3 s. The 60 s cap only stops a hang: one run of this file took 6 to 42 s on a loaded machine.
 jq -nc '{type:"user",cwd:"/w",message:{content:"hi"}}' > "$fx/p2/-r/a.jsonl"
-FAMILIAR_PROJECTS_DIR="$fx/p2" CLAUDE_CODE_SESSION_ID=me FAMILIAR_SESSIONS_EVERY=0.2 FAMILIAR_SESSIONS_ROUNDS=10 timeout 10 bash "$tools/familiar-sessions.sh" --new > "$fx/n2.out" & npid=$!
+FAMILIAR_PROJECTS_DIR="$fx/p2" CLAUDE_CODE_SESSION_ID=me FAMILIAR_SESSIONS_EVERY=0.2 FAMILIAR_SESSIONS_ROUNDS=10 timeout 60 bash "$tools/familiar-sessions.sh" --new > "$fx/n2.out" & npid=$!
 timeout 0.5 tail -f /dev/null
 jq -nc '{type:"user",cwd:"/w",message:{content:"hi"}}' > "$fx/p2/-r/me.jsonl"
 { jq -nc '{type:"user",cwd:"/w",message:{content:"hi"}}'; jq -nc '{type:"cost-state"}'; } > "$fx/p2/-r/gone.jsonl"

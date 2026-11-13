@@ -36,4 +36,39 @@ expect "K-7 star: Half (0 known, 2 unknown)"
 expect "K-8 star: Other (1 known, 0 unknown)"
 expect "  class T2 frontier"
 [ $fail -eq 0 ] && echo "ok   draw-chart builds edges, columns and classes from the tickets"
+# The whole drawing for a small chart: a title's spaces fold, unlinked tickets stack in their kind's column.
+cat > "$tickets" <<'JSON'
+[{"key": "K-1", "kind": "task", "title": "Tidy\n   the   desk", "open": true},
+ {"key": "K-2", "kind": "task", "title": "Sweep", "open": true},
+ {"key": "K-3", "kind": "star", "title": "Build", "open": true, "blocked_by": ["K-4"]},
+ {"key": "K-4", "kind": "star", "title": "Plan", "open": true}]
+JSON
+want='flowchart TD
+  T3["K-3 star: Build"]
+  T4["K-4 star: Plan"]
+  subgraph C3["task"]
+    direction TB
+    T1["K-1 task: Tidy the desk"]
+    T2["K-2 task: Sweep"]
+    T1 ~~~ T2
+  end
+  T4 --> T3
+  classDef frontier stroke-width:3px
+  classDef course fill:#fde68a
+  class T1,T2,T4 frontier'
+[ "$(python3 "$script" "$tickets")" = "$want" ] || { echo "FAIL the whole drawing for a small chart"; fail=1; }
+# --png renders through mmdc at the drawing's own width. A stub mmdc stands in.
+bin=$(mktemp -d); trap 'rm -f "$tickets"; rm -rf "$bin"' EXIT
+printf '#!/usr/bin/env bash\nprintf "%%s\\n" "$@" > "%s/args"; while [ $# -gt 0 ]; do case $1 in -c) cp "$2" "%s/config";; -i) cp "$2" "%s/source";; esac; shift; done; exit ${MMDC_EXIT:-0}\n' "$bin" "$bin" "$bin" > "$bin/mmdc"; chmod +x "$bin/mmdc"
+out=$(PATH="$bin:$PATH" python3 "$script" "$tickets" --png "$bin/c.svg"); code=$?
+[ $code = 0 ] && [ "$out" = "$want" ] || { echo "FAIL --png still prints the drawing"; fail=1; }
+grep -qx -- "-o" "$bin/args" && grep -qx "$bin/c.svg" "$bin/args" || { echo "FAIL --png names its output to mmdc"; fail=1; }
+[ "$(cat "$bin/config")" = '{"flowchart": {"useMaxWidth": false}}' ] || { echo "FAIL mmdc draws at the drawing's own width"; fail=1; }
+[ "$(cat "$bin/source")" = "$want" ] || { echo "FAIL mmdc gets the drawing"; fail=1; }
+err=$(MMDC_EXIT=1 PATH="$bin:$PATH" python3 "$script" "$tickets" --png "$bin/c.svg" 2>&1 >/dev/null); code=$?
+[ $code = 1 ] && grep -q "^draw-chart: mmdc failed" <<<"$err" || { echo "FAIL a failed render says so"; fail=1; }
+mkdir "$bin/bare"; ln -s "$(command -v python3)" "$bin/bare/python3"
+err=$(PATH="$bin/bare" python3 "$script" "$tickets" --png "$bin/c.svg" 2>&1 >/dev/null); code=$?
+[ $code = 1 ] && [ "$err" = "draw-chart: install mermaid-cli (mmdc) to render a PNG" ] || { echo "FAIL no mmdc, nix or npx says what to install"; fail=1; }
+[ "$(python3 "$script" 2>&1)" = "Usage: draw-chart.py <tickets.json> [--course KEY,KEY] [--png <chart.png or chart.svg>]" ] || { echo "FAIL a wrong call prints the usage"; fail=1; }
 exit $fail

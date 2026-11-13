@@ -40,4 +40,72 @@ out=$(env TMPDIR="$dir/tmp" CLAUDE_CODE_SESSION_ID=s1 python3 -I "$skill/checkli
 check "a checklist loose in the shared temp folder is refused, naming the session folder" '[ $rc = 1 ] && grep -q "tmp/s1" <<<"$out" && [ ! -e "$dir/tmp/over-to-you-x.md" ]'
 env TMPDIR="$dir/tmp" CLAUDE_CODE_SESSION_ID=s1 python3 -I "$skill/checklist.py" "$dir/spec.json" "$dir/tmp/s1/over-to-you-x.md" >/dev/null
 check "a checklist in the session folder is written" '[ -s "$dir/tmp/s1/over-to-you-x.md" ]'
+# The whole file for a full spec: a one-line brief, two sections, a kit and its source, and extra tests.
+jq -n '{name: "Bob", brief: "One sitting.", open: "Open the client.", signed_off: "nothing yet", proven_by: "`health.sh` answers ok", extra: "Try the bank too.", sections: [{title: "Pack", items: [{do: "Open the pack", see: "the slots show", person: "look"}]}, {title: "Paper", items: [{do: "Spawn the paper", see: "the sheet shows", person: "real client", kit: "`/runscript paper` in the game chat", source: "the module scripts"}]}]}' > "$dir/spec.json"
+cat > "$dir/want.md" <<'WANT'
+# Over to you, Bob!
+
+One sitting.
+Open the client.
+signed off: nothing yet
+proven by: `health.sh` answers ok
+Mark each item: [x] completed as expected, [~] completed with changes, [-] failed to complete, [ ] not tested at all.
+
+## Pack
+
+1. [ ] Open the pack → the slots show
+   person: look
+   notes:
+
+quick notes:
+- BUG:
+- QUIRK:
+- FRICTION:
+- UGLY:
+- IDEA:
+- RULE:
+- WIP:
+- QUESTION:
+
+## Paper
+
+2. [ ] Spawn the paper → the sheet shows
+   person: real client
+   kit: `/runscript paper` in the game chat
+   source: the module scripts
+   notes:
+
+quick notes:
+- BUG:
+- QUIRK:
+- FRICTION:
+- UGLY:
+- IDEA:
+- RULE:
+- WIP:
+- QUESTION:
+
+## Extra tests
+
+Try the bank too.
+
+quick notes:
+- BUG:
+- QUIRK:
+- FRICTION:
+- UGLY:
+- IDEA:
+- RULE:
+- WIP:
+- QUESTION:
+
+## Other
+
+WANT
+check "a full spec writes exactly the checklist the page reads" 'write >/dev/null && diff "$dir/want.md" "$dir/out.md" >/dev/null'
+spec "[$item]"
+check "with no extra tests named, Extra tests says nothing yet" 'write >/dev/null && grep -A2 "^## Extra tests" "$dir/out.md" | grep -qx "nothing yet"'
+jq -n '{name: "Bob", open: "x", signed_off: "n", proven_by: "p", sections: [{title: "P", items: []}]}' > "$dir/spec.json"
+check "a spec with no items is refused" 'out=$(write); [ $? = 1 ] && grep -qx "no items" <<<"$out"'
+check "a wrong call names its usage" 'python3 -I "$skill/checklist.py" 2>&1 | grep -q "^usage: checklist.py"'
 exit $fail

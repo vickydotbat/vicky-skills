@@ -37,6 +37,7 @@ address space a runtime such as Bun reserves and never uses.
 """
 import concurrent.futures
 import hashlib
+import io
 import os
 import queue
 import re
@@ -46,6 +47,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import tokenize
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PLUGIN = os.path.join(ROOT, "plugins", "vicky-skills")
@@ -110,10 +112,10 @@ TESTS = {
     "merge-point.sh": ["merged-branch-guard", "merged_branch_approved_examples", "auto-tidy-clone", "clone_takeover_approved_examples"],
     # Skill scripts, by their path under the plugin.
     "skills/engineering/captains-log/scripts/hook-audit.py": ["hook-audit"],
-    "skills/engineering/captains-log/scripts/idle-skills.py": ["idle_skills_approved_examples"],
+    "skills/engineering/captains-log/scripts/idle-skills.py": ["idle_skills_approved_examples", "idle-skills"],
     "skills/engineering/decision-record/scripts/check-adr.sh": ["check-adr", "decision-record-skill"],
     "skills/engineering/lay-course/scripts/draw-chart.py": ["draw-chart", "black_hole_drawing_approved_examples"],
-    "skills/productivity/drawing-board/scripts/board.py": ["drawing-board", "drawing_board_approved_examples"],
+    "skills/productivity/drawing-board/scripts/board.py": ["board-edges", "drawing-board", "drawing_board_approved_examples"],
     "skills/productivity/drawing-board/scripts/fetch-drawio.sh": ["fetch-drawio"],
     "skills/productivity/familiar/scripts/familiar-replay.sh": ["familiar-replay", "familiar_replay_approved_examples", "familiar_evidence_approved_examples"],
     "skills/productivity/familiar/scripts/familiar-sessions.sh": ["familiar", "familiar-sessions-off", "familiar_approved_examples", "familiar_catchup_approved_examples", "familiar_handoff_id_approved_examples", "familiar_intent_approved_examples"],
@@ -123,7 +125,7 @@ TESTS = {
     "skills/productivity/human-voice/scripts/lint-tells.py": ["lint-tells", "lint_tells_approved_examples"],
     "skills/productivity/interactive-page/scripts/open-draft.sh": ["open-draft", "open-draft-page"],
     "skills/productivity/interactive-page/scripts/open-page.sh": ["open-draft", "interactive_page_approved_examples", "open-draft-page"],
-    "skills/productivity/interactive-page/scripts/page.py": ["interactive-page", "interactive_page_approved_examples", "page_needs_ticks_approved_examples", "page_owns_pages_approved_examples"],
+    "skills/productivity/interactive-page/scripts/page.py": ["interactive-page", "interactive_page_approved_examples", "page_needs_ticks_approved_examples", "page_owns_pages_approved_examples", "drawing-board", "drawing_board_approved_examples", "write-page"],
     "skills/productivity/interactive-page/scripts/write-page.py": ["write-page", "page_needs_ticks_approved_examples"],
     "skills/productivity/over-to-you/scripts/checklist.py": ["over-to-you-checklist"],
     "skills/productivity/over-to-you/scripts/lint-checklist.py": ["over_to_you_lint_checklist"],
@@ -163,7 +165,6 @@ def skill_scripts():
 
 def string_lines(text):
     """0-based lines a Python string spans past its first: text there is no code."""
-    import io, tokenize
     inside = set()
     try:
         for tok in tokenize.generate_tokens(io.StringIO(text).readline):
@@ -174,6 +175,17 @@ def string_lines(text):
     except (tokenize.TokenError, SyntaxError):
         pass  # a file that won't tokenise won't compile either, and compiles() drops its mutants
     return inside
+
+
+def code_tokens(text):
+    """The file's tokens with string and comment text blanked: what a mutant must change to change code."""
+    try:
+        # Python 3.12 splits an f-string; its literal text is FSTRING_MIDDLE.
+        text_kinds = {tokenize.STRING, tokenize.COMMENT, getattr(tokenize, "FSTRING_MIDDLE", tokenize.STRING)}
+        return [(t.type, "" if t.type in text_kinds else t.string)
+                for t in tokenize.generate_tokens(io.StringIO(text).readline)]
+    except (tokenize.TokenError, SyntaxError):
+        return None
 
 
 def compiles(text, n, line):
@@ -188,10 +200,15 @@ def compiles(text, n, line):
 
 def mutants(text, lines_wanted, awk=False, py=False):
     if py:
-        skip = string_lines(text)
+        skip, code = string_lines(text), code_tokens(text)
+        lines = text.split("\n")
         for n, line in shell_mutants(text, lines_wanted, awk, py):
-            if n not in skip and compiles(text, n, line):
-                yield n, line
+            if n in skip or not compiles(text, n, line):
+                continue
+            # A swap that lands only in a string or a comment changes no code.
+            if line.strip() != "pass" and code_tokens("\n".join(lines[:n] + [line] + lines[n + 1:])) == code:
+                continue
+            yield n, line
     else:
         yield from shell_mutants(text, lines_wanted, awk, py)
 
@@ -215,7 +232,8 @@ def shell_mutants(text, lines_wanted, awk=False, py=False):
         if "# mutant-ok delete:" in line:
             continue
         if py:
-            if not code.endswith((":", ",", "(", "[", "{", "\\")) and not code.startswith((")", "]", "}", "@", "def ", "class ", "import ", "from ")):
+            # A docstring or other bare string line is no code to delete.
+            if not code.startswith(('"', "'")) and not code.endswith((":", ",", "(", "[", "{", "\\")) and not code.startswith((")", "]", "}", "@", "def ", "class ", "import ", "from ")):
                 yield n, line[:len(line) - len(line.lstrip())] + "pass"
         elif not control and not STRUCTURE.match(line) and not code.endswith(("\\", "'", "{", "(", "|")):
             yield n, ":"
@@ -329,7 +347,8 @@ def baseline(script):
                               env=dict(os.environ, MUTATE_HOOKS_INNER="1"), capture_output=True)
         took = time.monotonic() - start
         if done.returncode:
-            sys.exit(f"mutate-hooks: {test} fails on the real {script}; fix it before a pass")
+            failing = [line for line in done.stdout.decode(errors="replace").splitlines() if line.startswith("FAIL")]
+            sys.exit(f"mutate-hooks: {test} fails on the real {script}; fix it before a pass" + "".join("\n  " + line for line in failing[:5]))
         # Stryker's rule: a mutant times out at the baseline times 1.5 plus a fixed margin.
         times.append((took, test, took * 1.5 + 5))
     return [(test, limit) for _, test, limit in sorted(times)], sum(t for t, _, _ in times)
