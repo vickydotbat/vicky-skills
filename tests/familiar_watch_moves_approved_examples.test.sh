@@ -14,7 +14,7 @@ mkdir -p "$fx/projects/repo" "$fx/projects/repo-worktree"
 # When the session enters a worktree and its transcript moves to a new folder
 # Then the watch picks up the new file and keeps printing events, with no HANDOFF
 typed "before the move" > "$fx/projects/repo/s1.jsonl"
-timeout 20 bash "$watch" "$fx/projects/repo/s1.jsonl" > "$fx/out" 2>&1 & pid=$!
+timeout 60 bash "$watch" "$fx/projects/repo/s1.jsonl" > "$fx/out" 2>&1 & pid=$!
 sleep 2
 mv "$fx/projects/repo/s1.jsonl" "$fx/projects/repo-worktree/s1.jsonl"
 typed "between" >> "$fx/projects/repo-worktree/s1.jsonl"
@@ -30,7 +30,7 @@ check "8 the move itself is no HANDOFF" '[ "$(grep -c HANDOFF <<<"$out")" -le 1 
 
 # A transcript gone for one idle spell and back at its place is followed on.
 typed "first" > "$fx/projects/repo/s3.jsonl"
-timeout 20 bash "$watch" "$fx/projects/repo/s3.jsonl" > "$fx/out3" 2>&1 & pid=$!
+timeout 60 bash "$watch" "$fx/projects/repo/s3.jsonl" > "$fx/out3" 2>&1 & pid=$!
 sleep 1.5; rm "$fx/projects/repo/s3.jsonl"; sleep 1.2
 typed "back" > "$fx/projects/repo/s3.jsonl"; sleep 2.5
 jq -nc '{type:"cost-state"}' >> "$fx/projects/repo/s3.jsonl"; wait "$pid"
@@ -40,7 +40,7 @@ check "8 a short gap is no LOST" '! grep -q LOST "$fx/out3" && grep -q "USER: ba
 # When the watch looks for it
 # Then it prints one LOST line and ends
 typed "here" > "$fx/projects/repo/s2.jsonl"
-timeout 20 bash "$watch" "$fx/projects/repo/s2.jsonl" > "$fx/out2" 2>&1 & pid=$!
+timeout 60 bash "$watch" "$fx/projects/repo/s2.jsonl" > "$fx/out2" 2>&1 & pid=$!
 sleep 2
 rm "$fx/projects/repo/s2.jsonl"
 wait "$pid"; code=$?

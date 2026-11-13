@@ -40,7 +40,7 @@ skills/productivity/drawing-board/scripts/fetch-drawio.sh	e69344201d3866d9	e8e13
 skills/productivity/familiar/scripts/familiar-replay.sh	f1d7733cc3a3a34b	c2d98799f55b9581	41/41
 skills/productivity/familiar/scripts/familiar-sessions.sh	a6d057056cae9b4b	497c483d4c9abb34	47/47
 skills/productivity/familiar/scripts/familiar-shapes.sh	5c68c101c08e4a1f	0d8b9477e13eac62	32/32
-skills/productivity/familiar/scripts/familiar-watch.sh	11dc76c55896e285	c48b7d3a9fe5375d	57/57
+skills/productivity/familiar/scripts/familiar-watch.sh	11dc76c55896e285	6cd7161479d7a4f0	57/57
 skills/productivity/interactive-page/scripts/open-draft.sh	2e92cdecf5c30dff	c82ae5429fdc77a7	45/45
 skills/productivity/interactive-page/scripts/open-page.sh	9da7be591b0eb684	d1f8ddbaf947f5e7	9/9
 skills/productivity/standing-orders/scripts/todo.sh	8b469102d3f5fa91	2406d378210ca155	32/32
