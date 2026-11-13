@@ -33,4 +33,9 @@ check "with no arguments it reads 30 days of the user's logs" "no hook refusals 
 mkdir -p "$dir/r"
 { use s "make docs"; res s "$refused"; jq -nc '{type:"assistant",message:{content:[{type:"text",text:"Trying again."}]}}'; use t "make docs"; res t ok; } > "$dir/r/s.jsonl"
 check "the agent's own words don't end the search" "refusals=1 retry-passed=1" "$(counts "$dir/r")"
+mkdir -p "$dir/s" "$dir/t"
+{ use u "make all"; res u "$refused"; use v "make all"; skill w; res v ok; } > "$dir/s/s.jsonl"
+check "the first call after a refusal is the one judged, not a later one" "refusals=1 retry-passed=1" "$(counts "$dir/s")"
+{ use x "make it"; res x "$refused"; use y "make it"; res zz "$refused"; res y ok; } > "$dir/t/s.jsonl"
+check "another call's result is not the next call's" "refusals=2 retry-passed=1" "$(counts "$dir/t")"
 exit $fail
