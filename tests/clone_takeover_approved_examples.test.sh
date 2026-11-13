@@ -65,10 +65,10 @@ check "E3 an open pull request keeps the clone and sends the work to a worktree"
 
 # Given your clone sits on a merged branch and holds uncommitted changes
 # When a session starts in it
-# Then the clone stays put, and the first reply names the changed files and asks what to do with them
+# Then the clone stays put, and the first reply names the changed files without asking what to do with them
 setup; echo MERGED > "$dir/pr-feat"; echo half > "$dir/repo/notes.txt"
 out=$(run "$dir/repo")
-check "E4 uncommitted changes keep the clone where it is, and are named" '[ "$(on)" = feat ] && grep -q "notes.txt" <<<"$out" && grep -q "ask the user what to do with them" <<<"$out"'
+check "E4 uncommitted changes keep the clone where it is, and are named" '[ "$(on)" = feat ] && grep -q "notes.txt" <<<"$out" && grep -q "do not ask" <<<"$out"'
 
 # Given your clone sits on a merged branch that has commits made after the merge
 # When a session starts in it
