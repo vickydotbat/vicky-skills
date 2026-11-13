@@ -180,7 +180,9 @@ def code_tokens(text):
     """The file's tokens with string and comment text blanked: what a mutant must change to change code."""
     import io, tokenize
     try:
-        return [(t.type, "" if t.type in (tokenize.STRING, tokenize.COMMENT) else t.string)
+        # Python 3.12 splits an f-string; its literal text is FSTRING_MIDDLE.
+        text_kinds = {tokenize.STRING, tokenize.COMMENT, getattr(tokenize, "FSTRING_MIDDLE", tokenize.STRING)}
+        return [(t.type, "" if t.type in text_kinds else t.string)
                 for t in tokenize.generate_tokens(io.StringIO(text).readline)]
     except (tokenize.TokenError, SyntaxError):
         return None

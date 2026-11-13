@@ -45,12 +45,12 @@ check "a mutant that does not compile is never made" '! grep -qF "for x not in a
 py2=$(python3 - "$root/tests/mutate-hooks.py" <<'PY'
 import importlib.util, sys
 spec = importlib.util.spec_from_file_location("m", sys.argv[1]); m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
-text = '#!/usr/bin/env python3\ndef f(a):\n    say("not in backticks and done")  # a == b\n    return a in "x"\n'
+text = '#!/usr/bin/env python3\ndef f(a):\n    say("not in backticks and done")  # a == b\n    return a in "x"\n    say(f"{a} in a folder and more")\n'
 for n, line in m.mutants(text, None, py=True):
     print(f"{n}|{line}")
 PY
 )
-check "a swap inside a one-line string or a comment makes no mutant" '! grep -qF "backticks or done" <<<"$py2" && ! grep -qF "a != b" <<<"$py2" && ! grep -qF "in backticks and" <<<"$py2"'
+check "a swap inside a one-line string or a comment makes no mutant" '! grep -qF "backticks or done" <<<"$py2" && ! grep -qF "a != b" <<<"$py2" && ! grep -qF "in backticks and" <<<"$py2" && ! grep -qF "not in a folder" <<<"$py2" && ! grep -qF "folder or more" <<<"$py2"'
 doc=$(python3 - "$root/tests/mutate-hooks.py" <<'PY'
 import importlib.util, sys
 spec = importlib.util.spec_from_file_location("m", sys.argv[1]); m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
