@@ -6,7 +6,7 @@
 # section, the wrong order, a mix of the two shapes, a category off the list,
 # a code name or a word past the limit fails it.
 set -u
-script="$(dirname "$0")/../plugins/vicky-skills/skills/engineering/first-contact/scripts/check-adr.sh"
+script="$(dirname "$0")/../plugins/vicky-skills/skills/engineering/decision-record/scripts/check-adr.sh"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 what='# ADR-0007: Sound occlusion uses the physics raycasts'
 cat='Category: Architecture.'
@@ -116,7 +116,7 @@ $when
 $why"
 printf '%s\n' "$what" "$cat" "$when" "$why" "## Context" "The rays are cached per emitter." "More text." > "$dir/r.md"
 out=$(bash "$script" "$dir/r.md")
-grep -q 'found: what category when why other(x3)' <<<"$out" || { echo "FAIL the report does not sum up the lines: $out"; fail=1; }
+grep -q 'found: what category when why context other(x2)' <<<"$out" || { echo "FAIL the report does not sum up the lines: $out"; fail=1; }
 grep -q 'cached per emitter' <<<"$out" && { echo "FAIL the report repeats the record's text"; fail=1; }
 bash "$script" "$dir/missing.md" >/dev/null && { echo "FAIL passed: a missing record"; fail=1; }
 bash "$script" >/dev/null 2>&1; [ $? -eq 2 ] || { echo "FAIL no usage error without a record"; fail=1; }
@@ -218,5 +218,70 @@ $when
 $brief
 ## Rationale
 Because$(pad 72)."
-[ $fail -eq 0 ] && echo "ok   check-adr passes both shapes within their word limits, and fails anything else"
+# The current shape: Status, Context forces, a While decision, Consequences, Guard.
+nwhat='# ADR-0012: Reuse the physics raycasts for sound occlusion'
+st='## Status
+
+Accepted 2026-11-13.'
+ctx='## Context
+
+- F1: By 2026-11-01, the engine cast rays for physics every frame.
+- F2: Baked occlusion had needed a rebuild for every map.'
+dec='## Decision
+
+While F1 and F2 hold, sound occlusion reuses the physics raycasts.'
+con='## Consequences
+
+No bake step ships. A frame with no physics casts no sound rays either.'
+grd='## Guard
+
+Review only.'
+rec() { printf '%s\n\n' "$nwhat" "$cat" "${1:-$st}" "${2:-$ctx}" "${3:-$dec}" "${4:-$con}" "${5:-$grd}"; }
+pass "the current shape" "$(rec)"
+pass "a superseded current record" "$(rec "$st
+Superseded by ADR-0013 on 2026-12-01: F2 no longer holds.")"
+pass "an amended then superseded record" "$(rec "$st
+Amended by ADR-0013 on 2026-12-01.
+Superseded by platform ADR-0020 on 2027-01-05: F1 no longer holds.")"
+refuse "Superseded naming a force Context lacks" "$(rec "$st
+Superseded by ADR-0013 on 2026-12-01: F9 no longer holds.")"
+refuse "Superseded with no date" "$(rec "$st
+Superseded by ADR-0013.")"
+refuse "Status without Accepted" "$(rec '## Status
+
+Proposed.')"
+refuse "a Status edit in prose" "$(rec "$st
+We changed our minds.")"
+refuse "a Context line that is no force" "$(rec "$ctx
+The engine is fast.")"
+refuse "a repeated force number" "$(rec "" "$ctx
+- F1: Again.")"
+refuse "a Decision without While" "$(rec "" "" '## Decision
+
+Sound occlusion reuses the physics raycasts, given F1.')"
+refuse "a Decision citing no force" "$(rec "" "" '## Decision
+
+While the engine casts rays, sound occlusion reuses them.')"
+refuse "a Decision citing a force Context lacks" "$(rec "" "" '## Decision
+
+While F3 holds, sound occlusion reuses the physics raycasts.')"
+refuse "no Guard" "$(printf '%s\n\n' "$nwhat" "$cat" "$st" "$ctx" "$dec" "$con")"
+refuse "two paragraphs in the Guard" "$(rec "" "" "" "" "$grd
+
+A lint, later.")"
+refuse "Guard before Consequences" "$(printf '%s\n\n' "$nwhat" "$cat" "$st" "$ctx" "$dec" "$grd" "$con")"
+refuse "a Decided line in the current shape" "$(printf '%s\n\n' "$nwhat" "$cat" "$when" "$st" "$ctx" "$dec" "$con" "$grd")"
+refuse "a backticked name in the Decision" "$(rec "" "" '## Decision
+
+While F1 holds, sound occlusion calls `Physics.Raycast`.')"
+base=$(rec "" "" "" "## Consequences
+
+x" | wc -w)
+pass "180 words" "$(rec "" "" "" "## Consequences
+
+No bake step$(pad $((180 - base - 2)))")"
+refuse "181 words" "$(rec "" "" "" "## Consequences
+
+No bake step$(pad $((181 - base - 2)))")"
+[ $fail -eq 0 ] && echo "ok   check-adr passes the current and both older shapes within their word limits, and fails anything else"
 exit $fail

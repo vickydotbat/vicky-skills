@@ -27,7 +27,7 @@ The reference `lay-course` and `warp` both read: the words, the chart body, the 
 
 A person reads every chart and ticket before an agent does. Write them with the `human-voice` skill, in the plain register:
 
-- A body states the present. History goes in comments. A lasting broad rule goes in a decision record (`first-contact`'s ADR-FORMAT.md Scope), and the chart keeps one line pointing at it.
+- A body states the present. History goes in comments. A lasting broad rule goes in a decision record (written with `decision-record`), and the chart keeps one line pointing at it.
 - Refer to a ticket by its title, with the key inside the link.
 - One line per item in every list. Rewrite a line in place when it changes, and delete it when it stops being true.
 
