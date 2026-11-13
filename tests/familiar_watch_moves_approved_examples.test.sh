@@ -33,7 +33,7 @@ check "8 the move itself is no HANDOFF" '[ "$(grep -c HANDOFF <<<"$out")" -le 1 
 # A transcript gone for one idle spell and back at its place is followed on.
 typed "first" > "$fx/projects/repo/s3.jsonl"
 timeout 60 bash "$watch" "$fx/projects/repo/s3.jsonl" > "$fx/out3" 2>&1 & pid=$!
-until_out "$fx/out3" "USER: first$"; rm "$fx/projects/repo/s3.jsonl"; sleep 1.2
+until_out "$fx/out3" "USER: first$"; rm "$fx/projects/repo/s3.jsonl"; sleep 1.2 # one idle spell gone, fewer than the three that mean LOST
 typed "back" > "$fx/projects/repo/s3.jsonl"; until_out "$fx/out3" "USER: back$"
 jq -nc '{type:"cost-state"}' >> "$fx/projects/repo/s3.jsonl"; wait "$pid"
 check "8 a short gap is no LOST" '! grep -q LOST "$fx/out3" && grep -q "USER: back" "$fx/out3"'

@@ -37,6 +37,7 @@ address space a runtime such as Bun reserves and never uses.
 """
 import concurrent.futures
 import hashlib
+import io
 import os
 import queue
 import re
@@ -46,6 +47,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import tokenize
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PLUGIN = os.path.join(ROOT, "plugins", "vicky-skills")
@@ -163,7 +165,6 @@ def skill_scripts():
 
 def string_lines(text):
     """0-based lines a Python string spans past its first: text there is no code."""
-    import io, tokenize
     inside = set()
     try:
         for tok in tokenize.generate_tokens(io.StringIO(text).readline):
@@ -178,7 +179,6 @@ def string_lines(text):
 
 def code_tokens(text):
     """The file's tokens with string and comment text blanked: what a mutant must change to change code."""
-    import io, tokenize
     try:
         # Python 3.12 splits an f-string; its literal text is FSTRING_MIDDLE.
         text_kinds = {tokenize.STRING, tokenize.COMMENT, getattr(tokenize, "FSTRING_MIDDLE", tokenize.STRING)}

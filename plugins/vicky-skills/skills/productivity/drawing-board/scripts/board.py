@@ -183,7 +183,7 @@ def save(args):
     if name and ("/" in name or name in (".", "..")):
         sys.exit(f"board: the name {name} must be a plain name, with no folder in it")
     if not name or not code:
-        sys.exit(__doc__.strip().splitlines()[6])
+        sys.exit(next(line for line in __doc__.splitlines() if line.startswith("  board.py save")))
     top = subprocess.run(["git", "rev-parse", "--show-toplevel"], capture_output=True,
                          text=True).stdout.strip() or os.getcwd()
     folder = sketches_folder(top) or os.path.dirname(os.path.relpath(os.path.abspath(code), top))

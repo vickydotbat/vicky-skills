@@ -30,8 +30,8 @@ check "an unchanged property and the rules line are not named" '! grep -q "a kin
 check "a rule other than same-size is not checked" '[ "$(grep -c "^rule broken" <<<"$out")" = 1 ]'
 check "same-size names the odd box" 'grep -q "^rule broken: every slot cell is the same size" <<<"$out"'
 sed 's|<object label="b"[^>]*>|<object label="b" id="box1"><note/>|; s|<mxCell style="rounded=0;whiteSpace=wrap;" vertex="1" parent="window"><mxGeometry x="5" y="5" width="10" height="10" as="geometry" /></mxCell>||' "$dir/before.drawio" > "$dir/nogeo.drawio"
-grep -q '<note/>' "$dir/nogeo.drawio" || echo "FAIL fixture: no geometry-free box"
-check "a box with no geometry is left out" '! python3 -I "$board" report "$dir/nogeo.drawio" "$dir/before.drawio" | grep -q "^b: new"; python3 -I "$board" report "$dir/nogeo.drawio" "$dir/before.drawio" | grep -qx "b: new, 10x10"'
+check "the fixture holds a box with no geometry" 'grep -q "<note/>" "$dir/nogeo.drawio" && ! grep -q "width=\"10\" height=\"10\"" "$dir/nogeo.drawio"'
+check "a box with no geometry is left out, so the same box with one reads as new" 'python3 -I "$board" report "$dir/nogeo.drawio" "$dir/before.drawio" | grep -qx "b: new, 10x10"'
 
 git init -q "$dir/r"; mkdir -p "$dir/r/docs/agents" "$dir/r/src"
 printf 'Sketches: notes\n' > "$dir/r/docs/agents/x.txt"; printf 'nothing here\n' > "$dir/r/docs/agents/a.md"

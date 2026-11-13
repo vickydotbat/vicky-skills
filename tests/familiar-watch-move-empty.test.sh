@@ -28,7 +28,7 @@ check "a quiet transcript in its place is followed past three idle spells" '! gr
 # Idle spells before a move count no lines, so the moved file is read from the right line.
 typed "start" > "$fx/projects/repo/i.jsonl"; : > "$fx/out"
 timeout 30 bash "$watch" "$fx/projects/repo/i.jsonl" > "$fx/out" 2>&1 & pid=$!
-sleep 2.5
+sleep 2.5 # two idle spells of 1 s pass before the move
 mv "$fx/projects/repo/i.jsonl" "$fx/projects/repo-worktree/i.jsonl"; typed "later" >> "$fx/projects/repo-worktree/i.jsonl"
 until_out "USER: later$"; jq -nc '{type:"cost-state"}' >> "$fx/projects/repo-worktree/i.jsonl"; wait "$pid"
 check "a line written after idle spells and a move prints once" '[ "$(grep -c "USER: later$" "$fx/out")" = 1 ]'
