@@ -1,15 +1,6 @@
 #!/usr/bin/env bash
-# Checks decision records against FORMAT.md beside this folder. The current
-# shape: a "# ADR-NNNN: " title, a "Category: <name>." line from the fixed
-# list, then Status, Context, Decision, Consequences and Guard sections, in at
-# most 180 words. Status holds "Accepted YYYY-MM-DD." and then only dated
-# Superseded or Amended lines. Context holds "- F<n>: " force lines. Decision
-# is one paragraph that opens with "While " and cites only forces Context
-# holds. Consequences and Guard are one paragraph each. The two older shapes
-# still pass: "Decided YYYY-MM-DD." then a "Because " line (55 words) or Brief
-# and Rationale sections (100 words), each with an optional last
-# "Superseded by [<repo> ]ADR-NNNN." line. No other line and no backticks.
-# Prints one line per problem and exits 1 when any record fails.
+# Checks decision records against FORMAT.md beside this folder: the current
+# shape and the two older ones. Prints one line per problem, exits 1 on any.
 set -u
 [ $# -gt 0 ] || { echo "usage: check-adr.sh <record>..." >&2; exit 2; }
 categories='Architecture|Data|Interface|Infrastructure|Security|Dependencies|Tooling|Process|Other'

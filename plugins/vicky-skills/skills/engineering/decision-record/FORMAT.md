@@ -4,7 +4,7 @@ The structure follows the community ADR guide (architecture-decision-record on G
 
 ## Scope
 
-This is the format a repo takes when the `ADR format:` line of its `docs/agents/domain.md` says `decision-record`, `ADR-FORMAT.md` or `true-names` (older setups), or is missing. Write a record only for a decision that is hard to reverse, would surprise a reader without context, and came from a real trade-off.
+Which repos take this format: see the skill's opening ([SKILL.md](SKILL.md)). Write a record only for a decision that is hard to reverse, would surprise a reader without context, and came from a real trade-off.
 
 A record holds an architecture rule, macro and never micro: a broad, reusable why that many decisions rest on and the code can't show. Before you write one, state its rule in one sentence and name the later decisions it will govern. When you can't name any, it is a code comment. A rule that names one class, item, window or value is one feature's why: write it as a comment at the code that builds it, and write no record. A change against a record or a why comment follows the review principles' "No drift from a recorded why" ([PRINCIPLES.md](../review/PRINCIPLES.md)).
 
@@ -77,4 +77,4 @@ Records written before this format keep their shape and are never rewritten: a `
 
 ## Check
 
-Run `scripts/check-adr.sh <record>...`. It fails on a missing, repeated or out-of-order section, a Context line that is not a force, a Decision that does not open with `While` or names a force Context lacks, a Status line off the list, a category off the list, a backticked code name, or a word past the limit.
+Run `scripts/check-adr.sh <record>...`. Each failure prints its reason.
