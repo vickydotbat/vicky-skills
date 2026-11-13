@@ -11,7 +11,7 @@ run() { # tool path [option]
 }
 hints() { # name tool path [option]
   out=$(run "$2" "$3" ${4+"$4"}); code=$?
-  if [ $code = 0 ] && jq -e '.hookSpecificOutput.hookEventName == "PreToolUse" and (.hookSpecificOutput.additionalContext | test("macro") and test("Scope") and test("comment at the code"))' <<<"$out" >/dev/null 2>&1
+  if [ $code = 0 ] && jq -e '.hookSpecificOutput.hookEventName == "PreToolUse" and (.hookSpecificOutput.additionalContext | test("macro") and test("Scope") and test("comment at the code") and test("decision-record") and test("appended Status line"))' <<<"$out" >/dev/null 2>&1
   then echo "ok   $1"; else echo "FAIL $1: exit $code, '$out'"; fail=1; fi
 }
 silent() { # name tool path [option]

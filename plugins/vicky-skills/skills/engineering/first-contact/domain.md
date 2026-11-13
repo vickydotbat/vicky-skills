@@ -5,7 +5,7 @@ Read these before exploring the code, when they exist:
 - `GLOSSARY.md` at the root, or every glossary `GLOSSARY-MAP.md` lists that touches the topic.
 - Each decision record in `docs/adr/` (and a package's own `docs/adr/`) that touches the area.
 
-ADR format: <`ADR-FORMAT.md`, or the repo-relative path of this repo's own record template>
+ADR format: <`decision-record`, or the repo-relative path of this repo's own record template>
 
 Sketches: <the repo-relative folder for drawing-board sketches, or delete this line to keep each sketch beside the code it designs>
 

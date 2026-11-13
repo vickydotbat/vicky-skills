@@ -20,7 +20,7 @@ When you can't tell whether a message is a pivot, ask in one line: "Going with Y
    - the open pull requests the effort touches, and the wiki or docs site the repo mirrors to.
 
    Read each hit's thread whole, body and comments. Done when every search has run and each hit is on the list, or the search is on the "couldn't reach" list.
-3. **Rewrite each place now.** Edit ticket and pull request bodies in place, so they state only the new decision; a comment saying "see chat" settles nothing. Mark a replaced decision record as superseded, with a pointer to the new one, and leave its text as history. Update the repo's docs and agent files in the effort's branch. Write text a person reads with `human-voice`, and agent files with `robot-voice`. Done when every place on the list is rewritten or on the "couldn't reach" list.
+3. **Rewrite each place now.** Edit ticket and pull request bodies in place, so they state only the new decision; a comment saying "see chat" settles nothing. Replace a decision record with `decision-record`: it writes the new record, which names the force that changed, and appends one Status line to the old one. Edit nothing else in the old record. Its own call back to this skill is the run already under way. Update the repo's docs and agent files in the effort's branch. Write text a person reads with `human-voice`, and agent files with `robot-voice`. Done when every place on the list is rewritten or on the "couldn't reach" list.
 4. **Report** what you changed and what you couldn't reach, one line each. Done when both lists are in your reply.
 
 A pivot overrides the project's earlier decisions. It never overrides the user's standing rules (their global agent file), which change only when they say so.
