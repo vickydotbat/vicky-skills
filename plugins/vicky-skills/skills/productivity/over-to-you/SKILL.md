@@ -46,7 +46,7 @@ A kit is what one check needs to run: the things it acts on, their state, and th
 - A kit command for a console or tool you can't run yourself is quoted from a source (its docs, a stock file, the user's own earlier use), named on the item's `source:` line. The lint refuses a console kit with no `source:` line.
 - Reuse only what you already know works. A thing an earlier test may have changed (made hostile, left busy, moved) makes the check flaky for a person and for a machine alike, so build a new one.
 - Finish each thing (its properties set, its locals written) before it reaches the place where it could combine, such as a stack that would merge in a pack.
-- When the sitting closes, remove everything the kits made, and commit no kit file, unless the testing standards allow it and say where. When it does, commit it there and only there.
+- When the sitting closes, remove everything the kits made, and commit no kit file, unless the testing standards allow it and say where. When they do, commit it there and only there.
 
 ## Quick notes
 

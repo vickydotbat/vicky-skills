@@ -8,7 +8,7 @@ No skill here shares a name with one of Matt's, so both plugins load without cla
 
 | Skill | When it's used | What it does |
 | --- | --- | --- |
-| **`first-contact`** | When you type it | `/first-contact` sets a repository up for these skills, once: where its tickets, glossary and decision records are, and a `TESTING_STANDARDS.md` that says how testing is done there. Every testing skill reads that file first. |
+| **`first-contact`** | When you type it | `/first-contact` sets a repository up for these skills, once: where its tickets, glossary and decision records are, and where its testing standards live: a `TESTING_STANDARDS.md` it writes, or a page the repo already keeps. Every testing skill reads them first. |
 | **`power-word-fix`** | When you type it | `/power-word-fix <what's broken>` sorts the problem, runs the skills that fit and ends on proof. |
 | **`lay-course`** | When you type it | The lazy way in when you don't know where a session leads. You pick a council or an interrogation to work out what you want. It files a star chart of tickets, or a single ticket (a star) when the work fits in a session, and then stops or warps to it. Every star's spec is its approved examples. |
 | **`mission-brief`** | When you ask to file tickets or issues, turn a plan into tickets, or convert tickets from another tool | After it checks the source material, the tracker and the codebase, it writes down what the conversation already settled as a spec, cuts it into slices with Given / When / Then examples, and you approve the examples on a page. Then it files a star chart, one star per slice. Tickets made by another tool get re-sliced the same way, never copied across. It asks you no new questions. An open one becomes an anomaly on the chart. |
