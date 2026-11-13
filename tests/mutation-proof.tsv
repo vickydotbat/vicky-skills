@@ -35,6 +35,10 @@ review-fresh-guard.sh	be771addbe844bd0	760ee062ae153231	47/47
 since-user.sh	32eda50d00adbb86	21915eedaedec1f2	6/6
 skill-ledger.sh	4f6f1ba436f648ca	87ac889713948c1a	22/22
 skill-started.sh	efccf28986c36af3	3494157313d20506	5/5
+skills/engineering/decision-record/scripts/check-adr.sh	4fbf2b2911f030a6	b047bac5ebbee26e	75/75
+skills/productivity/drawing-board/scripts/fetch-drawio.sh	e69344201d3866d9	e8e138b40ea6e9d8	24/24
+skills/productivity/standing-orders/scripts/todo.sh	8b469102d3f5fa91	2406d378210ca155	32/32
+skills/productivity/video-captions/scripts/flatten-captions.sh	415082ac283f9808	1a2641b47ff3eda4	6/6
 spark-joy.sh	e88c476e7a612966	e307fe06c4392a7b	29/29
 springboard.sh	2b1a555e07899495	2509174cc3597015	53/53
 stale-copy-hint.sh	6c278c5222834240	bb7f1630d05934fc	27/27

@@ -5,7 +5,7 @@
 # files: nothing in it runs here.
 # DRAWIO_URL and DRAWIO_SHA256 replace the pin, for a test's fixture archive.
 set -eu
-version=32.6.9
+version=32.6.9 # mutant-ok delete: only the default URL reads it, and a test fetches its fixture, never the release
 url=${DRAWIO_URL:-https://github.com/jgraph/drawio/releases/download/v$version/draw.war}
 sum=${DRAWIO_SHA256:-31afc82b7920c409d0591f6126ccb6c377d7800e7f11ab324f88bdf1e4249ce7}
 data=${CLAUDE_PLUGIN_DATA:?fetch-drawio: CLAUDE_PLUGIN_DATA is not set}

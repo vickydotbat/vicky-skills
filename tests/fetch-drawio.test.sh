@@ -17,7 +17,8 @@ run() { CLAUDE_PLUGIN_DATA="$dir/data" DRAWIO_URL="file://$dir/$1" DRAWIO_SHA256
 mkdir -p "$dir/data"
 home=$(run app.war "$good")
 check "a matching archive is unpacked and named" '[ -f "$home/index.html" ] && [ "$home" = "$dir/data/drawio/$good" ]'
-check "a second run reuses it" '[ "$(run missing.war "$good")" = "$home" ]'
+check "a second run reuses it" 'again=$(run missing.war "$good") && [ "$again" = "$home" ]'
+check "a download that fails keeps nothing and says so" '! run missing.war 1111 >/dev/null && grep -q "could not download" "$dir/err" && [ ! -d "$dir/data/drawio/1111" ]'
 check "a wrong hash keeps nothing" '! run app.war 0000 >/dev/null && grep -q "not the pinned" "$dir/err" && [ ! -d "$dir/data/drawio/0000" ]'
 check "an entry outside the folder is refused" '! run bad.war "$bad" >/dev/null && [ ! -f "$dir/data/escape.txt" ] && [ ! -d "$dir/data/drawio/$bad" ]'
 check "no data folder, no fetch" '! CLAUDE_PLUGIN_DATA= bash "$fetch" >/dev/null 2>&1'

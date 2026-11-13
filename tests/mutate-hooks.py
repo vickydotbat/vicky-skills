@@ -48,7 +48,8 @@ import tempfile
 import time
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SCRIPTS = os.path.join(ROOT, "plugins", "vicky-skills", "scripts")
+PLUGIN = os.path.join(ROOT, "plugins", "vicky-skills")
+SCRIPTS = os.path.join(PLUGIN, "scripts")
 PROOF = os.path.join(ROOT, "tests", "mutation-proof.tsv")
 SURVIVORS = os.path.join(ROOT, "tests", ".mutation-survivors")
 # Each process a mutant's test starts may allocate this much memory. A mutant that
@@ -107,9 +108,30 @@ TESTS = {
     "lesson-hint.sh": ["lesson-hint", "engrave_approved_examples", "hint_once_approved_examples"],
     "merged-branch-guard.sh": ["merged-branch-guard", "merged_branch_approved_examples"],
     "merge-point.sh": ["merged-branch-guard", "merged_branch_approved_examples", "auto-tidy-clone", "clone_takeover_approved_examples"],
+    # Skill scripts, by their path under the plugin.
+    "skills/engineering/captains-log/scripts/hook-audit.py": ["hook-audit"],
+    "skills/engineering/captains-log/scripts/idle-skills.py": ["idle_skills_approved_examples"],
+    "skills/engineering/decision-record/scripts/check-adr.sh": ["check-adr", "decision-record-skill"],
+    "skills/engineering/lay-course/scripts/draw-chart.py": ["draw-chart", "black_hole_drawing_approved_examples"],
+    "skills/productivity/drawing-board/scripts/board.py": ["drawing-board", "drawing_board_approved_examples"],
+    "skills/productivity/drawing-board/scripts/fetch-drawio.sh": ["fetch-drawio"],
+    "skills/productivity/familiar/scripts/familiar-replay.sh": ["familiar-replay", "familiar_replay_approved_examples", "familiar_evidence_approved_examples"],
+    "skills/productivity/familiar/scripts/familiar-sessions.sh": ["familiar", "familiar-sessions-off", "familiar_approved_examples", "familiar_catchup_approved_examples", "familiar_handoff_id_approved_examples", "familiar_intent_approved_examples"],
+    "skills/productivity/familiar/scripts/familiar-shapes.sh": ["familiar-shapes", "familiar_shapes_approved_examples"],
+    "skills/productivity/familiar/scripts/familiar-visibility.py": ["familiar-visibility", "familiar_visibility_approved_examples", "familiar_evidence_approved_examples"],
+    "skills/productivity/familiar/scripts/familiar-watch.sh": ["familiar", "familiar_watch_approved_examples", "familiar_watch_moves_approved_examples", "familiar_catchup_approved_examples"],
+    "skills/productivity/human-voice/scripts/lint-tells.py": ["lint-tells", "lint_tells_approved_examples"],
+    "skills/productivity/interactive-page/scripts/open-draft.sh": ["open-draft", "open-draft-page"],
+    "skills/productivity/interactive-page/scripts/open-page.sh": ["interactive_page_approved_examples", "open-draft-page"],
+    "skills/productivity/interactive-page/scripts/page.py": ["interactive-page", "interactive_page_approved_examples", "page_needs_ticks_approved_examples", "page_owns_pages_approved_examples"],
+    "skills/productivity/interactive-page/scripts/write-page.py": ["write-page", "page_needs_ticks_approved_examples"],
+    "skills/productivity/over-to-you/scripts/checklist.py": ["over-to-you-checklist"],
+    "skills/productivity/over-to-you/scripts/lint-checklist.py": ["over_to_you_lint_checklist"],
+    "skills/productivity/standing-orders/scripts/todo.sh": ["todo-sh", "todo_script_approved_examples"],
+    "skills/productivity/video-captions/scripts/flatten-captions.sh": ["flatten-captions"],
 }
 # The shared exit-code test reaches every hook and runs in a fraction of a second.
-TESTS = {name: ["hook-exits"] + tests for name, tests in TESTS.items()}
+TESTS = {name: tests if "/" in name else ["hook-exits"] + tests for name, tests in TESTS.items()}
 SWAPS = [
     ("exit 0", "exit 1"), ("exit 2", "exit 0"), ("exit 1", "exit 0"),
     (" -eq ", " -ne "), (" -ne ", " -eq "), (" -lt ", " -ge "), (" -ge ", " -lt "),
@@ -117,12 +139,29 @@ SWAPS = [
     (" == ", " != "), (" != ", " == "), (" = ", " != "), ("if ! ", "if "), ("[ ! ", "[ "),
     ("grep -q", "grep -qv"), ("true|1)", "xtrue|x1)"),
 ]
+# Python has its own operators, and a deleted line keeps its indent as `pass`.
+PY_SWAPS = [
+    (" == ", " != "), (" != ", " == "), (" < ", " >= "), (" >= ", " < "), (" > ", " <= "), (" <= ", " > "),
+    (" and ", " or "), (" or ", " and "), ("if not ", "if "), (" not in ", " in "), (" in ", " not in "),
+    ("return True", "return False"), ("return False", "return True"), ("sys.exit(1)", "sys.exit(0)"),
+    ("sys.exit(0)", "sys.exit(1)"), (" + 1", " - 1"), (" - 1", " + 1"),
+]
 STRUCTURE = re.compile(r"^\s*(fi|done|esac|then|else|do|;;|\}|\{|\)|[^\s()]+\)|.*\(\)\s*\{?|EOF|PY)\s*$")
 # A line that only talks to a person makes no mutant: no test reads its wording.
 ARID = re.compile(r"^\s*(echo|printf)\b[^|;&]*>&2\s*$|^\s*(\"[^\"]*\"\s*)+\\?$")
 
 
-def mutants(text, lines_wanted, awk=False):
+def path_of(script):
+    """A hook script by its name, a skill script by its path under the plugin (skills/<group>/<skill>/scripts/...)."""
+    return os.path.join(PLUGIN if "/" in script else SCRIPTS, script)
+
+
+def skill_scripts():
+    """Skill scripts that hold a proof. One joins the default set once a named pass has proven it."""
+    return sorted(name for name in proofs() if name.startswith("skills/"))
+
+
+def mutants(text, lines_wanted, awk=False, py=False):
     for n, line in enumerate(text.split("\n")):
         code = line.strip()
         if lines_wanted is not None and n + 1 not in lines_wanted:
@@ -130,7 +169,7 @@ def mutants(text, lines_wanted, awk=False):
         if not code or code.startswith("#") or n == 0 or "# mutant-ok:" in line or code.startswith("set -") \
                 or ARID.match(line):
             continue
-        for old, new in SWAPS:
+        for old, new in PY_SWAPS if py else SWAPS:
             # "|| true" only matters under set -e, and awk's " = " is an assignment.
             if old == " || " and "|| true" in line or awk and old == " = ":
                 continue
@@ -140,7 +179,10 @@ def mutants(text, lines_wanted, awk=False):
         # "# mutant-ok delete: <reason>" spares a line whose deletion no test can see.
         if "# mutant-ok delete:" in line:
             continue
-        if not control and not STRUCTURE.match(line) and not code.endswith(("\\", "'", "{", "(", "|")):
+        if py:
+            if not code.endswith((":", ",", "(", "[", "{", "\\")) and not code.startswith((")", "]", "}", "@", "def ", "class ", "import ", "from ")):
+                yield n, line[:len(line) - len(line.lstrip())] + "pass"
+        elif not control and not STRUCTURE.match(line) and not code.endswith(("\\", "'", "{", "(", "|")):
             yield n, ":"
 
 
@@ -155,7 +197,7 @@ def sha(paths, extra=""):
 def hashes(script):
     """The script's hash, and its tests' hash with its own line of the test map: the rest of the runner is no test."""
     tests = [os.path.join(ROOT, "tests", t + ".test.sh") for t in TESTS[script]]
-    return sha([os.path.join(SCRIPTS, script)]), sha(tests, repr(TESTS[script]))
+    return sha([path_of(script)]), sha(tests, repr(TESTS[script]))
 
 
 def last_survivors():
@@ -181,7 +223,7 @@ def proofs():
 
 def changed_lines(script):
     """Lines of the script that differ from the merge base, or None for the whole file."""
-    path = os.path.relpath(os.path.join(SCRIPTS, script), ROOT)
+    path = os.path.relpath(path_of(script), ROOT)
     base = subprocess.run(["git", "-C", ROOT, "merge-base", "origin/main", "HEAD"], capture_output=True, text=True)
     if base.returncode:
         return None
@@ -220,7 +262,7 @@ class Worker:
             shutil.copytree(os.path.join(ROOT, part), os.path.join(self.root, part), symlinks=True)
 
     def run(self, script, text, timeouts):
-        path = os.path.join(self.root, "plugins", "vicky-skills", "scripts", script)
+        path = os.path.join(self.root, os.path.relpath(path_of(script), ROOT))
         # A new file renamed into place, since a test left running may still hold the old one open.
         replace(path, text)
         try:
@@ -239,7 +281,7 @@ class Worker:
                     return True
             return False
         finally:
-            with open(os.path.join(SCRIPTS, script)) as handle:
+            with open(path_of(script)) as handle:
                 replace(path, handle.read())
 
 
@@ -283,7 +325,7 @@ def main(argv):
         print("survivors: 0")
         return 0
     started = time.monotonic()
-    names = names or sorted(os.listdir(SCRIPTS))
+    names = names or sorted(os.listdir(SCRIPTS)) + skill_scripts()
     unmapped = [name for name in names if name not in TESTS]
     if unmapped:
         print("no tests mapped for: " + " ".join(unmapped))
@@ -304,9 +346,9 @@ def main(argv):
             print(f"script {name}: {old[2]}, proven at {code_hash}", flush=True)
             continue
         wanted = previous[name] if again else None if everything or not old or old[1] != test_hash else changed_lines(name)
-        with open(os.path.join(SCRIPTS, name)) as handle:
+        with open(path_of(name)) as handle:
             original = handle.read()
-        found = list(mutants(original, wanted, name.endswith(".awk")))
+        found = list(mutants(original, wanted, name.endswith(".awk"), name.endswith(".py")))
         timeouts, total = baseline(name)
         plan.append((name, original, found, timeouts, total, code_hash, test_hash, wanted is None))
     # Most mutants die in the first, fastest test, so the full time per mutant is the worst case.

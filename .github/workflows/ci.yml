@@ -159,6 +159,8 @@ jobs:
         run: tests/no-transcripts.test.sh
       - name: Backlog roll-up skill lines
         run: tests/backlog_rollup_lines.test.sh
+      - name: Mutation tool takes skill scripts
+        run: tests/mutate_skill_scripts.test.sh
       - name: Brief mode memes
         run: tests/brief_mode_memes_approved_examples.test.sh
       - name: Red pen quick close
