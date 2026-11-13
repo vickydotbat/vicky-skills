@@ -13,7 +13,7 @@ Read the repo's `TESTING_STANDARDS.md` first: it wins over this skill's defaults
 
 ## Steps
 
-1. **Finish the branch.** Commit everything. Run `git fetch origin`. When the branch is behind its base branch, rebase it, as `push-behind-guard` will refuse the push otherwise, with `history-monks` when what landed changes the form of what the branch touches. Run the checks the change reaches. Done when the tree is clean, the branch is current, and the checks pass.
+1. **Finish the branch.** Commit everything. Run `git fetch origin`. When the branch is behind its base branch, rebase it with `history-monks`, always, as `push-behind-guard` will refuse the push otherwise. Run the checks the change reaches. Done when the tree is clean, the branch is current, and the checks pass.
 2. **Run the QA checklist**, Q0 to Q6, below. Q0 comes first. Fix each other failure in place and run the item again. A finding on an approved-spec test goes to the user as a question, through `examples`' "Changing an approved example". Q1 to Q6 are not a review: once Q0 passes, a new design concern goes to the user as a question. Done when Q0 to Q6 each pass, or Q5 has its reason in the body.
 3. **Hand over what the build held.** When the effort has a draft file, open it with `red-pen` and commit what the user leaves. Then take the pull request's Check these list to the user, one line at a time (a live check goes through `over-to-you`, and make-it-so resumes in the fresh session its read-back asks for), except each line a statement of the user's in this effort already answers (a deferral such as "that can wait"): settle it with that statement, quoted, and ask nothing. Fix each answer that differs from the guess, build each parked slice they unblock, and delete the list. Done when the draft file is gone and Check these is empty or holds only lines marked `Waits on: <who else>`.
 4. **Make it true.** Rewrite the body to `ship-it`'s template with `ship-it`, and settle every ticket the effort touched with [SETTLE.md](SETTLE.md), then Q7 to Q10. Fix each failure in place and run the item again. Done when Q7 to Q10 each pass.
@@ -25,7 +25,7 @@ Read the repo's `TESTING_STANDARDS.md` first: it wins over this skill's defaults
    - **Stuck or never reports**: run `machine-spirit`.
 
    A merge or approval only someone else can give is a gate: handle it as `warp`'s "Punch through" says, in a warp or not. Stop after three red rounds, or when the cause sits outside the repository, and report what you found. Done when Q11 passes.
-7. **Report** in one or two lines: the pull request link, the run, its result, the checklist (`Q0-Q11 pass`, or each item that failed and why), and anything left for the user, such as the merge. Then run `cerebro` as a forecast. Done when the reply holds all of it.
+7. **Report** in one or two lines: the pull request link, the run, its result, the checklist (`Q0-Q12 pass`, or each item that failed and why), and anything left for the user, such as the merge. Once the pull request merges, run `marie-kondo` on the repo, which removes this effort's worktree and branch. Then run `cerebro` as a forecast. Done when the reply holds all of it.
 
 **State at every stop.** At every stop, write the pull request body's Status section, as `ship-it` says: a draft opened, a slice parked, a gate reached, the run ended.
 
@@ -49,6 +49,7 @@ Measured by one read:
 - **Q8 Title.** The title says what the change does, in the repo's title style, with no `WIP:` once ready.
 - **Q9 What and why.** The body's first paragraph says what the change does and why. Every sentence is true of `git diff origin/<base>...HEAD`.
 - **Q10 How tested.** The body names the approved examples and the tests that prove them, the mutation counts from `sentinels` (a hand-broken line counts as a pass and goes through it too), or `unrun, because <the log line or reason>`, and anything left unchecked. When `TESTING_STANDARDS.md` has a `Metrics:` line that isn't `none`, each rule the change sets with a written target has its metrics on its ticket, or a `Metrics owed: <rule>` line in the body. This item reads only that they are there, never what they found.
+- **Q12 Current truth.** README, docs, agent files and project memory say nothing the diff makes untrue: grep each for the names, commands and rules the diff changes. Fix each hit in the branch, or name it in the body with its reason.
 
 Measured after the push:
 
