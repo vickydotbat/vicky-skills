@@ -283,5 +283,29 @@ No bake step$(pad $((180 - base - 2)))")"
 refuse "181 words" "$(rec "" "" "" "## Consequences
 
 No bake step$(pad $((181 - base - 2)))")"
-[ $fail -eq 0 ] && echo "ok   check-adr passes the current and both older shapes within their word limits, and fails anything else"
+tpl='# 2. Keep money as integer cents
+
+## Decision
+
+While binary floats lose cents, money is integer cents.
+
+## Consequences
+
+Sums are exact. No migration: old ledgers stop loading.
+
+## Guard
+
+A test fails on a float in any module.'
+tpass() { printf '%s\n' "$2" > "$dir/t.md"; bash "$script" --template "$dir/t.md" >/dev/null || { echo "FAIL refused: $1"; fail=1; }; }
+trefuse() { printf '%s\n' "$2" > "$dir/t.md"; bash "$script" --template "$dir/t.md" >/dev/null && { echo "FAIL passed: $1"; fail=1; }; }
+tpass "a template record" "$tpl"
+trefuse "a template record with code" "$tpl
+See \`ledger.py\`."
+trefuse "a template record with no While" "${tpl/While binary floats lose cents, money/Money}"
+trefuse "a template record with no Consequences" "${tpl/Consequences/Effects}"
+trefuse "a template record with no Guard" "${tpl/Guard/Checks}"
+trefuse "a template record past 180 words" "$tpl$(pad 180)"
+rm -f "$dir/t.md"; bash "$script" --template "$dir/t.md" >/dev/null && { echo "FAIL passed: a missing template record"; fail=1; }
+bash "$script" --template >/dev/null 2>&1; [ $? -eq 2 ] || { echo "FAIL --template with no record should exit 2"; fail=1; }
+[ $fail -eq 0 ] && echo "ok   check-adr passes the current and both older shapes within their word limits, and fails anything else, and --template checks a repo template's shape-free rules"
 exit $fail

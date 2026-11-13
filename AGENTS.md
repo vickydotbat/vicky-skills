@@ -34,6 +34,10 @@ Every file stays free of local paths, hostnames and any project's infrastructure
 
 - A rule for agents lives in this repo, as a hook, a test or a skill line. The user's own global agent file changes only where it contradicts a rule here, and the pull request names that line.
 
+## Change a skill
+
+- A branch that changes a skill's text adds or changes a test that proves the change works as intended: it fails on the skill text from before the change and passes after. `tests/skill-change-tested.test.sh` fails a branch that changes skill text and no test; whether the test proves the intent is the review's call.
+
 ## Add or change a hook
 
 - Back each rule with the strongest of these that fits: a hook that refuses or asks; a test or CI step that proves it; a hint a hook injects at the moment the rule applies (when a skill starts, or before the tool call it governs). A skill line comes last, and names what backs it.

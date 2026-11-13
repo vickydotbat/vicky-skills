@@ -41,7 +41,7 @@ While F1 holds, <the rule a reader applies>.
 
 ## Consequences
 
-<one paragraph: what gets easier, what gets harder, the option turned down and its cost>
+<one paragraph: what gets easier, what gets harder, each break (a stored form, public call or layout that changes) with its migration or "No migration:" and who it leaves behind, the option turned down and its cost>
 
 ## Guard
 
@@ -77,4 +77,4 @@ Records written before this format keep their shape and are never rewritten: a `
 
 ## Check
 
-Run `scripts/check-adr.sh <record>...`. Each failure prints its reason.
+Run `scripts/check-adr.sh <record>...`. Each failure prints its reason. A record in a repo template takes `--template`: no code in backticks, at most 180 words, a Decision line opening `While`, and a Consequences and a Guard heading.
