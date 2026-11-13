@@ -42,7 +42,7 @@ check "on a branch whose new approved test passed at the commit that added it, t
 check "on a branch whose new approved tests each failed at the commit that added them, the red-first check passes" '[ $red_code = 0 ]'
 
 out=$(bash "$root/tests/mutate-hooks.sh" 2>&1); mcode=$?
-covered=$(grep -c '^script ' <<<"$out"); hooks=$(ls "$scripts" | wc -l)
+covered=$(grep '^script ' <<<"$out" | grep -vc '^script skills/'); hooks=$(ls "$scripts" | wc -l)
 check "a mutation pass over every hook script in the plugin leaves no mutant alive" \
   '[ $mcode = 0 ] && grep -q "^survivors: 0$" <<<"$out" && [ "$covered" = "$hooks" ]'
 exit $fail

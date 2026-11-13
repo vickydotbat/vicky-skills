@@ -7,7 +7,7 @@ description: Hand drafts to the user to edit on a page in their browser, then wr
 
 > _The red pen is theirs. Copy back exactly what it leaves._
 
-The user edits drafts on a page in their browser, never in the chat. Only audience-facing writing and examples to approve come here: a spec, a ticket body, a pull request body or an internal doc goes straight to its destination, written with `human-voice`. During a `council-of-elrond`, the draft file waits until Frodo has chosen the road. Collect every draft of the effort in one **draft file**, open it, and copy back exactly what they leave there. Every approval the work needs before it can go on comes through this page, never as a chat reply. This adds no approvals: a pick the agent may take on its own needs none.
+The user edits drafts on a page in their browser, never in the chat. Only audience-facing writing and examples to approve come here: a spec, a ticket body, a pull request body or an internal doc goes straight to its destination, written with `human-voice`. A pull request, review or comment on a repository the user doesn't administer is text for an audience, and comes here: the `foreign-post-hint` hook says so before the post. During a `council-of-elrond`, the draft file waits until Frodo has chosen the road. Collect every draft of the effort in one **draft file**, open it, and copy back exactly what they leave there. Every approval the work needs before it can go on comes through this page, never as a chat reply. This adds no approvals: a pick the agent may take on its own needs none.
 
 ## Steps
 
