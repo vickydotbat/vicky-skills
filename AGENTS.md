@@ -6,7 +6,7 @@ This repo is a public Claude Code plugin. Every commit on `main` reaches users a
 
 - Work on a branch and open a pull request on GitHub. `main` gets finished work only and merges by squash once `checks` passes.
 - CI refuses a draft pull request and runs once it is marked ready.
-- Merge your own pull request once `make-it-so` has finished it (Q0 to Q11 pass, `checks` green): `gh pr merge <n> --squash`. It needs no human approval.
+- Merge your own pull request once `make-it-so` has finished it (Q0 to Q12 pass, `checks` green): `gh pr merge <n> --squash`. It needs no human approval.
 
 ## Tests
 
