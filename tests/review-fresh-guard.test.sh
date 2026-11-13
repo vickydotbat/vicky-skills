@@ -17,7 +17,7 @@ agent() { tool Agent "{\"subagent_type\":\"$1\"}"; }
 run() { jq -nc --arg t "$fx/t.jsonl" --argjson a "${1:-false}" '{stop_hook_active:$a,transcript_path:$t}' | bash "$hook" 2>/dev/null; }
 sent_back() { [ "$(run "${1:-false}" | jq -r '.decision // empty' 2>/dev/null)" = block ]; }
 passes() { local out; out=$(run "${1:-false}"); [ $? = 0 ] && [ -z "$out" ]; }
-done_="🏁 Done: the X clears the box."
+done_="🚪 Waiting on you: the X clears the box."
 gate="🚪 Waiting on you: press the X in the client."
 
 { user "go"; edit /repo/a.cs; user "report"; text "$done_"; } > "$fx/t.jsonl"
@@ -54,8 +54,11 @@ check "another subagent is no review" 'sent_back'
 { user "go"; edit /repo/a.cs; text "Built it. The tests pass, next I push."; } > "$fx/t.jsonl"
 check "a reply that hands nothing over goes through" 'passes'
 
-{ user "go"; edit /repo/a.cs; text 'The report starts with `🏁 Done`.'; } > "$fx/t.jsonl"
+{ user "go"; edit /repo/a.cs; text 'The report starts with `🚪 Waiting on you:`.'; } > "$fx/t.jsonl"
 check "a hand-off marker in quoted code is no hand-off" 'passes'
+
+{ user "go"; edit /repo/a.cs; text "🏁 Done: finished."; } > "$fx/t.jsonl"
+check "a Done line is no hand-off any more" 'passes'
 
 { user "go"; text "$done_"; } > "$fx/t.jsonl"
 check "a session with no change goes through" 'passes'

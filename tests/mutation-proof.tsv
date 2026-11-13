@@ -30,7 +30,7 @@ read-before-asking.sh	ecf3d5154a3c9ca6	0db3e83abcb263cd	21/21
 read-item.sh	81e4d8d4ff057aba	e9dc2de4d74f9ea4	14/14
 red-first-check.sh	e585449df8cf7aee	604e33beb88b1aaf	20/20
 red-first-guard.sh	5e77f24e5f48fac1	cb07ab0a50623ce6	40/40
-review-fresh-guard.sh	385bab25df63aae7	6e9369299d42623f	47/47
+review-fresh-guard.sh	be771addbe844bd0	760ee062ae153231	47/47
 since-user.sh	32eda50d00adbb86	21915eedaedec1f2	6/6
 skill-ledger.sh	4f6f1ba436f648ca	87ac889713948c1a	22/22
 skill-started.sh	efccf28986c36af3	3494157313d20506	5/5
@@ -38,7 +38,7 @@ spark-joy.sh	e88c476e7a612966	e307fe06c4392a7b	29/29
 springboard.sh	2b1a555e07899495	2509174cc3597015	53/53
 stale-copy-hint.sh	6c278c5222834240	bb7f1630d05934fc	27/27
 step-hint.sh	8ec68d162979dafe	e971538018d19efa	18/18
-stop-reply.sh	515c0d48e861eb9a	a5adb07fe49101d6	17/17
+stop-reply.sh	515c0d48e861eb9a	e48d008c5df14f34	17/17
 summit.sh	a7326a54e5ec3ae0	3a97a0da403c2002	53/53
 tea-stdin.awk	ddfdfc5257c31b06	44ed4f52ffc9914a	70/70
 tea-stdin.sh	c631fcfccdb1abf0	d89e8c223456c7f6	15/15
