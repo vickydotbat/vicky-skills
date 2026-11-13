@@ -62,6 +62,14 @@ git push origin topic"
   opt=off; expect 0 "$dflt: option off passes" "$w" 'git push origin topic'; opt=true
   gi "$w" rebase -q "origin/$dflt"
   expect 0 "$dflt: rebased passes" "$w" 'git push origin topic'
+  # Pull request 5's head on the forge is still the old, behind commit.
+  expect 2 "$dflt: marking a pull request ready while its forge head is behind is refused" "$w" 'gh pr ready 5'
+  expect 0 "$dflt: a ready after the push that brings it current, in one command, passes" "$w" 'git push --force-with-lease=topic origin topic && gh pr ready 5'
+  expect 0 "$dflt: a bare ready after a push in one command checks what the push sends" "$w" 'git push origin topic; gh pr ready'
+  gi "$w" branch -q stale HEAD~2
+  gi "$w" checkout -q stale
+  expect 0 "$dflt: a bare ready after a push of a current branch, from a behind checkout, checks the pushed branch" "$w" 'git push origin topic; gh pr ready'
+  gi "$w" checkout -q topic
   gi "$seed" commit -q --allow-empty -m three
   gi "$seed" push -q origin "$dflt"
   # The local copy of origin shows the branch behind, so only the failed fetch lets it through.
