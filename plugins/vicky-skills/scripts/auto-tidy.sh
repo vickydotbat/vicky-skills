@@ -32,7 +32,7 @@ clone() {
   [ "$state" = MERGED ] || [ "$(git for-each-ref --format='%(upstream:track)' "refs/heads/$current")" = "[gone]" ] || return 0
   dirty=$(git status --porcelain | cut -c4- | tr '\n' ' ')
   if [ -n "$dirty" ]; then
-    echo "auto_tidy: '$current' merged, but the clone holds uncommitted changes, so it stays put: ${dirty% }. In your first reply, name these files and ask the user what to do with them."
+    echo "auto_tidy: '$current' merged, but the clone holds uncommitted changes, so it stays put: ${dirty% }. These are unpushed work, so they stay. Name these files in your first reply and do not ask."
     return 0
   fi
   point=$(merge_point "$default")
@@ -56,7 +56,7 @@ clone() {
   fi
   main=${default#origin/}
   if git rev-parse -q --verify "refs/heads/$main" >/dev/null && ! git merge-base --is-ancestor "$main" "$default"; then
-    echo "auto_tidy: '$current' merged, but the local $main has commits $default lacks, so the clone stays put. Ask the user about them in your first reply."
+    echo "auto_tidy: '$current' merged, but the local $main has commits $default lacks, so the clone stays put. Those commits are unpushed work: name them in your first reply and do not ask."
     return 0
   fi
   git switch -q "$main" 2>/dev/null && git merge -q --ff-only "$default" >/dev/null 2>&1 || return 0
@@ -67,5 +67,5 @@ clone
 gone=$(git for-each-ref --format='%(refname:short) %(upstream:track)' refs/heads \
   | awk '$2 == "[gone]" { printf "%s ", $1 }')
 [ -n "$gone" ] || exit 0
-echo "auto_tidy: these local branches lost their upstream: ${gone% }. Before your first reply, run the marie-kondo skill, and give its report in one line."
+echo "auto_tidy: these local branches lost their upstream: ${gone% }. Before your first reply, run the marie-kondo skill without asking the user, and give its report in one line."
 exit 0 # mutant-ok delete: the line above leaves status 0, so the script ends the same way

@@ -2,7 +2,7 @@ adr-scope-hint.sh	891e7e025dfbeb0c	9806d1dd50bd894b	7/7
 ai-credit.sh	ce9c03ae1de6bb7b	34d59d3878cbb775	1/1
 approved-spec.sh	1631dde4942ed5b6	888ee167537dc349	6/6
 assign-expand.sh	a2d6f7ea568cb59e	769ca0b5f23767d6	5/5
-auto-tidy.sh	8d1a5176faea2f7b	fc67071cbbc1d949	57/57
+auto-tidy.sh	d5147ac062d8d26f	8a9dcd8f85a5da85	57/57
 draft-guard.sh	647fc9d57b207b4c	4be6de83b9898c1e	61/61
 familiar-voice.sh	3128a205d08ce300	5d270de0d26cf8c7	18/18
 fetch-place-hint.sh	3573b2f17e94944d	2c5a05ab853546e0	12/12
@@ -16,7 +16,7 @@ keep-awake.sh	64e8be754351199c	ecfc01b8cf98bd99	25/25
 lesson-hint.sh	7a82ca13330f28fd	f3fdb12d08eef12f	11/11
 lesson-ledger.sh	4c88dc2d0aebcfe6	4cb925598f2dbcc8	18/18
 local-path-guard.sh	d427caa9a875a87c	939f20348d896e77	29/29
-merge-point.sh	a19dbe9167831b34	9827ff76f5819e09	2/2
+merge-point.sh	a19dbe9167831b34	4ae7007ff5ee698a	2/2
 merged-branch-guard.sh	eddb14559b662ad4	19120906bae20d5e	41/41
 pkill-guard.sh	b7b411516636d988	2cdcc91629969504	7/7
 plane-block-guard.sh	233812567c67b857	14a56a630609ba7f	20/20
