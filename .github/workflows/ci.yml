@@ -153,6 +153,8 @@ jobs:
         run: tests/over-to-you-checklist.test.sh
       - name: Fetch place hint hook
         run: tests/fetch-place-hint.test.sh
+      - name: Foreign post hint hook
+        run: tests/foreign-post-hint.test.sh
       - name: Brief mode memes
         run: tests/brief_mode_memes_approved_examples.test.sh
       - name: Red pen quick close

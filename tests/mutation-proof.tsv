@@ -6,6 +6,7 @@ auto-tidy.sh	d5147ac062d8d26f	8a9dcd8f85a5da85	57/57
 draft-guard.sh	647fc9d57b207b4c	4be6de83b9898c1e	61/61
 familiar-voice.sh	3128a205d08ce300	5d270de0d26cf8c7	18/18
 fetch-place-hint.sh	3573b2f17e94944d	2c5a05ab853546e0	12/12
+foreign-post-hint.sh	5869da3216e59b15	978f7e5d6290073b	25/25
 gamma-shift.sh	bf7b0a15b596e9fc	105151370ead9c2f	12/12
 gate-notify.sh	7ba893f680c5d672	f5838b34f16e7992	25/25
 gate-state-guard.sh	71c338f183976bce	8a8a8a438ed67e88	71/71

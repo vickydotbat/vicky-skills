@@ -270,6 +270,12 @@
       "description": "When a command downloads or unpacks into /tmp, remind the agent that data kept outside git goes in one lasting place every checkout of the project shares.",
       "default": true
     },
+    "foreign_post_hint": {
+      "type": "boolean",
+      "title": "Text for someone else's repository goes through red-pen",
+      "description": "When a gh command posts a pull request, review or comment to a repository you don't administer, remind the agent to hand you the text on a red-pen page first.",
+      "default": true
+    },
     "keep_awake": {
       "type": "boolean",
       "title": "Keep the computer awake while an agent works",

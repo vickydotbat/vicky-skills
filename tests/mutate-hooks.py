@@ -100,6 +100,7 @@ TESTS = {
     "review-fresh-guard.sh": ["review-fresh-guard"],
     "read-before-asking.sh": ["read-before-asking"],
     "fetch-place-hint.sh": ["fetch-place-hint"],
+    "foreign-post-hint.sh": ["foreign-post-hint"],
     "adr-scope-hint.sh": ["adr-scope-hint"],
     "ticket-filing-guard.sh": ["ticket-filing-guard"],
     "step-hint.sh": ["mutation_step_approved_examples", "step-hint", "review-prevention", "do_imp_pass_approved_examples", "read_item_approved_examples"],
