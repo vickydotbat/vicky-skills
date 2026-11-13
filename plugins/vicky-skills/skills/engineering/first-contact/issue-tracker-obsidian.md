@@ -53,6 +53,10 @@ PR template: on
 
 Change `on` to `off` to stop `pr-guard` refusing a pull request body that lacks `ship-it`'s Status, Summary, Proof and Risk sections in this repo.
 
+PR drafts: on
+
+Change `on` to `off` to stop `draft-guard` refusing a pull request opened ready for review, or marked ready before `make-it-so` starts, in this repo.
+
 ## Familiar
 
 Familiar: on

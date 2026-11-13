@@ -17,7 +17,7 @@ The forge picks the tool:
   takes no label and no body: add the label to each new pull request with
   `gh pr edit <n> --add-label stacked`, and write each new pull request's body with `ship-it`. After a merge, `gh stack sync`. Merge with `gh stack merge <pr> --yes`, never
   `gh pr merge`.
-- **Gitea**: `git-spice` (`gs`). `gs branch create <name>` from the branch it
+- **Gitea**: `git-spice` (`gs`). Once per repo, `git config spice.submit.draft true`, so new pull requests open as drafts and `draft-guard` lets a submit through. `gs branch create <name>` from the branch it
   depends on, then `gs stack submit -l stacked`. After any branch merges: `gs repo sync`,
   `gs stack restack`, `gs stack submit`.
 - **Any other forge**: plain branches. Branch each one from the one it depends on, open its pull request against that branch, and after a merge rebase the next one onto the new base with `git rebase --onto <new base> <old base> <branch>`.

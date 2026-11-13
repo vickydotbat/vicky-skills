@@ -237,5 +237,9 @@ sent() {
 }
 out=$(sent "gh pr edit 7 --body-file $thin"); grep -q "no ## Status, ## Proof, ## Risk section\.$" <<<"$out" && echo "ok   a body short of sections hears every missing one" || { echo "FAIL a body short of sections hears every missing one: $out"; fail=1; }
 [ -z "$(sent "gh pr edit 7 --body-file $good")" ] && echo "ok   a body with every section goes through" || { echo "FAIL a body with every section goes through"; fail=1; }
+# A --help call reads the forge's own help and sends nothing.
+for c in "tea pr create --help" "tea pr edit -h" "gh pr create --help"; do
+  [ -z "$(sent "$c")" ] && echo "ok   $c goes through" || { echo "FAIL $c goes through"; fail=1; }
+done
 rm -rf "$scratch/hub/docs"
 exit $fail

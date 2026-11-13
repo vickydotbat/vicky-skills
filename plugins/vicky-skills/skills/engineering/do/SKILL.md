@@ -35,7 +35,7 @@ The user may be away once the examples are approved, and a question or an open e
 - **Shared stores**: an upload to a store others pull from (a depot, CDN, registry, package index or release) happens once per effort, when the change is complete and proven through a local override. Every fix before then is tested locally, never uploaded.
 - **A guess too costly to undo, or an approved example the build shows is wrong**: park that slice. Add it to Check these with what it waits on, and build the rest.
 
-`make-it-so`, run by `warp` or when the ask needs a finished pull request, hands the drafts and the list to the user before the pull request goes ready. Done when step 6 ends with no question asked since step 1.
+`make-it-so`, run by `warp` or when the user asks for it, hands the drafts and the list to the user before the pull request goes ready. Done when step 6 ends with no question asked since step 1.
 
 **State at every stop.** At every stop, write the pull request body's Status section, as `ship-it` says: a draft opened, a slice parked, a gate reached, the run ended. A ticket whose slice is parked: park its ticket with the tracker's "Park a ticket" action, with a `Waits on:` line, as "Waiting work" in `docs/agents/issue-tracker.md` says.
 
