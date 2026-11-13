@@ -24,11 +24,11 @@ while IFS= read -r t; do
 done < <(find "$corpus" -name '*.jsonl' -type f | sort) > "$tally"
 shapes=$(for r in "$rules"/*.jq; do basename "$r" .jq; done)
 awk -v shapes="$shapes" -v laws="${laws[*]}" '
-  $1 == "day" { days[$2] = 1 } $1 == "turn" { turns[$2]++ } $1 == "hit" { hits[$2, $3]++ } $1 == "unreadable" { unreadable++ }
+  $1 == "day" { days[$2]++ } $1 == "turn" { turns[$2]++ } $1 == "hit" { hits[$2, $3]++ } $1 == "unreadable" { unreadable++ }
   END {
     n = split(shapes, s, "\n"); m = 0
     for (d in days) list[++m] = d
-    for (i = 2; i <= m; i++) for (j = i; j > 1 && list[j - 1] > list[j]; j--) { x = list[j]; list[j] = list[j - 1]; list[j - 1] = x }
+    for (i = 2; i <= m; i++) for (j = i; j > 1 && list[j - 1] > list[j]; j--) { x = list[j]; list[j] = list[j - 1]; list[j - 1] = x } # mutant-ok: an insertion sort from i = 0 or 1 sorts the same list
     for (i = 1; i <= m; i++) for (k = 1; k <= n; k++) {
       d = list[i]; h = hits[s[k], d] + 0
       if (turns[d] + 0 == 0) printf "%s %s no user turns, no rate\n", d, s[k]

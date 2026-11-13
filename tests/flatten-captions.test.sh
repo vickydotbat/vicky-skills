@@ -24,6 +24,7 @@ check() { if [ "$2" = "$3" ]; then echo "ok   $1"; else echo "FAIL $1: got [$2],
 out=$(bash "$script" "$dir/in.vtt" 2>"$dir/err"); code=$?
 check "flattens captions to prose, each repeated line once" "$out" "Example mapping comes before the code."
 check "exits 0 on a caption file" "$code" 0
+check "ends the prose with a newline" "$(bash "$script" "$dir/in.vtt" | tail -c1 | od -An -c | tr -d ' ')" '\n'
 check "writes nothing to stderr on a caption file" "$(cat "$dir/err")" ""
 { echo WEBVTT; echo; for i in $(seq 1 60); do echo "00:00:0$((i % 10)).000 --> 00:00:09.000"; echo "caption line $i"; echo; done; } > "$dir/long.vtt"
 widest=$(bash "$script" "$dir/long.vtt" | awk '{ if (length($0) > w) w = length($0) } END { print w + 0 }')

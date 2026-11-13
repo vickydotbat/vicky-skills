@@ -22,4 +22,14 @@ check "an already ignored .todo leaves .gitignore alone" '[ "$(cat "$dir/h/.giti
 git init -q "$dir/e"; printf '.todo\n' > "$dir/e/.git/info/exclude"
 (cd "$dir/e" && bash "$todo" add a)
 check "a .todo ignored by info/exclude gets no .gitignore" '[ ! -e "$dir/e/.gitignore" ]'
+git init -q "$dir/n"; printf 'node_modules\n' > "$dir/n/.gitignore"; printf -- '- Old\n' > "$dir/n/.todo"
+(cd "$dir/n" && bash "$todo" add new)
+check "a .gitignore that ends in a newline gets no blank line" '[ "$(cat "$dir/n/.gitignore")" = "$(printf "node_modules\n.todo")" ]'
+check "a .todo that ends in a newline gets no blank line" '[ "$(cat "$dir/n/.todo")" = "$(printf -- "- Old\n- new")" ]'
+code() { (cd "$1" && bash "$todo" "${@:2}" >/dev/null 2>&1); echo $?; }
+check "add with no line is a usage error" '[ "$(code "$dir/n" add)" = 2 ]'
+check "done with no text is a usage error" '[ "$(code "$dir/n" done)" = 2 ]'
+git init -q "$dir/x"
+check "done with no .todo is a usage error" '[ "$(code "$dir/x" done Old)" = 2 ]'
+check "an unknown command is a usage error" '[ "$(code "$dir/n" list)" = 2 ]'
 exit $fail

@@ -22,13 +22,13 @@ for f in "$@"; do
     # however many lines it wraps over; text outside one is "other".
     tokens=$(awk -v cats="$categories" -v ref="$ref" -v date="$date" '
       /^[[:space:]]*$/ { inpara = 0; next }
-      /^# ADR-[0-9][0-9][0-9][0-9]: ./ { print "what"; sec = ""; next }
+      /^# ADR-[0-9][0-9][0-9][0-9]: ./ { print "what"; sec = ""; next } # mutant-ok: the sec reset only changes tokens after a line the shape already refuses or that opens the file
       $0 ~ "^Category: (" cats ")\\.$" { print "category"; next }
       /^Decided [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]\.$/ { print "when"; next }
-      $0 ~ "^Superseded by " ref "\\.$" && sec != "status" { print "superseded"; sec = ""; next }
+      $0 ~ "^Superseded by " ref "\\.$" && sec != "status" { print "superseded"; sec = ""; next } # mutant-ok: the sec reset only changes tokens after a line the shape already refuses or that opens the file
       /^## (Brief|Rationale|Status|Context|Decision|Consequences|Guard)$/ {
         sec = tolower($2); print sec; inpara = 0; next }
-      /^#/ { print "other"; sec = ""; next }
+      /^#/ { print "other"; sec = ""; next } # mutant-ok: the sec reset only changes tokens after a line the shape already refuses or that opens the file
       sec == "status" {
         if ($0 ~ "^Accepted " date "\\.$") print "accepted"
         else if ($0 ~ "^Superseded by " ref " on " date ": F[0-9]+ no longer holds\\.$") print "later"

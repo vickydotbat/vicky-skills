@@ -238,6 +238,10 @@ grd='## Guard
 Review only.'
 rec() { printf '%s\n\n' "$nwhat" "$cat" "${1:-$st}" "${2:-$ctx}" "${3:-$dec}" "${4:-$con}" "${5:-$grd}"; }
 pass "the current shape" "$(rec)"
+pass "a Decision paragraph that wraps over two lines" "$(rec "" "" '## Decision
+
+While F1 and F2 hold, sound occlusion
+reuses the physics raycasts.')"
 pass "a superseded current record" "$(rec "$st
 Superseded by ADR-0013 on 2026-12-01: F2 no longer holds.")"
 pass "an amended then superseded record" "$(rec "$st
@@ -306,6 +310,7 @@ trefuse "a template record with no Consequences" "${tpl/Consequences/Effects}"
 trefuse "a template record with no Guard" "${tpl/Guard/Checks}"
 trefuse "a template record past 180 words" "$tpl$(pad 180)"
 rm -f "$dir/t.md"; bash "$script" --template "$dir/t.md" >/dev/null && { echo "FAIL passed: a missing template record"; fail=1; }
+[ "$(bash "$script" "$dir/t.md")" = "$dir/t.md: cannot read" ] || { echo "FAIL a missing record is named once as unreadable"; fail=1; }
 bash "$script" --template >/dev/null 2>&1; [ $? -eq 2 ] || { echo "FAIL --template with no record should exit 2"; fail=1; }
 [ $fail -eq 0 ] && echo "ok   check-adr passes the current and both older shapes within their word limits, and fails anything else, and --template checks a repo template's shape-free rules"
 exit $fail
