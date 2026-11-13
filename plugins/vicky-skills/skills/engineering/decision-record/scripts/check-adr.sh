@@ -2,7 +2,23 @@
 # Checks decision records against FORMAT.md beside this folder: the current
 # shape and the two older ones. Prints one line per problem, exits 1 on any.
 set -u
-[ $# -gt 0 ] || { echo "usage: check-adr.sh <record>..." >&2; exit 2; }
+[ $# -gt 0 ] || { echo "usage: check-adr.sh [--template] <record>..." >&2; exit 2; }
+# --template: the record follows a repo's own template, so check only the
+# rules that hold in any shape.
+if [ "$1" = "--template" ]; then
+  shift; [ $# -gt 0 ] || { echo "usage: check-adr.sh [--template] <record>..." >&2; exit 2; }
+  fail=0
+  for f in "$@"; do
+    [ -r "$f" ] || { echo "$f: cannot read"; fail=1; continue; }
+    grep -q '`' "$f" && { echo "$f: names code in backticks: that belongs in the code"; fail=1; }
+    words=$(wc -w < "$f")
+    [ "$words" -le 180 ] || { echo "$f: $words words, the limit is 180"; fail=1; }
+    grep -qE '^While .' "$f" || { echo "$f: no Decision line opens with While and its forces"; fail=1; }
+    grep -qE '^#+ .*Consequences' "$f" || { echo "$f: no Consequences heading"; fail=1; }
+    grep -qE '^#+ .*Guard' "$f" || { echo "$f: no Guard heading"; fail=1; }
+  done
+  exit $fail
+fi
 categories='Architecture|Data|Interface|Infrastructure|Security|Dependencies|Tooling|Process|Other'
 ref='([a-z0-9][a-z0-9-]* )?ADR-[0-9]{4}'
 date='[0-9]{4}-[0-9]{2}-[0-9]{2}'
