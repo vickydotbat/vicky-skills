@@ -12,4 +12,14 @@ check "a line over 80 characters warns and is still added" \
 check "a file with no final newline gets one before the new line" 'grep -qx -- "- Kept line" "$dir/r/.todo"'
 check "done on text no line holds fails" '! (cd "$dir/r" && bash "$todo" done "nothing like this" 2>/dev/null)'
 check "outside a repo it refuses" '! (cd / && bash "$todo" add x 2>/dev/null)'
+git init -q "$dir/g"; printf 'node_modules' > "$dir/g/.gitignore"
+(cd "$dir/g" && bash "$todo" add a && bash "$todo" add b)
+check "add puts .todo in .gitignore, once, keeping the old lines" \
+  '[ "$(grep -cx "\.todo" "$dir/g/.gitignore")" = 1 ] && grep -qx node_modules "$dir/g/.gitignore" && git -C "$dir/g" check-ignore -q .todo'
+git init -q "$dir/h"; printf '.todo\n' > "$dir/h/.gitignore"
+(cd "$dir/h" && bash "$todo" add a)
+check "an already ignored .todo leaves .gitignore alone" '[ "$(cat "$dir/h/.gitignore")" = ".todo" ]'
+git init -q "$dir/e"; printf '.todo\n' > "$dir/e/.git/info/exclude"
+(cd "$dir/e" && bash "$todo" add a)
+check "a .todo ignored by info/exclude gets no .gitignore" '[ ! -e "$dir/e/.gitignore" ]'
 exit $fail
