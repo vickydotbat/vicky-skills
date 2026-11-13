@@ -36,7 +36,8 @@ is_trunk "$top" && trunk=1
 # --- Rule 1: no new branch on top of unmerged work -------------------------
 # One command per line, so a pattern never spans two commands.
 segments=$(sed -E 's/&&|\|\||[;|&]/\n/g' <<<"$code")
-if grep -Eq 'git[[:space:]].*((checkout|switch)[[:space:]](.*[[:space:]])?-([bBcC]|-create)|worktree[[:space:]]+add[[:space:]](.*[[:space:]])?-[bB])([[:space:]]|$)' <<<"$segments"; then
+branching=$(grep -E 'git[[:space:]].*((checkout|switch)[[:space:]](.*[[:space:]])?-([bBcC]|-create)|worktree[[:space:]]+add[[:space:]](.*[[:space:]])?-[bB])([[:space:]]|$)' <<<"$segments")
+if [ -n "$branching" ]; then
   [ "$trunk" = 0 ] || say "this repository takes every change on main." "Do not open a branch here. Work on main, then push it."
   base=""
   for candidate in main master; do
@@ -45,7 +46,7 @@ if grep -Eq 'git[[:space:]].*((checkout|switch)[[:space:]](.*[[:space:]])?-([bBc
   # A new branch that starts from main is the rule's own advice. Any shell
   # separator or redirect may follow the base.
   from_main=0
-  grep -Eq "[[:space:]](origin/)?$base([[:space:];&|)<>]|\$)" <<<"$code" && from_main=1
+  grep -Eq "[[:space:]](origin/)?$base([[:space:];&|)<>]|\$)" <<<"$branching" && from_main=1
   gone=$(git for-each-ref --format='%(upstream:track)' "refs/heads/$current" 2>/dev/null)
   if [ -n "$base" ] && [ -n "$current" ] && [ "$current" != "$base" ] && [ "$from_main" = 0 ] && [ "$gone" != "[gone]" ] &&
     ! git branch --merged "$base" --format='%(refname:short)' | grep -Fxq "$current"; then
