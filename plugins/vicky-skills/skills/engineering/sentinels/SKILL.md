@@ -24,7 +24,7 @@ A mutation loop you write yourself never replaces this skill, whatever the langu
 
 Every mutation pass starts here, no exceptions: run a mutation-tool command (Stryker, a `mutate.sh`, mutmut, cargo-mutants, PIT, `tests/mutate-hooks.sh`) only after this skill has started in the session.
 
-Read the repo's `TESTING_STANDARDS.md` first: it wins over this skill's defaults.
+Read the repo's testing standards first, where the `Testing standards:` line in `docs/agents/testing.md` names them (`TESTING_STANDARDS.md` at the root when the line is absent): they win over this skill's defaults.
 
 ## Tests that make a pass fast
 
