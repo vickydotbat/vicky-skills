@@ -4,11 +4,11 @@
 # not on a fixed sleep, with a hard cap.
 set -u
 watch="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/productivity/familiar/scripts/familiar-watch.sh"
-fx=$(mktemp -d); trap 'kill "$pid" 2>/dev/null; rm -rf "$fx"' EXIT
+fx=$(mktemp -d); pid=; trap '[ -n "$pid" ] && kill "$pid" 2>/dev/null; rm -rf "$fx"' EXIT
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 typed() { jq -nc --arg t "$1" '{type:"user",timestamp:"2026-11-06T10:00:01.000Z",message:{content:$t}}'; }
-until_out() { local i; for i in $(seq 1 100); do grep -q "$1" "$fx/out" && return 0; sleep 0.1; done; return 1; }
+until_out() { local i; for i in $(seq 1 100); do grep -q "$1" "$fx/out" && return 0; sleep 0.1; done; echo "FAIL the watch never printed $1"; fail=1; return 1; }
 export FAMILIAR_PROJECTS_DIR="$fx/projects" FAMILIAR_WATCH_IDLE=1
 mkdir -p "$fx/projects/repo" "$fx/projects/repo-worktree"
 : > "$fx/projects/repo/s.jsonl"
@@ -22,6 +22,7 @@ check "a transcript empty at the start and then moved prints each line once" '[ 
 # A quiet transcript outside the projects folder, still in its place, is no LOST.
 mkdir -p "$fx/elsewhere"; typed "hello" > "$fx/elsewhere/q.jsonl"
 : > "$fx/out"; timeout 30 bash "$watch" "$fx/elsewhere/q.jsonl" > "$fx/out" 2>&1 & pid=$!
+# The watch says LOST after three idle spells of 1 s with no file, so 4.5 s of quiet crosses them.
 sleep 4.5; jq -nc '{type:"cost-state"}' >> "$fx/elsewhere/q.jsonl"; wait "$pid"
 check "a quiet transcript in its place is followed past three idle spells" '! grep -q LOST "$fx/out"'
 exit $fail

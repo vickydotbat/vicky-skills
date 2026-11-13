@@ -17,7 +17,7 @@ check "review runs the spec axis on the user's ask when there is no ticket" '! g
 # Given the idle-stop guard was cut
 # When familiar tells the agent to end a watch turn silent
 # Then it names no hook that no longer exists
-check "familiar names no idle-stop guard" '! grep -qi "idle-stop" "$familiar"'
+check "familiar names no idle-stop guard" '! grep -qi "idle-stop" "$familiar" && grep -qF "End that turn with no text at all" "$familiar"'
 
 # Given a friction complaint about one repo
 # When the familiar watches the fix

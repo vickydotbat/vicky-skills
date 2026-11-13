@@ -172,7 +172,7 @@ def string_lines(text):
                 if tok.start[0] != tok.end[0]:
                     inside.add(tok.start[0] - 1)
     except (tokenize.TokenError, SyntaxError):
-        pass
+        pass  # a file that won't tokenise won't compile either, and compiles() drops its mutants
     return inside
 
 
