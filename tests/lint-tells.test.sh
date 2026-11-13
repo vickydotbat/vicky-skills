@@ -26,4 +26,14 @@ check "a hedged sentence with a colon prints as line, match and move" \
 printf '%s\n' 'That clause is load-bearing.' > "$scratch/draft.md"
 out=$(python3 "$lint" "$scratch/draft.md")
 check "a stock metaphor gets the literal-word move" 'grep -q "^1: load-bearing: Write the literal word" <<<"$out"'
+
+printf '%s\n' 'We utilize it in order to ship.' > "$scratch/draft.md"
+out=$(python3 "$lint" "$scratch/draft.md")
+check "a fancy verb or filler phrase gets the plain-word move" \
+  'grep -q "^1: utilize: Use the plain word" <<<"$out" && grep -q "^1: in order to: Use the plain word" <<<"$out"'
+
+printf '%s\n' 'The interplay is our bedrock.' > "$scratch/draft.md"
+out=$(python3 "$lint" "$scratch/draft.md")
+check "an abstract noun gets the concrete-thing move" \
+  'grep -q "^1: interplay: Name the concrete thing" <<<"$out" && grep -q "^1: bedrock: Name the concrete thing" <<<"$out"'
 exit $fail
