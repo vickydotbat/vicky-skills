@@ -7,7 +7,8 @@
 # not checked. Marking a pull request ready or reopening it (gh, tea) is
 # checked like a push: bare, it is the current branch, and a named pull request
 # is its own head (refs/pull/<n>/head), so a behind checkout never blocks another
-# pull request. CI would test a stale base.
+# pull request. A ready after a push in the same command checks what the push
+# sends instead. CI would test a stale base.
 # On unless the plugin option guard_push_behind is false or 0.
 GUARD=push-behind-guard
 OPTION=${CLAUDE_PLUGIN_OPTION_GUARD_PUSH_BEHIND:-true}
@@ -22,14 +23,19 @@ default_ref=$(default_ref_of origin)
 [ -n "$default_ref" ] || exit 0
 dflt=${default_ref#origin/}
 fetched=""
+pushed=""
 
 while IFS= read -r segment; do
   if grep -Eq "$ready" <<<"$segment"; then
     src=$current
     # A named pull request is its own head, whichever branch is checked out. The forge's
     # refs/pull/<n>/head carries it; a head that cannot be fetched is not checked.
+    # A ready after a push in the same command sees what that push sends, not the
+    # forge's head from before it.
     num=$(sed -nE 's/.*(pr|pulls?)[[:space:]]+(ready|reopen)[[:space:]]+#?([0-9]+).*/\3/p' <<<"$segment")
-    if [ -n "$num" ]; then
+    if [ -n "$pushed" ]; then
+      src=$pushed
+    elif [ -n "$num" ]; then
       if GIT_TERMINAL_PROMPT=0 timeout 10 git fetch -q origin "refs/pull/$num/head" >/dev/null 2>&1; then
         src=$(git rev-parse -q --verify FETCH_HEAD)
       else
@@ -49,6 +55,7 @@ while IFS= read -r segment; do
     src=${src#+}
     src=${src//[\"\']/}
     [ "$src" = "HEAD" ] && src=$current
+  pushed=$src
   fi
   fi
   if [ -z "$src" ] || [ "$src" = "$dflt" ] || ! git rev-parse --verify -q "$src" >/dev/null 2>&1; then
