@@ -159,6 +159,10 @@ jobs:
         run: tests/red_pen_quick_close_approved_examples.test.sh
       - name: Check ADR
         run: tests/check-adr.test.sh
+      - name: decision-record skill holds its rules
+        run: tests/decision-record-skill.test.sh
+      - name: Skill changes come with a test
+        run: tests/skill-change-tested.test.sh
       - name: ADR scope hint
         run: tests/adr-scope-hint.test.sh
       - name: Skill links
