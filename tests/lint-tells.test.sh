@@ -42,4 +42,17 @@ for word in utilize utilizes utilized utilizing utilization facilitate facilitat
   out=$(python3 "$lint" "$scratch/draft.md")
   check "\"$word\" gets a plain-word or concrete-thing move" 'grep -Eiq "^1: $word: (Use the plain word|Name the concrete thing)" <<<"$out"'
 done
+run() { printf '%s\n' "$1" > "$scratch/d.md"; python3 -I "$lint" "$scratch/d.md"; }
+check "a fence line's own text is skipped, and so is the block" '[ -z "$(run "$(printf '"'"'```robust\nrobust\n```\nPlain words.'"'"')")" ]'
+check "a line after a closed block is read again" 'run "$(printf '"'"'```\ncode\n```\nIt is robust.'"'"')" | grep -q "^4: robust:"'
+check "three bold spans in a paragraph are a hit" 'run "The **a** and **b** and **c** parts." | grep -q "^1: 3 bold spans: "'
+check "three bold spans in a list are not" '[ -z "$(run "- The **a** and **b** and **c** parts.")" ]'
+check "three paragraphs of the same length are a hit" 'run "$(printf '"'"'One. Two.\n\nThree. Four.\n\nFive. Six.'"'"')" | grep -q "^1: every paragraph has 2 sentences: "'
+check "paragraphs of mixed length are not" '[ -z "$(run "$(printf '"'"'One. Two.\n\nThree.\n\nFive. Six.'"'"')")" ]'
+check "headings, lists and numbered steps don't count toward the rhythm" '[ -z "$(run "$(printf '"'"'One. Two.\n\n# Head. Er.\n\n1. Step two.\n\nFive. Six.'"'"')")" ]'
+check "two rules before headings are a hit" 'run "$(printf -- '"'"'---\n# A\nText here.\n---\n# B\nMore text.'"'"')" | grep -q "^1: 2 rules before headings: "'
+check "one rule before a heading is not" '[ -z "$(run "$(printf -- '"'"'---\n# A\nText here.\n---\nMore text.'"'"')")" ]'
+check "the wrong number of arguments prints the usage" '[ "$(python3 -I "$lint" 2>&1)" = "Usage: lint-tells.py <draft>" ]'
+check "a fence line ends a paragraph" 'run "$(printf '"'"'One. Two.\n```\n```\nThree. Four.\n\nFive. Six.'"'"')" | grep -q "every paragraph has 2 sentences"'
+check "a closing fence line's own text is skipped" '[ -z "$(run "$(printf '"'"'```\ncode\n``` robust\nPlain words.'"'"')")" ]'
 exit $fail
