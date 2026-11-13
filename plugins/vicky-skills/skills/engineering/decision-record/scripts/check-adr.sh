@@ -2,29 +2,22 @@
 # Checks decision records against FORMAT.md beside this folder: the current
 # shape and the two older ones. Prints one line per problem, exits 1 on any.
 set -u
-[ $# -gt 0 ] || { echo "usage: check-adr.sh [--template] <record>..." >&2; exit 2; }
 # --template: the record follows a repo's own template, so check only the
 # rules that hold in any shape.
-if [ "$1" = "--template" ]; then
-  shift; [ $# -gt 0 ] || { echo "usage: check-adr.sh [--template] <record>..." >&2; exit 2; }
-  fail=0
-  for f in "$@"; do
-    [ -r "$f" ] || { echo "$f: cannot read"; fail=1; continue; }
-    grep -q '`' "$f" && { echo "$f: names code in backticks: that belongs in the code"; fail=1; }
-    words=$(wc -w < "$f")
-    [ "$words" -le 180 ] || { echo "$f: $words words, the limit is 180"; fail=1; }
-    grep -qE '^While .' "$f" || { echo "$f: no Decision line opens with While and its forces"; fail=1; }
-    grep -qE '^#+ .*Consequences' "$f" || { echo "$f: no Consequences heading"; fail=1; }
-    grep -qE '^#+ .*Guard' "$f" || { echo "$f: no Guard heading"; fail=1; }
-  done
-  exit $fail
-fi
+tpl=0; [ "${1:-}" = "--template" ] && { tpl=1; shift; }
+[ $# -gt 0 ] || { echo "usage: check-adr.sh [--template] <record>..." >&2; exit 2; }
 categories='Architecture|Data|Interface|Infrastructure|Security|Dependencies|Tooling|Process|Other'
 ref='([a-z0-9][a-z0-9-]* )?ADR-[0-9]{4}'
 date='[0-9]{4}-[0-9]{2}-[0-9]{2}'
 fail=0
 for f in "$@"; do
   [ -r "$f" ] || { echo "$f: cannot read"; fail=1; continue; }
+  limit=180
+  if [ $tpl -eq 1 ]; then
+    grep -qE '^While .' "$f" || { echo "$f: no Decision line opens with While and its forces"; fail=1; }
+    grep -qE '^#+ .*Consequences' "$f" || { echo "$f: no Consequences heading"; fail=1; }
+    grep -qE '^#+ .*Guard' "$f" || { echo "$f: no Guard heading"; fail=1; }
+  else
   # One token per line or paragraph. Text inside a section is a paragraph,
   # however many lines it wraps over; text outside one is "other".
   tokens=$(awk -v cats="$categories" -v ref="$ref" -v date="$date" '
@@ -67,6 +60,7 @@ for f in "$@"; do
         printf '%s\n' "$forces" | grep -qx "$c" || { echo "$f: Status cites $c, which Context lacks"; fail=1; }; done ;;
     *) echo "$f: needs what, category, Status, Context, Decision, Consequences and Guard (or an older shape), and nothing else; found: $report"; fail=1 ;;
   esac
+  fi
   grep -q '`' "$f" && { echo "$f: names code in backticks: that belongs in the code"; fail=1; }
   words=$(wc -w < "$f")
   [ "$words" -le "$limit" ] || { echo "$f: $words words, the limit is $limit"; fail=1; }
