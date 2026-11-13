@@ -161,6 +161,8 @@ jobs:
         run: tests/backlog_rollup_lines.test.sh
       - name: Mutation tool takes skill scripts
         run: tests/mutate_skill_scripts.test.sh
+      - name: idle-skills edge cases
+        run: tests/idle-skills.test.sh
       - name: Familiar watch on an empty, moved or quiet transcript
         run: tests/familiar-watch-move-empty.test.sh
       - name: Brief mode memes

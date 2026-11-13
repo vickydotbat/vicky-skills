@@ -22,4 +22,9 @@ once=$(FAMILIAR_WATCH_ONCE=1 timeout 10 bash "$here/familiar-watch.sh" "$dir/cor
 check "the watch's read-once mode prints the saved events and ends" '[ $code -eq 0 ] && grep -q "SKILL: do" <<<"$once"'
 kinds=$(printf -- '- S1 10:01: hook refused the edit\n- S2 10:02: the sentinels skill never ran\n- S3 10:03: the user had to ask for the todo line\n- S4 10:04: claimed done in chat\n- S5 10:05: debug lines left in the code\n- S6 10:06: Refused twice\n- S7 10:07: skipped a test\nnot a snag line\n' | python3 "$here/familiar-visibility.py" --kind)
 check "the classifier names each kind of snag and skips other lines" '[ "$(tr "\n" " " <<<"$kinds")" = "10:01 refused 10:02 skill 10:03 user 10:04 agent 10:05 none 10:06 refused 10:07 none " ]'
+mkdir "$dir/noid"; printf -- '- S1 09:00: a line\n' > "$dir/noid/2026 Familiar debt - no session here.md"
+noid=$(python3 "$here/familiar-visibility.py" "$dir/noid" "$dir/corpus" 2>&1); code=$?
+check "a debt note with no session id in its name is skipped" '[ $code = 0 ] && ! grep -q "S1" <<<"$noid"'
+usage=$(python3 "$here/familiar-visibility.py" "$dir/notes" 2>&1); code=$?
+check "the wrong number of arguments is a usage error" '[ $code = 1 ] && grep -q "^usage: familiar-visibility.py" <<<"$usage"'
 exit $fail

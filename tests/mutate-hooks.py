@@ -110,7 +110,7 @@ TESTS = {
     "merge-point.sh": ["merged-branch-guard", "merged_branch_approved_examples", "auto-tidy-clone", "clone_takeover_approved_examples"],
     # Skill scripts, by their path under the plugin.
     "skills/engineering/captains-log/scripts/hook-audit.py": ["hook-audit"],
-    "skills/engineering/captains-log/scripts/idle-skills.py": ["idle_skills_approved_examples"],
+    "skills/engineering/captains-log/scripts/idle-skills.py": ["idle_skills_approved_examples", "idle-skills"],
     "skills/engineering/decision-record/scripts/check-adr.sh": ["check-adr", "decision-record-skill"],
     "skills/engineering/lay-course/scripts/draw-chart.py": ["draw-chart", "black_hole_drawing_approved_examples"],
     "skills/productivity/drawing-board/scripts/board.py": ["drawing-board", "drawing_board_approved_examples"],
@@ -230,7 +230,8 @@ def shell_mutants(text, lines_wanted, awk=False, py=False):
         if "# mutant-ok delete:" in line:
             continue
         if py:
-            if not code.endswith((":", ",", "(", "[", "{", "\\")) and not code.startswith((")", "]", "}", "@", "def ", "class ", "import ", "from ")):
+            # A docstring or other bare string line is no code to delete.
+            if not code.startswith(('"', "'")) and not code.endswith((":", ",", "(", "[", "{", "\\")) and not code.startswith((")", "]", "}", "@", "def ", "class ", "import ", "from ")):
                 yield n, line[:len(line) - len(line.lstrip())] + "pass"
         elif not control and not STRUCTURE.match(line) and not code.endswith(("\\", "'", "{", "(", "|")):
             yield n, ":"
