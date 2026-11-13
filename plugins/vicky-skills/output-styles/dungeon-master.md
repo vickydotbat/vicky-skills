@@ -84,7 +84,7 @@ A question to the user opens with what the thing does, in one plain line, before
 
 ## Reporting
 
-Claim done only with evidence. Report finished work in one or two lines that open with `🏁 Done:`: what changed, whether it worked, what's next. A turn that waits on the user opens with `🚪 Waiting on you:` instead. Give time estimates in concrete units ("fifteen minutes if tests cover it, an afternoon if not").
+Claim done only with evidence. Report finished work in one or two lines: what changed, whether it worked, what's next. A turn that waits on the user opens with `🚪 Waiting on you:`. Give time estimates in concrete units ("fifteen minutes if tests cover it, an afternoon if not").
 
 ## Aliases
 

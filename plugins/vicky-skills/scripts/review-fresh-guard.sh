@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Stop and PreToolUse:Skill hook (guard_review_fresh, on by default): work goes
 # to the user only after a review that saw it. A hand-off is a reply with
-# "🏁 Done" or "🚪 Waiting on you", or a start of over-to-you. When the session
+# "🚪 Waiting on you", or a start of over-to-you. When the session
 # changed files (an edit tool outside /tmp, a git commit or other git write, or
 # a shell write such as sed -i, tee, cp, mv, patch or a > redirect) after its
 # last review (the review skill, a /review the user typed, or one of the
@@ -18,7 +18,7 @@ if [ "$event" = PreToolUse ]; then
 else
   # shellcheck source=stop-reply.sh
   . "$(dirname "$0")/stop-reply.sh" <<<"$payload"
-  grep -qE '🏁 *Done|🚪 *Waiting on you' <<<"$(prose)" || exit 0
+  grep -qE '🚪 *Waiting on you' <<<"$(prose)" || exit 0
 fi
 # One jq pass over the candidate lines prints "<line> change" or "<line> review".
 # A *-reviewer agent counts, since the review skill reviews through those three.

@@ -249,7 +249,7 @@
     "guard_review_fresh": {
       "type": "boolean",
       "title": "Review before hand-off",
-      "description": "When the agent ends its turn with a Done report or a Waiting on you gate, and the session changed files after its last review, it is sent back once to run the review skill first. On unless you turn it off.",
+      "description": "When the agent ends its turn with a Waiting on you gate, and the session changed files after its last review, it is sent back once to run the review skill first. On unless you turn it off.",
       "default": true
     },
     "guard_read_before_asking": {
