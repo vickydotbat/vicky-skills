@@ -9,7 +9,7 @@ description: Engrave a lesson: turn a snag, mistake or correction into a law (a 
 
 A **snag** is one thing that went wrong: a red check, a crash, a retry, a wrong claim, or a correction from the user. A correction that cost no retry is engraved in the batch `make-it-so`'s SETTLE.md runs, not on the spot. A **law** is what stops the snag next time. An apology or "I'll remember" is no law: the next session never reads it.
 
-Build every law for the next agent: it sees only the files it opened, copies the nearest example, and takes the shortest path that passes. A law it never meets on that path stops nothing.
+Build every law for the next agent: it sees only the files it opened, copies the nearest example, and takes the shortest path that passes.
 
 ## Steps
 
@@ -19,7 +19,7 @@ Build every law for the next agent: it sees only the files it opened, copies the
    2. **Guard it.** Build a check or a hook where one can hold the rule, and a skill line only where neither can, with the reason (`robot-voice` step 1). A check's error names the fix: the file, command or skill to use instead. Where the bad pattern is already common, the check fails only on a change that adds more.
    3. **A skill line**, with an example of the snag beside it.
 
-   Done when you can say "first time" or "repeat of <entry or `file:line`>", the snag has its law, and you can say why each rung above it can't hold it.
+   Done when you can say "first time" or "repeat of <entry or `file:line`>" and the snag has its law.
 3. **Route it.** A home the user names wins. Otherwise send each part to its own home, checked in the order plugin, user setup, repo:
    - **The plugin's repo**, only when the user can push to it: `gh repo view <repository in plugin.json> --json viewerPermission` says `ADMIN`, `MAINTAIN` or `WRITE`. When it can't answer, the repo is not pushable. It takes a lesson that would help an agent in any repo, such as one about the plugin's skills or hooks. Hand it to an idle session in the plugin's repo (`ListAgents`, then `SendMessage`), else build it on a fresh branch from its main in a worktree, without asking. Never switch a checkout another session uses.
    - **The user's own agent setup**: a pattern across tasks or repos. That is their `CLAUDE.md` (`~/.claude/CLAUDE.md`), or the repo that declares it when their setup lives in one.

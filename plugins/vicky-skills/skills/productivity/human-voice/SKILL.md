@@ -84,8 +84,7 @@ Make each move while you draft. Step 6 walks the draft against every one.
 - Point a pronoun at the noun just before it. Write the noun when the reader could ask "...that what?"
 - Write the view the author holds, in their words, at the confidence they hold it. One qualifier is enough.
 - Group things in the number they come in. A list of three holds three distinct things. One measured fact replaces three vague qualities.
-- Say what a thing is directly, with no contrast against something it isn't.
-- Name the thing plainly, where the reader would otherwise decode a hint.
+- Name the thing plainly and say what it is, with no contrast against what it isn't and no hint the reader must decode.
 
 **Sentences**
 
@@ -101,7 +100,6 @@ Make each move while you draft. Step 6 walks the draft against every one.
 - Keep events in the order they happened, false starts included.
 - Let the part the author cares about run long, and the rest stay short.
 - Save the punchline or image for the one place it lands.
-- Stop on the last real point.
 
 **Format**
 

@@ -36,4 +36,10 @@ printf '%s\n' 'The interplay is our bedrock.' > "$scratch/draft.md"
 out=$(python3 "$lint" "$scratch/draft.md")
 check "an abstract noun gets the concrete-thing move" \
   'grep -q "^1: interplay: Name the concrete thing" <<<"$out" && grep -q "^1: bedrock: Name the concrete thing" <<<"$out"'
+
+for word in utilize utilizes utilized utilizing utilization facilitate facilitates facilitated facilitating "in order to" "due to the fact that" "in the event that" interplay flywheel bedrock; do
+  printf '%s\n' "Then $word it." > "$scratch/draft.md"
+  out=$(python3 "$lint" "$scratch/draft.md")
+  check "\"$word\" gets a plain-word or concrete-thing move" 'grep -Eiq "^1: $word: (Use the plain word|Name the concrete thing)" <<<"$out"'
+done
 exit $fail

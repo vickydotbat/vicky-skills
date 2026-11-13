@@ -57,7 +57,7 @@ WORDS = [
     ("Use the plain word: use, help, many, to, because, if.",
      r"\b(utiliz(e|es|ed|ing|ation)|facilitat(e|es|ed|ing)|in order to|due to the fact that|in the event that)\b"),
     ("Name the concrete thing: the base, the link, the goal, the part.",
-     r"\b(garner(s|ed|ing)?|interplay|nexus|flywheel|bedrock|locus)\b"),
+     r"\b(interplay|flywheel|bedrock)\b"),
     ("Write the literal word, and say which part matters and why.",
      r"\b(load-bearing|throughline|doing the heavy lifting)\b"),
 ]
