@@ -9,18 +9,20 @@ check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 typed() { jq -nc --arg t "$1" '{type:"user",timestamp:"2026-11-06T10:00:01.000Z",message:{content:$t}}'; }
 export FAMILIAR_PROJECTS_DIR="$fx/projects" FAMILIAR_WATCH_IDLE=1 FAMILIAR_WATCH_FROM_START=1
 mkdir -p "$fx/projects/repo" "$fx/projects/repo-worktree"
+# Each step waits on the watch's own output, with a hard cap, so a slow machine can't reorder them.
+until_out() { local i; for i in $(seq 1 300); do grep -q "$2" "$1" 2>/dev/null && return 0; sleep 0.1; done; echo "FAIL the watch never printed $2"; fail=1; return 1; }
 
 # Given the familiar watches a session transcript
 # When the session enters a worktree and its transcript moves to a new folder
 # Then the watch picks up the new file and keeps printing events, with no HANDOFF
 typed "before the move" > "$fx/projects/repo/s1.jsonl"
 timeout 60 bash "$watch" "$fx/projects/repo/s1.jsonl" > "$fx/out" 2>&1 & pid=$!
-sleep 2
+until_out "$fx/out" "USER: before the move$"
 mv "$fx/projects/repo/s1.jsonl" "$fx/projects/repo-worktree/s1.jsonl"
 typed "between" >> "$fx/projects/repo-worktree/s1.jsonl"
-sleep 3
+until_out "$fx/out" "USER: between$"
 typed "after the move" >> "$fx/projects/repo-worktree/s1.jsonl"
-sleep 4
+until_out "$fx/out" "USER: after the move$"
 jq -nc '{type:"cost-state"}' >> "$fx/projects/repo-worktree/s1.jsonl"
 wait "$pid"
 out=$(cat "$fx/out")
@@ -31,8 +33,8 @@ check "8 the move itself is no HANDOFF" '[ "$(grep -c HANDOFF <<<"$out")" -le 1 
 # A transcript gone for one idle spell and back at its place is followed on.
 typed "first" > "$fx/projects/repo/s3.jsonl"
 timeout 60 bash "$watch" "$fx/projects/repo/s3.jsonl" > "$fx/out3" 2>&1 & pid=$!
-sleep 1.5; rm "$fx/projects/repo/s3.jsonl"; sleep 1.2
-typed "back" > "$fx/projects/repo/s3.jsonl"; sleep 2.5
+until_out "$fx/out3" "USER: first$"; rm "$fx/projects/repo/s3.jsonl"; sleep 1.2
+typed "back" > "$fx/projects/repo/s3.jsonl"; until_out "$fx/out3" "USER: back$"
 jq -nc '{type:"cost-state"}' >> "$fx/projects/repo/s3.jsonl"; wait "$pid"
 check "8 a short gap is no LOST" '! grep -q LOST "$fx/out3" && grep -q "USER: back" "$fx/out3"'
 
@@ -41,7 +43,7 @@ check "8 a short gap is no LOST" '! grep -q LOST "$fx/out3" && grep -q "USER: ba
 # Then it prints one LOST line and ends
 typed "here" > "$fx/projects/repo/s2.jsonl"
 timeout 60 bash "$watch" "$fx/projects/repo/s2.jsonl" > "$fx/out2" 2>&1 & pid=$!
-sleep 2
+until_out "$fx/out2" "USER: here$"
 rm "$fx/projects/repo/s2.jsonl"
 wait "$pid"; code=$?
 out=$(cat "$fx/out2")

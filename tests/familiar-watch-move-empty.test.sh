@@ -25,4 +25,11 @@ mkdir -p "$fx/elsewhere"; typed "hello" > "$fx/elsewhere/q.jsonl"
 # The watch says LOST after three idle spells of 1 s with no file, so 4.5 s of quiet crosses them.
 sleep 4.5; jq -nc '{type:"cost-state"}' >> "$fx/elsewhere/q.jsonl"; wait "$pid"
 check "a quiet transcript in its place is followed past three idle spells" '! grep -q LOST "$fx/out"'
+# Idle spells before a move count no lines, so the moved file is read from the right line.
+typed "start" > "$fx/projects/repo/i.jsonl"; : > "$fx/out"
+timeout 30 bash "$watch" "$fx/projects/repo/i.jsonl" > "$fx/out" 2>&1 & pid=$!
+sleep 2.5
+mv "$fx/projects/repo/i.jsonl" "$fx/projects/repo-worktree/i.jsonl"; typed "later" >> "$fx/projects/repo-worktree/i.jsonl"
+until_out "USER: later$"; jq -nc '{type:"cost-state"}' >> "$fx/projects/repo-worktree/i.jsonl"; wait "$pid"
+check "a line written after idle spells and a move prints once" '[ "$(grep -c "USER: later$" "$fx/out")" = 1 ]'
 exit $fail
