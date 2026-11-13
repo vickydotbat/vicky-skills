@@ -99,6 +99,8 @@ fi
 tracker="$(git rev-parse --show-toplevel 2>/dev/null)/docs/agents/issue-tracker.md"
 if [[ $event != PostToolUse ]] && [ -f "$tracker" ] && ! grep -qix 'PR template:[[:space:]]*off' "$tracker"; then
   while IFS= read -r segment; do
+    # A --help call reads the forge's own help and sends nothing.
+    grep -Eq '(^|[[:space:]])(--help|-h)([[:space:]]|$)' <<<"$segment" && continue
     if grep -Eq '(^|[[:space:]])--fill' <<<"$segment"; then
       refuse "--fill writes the pull request body from the commits." \
         "Write the body with the ship-it skill and pass it with --body-file."

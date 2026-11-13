@@ -73,6 +73,7 @@ TESTS = {
     "heredoc-strip.awk": ["heredoc-strip"] + GIT_GUARDS + ["pr-guard", "pkill_guard_approved_examples"],
     "quote-mask.awk": ["pr-guard"],
     "local-path-guard.sh": ["local-path-guard"],
+    "draft-guard.sh": ["draft-guard"],
     "pr-guard.sh": ["pr-guard", "pr_guard_ai_credit_approved_examples", "pr_guard_one_pr_approved_examples", "pr_guard_create_approved_examples"],
     "push-behind-guard.sh": ["push-behind-guard"],
     "red-first-check.sh": ["red-first", "red_first_approved_examples"],

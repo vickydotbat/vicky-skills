@@ -1,13 +1,13 @@
 ---
 name: make-it-so
-description: Finish a draft pull request and see it through CI. Use when the user says "make it so", "finish the PR", "mark it ready", "ship it", "babysit CI" or "make sure CI passes", when `warp` ends, and when an effort's ask needs a finished pull request ("one PR", "ship it", "done").
+description: Finish a draft pull request and see it through CI. Use when the user says "make it so", "finish the PR", "mark it ready", "ship it", "babysit CI" or "make sure CI passes", and when a `warp` the user engaged ends. Only the user's ask starts it.
 ---
 
 # Make it so
 
 > _Make it so: current, checked, true, ready, green._
 
-A pull request opens early as a **draft**: a pull request that asks no one to review it yet (GitHub's Draft state, or a `WIP:` title prefix on Gitea, unless the repo's guide names another way). The draft collects the work. **Make it so** is the order that finishes it: current, checked by the user, true, ready, green. Merging stays with the user or the repo's own automation.
+A pull request opens early, and always, as a **draft**: a pull request that asks no one to review it yet (GitHub's Draft state, or a `WIP:` title prefix on Gitea, unless the repo's guide names another way). The draft collects the work, and stays a draft until the user asks for it to be ready; `draft-guard` refuses a ready mark in a session where this skill never started. **Make it so** is the order that finishes it: current, checked by the user, true, ready, green. Merging stays with the user or the repo's own automation.
 
 Read the repo's `TESTING_STANDARDS.md` first: it wins over this skill's defaults.
 

@@ -56,6 +56,12 @@
       "description": "Keep each session's effort to one pull request, opened once: a new one opens only stacked on it, labelled stacked, on a big enough pull request or as separate work. Also refuse a gh, tea or git-spice command whose text, or the body file it sends, credits an AI.",
       "default": true
     },
+    "guard_draft": {
+      "type": "boolean",
+      "title": "Pull requests open as drafts, and turn ready only when you ask",
+      "description": "Refuse a pull request opened ready for review, and refuse marking one ready in a session where make-it-so never started. A repo opts out with a 'PR drafts: off' line in docs/agents/issue-tracker.md.",
+      "default": true
+    },
     "guard_pr_stack_min_lines": {
       "type": "string",
       "title": "Lines before a follow-up may stack",

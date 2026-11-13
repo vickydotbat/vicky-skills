@@ -169,6 +169,8 @@ jobs:
         run: tests/skill-descriptions.test.sh
       - name: PR guard
         run: tests/pr-guard.test.sh
+      - name: Draft guard
+        run: tests/draft-guard.test.sh
       - name: Familiar watch follows a moved transcript
         run: tests/familiar_watch_moves_approved_examples.test.sh
       - name: Familiar handoff by session id
