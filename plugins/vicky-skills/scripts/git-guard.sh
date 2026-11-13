@@ -34,7 +34,9 @@ trunk=0
 is_trunk "$top" && trunk=1
 
 # --- Rule 1: no new branch on top of unmerged work -------------------------
-if grep -Eq 'git[[:space:]].*((checkout|switch)[[:space:]](.*[[:space:]])?-([bBcC]|-create)|worktree[[:space:]]+add[[:space:]](.*[[:space:]])?-[bB])([[:space:]]|$)' <<<"$code"; then
+# One command per line, so a pattern never spans two commands.
+segments=$(sed -E 's/&&|\|\||[;|&]/\n/g' <<<"$code")
+if grep -Eq 'git[[:space:]].*((checkout|switch)[[:space:]](.*[[:space:]])?-([bBcC]|-create)|worktree[[:space:]]+add[[:space:]](.*[[:space:]])?-[bB])([[:space:]]|$)' <<<"$segments"; then
   [ "$trunk" = 0 ] || say "this repository takes every change on main." "Do not open a branch here. Work on main, then push it."
   base=""
   for candidate in main master; do

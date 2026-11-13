@@ -36,4 +36,12 @@ rm "$repo/tests/d_approved_examples.test.sh"
 expect "a commit of a new file that is no approved test runs" 0 "$(guard 'git add -A && git commit -m code')"
 printf 'exit 1\n' > "$repo/tests/e_approved_examples.test.sh"; git -C "$repo" add -A
 expect "a git command that is no commit runs, with a new approved test and code staged" 0 "$(guard 'git status')"
+git -C "$repo" add -A; commit e; printf 'code2\n' > "$repo/new2.sh"
+expect "two commits in one call with only code in the tree run" 0 "$(guard 'git add new2.sh && git commit -m a && git commit --allow-empty -m b')"
+printf 'exit 2\n' > "$repo/tests/e_approved_examples.test.sh"
+expect "two commits in one call with only an edited approved test run" 0 "$(guard 'git add -A && git commit -m a && git commit --allow-empty -m b')"
+printf 'exit 1\n' > "$repo/tests/f_approved_examples.test.sh"
+expect "two commits in one call with a new approved test are refused" 2 "$(guard 'git add -A && git commit -m a && git commit --allow-empty -m b')"
+rm "$repo/new2.sh"; git -C "$repo" add -A; commit g; printf 'exit 1\n' > "$repo/tests/h_approved_examples.test.sh"
+expect "two commits in one call with only a new approved test run" 0 "$(guard 'git add -A && git commit -m a && git commit --allow-empty -m b')"
 exit $fail
