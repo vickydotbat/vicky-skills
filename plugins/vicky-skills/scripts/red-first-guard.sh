@@ -13,6 +13,15 @@ grep -Eq 'git[[:space:]].*commit([[:space:]]|$)' <<<"$code" || exit 0
 # command stages them itself (`git add`, `commit -a`).
 changes=$(git diff --cached --name-status --no-renames)
 everything() { git status --porcelain --untracked-files=all | awk '{s=substr($0,1,2); sub(/^.. /,""); print (s ~ /\?|A/ ? "A" : "M") "\t" $0}'; }
+# Two commits in one call split the changes in a way no read of the tree can
+# tell, so a call that holds a new approved test makes one commit.
+if [ "$(grep -oE 'git[[:space:]]+([^;&|]*[[:space:]])?commit([[:space:]]|$)' <<<"$code" | wc -l)" -gt 1 ]; then
+  tree=$(everything)
+  awk -F '\t' '$1 == "A" && tolower($2) ~ /approved_?examples/' <<<"$tree" | grep -q . || exit 0
+  awk -F '\t' 'NF && tolower($2) !~ /approved_?examples/' <<<"$tree" | grep -q . || exit 0
+  refuse "$GUARD: this call makes more than one commit while the tree holds a new approved test." \
+    "Make one commit per call: commit the approved tests on their own, red, then the code in the next call."
+fi
 if grep -Eq 'commit[^;&|]*[[:space:]]-[a-zA-Z]*a' <<<"$code"; then
   changes=$(everything)
 elif adds=$(grep -oE 'git[[:space:]]+add[[:space:]][^;&|]*' <<<"$code"); then

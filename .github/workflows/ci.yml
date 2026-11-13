@@ -241,6 +241,8 @@ jobs:
         run: tests/do_delegate_approved_examples.test.sh
       - name: do and make-it-so name every step of the flow
         run: tests/flow_gaps_approved_examples.test.sh
+      - name: git-guard and red-first-guard judge one command at a time
+        run: tests/hook_state_approved_examples.test.sh
       - name: Hook exit codes
         run: tests/hook-exits.test.sh
       - name: open-draft marks a draft opened as a page
