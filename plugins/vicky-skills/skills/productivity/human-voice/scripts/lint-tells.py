@@ -54,6 +54,10 @@ WORDS = [
     ("Fill it in, or cut the sentence.", r"\[(citation needed|TODO)\]|\bturn\d+search\d+\b"),
     ("Use words. Emoji go only where the house style uses them.", "[\U0001F300-\U0001FAFF☀-➿]"),
     ("Use straight quotes.", "[‘’“”]"),
+    ("Use the plain word: use, help, many, to, because, if.",
+     r"\b(utiliz(e|es|ed|ing|ation)|facilitat(e|es|ed|ing)|in order to|due to the fact that|in the event that)\b"),
+    ("Name the concrete thing: the base, the link, the goal, the part.",
+     r"\b(interplay|flywheel|bedrock)\b"),
     ("Write the literal word, and say which part matters and why.",
      r"\b(load-bearing|throughline|doing the heavy lifting)\b"),
 ]
