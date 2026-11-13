@@ -44,8 +44,4 @@ check "E15 a law's shape gets its rate before and after the merge on one line" \
 check "E16 a day with no user turns shows no rate" \
   'grep -qx "2026-11-05 same-refusal no user turns, no rate" <<<"$out" && ! grep -q "^2026-11-05 same-refusal .*per 100" <<<"$out"'
 [ $fail -eq 0 ] || echo "$out" | sed 's/^/     /'
-twice=$(bash "$counter" "$dir/corpus" --law same-refusal=2026-11-04 --law same-refusal=2026-11-04 2>&1 | grep " law ")
-check "each law counts from zero, so the same law twice prints the same line twice" '[ "$(sort -u <<<"$twice")" = "same-refusal law 2026-11-04: before 25.0 per 100, after 0.0 per 100" ] && [ "$(wc -l <<<"$twice")" = 2 ]'
-bash "$counter" "$dir/corpus" --bogus >/dev/null 2>&1; code=$?
-check "an unknown argument is a usage error" '[ $code = 2 ]'
 exit $fail

@@ -32,4 +32,10 @@ check "a law after every day has no rate after it" 'grep -qx "same-refusal law 2
 printf 'not json\n' > "$dir/c/broken.jsonl"
 out=$(bash "$counter" "$dir/c")
 check "an unreadable transcript is counted and left out, never read as zero hits" 'grep -qx "unreadable transcripts, left out: 1" <<<"$out"'
+mkdir -p "$dir/h"
+{ printf '{"type":"user","timestamp":"%s","message":{"content":"go"}}\n' "$(at 04)"; use 04 e Bash "rm y"; refused 04 e; use 04 f Bash "rm y"; } > "$dir/h/hit.jsonl"
+twice=$(bash "$counter" "$dir/h" --law same-refusal=2026-11-09 --law same-refusal=2026-11-09 | grep " law ")
+check "each law counts from zero, so the same law twice prints the same line twice" '[ "$(sort -u <<<"$twice" | wc -l)" = 1 ] && [ "$(wc -l <<<"$twice")" = 2 ] && ! grep -q "before 0.0" <<<"$twice"'
+bash "$counter" "$dir/c" --bogus >/dev/null 2>&1; code=$?
+check "an unknown argument is a usage error" '[ $code = 2 ]'
 exit $fail

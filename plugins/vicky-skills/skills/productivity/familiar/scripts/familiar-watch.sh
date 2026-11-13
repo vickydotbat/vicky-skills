@@ -18,7 +18,7 @@ idle=${FAMILIAR_WATCH_IDLE:-10}
 first=$(head -n 1 "$file" 2>/dev/null); seen=$(wc -l < "$file" 2>/dev/null || echo 0); [ "$from" = +1 ] && seen=0; gone=0
 follow() {
   local moved # mutant-ok delete: no other code reads the name
-  [ -e "$file" ] && { gone=0; return 0; } # mutant-ok delete: the search finds the same file, which reopens after the lines already read
+  [ -e "$file" ] && { gone=0; return 0; }
   moved=$(find "$projects" -mindepth 2 -maxdepth 2 -name "$(basename "$file")" 2>/dev/null | head -n 1)
   if [ -z "$moved" ]; then gone=$((gone + 1)); [ "$gone" -lt 3 ]; return; fi
   kill "$tailer" 2>/dev/null # mutant-ok delete: the old tail follows a name that is gone and prints nothing more

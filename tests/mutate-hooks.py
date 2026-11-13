@@ -119,7 +119,7 @@ TESTS = {
     "skills/productivity/familiar/scripts/familiar-sessions.sh": ["familiar", "familiar-sessions-off", "familiar_approved_examples", "familiar_catchup_approved_examples", "familiar_handoff_id_approved_examples", "familiar_intent_approved_examples"],
     "skills/productivity/familiar/scripts/familiar-shapes.sh": ["familiar-shapes", "familiar_shapes_approved_examples"],
     "skills/productivity/familiar/scripts/familiar-visibility.py": ["familiar-visibility", "familiar_visibility_approved_examples", "familiar_evidence_approved_examples"],
-    "skills/productivity/familiar/scripts/familiar-watch.sh": ["familiar", "familiar_watch_approved_examples", "familiar_watch_moves_approved_examples", "familiar_catchup_approved_examples", "familiar-visibility"],
+    "skills/productivity/familiar/scripts/familiar-watch.sh": ["familiar", "familiar_watch_approved_examples", "familiar_watch_moves_approved_examples", "familiar_catchup_approved_examples", "familiar-visibility", "familiar-watch-move-empty"],
     "skills/productivity/human-voice/scripts/lint-tells.py": ["lint-tells", "lint_tells_approved_examples"],
     "skills/productivity/interactive-page/scripts/open-draft.sh": ["open-draft", "open-draft-page"],
     "skills/productivity/interactive-page/scripts/open-page.sh": ["open-draft", "interactive_page_approved_examples", "open-draft-page"],
@@ -161,7 +161,42 @@ def skill_scripts():
     return sorted(name for name in proofs() if name.startswith("skills/"))
 
 
+def string_lines(text):
+    """0-based lines a Python string spans past its first: text there is no code."""
+    import io, tokenize
+    inside = set()
+    try:
+        for tok in tokenize.generate_tokens(io.StringIO(text).readline):
+            if tok.type == tokenize.STRING:
+                inside.update(range(tok.start[0], tok.end[0]))
+                if tok.start[0] != tok.end[0]:
+                    inside.add(tok.start[0] - 1)
+    except (tokenize.TokenError, SyntaxError):
+        pass
+    return inside
+
+
+def compiles(text, n, line):
+    lines = text.split("\n")
+    lines[n] = line
+    try:
+        compile("\n".join(lines), "<mutant>", "exec")
+        return True
+    except SyntaxError:
+        return False
+
+
 def mutants(text, lines_wanted, awk=False, py=False):
+    if py:
+        skip = string_lines(text)
+        for n, line in shell_mutants(text, lines_wanted, awk, py):
+            if n not in skip and compiles(text, n, line):
+                yield n, line
+    else:
+        yield from shell_mutants(text, lines_wanted, awk, py)
+
+
+def shell_mutants(text, lines_wanted, awk=False, py=False):
     for n, line in enumerate(text.split("\n")):
         code = line.strip()
         if lines_wanted is not None and n + 1 not in lines_wanted:
