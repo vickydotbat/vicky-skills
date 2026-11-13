@@ -1,4 +1,4 @@
-adr-scope-hint.sh	891e7e025dfbeb0c	9806d1dd50bd894b	7/7
+adr-scope-hint.sh	dd0f4f2d0f53e71a	283f8e98c97d78a5	7/7
 ai-credit.sh	ce9c03ae1de6bb7b	34d59d3878cbb775	1/1
 approved-spec.sh	1631dde4942ed5b6	3cfe1fd27260efcc	5/5
 assign-expand.sh	a2d6f7ea568cb59e	769ca0b5f23767d6	5/5
@@ -37,7 +37,7 @@ skill-ledger.sh	4f6f1ba436f648ca	87ac889713948c1a	22/22
 skill-started.sh	efccf28986c36af3	3494157313d20506	5/5
 skills/engineering/captains-log/scripts/hook-audit.py	e42dd2a80904c2c8	d5b2bd78a040a3b9	63/63
 skills/engineering/captains-log/scripts/idle-skills.py	a2b8bf6588ba88a3	3bc8262a62dcdffe	29/29
-skills/engineering/decision-record/scripts/check-adr.sh	4fbf2b2911f030a6	b047bac5ebbee26e	75/75
+skills/engineering/decision-record/scripts/check-adr.sh	e913fc36c14c5891	970c4ec6e4eeacbb	77/77
 skills/engineering/lay-course/scripts/draw-chart.py	0c5de7696438df4a	e90e4934d5d55f2a	80/80
 skills/productivity/drawing-board/scripts/board.py	511cd6695d270424	0746732e467fe7f1	140/140
 skills/productivity/drawing-board/scripts/fetch-drawio.sh	e69344201d3866d9	e8e138b40ea6e9d8	24/24

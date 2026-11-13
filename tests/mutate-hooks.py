@@ -113,7 +113,7 @@ TESTS = {
     # Skill scripts, by their path under the plugin.
     "skills/engineering/captains-log/scripts/hook-audit.py": ["hook-audit"],
     "skills/engineering/captains-log/scripts/idle-skills.py": ["idle_skills_approved_examples", "idle-skills"],
-    "skills/engineering/decision-record/scripts/check-adr.sh": ["check-adr", "decision-record-skill"],
+    "skills/engineering/decision-record/scripts/check-adr.sh": ["check-adr", "decision-record-skill", "adr_retire_approved_examples"],
     "skills/engineering/lay-course/scripts/draw-chart.py": ["draw-chart", "black_hole_drawing_approved_examples"],
     "skills/productivity/drawing-board/scripts/board.py": ["board-edges", "drawing-board", "drawing_board_approved_examples"],
     "skills/productivity/drawing-board/scripts/fetch-drawio.sh": ["fetch-drawio"],

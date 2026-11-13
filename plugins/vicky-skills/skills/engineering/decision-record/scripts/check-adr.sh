@@ -61,6 +61,12 @@ for f in "$@"; do
       *) echo "$f: needs what, category, Status, Context, Decision, Consequences and Guard (or an older shape), and nothing else; found: $report"; fail=1 ;;
     esac
   fi
+  # A record replaced in full is deleted once a Retires line names it.
+  for n in $(grep -oE 'Retires ADR-[0-9]{4}' "$f" | grep -oE '[0-9]{4}$'); do
+    for old in "$(dirname "$f")/$n"-*.md; do
+      [ -e "$old" ] && { echo "$f: ADR-$n is retired but still present: delete it"; fail=1; }
+    done
+  done
   grep -q '`' "$f" && { echo "$f: names code in backticks: that belongs in the code"; fail=1; }
   words=$(wc -w < "$f")
   [ "$words" -le "$limit" ] || { echo "$f: $words words, the limit is $limit"; fail=1; }
