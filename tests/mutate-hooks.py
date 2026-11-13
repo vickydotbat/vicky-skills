@@ -347,7 +347,8 @@ def baseline(script):
                               env=dict(os.environ, MUTATE_HOOKS_INNER="1"), capture_output=True)
         took = time.monotonic() - start
         if done.returncode:
-            sys.exit(f"mutate-hooks: {test} fails on the real {script}; fix it before a pass")
+            failing = [line for line in done.stdout.decode(errors="replace").splitlines() if line.startswith("FAIL")]
+            sys.exit(f"mutate-hooks: {test} fails on the real {script}; fix it before a pass" + "".join("\n  " + line for line in failing[:5]))
         # Stryker's rule: a mutant times out at the baseline times 1.5 plus a fixed margin.
         times.append((took, test, took * 1.5 + 5))
     return [(test, limit) for _, test, limit in sorted(times)], sum(t for t, _, _ in times)
