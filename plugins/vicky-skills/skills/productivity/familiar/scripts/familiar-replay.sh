@@ -30,7 +30,7 @@ done > "$seen"
 awk -v runs="$runs" '
   function min(t) { split(t, p, ":"); return p[1] * 60 + p[2] }
   # The one-minute window matches familiar-visibility.py; awk and Python share no code.
-  FNR == NR { at[$1, min($2)] = 1; kinds[$1, min($2), $3] = 1; next }
+  FNR == NR { at[$1, min($2)]++; kinds[$1, min($2), $3]++; next }
   function hit(r, t) { return (r, t) in at && (want == "" || (r, t, want) in kinds) }
   {
     m = min($2); want = $3; k = 0

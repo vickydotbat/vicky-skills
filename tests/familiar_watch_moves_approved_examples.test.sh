@@ -36,6 +36,15 @@ typed "back" > "$fx/projects/repo/s3.jsonl"; sleep 2.5
 jq -nc '{type:"cost-state"}' >> "$fx/projects/repo/s3.jsonl"; wait "$pid"
 check "8 a short gap is no LOST" '! grep -q LOST "$fx/out3" && grep -q "USER: back" "$fx/out3"'
 
+# A transcript empty when the watch starts, then moved, prints each line once.
+: > "$fx/projects/repo/s4.jsonl"
+timeout 20 bash "$watch" "$fx/projects/repo/s4.jsonl" > "$fx/out4" 2>&1 & pid=$!
+sleep 1; typed "one" >> "$fx/projects/repo/s4.jsonl"; sleep 1.5
+mv "$fx/projects/repo/s4.jsonl" "$fx/projects/repo-worktree/s4.jsonl"; sleep 2.5
+typed "two" >> "$fx/projects/repo-worktree/s4.jsonl"; sleep 2.5
+jq -nc '{type:"cost-state"}' >> "$fx/projects/repo-worktree/s4.jsonl"; wait "$pid"
+check "8 a transcript empty at the start and then moved prints each line once" '[ "$(grep -c "USER: one$" "$fx/out4")" = 1 ] && [ "$(grep -c "USER: two$" "$fx/out4")" = 1 ]'
+
 # Given the old transcript is gone and no new one with the same session id appears
 # When the watch looks for it
 # Then it prints one LOST line and ends

@@ -66,5 +66,36 @@ expect "an approved-examples section with its path:line and approve box opens" "
 expect "an approved-examples section with no approve box opens with one added" "$(opens "${c_ok/- \[ \] approve
 /}"; grep -c '^- \[ \] approve' "$dir/draft.md")" "opened
 1"
+echo '# approved-spec: d' > "$dir/repo/tests/d_approved_examples.test.sh"
+two='## C
+tests/c_approved_examples.test.sh:new
+
+```text
+Then c
+```
+## D
+tests/d_approved_examples.test.sh:new
+
+```text
+Then d
+```
+'
+opens "$two" >/dev/null
+expect "two approved sections with no box each get one, under their location" "$(grep -A1 '_approved_examples.test.sh:new$' "$dir/draft.md" | grep -c '^- \[ \] approve$')" "2"
+code() { (cd "${2:-$dir/repo}" && VISUAL="$1" EDITOR= bash "$open" "${@:3}" >/dev/null 2>&1); echo $?; }
+expect "no draft named is a usage error" "$(code true "$dir/repo")" "2"
+expect "no editor set is an error" "$(code "" "$dir/repo" "$dir/draft.md")" "2"
+printf '#!/usr/bin/env bash\nexit 3\n' > "$dir/editor3"; chmod +x "$dir/editor3"
+expect "in a checkout, the editor's exit is passed back" "$(code "$dir/editor3" "$dir/repo" "$dir/draft.md")" "3"
+expect "the lock is gone after the close" "$([ -e "$dir/repo/.git/red-pen-open" ] && echo kept || echo gone)" "gone"
+rm -f "$dir/approved-spec-grants"; code "$dir/editor3" "$dir" "$dir/draft.md" >/dev/null
+expect "outside a checkout, no grants file is written" "$([ -e "$dir/approved-spec-grants" ] && echo written || echo none)" "none"
 expect "an approved-examples section whose location is not path:line never opens" "$(opens "${c_ok/c_approved_examples.test.sh:new/c_approved_examples.test.sh, the Then line}")" "refused 2"
+# open-page.sh hands its page to open-draft.sh as the editor, and marks the lock as a page's.
+mkdir -p "$dir/op"; cp "$(dirname "$open")/open-page.sh" "$dir/op/"
+printf '#!/usr/bin/env bash\necho "$DRAFT_PAGE|$VISUAL"\n' > "$dir/op/open-draft.sh"
+got=$(DISPLAY=:9 DRAFT_PAGE= VISUAL=true bash "$dir/op/open-page.sh" x.md)
+expect "with a display, open-page sets the page as the editor and marks it" "$got" "1|python3 -I $dir/op/page.py"
+got=$(DISPLAY= WAYLAND_DISPLAY= DRAFT_PAGE= VISUAL=true bash "$dir/op/open-page.sh" x.md)
+expect "with no display, the editor stays and no page is marked" "$got" "|true"
 exit $fail

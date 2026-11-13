@@ -30,7 +30,8 @@ jq -nc '{type:"user",cwd:"/work/r",message:{content:"hi"}}' > "$fx/projects/-r/n
 cp "$fx/projects/-r/new.jsonl" "$fx/projects/-r/old.jsonl"; touch -d '2 days ago' "$fx/projects/-r/old.jsonl"
 cp "$fx/projects/-r/new.jsonl" "$fx/projects/-r/resumed.jsonl"
 { jq -nc '{type:"cost-state"}'; jq -nc '{type:"user",message:{content:"back"}}'; } >> "$fx/projects/-r/resumed.jsonl"
-out=$(FAMILIAR_SESSIONS_DIR="$fx/no-records" FAMILIAR_PROJECTS_DIR="$fx/projects" CLAUDE_CODE_SESSION_ID=x bash "$tools/familiar-sessions.sh")
+out=$(FAMILIAR_SESSIONS_DIR="$fx/no-records" FAMILIAR_PROJECTS_DIR="$fx/projects" CLAUDE_CODE_SESSION_ID=x bash "$tools/familiar-sessions.sh"); code=$?
+check "the session list exits 0" '[ $code = 0 ]'
 check "a session names its transcript and working folder" 'grep -qx "new $fx/projects/-r/new.jsonl /work/r" <<<"$out"'
 check "a session quiet for two days is not live" '! grep -q "^old " <<<"$out"'
 check "a session resumed after it ended is live again" 'grep -q "^resumed " <<<"$out"'

@@ -5,7 +5,6 @@
 # session exits.
 # Usage: familiar-watch.sh <transcript> [<session tag>]
 # It starts at the end of the file; FAMILIAR_WATCH_FROM_START=1 reads it whole and follows on.
-# The mutation tool covers plugins/vicky-skills/scripts only: mutate this script by hand, with sentinels.
 set -u
 file=${1:?usage: familiar-watch.sh <transcript> [<session tag>]}
 tag=${2:-}
@@ -18,11 +17,11 @@ projects=${FAMILIAR_PROJECTS_DIR:-$HOME/.claude/projects}
 idle=${FAMILIAR_WATCH_IDLE:-10}
 first=$(head -n 1 "$file" 2>/dev/null); seen=$(wc -l < "$file" 2>/dev/null || echo 0); [ "$from" = +1 ] && seen=0; gone=0
 follow() {
-  local moved
-  [ -e "$file" ] && { gone=0; return 0; }
+  local moved # mutant-ok delete: no other code reads the name
+  [ -e "$file" ] && { gone=0; return 0; } # mutant-ok delete: the search finds the same file, which reopens after the lines already read
   moved=$(find "$projects" -mindepth 2 -maxdepth 2 -name "$(basename "$file")" 2>/dev/null | head -n 1)
   if [ -z "$moved" ]; then gone=$((gone + 1)); [ "$gone" -lt 3 ]; return; fi
-  kill "$tailer" 2>/dev/null
+  kill "$tailer" 2>/dev/null # mutant-ok delete: the old tail follows a name that is gone and prints nothing more
   file=$moved; gone=0
   # A moved file keeps the lines already read: start after them.
   if [ "$(head -n 1 "$file")" = "$first" ]; then start=$((seen + 1)); else start=1; fi

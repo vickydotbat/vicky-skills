@@ -37,6 +37,12 @@ skill-ledger.sh	4f6f1ba436f648ca	87ac889713948c1a	22/22
 skill-started.sh	efccf28986c36af3	3494157313d20506	5/5
 skills/engineering/decision-record/scripts/check-adr.sh	4fbf2b2911f030a6	b047bac5ebbee26e	75/75
 skills/productivity/drawing-board/scripts/fetch-drawio.sh	e69344201d3866d9	e8e138b40ea6e9d8	24/24
+skills/productivity/familiar/scripts/familiar-replay.sh	f1d7733cc3a3a34b	c2d98799f55b9581	41/41
+skills/productivity/familiar/scripts/familiar-sessions.sh	a6d057056cae9b4b	497c483d4c9abb34	47/47
+skills/productivity/familiar/scripts/familiar-shapes.sh	5c68c101c08e4a1f	5e4e162580cc21be	32/32
+skills/productivity/familiar/scripts/familiar-watch.sh	a5b45cf51722621e	46aec4470f041284	56/56
+skills/productivity/interactive-page/scripts/open-draft.sh	2e92cdecf5c30dff	f82b98109a9c8e5c	45/45
+skills/productivity/interactive-page/scripts/open-page.sh	9da7be591b0eb684	d7c94ecbb078cc2b	9/9
 skills/productivity/standing-orders/scripts/todo.sh	8b469102d3f5fa91	2406d378210ca155	32/32
 skills/productivity/video-captions/scripts/flatten-captions.sh	415082ac283f9808	1a2641b47ff3eda4	6/6
 spark-joy.sh	e88c476e7a612966	e307fe06c4392a7b	29/29

@@ -12,16 +12,15 @@
 # list and this check still shows. With no ids, the sessions live at its
 # start are known. It runs 30 rounds (FAMILIAR_SESSIONS_ROUNDS), so a Monitor
 # re-arms it.
-# The mutation tool covers plugins/vicky-skills/scripts only: mutate this script by hand, with sentinels.
 set -u
 dir=${FAMILIAR_PROJECTS_DIR:-$HOME/.claude/projects}
 # Claude Code keeps one record per running session, "<pid>.json" naming its
 # sessionId. Where any exist, a session counts only while its process runs.
 records=${FAMILIAR_SESSIONS_DIR:-$(dirname "$dir")/sessions}
 running() {
-  local f pid
+  local f pid # mutant-ok delete: the function runs in a subshell, so its names never leak
   for f in "$records"/*.json; do
-    [ -e "$f" ] || continue
+    [ -e "$f" ] || continue # mutant-ok delete: an unmatched glob names no file, so jq reads no pid and nothing prints
     pid=$(jq -r '.pid // empty' "$f" 2>/dev/null)
     [ -n "$pid" ] && [ -d "/proc/$pid" ] && jq -r '.sessionId // empty' "$f" 2>/dev/null
   done
