@@ -15,7 +15,7 @@ check "an existing creature that might be hostile, busy or changed is passed ove
 check "a kit whose things could combine, such as stacks that merge in a pack, finishes each thing before it reaches the place where it could combine" \
   'grep -q "Finish each thing (its properties set, its locals written) before it reaches the place where it could combine" <<<"$kits"'
 check "when the sitting closes, everything the kits made is removed and no kit file is committed, unless the project's docs allow it and say where" \
-  'grep -q "remove everything the kits made" <<<"$kits" && grep -q "commit no kit file" <<<"$kits" && grep -q "unless TESTING_STANDARDS.md allows it and says where" <<<"$kits" && grep "Read it back" "$s" | grep -q "Kits"'
+  'grep -q "remove everything the kits made" <<<"$kits" && grep -q "commit no kit file" <<<"$kits" && grep -q "unless the testing standards allow it and say where" <<<"$kits" && grep "Read it back" "$s" | grep -q "Kits"'
 check "the checklist marks each item [x] completed as expected, [~] completed with changes, [-] failed to complete, or [ ] not tested, in sections, and ends with Extra tests and Other" \
   'grep -qF "[x] completed as expected" <<<"$form" && grep -qF "[~] completed with changes" <<<"$form" && grep -qF "[-] failed to complete" <<<"$form" && grep -qF "[ ] not tested at all" <<<"$form" && grep -q "^## <section>" <<<"$form" && grep -q "^## Extra tests" <<<"$form" && grep -q "^## Other" <<<"$form"'
 exit $fail

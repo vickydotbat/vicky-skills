@@ -9,7 +9,7 @@ description: Finish a draft pull request and see it through CI. Use when the use
 
 A pull request opens early, and always, as a **draft**: a pull request that asks no one to review it yet (GitHub's Draft state, or a `WIP:` title prefix on Gitea, unless the repo's guide names another way). The draft collects the work, and stays a draft until the user asks for it to be ready; `draft-guard` refuses a ready mark in a session where this skill never started. **Make it so** is the order that finishes it: current, checked by the user, true, ready, green. Merging stays with the user or the repo's own automation.
 
-Read the repo's `TESTING_STANDARDS.md` first: it wins over this skill's defaults.
+Read the repo's testing standards first, where the `Testing standards:` line in `docs/agents/testing.md` names them (`TESTING_STANDARDS.md` at the root when the line is absent): they win over this skill's defaults.
 
 ## Steps
 
@@ -48,7 +48,7 @@ Measured by one read:
 
 - **Q8 Title.** The title says what the change does, in the repo's title style, with no `WIP:` once ready.
 - **Q9 What and why.** The body's first paragraph says what the change does and why. Every sentence is true of `git diff origin/<base>...HEAD`.
-- **Q10 How tested.** The body names the approved examples and the tests that prove them, the mutation counts from `sentinels` (a hand-broken line counts as a pass and goes through it too), or `unrun, because <the log line or reason>`, and anything left unchecked. When `TESTING_STANDARDS.md` has a `Metrics:` line that isn't `none`, each rule the change sets with a written target has its metrics on its ticket, or a `Metrics owed: <rule>` line in the body. This item reads only that they are there, never what they found.
+- **Q10 How tested.** The body names the approved examples and the tests that prove them, the mutation counts from `sentinels` (a hand-broken line counts as a pass and goes through it too), or `unrun, because <the log line or reason>`, and anything left unchecked. When the testing standards have a `Metrics:` line that isn't `none`, each rule the change sets with a written target has its metrics on its ticket, or a `Metrics owed: <rule>` line in the body. This item reads only that they are there, never what they found.
 - **Q12 Current truth.** README, docs, agent files and project memory say nothing the diff makes untrue: grep each for the names, commands and rules the diff changes. Fix each hit in the branch, or name it in the body with its reason.
 
 Measured after the push:

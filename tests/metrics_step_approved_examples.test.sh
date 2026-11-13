@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # approved-spec: the finishing order red, green, mutate, metrics, QA, for a
-# repo whose TESTING_STANDARDS.md has a Metrics: line. Each check is named
+# repo whose testing standards have a Metrics: line. Each check is named
 # after its example and reads the instructions that drive the agent.
 set -u
 p="$(dirname "$0")/../plugins/vicky-skills/skills/engineering"
