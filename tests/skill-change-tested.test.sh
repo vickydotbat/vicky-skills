@@ -2,7 +2,7 @@
 # A branch that changes a skill's text also changes a test that proves the
 # change works as intended. This check holds the floor (some file under tests/
 # changed). AGENTS.md's "Change a skill" rule holds the rest: the test goes red
-# on the skill text before the change.
+# on the skill text before the change. A local run needs `git fetch origin`.
 set -u
 cd "$(dirname "$0")/.."
 # judge reads changed paths on stdin. It exits 1, naming the skill files, when
