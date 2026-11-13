@@ -34,6 +34,9 @@ expect "gh pr create without --draft is refused" 2 'gh pr create --title T --bod
 expect "gh pr create without --draft is refused after make-it-so too" 2 'gh pr create --title T' "$s/agent.jsonl"
 expect "gh pr create --draft goes through" 0 'gh pr create --draft --title T'
 expect "gh pr create -d goes through" 0 'gh pr create -d --title T'
+expect "gh pr create --draft=false is refused" 2 'gh pr create --draft=false --title T'
+expect "gh pr create -d=false is refused" 2 'gh pr create -d=false --title T'
+expect "tea pr create --draft=false is refused" 2 'tea pr create --draft=false -t Fix </dev/null'
 expect "a --draft inside the quoted title does not count" 2 'gh pr create --title "T --draft"'
 expect "tea pr create without WIP: is refused" 2 'tea pr create --title "Fix it" --description x </dev/null'
 expect "tea pulls create is refused the same way" 2 'tea pulls create -t Fix </dev/null'
@@ -50,6 +53,11 @@ expect "gh pr ready goes through after the agent started make-it-so" 0 'gh pr re
 expect "gh pr ready goes through after the user typed make-it-so" 0 'gh pr ready 5' "$s/typed.jsonl"
 expect "talk about make-it-so is not make-it-so" 2 'gh pr ready 5' "$s/talk.jsonl"
 expect "gh pr ready --undo goes through" 0 'gh pr ready 5 --undo'
+expect "gh pr ready --undo=false is refused" 2 'gh pr ready 5 --undo=false'
+expect "a flag before the subcommand is still read" 2 'gh -R o/r pr create --title T'
+expect "a flag before pr ready is still read" 2 'gh --repo o/r pr ready 5'
+expect "gs -C <dir> ss is still read" 2 'gs -C . ss'
+expect "gs branch submit --draft=false is refused" 2 'gs branch submit --draft=false'
 expect "tea pr edit --ready is refused with no make-it-so" 2 'tea pr edit 5 --ready </dev/null'
 expect "tea pr edit --ready goes through after make-it-so" 0 'tea pr edit 5 --ready </dev/null' "$s/typed.jsonl"
 expect "a title with no WIP: is refused with no make-it-so" 2 'tea pr edit 5 -t "Fix it" </dev/null'

@@ -3,7 +3,7 @@ ai-credit.sh	ce9c03ae1de6bb7b	1dd88b3a1de397ad	1/1
 approved-spec.sh	1631dde4942ed5b6	888ee167537dc349	6/6
 assign-expand.sh	a2d6f7ea568cb59e	769ca0b5f23767d6	5/5
 auto-tidy.sh	8d1a5176faea2f7b	fc67071cbbc1d949	57/57
-draft-guard.sh	0de55375bb8a1651	d42a6d1b6a35de7f	60/60
+draft-guard.sh	647fc9d57b207b4c	4be6de83b9898c1e	61/61
 familiar-voice.sh	3128a205d08ce300	5d270de0d26cf8c7	18/18
 fetch-place-hint.sh	3573b2f17e94944d	2c5a05ab853546e0	12/12
 gamma-shift.sh	bf7b0a15b596e9fc	105151370ead9c2f	12/12
@@ -33,6 +33,7 @@ red-first-guard.sh	ce1336cf1ab35246	71d58db6a8b49690	27/27
 review-fresh-guard.sh	385bab25df63aae7	6e9369299d42623f	47/47
 since-user.sh	32eda50d00adbb86	21915eedaedec1f2	6/6
 skill-ledger.sh	4f6f1ba436f648ca	87ac889713948c1a	22/22
+skill-started.sh	efccf28986c36af3	3494157313d20506	5/5
 spark-joy.sh	e88c476e7a612966	e307fe06c4392a7b	29/29
 springboard.sh	2b1a555e07899495	2509174cc3597015	53/53
 stale-copy-hint.sh	6c278c5222834240	bb7f1630d05934fc	27/27
@@ -42,7 +43,7 @@ summit.sh	a7326a54e5ec3ae0	3a97a0da403c2002	53/53
 tea-stdin.awk	ddfdfc5257c31b06	44ed4f52ffc9914a	70/70
 tea-stdin.sh	c631fcfccdb1abf0	d89e8c223456c7f6	15/15
 ticket-drift.sh	1bc60db2e95d9227	cbdb7e2f644687db	36/36
-ticket-filing-guard.sh	871aebb62a4b9289	d88626b76e3ac06b	23/23
+ticket-filing-guard.sh	13841080ab73f460	d88626b76e3ac06b	23/23
 todo-reminder.sh	87bab188b0686e79	a8ca61c6f02f86c9	9/9
 watch.sh	8361b0cd96435e12	a15ce89a2f7fa094	33/33
 worktree-place.sh	019f7c975eb4a099	e332e7a8fba90fe7	71/71
