@@ -37,7 +37,7 @@ skill-ledger.sh	4f6f1ba436f648ca	87ac889713948c1a	22/22
 skill-started.sh	efccf28986c36af3	3494157313d20506	5/5
 skills/engineering/captains-log/scripts/hook-audit.py	e42dd2a80904c2c8	d5b2bd78a040a3b9	63/63
 skills/engineering/captains-log/scripts/idle-skills.py	a2b8bf6588ba88a3	3bc8262a62dcdffe	29/29
-skills/engineering/decision-record/scripts/check-adr.sh	e913fc36c14c5891	970c4ec6e4eeacbb	77/77
+skills/engineering/decision-record/scripts/check-adr.sh	b2be17a8b3861cce	b4d64c04020e970b	77/77
 skills/engineering/lay-course/scripts/draw-chart.py	0c5de7696438df4a	e90e4934d5d55f2a	80/80
 skills/productivity/drawing-board/scripts/board.py	511cd6695d270424	0746732e467fe7f1	140/140
 skills/productivity/drawing-board/scripts/fetch-drawio.sh	e69344201d3866d9	e8e138b40ea6e9d8	24/24

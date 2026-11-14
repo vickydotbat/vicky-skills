@@ -15,7 +15,7 @@ A kept record is never edited, so every sentence in it must stay true after any 
 - **Facts in the dated past.** Context states what was true and when: "By 2026-08-31, copies had gone stale." Never a present-tense claim about the system ("the server reads X"): the code owns the present.
 - **The rule is conditional.** The Decision opens with `While` and names the forces it rests on: "While F1 and F2 hold, ...". When a force stops holding, the rule stops applying, and the record stays true.
 - **No names that rot.** No file, function, constant, version, count, person or team name. Name a thing by its role.
-- **Append, never edit.** After acceptance, a kept record's only change is a new last line in Status. A retired record is deleted whole, never edited.
+- **Append, never edit.** After acceptance, a kept record's only change is a new last line in Status.
 
 ## Shape
 

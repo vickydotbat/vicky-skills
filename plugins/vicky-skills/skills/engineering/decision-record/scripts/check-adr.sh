@@ -62,7 +62,7 @@ for f in "$@"; do
     esac
   fi
   # A record replaced in full is deleted once a Retires line names it.
-  for n in $(grep -oE 'Retires ADR-[0-9]{4}' "$f" | grep -oE '[0-9]{4}$'); do
+  for n in $(grep -oE 'Retires ADR-[0-9]{4}([^0-9]|$)' "$f" | grep -oE '[0-9]{4}'); do
     for old in "$(dirname "$f")/$n"-*.md; do
       [ -e "$old" ] && { echo "$f: ADR-$n is retired but still present: delete it"; fail=1; }
     done

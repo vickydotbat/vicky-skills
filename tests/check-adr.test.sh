@@ -313,15 +313,15 @@ rm -f "$dir/t.md"; bash "$script" --template "$dir/t.md" >/dev/null && { echo "F
 [ "$(bash "$script" "$dir/t.md")" = "$dir/t.md: cannot read" ] || { echo "FAIL a missing record is named once as unreadable"; fail=1; }
 bash "$script" --template >/dev/null 2>&1; [ $? -eq 2 ] || { echo "FAIL --template with no record should exit 2"; fail=1; }
 [ $fail -eq 0 ] && echo "ok   check-adr passes the current and both older shapes within their word limits, and fails anything else, and --template checks a repo template's shape-free rules"
-# Regression (holds since the Retires check landed): a Retires line whose
-# record is gone from the folder passes.
+# A Retires line passes once its record is gone from the folder, and names
+# only the number it holds.
 rd=$(mktemp -d)
 printf '%s\n' '# ADR-0004: Keep the new rule' '' 'Category: Process.' '' '## Status' '' 'Accepted 2026-11-14.' '' '## Context' '' '- F1: On 2026-11-13, the old force stopped holding.' '' '## Decision' '' 'While F1 holds, the new rule applies.' '' '## Consequences' '' 'Retires ADR-0003: nothing it stated still holds.' '' '## Guard' '' 'Review only.' > "$rd/0004-new-rule.md"
 bash "$script" "$rd/0004-new-rule.md" >/dev/null || { echo "FAIL refused: a Retires line whose record is gone"; fail=1; }
-printf '# ADR-0003: Old\n' > "$rd/0003-old.md"
-bash "$script" "$rd/0004-new-rule.md" >/dev/null && { echo "FAIL passed: a Retires line whose record is still present"; fail=1; }
-printf '# ADR-0005: Other\n' > "$rd/0005-other.md"; rm "$rd/0003-old.md"
+printf '# ADR-0005: Other\n' > "$rd/0005-other.md"
 bash "$script" "$rd/0004-new-rule.md" >/dev/null || { echo "FAIL refused: another record in the folder is not the retired one"; fail=1; }
+sed -i 's/Retires ADR-0003/Retires ADR-00031/' "$rd/0004-new-rule.md"; printf '# ADR-0003: Old\n' > "$rd/0003-old.md"
+bash "$script" "$rd/0004-new-rule.md" >/dev/null || { echo "FAIL refused: a five-digit number read as its first four"; fail=1; }
 rm -rf "$rd"
 
 exit $fail
