@@ -32,9 +32,9 @@ check "E3 a wiki record replaced in full is tombstoned with a pointer" \
 # Given a new record whose Consequences say Retires ADR-0003, and ADR-0003 still in the same folder
 # When the record checker runs on the new record
 # Then it fails and names ADR-0003 as retired but still present
-dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
-printf '# ADR-0003: Old rule\n' > "$dir/0003-old-rule.md"
-cat > "$dir/0004-new-rule.md" <<'R'
+# new_record <folder> <Retires line>: writes 0004-new-rule.md, a valid record
+# whose Consequences open with the given line.
+new_record() { sed "s|^RETIRES\$|$2|" > "$1/0004-new-rule.md" <<'R'
 # ADR-0004: Keep the new rule
 
 Category: Process.
@@ -53,23 +53,27 @@ While F1 holds, the new rule applies.
 
 ## Consequences
 
-Retires ADR-0003: nothing it stated still holds. No migration: nobody is left behind.
+RETIRES
+No migration: nobody is left behind.
 
 ## Guard
 
 Review only.
 R
+}
+dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
+printf '# ADR-0003: Old rule\n' > "$dir/0003-old-rule.md"
+new_record "$dir" "Retires ADR-0003: nothing it stated still holds."
 out=$(bash "$skill/scripts/check-adr.sh" "$dir/0004-new-rule.md"); rc=$?
 check "E4 the checker refuses a retired record left on disk" \
   '[ $rc -ne 0 ] && grep -q "ADR-0003 is retired but still present" <<<"$out"'
 
-
 # Given a new record whose Consequences say Retires ADR-0003 with no reason after it
 # When the record checker runs on the new record
 # Then it fails and asks for the reason
-rm "$dir/0003-old-rule.md"
-sed -i 's/^Retires ADR-0003: nothing it stated still holds\./Retires ADR-0003./' "$dir/0004-new-rule.md"
-out=$(bash "$skill/scripts/check-adr.sh" "$dir/0004-new-rule.md"); rc=$?
+bare=$(mktemp -d); trap 'rm -rf "$dir" "$bare"' EXIT
+new_record "$bare" "Retires ADR-0003."
+out=$(bash "$skill/scripts/check-adr.sh" "$bare/0004-new-rule.md"); rc=$?
 check "E6 the checker refuses a Retires line with no reason" \
   '[ $rc -ne 0 ] && grep -q "Retires ADR-0003 gives no reason" <<<"$out"'
 

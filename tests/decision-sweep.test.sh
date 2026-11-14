@@ -10,4 +10,5 @@ desc() { awk '/^---$/{n++; next} n==1' "$1" | grep '^description:'; }
 check "plot-twist's trigger names a decision a ticket records" 'desc "$root/productivity/plot-twist/SKILL.md" | grep -q "a ticket records a decision"'
 check "settling runs plot-twist's sweep for a recorded decision" 'grep -q "records a decision.*plot-twist.*sweep" "$root/engineering/make-it-so/SETTLE.md"'
 check "that sweep is part of settling step 2's Done when" 'grep -q "every decision a ticket records has had its sweep" "$root/engineering/make-it-so/SETTLE.md"'
+check "plot-twist retires a record with nothing left true, not only appends a line" 'grep -q "when nothing the old one states still holds, retires it" "$root/productivity/plot-twist/SKILL.md"'
 exit $fail
