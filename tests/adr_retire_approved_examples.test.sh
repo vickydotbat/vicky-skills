@@ -63,4 +63,14 @@ out=$(bash "$skill/scripts/check-adr.sh" "$dir/0004-new-rule.md"); rc=$?
 check "E4 the checker refuses a retired record left on disk" \
   '[ $rc -ne 0 ] && grep -q "ADR-0003 is retired but still present" <<<"$out"'
 
+
+# Given a new record whose Consequences say Retires ADR-0003 with no reason after it
+# When the record checker runs on the new record
+# Then it fails and asks for the reason
+rm "$dir/0003-old-rule.md"
+sed -i 's/^Retires ADR-0003: nothing it stated still holds\./Retires ADR-0003./' "$dir/0004-new-rule.md"
+out=$(bash "$skill/scripts/check-adr.sh" "$dir/0004-new-rule.md"); rc=$?
+check "E6 the checker refuses a Retires line with no reason" \
+  '[ $rc -ne 0 ] && grep -q "Retires ADR-0003 gives no reason" <<<"$out"'
+
 exit $fail
