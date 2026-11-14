@@ -69,7 +69,7 @@ Status opens with `Accepted YYYY-MM-DD.` and later gains only appended lines, ea
 - `Superseded by ADR-NNNN on YYYY-MM-DD: F<n> no longer holds.` The new record replaces the rule, but a fact this record states still holds. Its Context says what changed in that force.
 - `Amended by ADR-NNNN on YYYY-MM-DD.` The new record adds to the rule (a guard, a narrower case) and this one still applies.
 
-A record with nothing left true gets no Status line: it is retired. The new record's Consequences hold `Retires ADR-NNNN: <why>.`, and the old file is deleted in the same commit. A wiki keeps a tombstone page that points at the new record. The record check refuses a Retires line whose record still sits in the same folder.
+A record with nothing left true gets no Status line: it is retired. The new record's Consequences hold `Retires ADR-NNNN: <why>.`, and the old file is deleted in the same commit. A wiki keeps a tombstone page that points at the new record. The record check refuses a Retires line with no reason, or whose record still sits in the same folder.
 
 A record in another repository is named with that repository first: `Superseded by platform ADR-0064 on 2026-11-13: F1 no longer holds.`
 

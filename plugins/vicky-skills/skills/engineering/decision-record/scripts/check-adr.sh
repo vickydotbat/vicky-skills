@@ -63,6 +63,7 @@ for f in "$@"; do
   fi
   # A record replaced in full is deleted once a Retires line names it.
   for n in $(grep -oE 'Retires ADR-[0-9]{4}([^0-9]|$)' "$f" | grep -oE '[0-9]{4}'); do
+    grep -qE "Retires ADR-$n: [^[:space:]]" "$f" || { echo "$f: Retires ADR-$n gives no reason: write Retires ADR-$n: <why>."; fail=1; }
     for old in "$(dirname "$f")/$n"-*.md; do
       [ -e "$old" ] && { echo "$f: ADR-$n is retired but still present: delete it"; fail=1; }
     done

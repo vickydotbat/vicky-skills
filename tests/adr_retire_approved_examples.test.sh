@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # approved-spec: the examples approved on the note "decision-record retires a
 # wholly superseded record". E1 to E3 read the instruction that drives the
-# agent. E4 runs the record checker on a fixture folder. E5 holds already, so
+# agent. E4 and E6 run the record checker on a fixture folder. E5 holds already, so
 # it lives in check-adr.test.sh as a plain regression test.
 set -u
 here="$(dirname "$0")"
