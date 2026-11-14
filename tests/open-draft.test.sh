@@ -94,6 +94,19 @@ expect "the lock is gone after the close" "$([ -e "$dir/repo/.git/red-pen-open" 
 rm -f "$dir/approved-spec-grants"; code "$dir/editor3" "$dir" "$dir/draft.md" >/dev/null
 expect "outside a checkout, no grants file is written" "$([ -e "$dir/approved-spec-grants" ] && echo written || echo none)" "none"
 expect "an approved-examples section whose location is not path:line never opens" "$(opens "${c_ok/c_approved_examples.test.sh:new/c_approved_examples.test.sh, the Then line}")" "refused 2"
+# The close marker: an absolute path printed before the editor opens, holding
+# the exit status once it closes, so a watch from any folder, started late, reads it.
+printf '#!/usr/bin/env bash\n[ -e "%s/repo/.git/red-pen-closed" ] && echo early > "%s/early"\nexit 3\n' "$dir" "$dir" > "$dir/editor4"; chmod +x "$dir/editor4"
+rm -f "$dir/early"; echo 0 > "$dir/repo/.git/red-pen-closed"; printf 'x\n' > "$dir/plain.md"
+line=$(cd "$dir/repo" && VISUAL="$dir/editor4" bash "$open" "$dir/plain.md" 2>&1 >/dev/null | grep '^draft: wait')
+expect "a marker from an earlier close is gone before the editor opens" "$([ -e "$dir/early" ] && echo kept || echo gone)" "gone"
+check=$(sed -n "s/^draft: wait with watch.sh '\(.*\)'$/\1/p" <<<"$line")
+expect "in a checkout, the printed check passes from another folder after the close" "$(cd / && [ -n "$check" ] && bash -c "$check" && echo pass)" "pass"
+expect "the marker holds the exit status" "$(cat "$dir/repo/.git/red-pen-closed")" "3"
+mkdir -p "$dir/loose"; printf 'x\n' > "$dir/loose/d.md"
+line=$(cd "$dir/loose" && GIT_CEILING_DIRECTORIES="$dir" VISUAL=true bash "$open" "$dir/loose/d.md" 2>&1 >/dev/null | grep '^draft: wait')
+expect "outside a checkout, the marker sits beside the draft" "$line" "draft: wait with watch.sh 'test -f \"$dir/loose/.d.md.closed\"'"
+expect "outside a checkout, the marker holds the exit status" "$(cat "$dir/loose/.d.md.closed" 2>/dev/null)" "0"
 # open-page.sh hands its page to open-draft.sh as the editor, and marks the lock as a page's.
 mkdir -p "$dir/op"; cp "$(dirname "$open")/open-page.sh" "$dir/op/"
 printf '#!/usr/bin/env bash\necho "$DRAFT_PAGE|$VISUAL"\n' > "$dir/op/open-draft.sh"

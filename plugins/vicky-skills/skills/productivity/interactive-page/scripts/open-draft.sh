@@ -30,12 +30,20 @@ editor=${VISUAL:-${EDITOR:-}}
 [ -n "$editor" ] || { echo "open-draft: set VISUAL or EDITOR, or tell the user the draft's path" >&2; exit 2; }
 lock=""
 if gitdir=$(git rev-parse --absolute-git-dir 2>/dev/null); then lock="$gitdir/red-pen-open"; fi
+# The close marker holds the exit status once the editor or page has closed.
+# It sits in the git folder, or beside the draft outside a repo, at an absolute
+# path printed before the editor opens, so a watch started late or from
+# another folder still reads the close.
+closed="$(cd "$(dirname "$1")" && pwd)/.$(basename "$1").closed"
+[ -n "$lock" ] && closed="$gitdir/red-pen-closed"
+rm -f "$closed"
+echo "draft: wait with watch.sh 'test -f \"$closed\"'" >&2
 before=$(cat "$1" 2>/dev/null)
 # shellcheck disable=SC2086 # the editor variable holds a command and its flags
 $editor "$1" & pid=$!
 # The third line says where the draft is open: open-page.sh sets DRAFT_PAGE.
 [ -n "$lock" ] && printf '%s\n%s\n%s\n' "$pid" "$1" "${DRAFT_PAGE:+page}" > "$lock"
-trap '[ -n "$lock" ] && rm -f "$lock"' EXIT
+trap '[ -n "$lock" ] && rm -f "$lock"; echo "${status:-1}" > "$closed"' EXIT
 wait "$pid"; status=$?
 [ -n "$lock" ] && [ -f "$1" ] || exit "$status"
 # Each section on one line: its location's path, a tab, then its text. The
