@@ -10,12 +10,12 @@ A record holds an architecture rule, macro and never micro: a broad, reusable wh
 
 ## Stays true forever
 
-A record is immutable, so every sentence in it must stay true after any pivot. A record that a later change of mind makes false has drifted, and an edit to fix it breaks immutability.
+A kept record is never edited, so every sentence in it must stay true after any pivot. A record that a later change of mind makes false has drifted, and an edit to fix it breaks that rule. A record with nothing left true is retired instead, as Status lines says.
 
 - **Facts in the dated past.** Context states what was true and when: "By 2026-08-31, copies had gone stale." Never a present-tense claim about the system ("the server reads X"): the code owns the present.
 - **The rule is conditional.** The Decision opens with `While` and names the forces it rests on: "While F1 and F2 hold, ...". When a force stops holding, the rule stops applying, and the record stays true.
 - **No names that rot.** No file, function, constant, version, count, person or team name. Name a thing by its role.
-- **Append, never edit.** After acceptance, the only change is a new last line in Status.
+- **Append, never edit.** After acceptance, a kept record's only change is a new last line in Status.
 
 ## Shape
 
@@ -66,8 +66,10 @@ While F1 holds, <the rule a reader applies>.
 
 Status opens with `Accepted YYYY-MM-DD.` and later gains only appended lines, each dated, each naming the record that caused it:
 
-- `Superseded by ADR-NNNN on YYYY-MM-DD: F<n> no longer holds.` The new record replaces the whole rule. Its Context says what changed in that force.
+- `Superseded by ADR-NNNN on YYYY-MM-DD: F<n> no longer holds.` The new record replaces the rule, but a fact this record states still holds. Its Context says what changed in that force.
 - `Amended by ADR-NNNN on YYYY-MM-DD.` The new record adds to the rule (a guard, a narrower case) and this one still applies.
+
+A record with nothing left true gets no Status line: it is retired. The new record's Consequences hold `Retires ADR-NNNN: <why>.`, and the old file is deleted in the same commit. A wiki keeps a tombstone page that points at the new record. The record check refuses a Retires line with no reason, or whose record still sits in the same folder.
 
 A record in another repository is named with that repository first: `Superseded by platform ADR-0064 on 2026-11-13: F1 no longer holds.`
 
