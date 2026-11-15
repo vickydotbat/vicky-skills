@@ -21,7 +21,7 @@ check "A1 a chart nobody needs to answer gets the label" \
 # When an agent records any other answer
 # Then the chart has no starchart:afk label
 check "A2 one open question keeps it off" \
-  'r=$(ready); for w in anomaly probe "Confirm:" "examples approved" account; do grep -q "$w" <<<"$r" || exit 1; done; grep -q "every one" <<<"$r"'
+  'r=$(ready | grep "Add"); for w in anomaly probe "Confirm:" "examples approved" "task that needs"; do grep -q "$w" <<<"$r" || exit 1; done; grep -q "every one" <<<"$r"'
 
 # Given a chart labelled starchart:afk
 # When an agent files an anomaly, a probe, a Confirm line or a star without approved examples on it
