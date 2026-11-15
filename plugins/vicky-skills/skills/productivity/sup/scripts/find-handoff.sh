@@ -16,7 +16,7 @@ hit() { printf 'found: %s: %s\n' "$1" "$2"; found=1; }
 branch=${FIND_HANDOFF_BRANCH:-$(git branch --show-current 2>/dev/null)}
 [ -n "$branch" ] || unread+=("pull request, HEAD is detached")
 keys=("$@")
-pr_text=""
+pr_text="" # mutant-ok delete: every later read is "${pr_text}" in a quoted printf or jq, and an unset name prints the same empty text
 if [ -n "$branch" ]; then
   if git remote get-url origin 2>/dev/null | grep -q 'github\.com'; then
     if command -v gh >/dev/null; then
@@ -71,4 +71,3 @@ list=$(printf '%s; ' "${searched[@]}"); list=${list%; }
 if [ "$found" = 0 ]; then printf 'none found in: %s\n' "${list:-nothing}"
 else printf 'searched: %s\n' "$list"; fi
 for u in "${unread[@]}"; do printf 'not read: %s\n' "$u"; done
-exit 0

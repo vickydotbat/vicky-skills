@@ -228,6 +228,12 @@
       "description": "When do, warp, examples, review, sentinels, over-to-you, make-it-so, council-of-elrond, gamma-shift, away-team or lay-course starts, add one line of context naming what its steps need.",
       "default": false
     },
+    "sup_handoff_hint": {
+      "type": "boolean",
+      "title": "sup finds the handoff",
+      "description": "When sup starts, run its handoff finder and hand the agent the output: each handoff on the branch's pull request, its tickets or an earlier session, and every place it searched.",
+      "default": true
+    },
     "lesson_hint": {
       "type": "boolean",
       "title": "Lesson hint",

@@ -47,6 +47,12 @@ check "a handoff on a linked ticket is found" "found: ticket XYZ-9: - 2026-01-01
 rm "$dir/ticket-XYZ-9"
 
 echo '[]' > "$dir/tea-prs"
+echo '- 2026-01-01: plain note' > "$dir/ticket-XYZ-9"
+out=$(run "$tea_repo" XYZ-9); code=$?
+check "a ticket read with no handoff is listed as searched" "none found in: ticket XYZ-9" "$out"
+check "the earlier sessions are listed as searched" "earlier session transcripts naming feat-ABC-7" "$out"
+check "a miss still exits 0" 0 "$code"
+rm "$dir/ticket-XYZ-9"
 out=$(run "$tea_repo")
 check "no open pull request is named as not read" "not read: pull request, no open one for feat-ABC-7" "$out"
 check "with no hit it lists where it looked" "none found in:" "$out"
@@ -61,6 +67,13 @@ out=$(run "$tea_repo")
 check "an earlier worktree session naming the branch links the handoff" "found: earlier session old: https://forge.example/o/r/pulls/5#c9" "$out"
 lacks "a session that never names the branch or a key is skipped" "forge.example/wrong" "$out"
 lacks "the current session is skipped" "forge.example/self" "$out"
+mkdir -p "$dir/projects/$prefix-x"
+echo '{"text":"plain-branch **Handoff** https://forge.example/plain"}' > "$dir/projects/$prefix-x/p.jsonl"
+check "a session that names only the branch is matched" "https://forge.example/plain" "$(FIND_HANDOFF_BRANCH=plain-branch run "$tea_repo")"
+for i in 1 2 3 4 5 6; do echo '{"text":"feat-ABC-7 no link"}' > "$dir/projects/$prefix/n$i.jsonl"; done
+out=$(run "$tea_repo")
+check "at most five matching sessions are read" "5 earlier session transcripts naming feat-ABC-7" "$out"
+lacks "a match past the fifth is not read" "pulls/5#c9" "$out"
 rm -rf "$dir/projects/"*
 
 gh_repo=$(repo gh https://github.com/o/r.git)
@@ -71,6 +84,20 @@ out=$(run "$gh_repo")
 check "gh: a merged pull request is not the branch's open one" "not read: pull request, no open one for feat-ABC-7" "$out"
 lacks "gh: a merged pull request's handoff is not reported" "g1" "$out"
 
+echo '{"state":"OPEN","url":"https://github.com/o/r/pull/3","title":"t","body":"Closes GH-4","comments":[]}' > "$dir/gh-pr"
+out=$(run "$gh_repo")
+check "gh: it names the pull request it searched" "none found in: pull request https://github.com/o/r/pull/3" "$out"
+check "gh: a key in the pull request body is read as a ticket" "ticket GH-4" "$out"
+echo '[{"index":"5","head":"feat-ABC-7","url":"u","title":"ABC-7","body":"ABC-7"}]' > "$dir/tea-prs"
+out=$(run "$tea_repo" ABC-7)
+check "a key named three times is read once" 1 "$(grep -o 'ticket ABC-7' <<<"$out" | wc -l)"
+lacks "a blank line is never read as a key" "ticket ," "$out"
+lacks "a blank line is never read as a key, at the end" "ticket $" "$(tr ';' '\n' <<<"$out")"
+norow=$(repo norow git@forge.example:o/n.git); echo '| Read, whole | Open the note. |' > "$norow/docs/agents/issue-tracker.md"
+check "a tracker with no read command names the ticket as not read" "not read: ticket ABC-7, read it by hand" "$(run "$norow")"
+mkdir -p "$dir/plain"
+check "outside a repo the earlier sessions are not read" "not read: earlier sessions, no branch or ticket key to match" "$(run "$dir/plain")"
+check "outside a repo a ticket key still reads no sessions" "not read: earlier sessions, no branch or ticket key to match" "$(run "$dir/plain" QQ-1)"
 git -C "$tea_repo" switch -q --detach
 check "a detached HEAD names the pull request as not read" "not read: pull request, HEAD is detached" "$(run "$tea_repo")"
 check "an extra argument is read as a ticket key" "ticket QQ-1" "$(run "$tea_repo" QQ-1)"

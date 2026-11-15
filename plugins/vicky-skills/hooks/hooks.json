@@ -190,6 +190,16 @@
             "timeout": 15
           }
         ]
+      },
+      {
+        "matcher": "Skill",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/sup-handoff-hint.sh\"",
+            "timeout": 120
+          }
+        ]
       }
     ],
     "SessionStart": [
@@ -284,6 +294,11 @@
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/keep-awake.sh\"",
             "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/sup-handoff-hint.sh\"",
+            "timeout": 120
           }
         ]
       }

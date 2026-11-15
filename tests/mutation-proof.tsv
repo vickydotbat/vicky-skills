@@ -54,6 +54,7 @@ skills/productivity/interactive-page/scripts/write-page.py	a938fb35f036f46f	2adf
 skills/productivity/over-to-you/scripts/checklist.py	27a211cc5c115d95	5e8ad86500d05d33	56/56
 skills/productivity/over-to-you/scripts/lint-checklist.py	c2a58fb7adf00fa2	a016ed89ff022dc7	54/54
 skills/productivity/standing-orders/scripts/todo.sh	8b469102d3f5fa91	2406d378210ca155	32/32
+skills/productivity/sup/scripts/find-handoff.sh	a0ea7a313db60474	cf12025f0fa25db0	65/65
 skills/productivity/video-captions/scripts/flatten-captions.sh	415082ac283f9808	1a2641b47ff3eda4	6/6
 spark-joy.sh	e88c476e7a612966	e307fe06c4392a7b	29/29
 springboard.sh	2b1a555e07899495	2509174cc3597015	53/53
@@ -61,6 +62,7 @@ stale-copy-hint.sh	6c278c5222834240	bb7f1630d05934fc	27/27
 step-hint.sh	8ec68d162979dafe	4e1bca548fb1defd	18/18
 stop-reply.sh	ceb60624ee38f37f	b082aaf29fe64782	17/17
 summit.sh	a7326a54e5ec3ae0	3a97a0da403c2002	53/53
+sup-handoff-hint.sh	e698dd44d7344d9d	bf5a91becc2bb033	22/22
 tea-stdin.awk	ddfdfc5257c31b06	44ed4f52ffc9914a	70/70
 tea-stdin.sh	c631fcfccdb1abf0	d89e8c223456c7f6	15/15
 ticket-drift.sh	1bc60db2e95d9227	cbdb7e2f644687db	36/36
