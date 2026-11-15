@@ -144,7 +144,7 @@ The Examples are the star's spec, and the only one: the sentence and the Pointer
 
 Every new star, and every anomaly, probe or task that holds build work, is filed this way, whichever skill files it. A research ticket closed as it opens is a record and skips it. A parked waiting ticket skips it only while it holds no build work.
 
-Found work, such as a bug a test caught or a gap a review named, is filed this way on the chart the build is working, as a star the same effort builds: see "Sharding".
+Found work, such as a bug a test caught or a gap a review named, is filed this way too, as "Sharding" step 4 says.
 
 1. **Slice.** Each star is a vertical slice: a thin path through every layer, shown working on its own, sized to one session, and landing green on the base the repo's rules name. A change that can't land green in one step goes expand–contract: build the new form beside the old, move the callers, then delete the old. A plan that takes something away and puts it back later ("reset to stock, then re-add") is no slice: re-cut it. An integration branch is a last resort, for a wide refactor only. Where any star lands follows `lay-course`'s "Where work lands". Done when every star stands on its own.
 2. **Draft** each star's Given / When / Then examples with `examples`, steps 1 and 2. Done when every star has its examples, or "Examples: not written yet".
@@ -152,7 +152,7 @@ Found work, such as a bug a test caught or a gap a review named, is filed this w
 
 ## Sharding
 
-A star chart is one effort: one warp, one branch, one pull request. Shard a chart before its examples go to `red-pen` (`mission-brief`) and before a course is plotted on it (`lay-course`, `warp`). A chart that grows past its mission never closes.
+A star chart is one effort: one warp, one branch, one pull request. Shard a chart before its examples go to `red-pen` (`mission-brief`) and before a course is plotted on it (`lay-course`, `warp`).
 
 1. **Judge each planned star against the chart's own mission** and its milestone (alpha, a release). A star the milestone ships without leaves the chart. A star that keeps play bad or the tool painful stays. A polish chart keeps its polish: polish is its mission. Done when each planned star stays or is marked to leave.
 2. **Rehome each star that leaves**, with a comment on it naming where it went and why:
@@ -161,7 +161,7 @@ A star chart is one effort: one warp, one branch, one pull request. Shard a char
    - Polish goes on the polish chart for its area. When there is none, the shard opens one.
 
    Done when every star that left sits on another chart.
-3. **Split past the cap.** A chart with more than 8 planned stars splits into sibling charts, each with its own mission, linked to each other as related. Done when every chart holds 8 planned stars or fewer.
+3. **Split past the cap.** A chart with more than 8 planned stars splits into sibling charts, each with its own mission, linked to each other as related. A `Chart cap:` line in `docs/agents/domain.md` sets another number, and `off` skips this step. Done when every chart holds 8 planned stars or fewer, or the cap the repo sets.
 4. **Keep found work.** Found work never counts toward the cap. It goes on the chart the build is working, and is built on the same branch and pull request. No star moves off a chart once a build has started on it. Done when every found-work star sits on the active chart.
 
 ## Drawing the chart

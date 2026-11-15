@@ -11,6 +11,10 @@ Sketches: <the repo-relative folder for drawing-board sketches, or delete this l
 
 Todo file: on
 
+Chart cap: 8
+
+Found work check: on
+
 Checklist lint: full
 
 Write `Checklist lint: basic` to keep only the person, kit and proof checks on over-to-you pages.
