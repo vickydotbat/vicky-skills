@@ -98,8 +98,8 @@ A ticket in the chart's orbit is a related link on the tracker, never a section.
 A chart is ready to warp when a warp can clear it with the user away. The label `starchart:afk` marks it, so the tracker's "List charts ready to warp" sorts AFK work from work that needs the user.
 
 - **Add** `starchart:afk` to an open chart when every one of these holds: no open anomaly or probe, no `Confirm:` line under Knowns, every open star's examples approved, and no open task that needs the user's account or a deploy.
-- **Remove** it the moment one stops holding: an anomaly, probe, `Confirm:` line or star without approved examples is filed on the chart, or a task that needs the user is added.
-- Check after every write that answers, files or closes a ticket on the chart. Red tests on a warp branch are not part of it: they live on the branch, not the chart.
+- **Remove** it the moment one stops holding: an anomaly, probe, `Confirm:` line or star without approved examples is filed on the chart, or a task that needs the user is added. Remove it too when the chart closes.
+- Check after every write that answers, files or closes a ticket on the chart.
 
 ## Sorting the knowns
 

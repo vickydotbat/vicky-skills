@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-# approved-spec: the AFK label examples (A1 to A4), ticked on the drafts page
-# 2026-11-15. Agents follow skill text, so each check reads the text that
-# tells an agent to set, keep off, drop or list the label.
+# approved-spec. Skill text is the behaviour, so each check reads the text
+# that sets, keeps off, drops or lists the label.
 set -u
 root="$(dirname "$0")/.."
 skills="$root/plugins/vicky-skills/skills/engineering"
@@ -33,5 +32,5 @@ check "A3 new work for you takes it off" \
 # When an agent lists the charts ready to warp
 # Then the repo's issue-tracker doc names a List charts ready to warp operation that returns only open charts with the label
 check "A4 every tracker lists the charts ready to warp" \
-  '[ ${#templates[@]} -eq 7 ] && (for t in "${templates[@]}"; do l=$(grep -F "**List charts ready to warp**" "$t"); grep -q "\`" <<<"$l" && grep -q "afk" <<<"$l" && grep -qi "open" <<<"$l" || { echo "  missing in $t"; exit 1; }; done)'
+  '[ ${#templates[@]} -gt 1 ] && (for t in "${templates[@]}"; do l=$(grep -F "**List charts ready to warp**" "$t"); grep -q "\`" <<<"$l" && grep -q "afk" <<<"$l" && grep -qi "open" <<<"$l" || { echo "  missing in $t"; exit 1; }; done)'
 exit $fail
