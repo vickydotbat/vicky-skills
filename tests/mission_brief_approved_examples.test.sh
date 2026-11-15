@@ -9,9 +9,9 @@ fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 . "$(dirname "$0")/lib/skill-step.sh"; step() { skill_step "$s" "$1"; }
 check "asking to file tickets after a conversation settled a feature, or typing /mission-brief, writes the spec from that conversation and opens its examples in my browser for approval before anything is filed" \
-  '! grep -q "^disable-model-invocation: true" "$s" && grep -q "^description: \"File tickets" "$s" && step 1 | grep -q "from the conversation" && step 2 | grep -q "red-pen" && step 2 | grep -q "before anything is filed" && step 2 | grep -q "The spec stays out of the page"'
+  '! grep -q "^disable-model-invocation: true" "$s" && grep -q "^description: \"File tickets" "$s" && step 1 | grep -q "from the conversation" && step 3 | grep -q "red-pen" && step 3 | grep -q "before anything is filed" && step 3 | grep -q "The spec stays out of the page"'
 check "once I close the spec, mission-brief files it as a star chart in the repo tracker, one star per slice, each with Given / When / Then examples drafted with examples" \
-  'step 3 | grep -q "star chart" && step 3 | grep -q "one star per slice" && step 3 | grep -q "\`examples\`"'
+  'step 4 | grep -q "star chart" && step 4 | grep -q "one star per slice" && step 4 | grep -q "\`examples\`"'
 check "a slice whose examples I cut in the editor is filed with \"Examples: not written yet\", never with examples I didn't see" \
   'grep -q "Examples: not written yet" "$s" && grep -q "never with examples the user did not see" "$s"'
 check "an agent that decides a conversation needs tickets, or is asked to convert tickets from another tool, runs mission-brief itself, and nothing is filed before I read it" \

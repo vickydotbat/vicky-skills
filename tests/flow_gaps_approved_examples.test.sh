@@ -18,7 +18,7 @@ check "E2 do looks at the result" \
 check "E3 make-it-so sweeps current truth" \
   'grep -q "\*\*Q12 Current truth\.\*\*" "$mis" && grep -q "README, docs, agent files and project memory" "$mis"'
 check "E3 make-it-so step 4 runs Q12" \
-  'grep -q "^4\. .*then Q7 to Q10 and Q12" "$mis"'
+  'grep -q "^4\. .*then Q7 to Q10, Q12" "$mis"'
 check "E1 do step 6 is done only with the refactor report" \
   'grep -q "and the report names each refactor or says .nothing to refactor." "$do"'
 # E4 Given a build starts outside a trunk repo, When the first edit comes, Then it lands in a worktree and the main checkout stays untouched

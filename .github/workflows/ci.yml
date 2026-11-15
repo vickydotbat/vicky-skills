@@ -37,6 +37,8 @@ jobs:
         run: tests/heredoc-strip.test.sh
       - name: stop-reply reads only the reply since the user spoke
         run: tests/stop-reply.test.sh
+      - name: Chart sharding and found work
+        run: tests/chart_sharding_approved_examples.test.sh
       - name: Familiar watch script
         run: tests/familiar_watch_approved_examples.test.sh
       - name: Familiar skill and voice
