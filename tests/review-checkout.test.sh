@@ -14,4 +14,8 @@ check "when nothing settles it, the user sees the worktrees and pull requests an
 check "each reviewer is handed the checkout path" 'grep -q "Give each the checkout path, the fixed point" "$rev"'
 check "every reviewer agent works in the checkout it is given" '(for a in standards spec simplicity; do grep -q "in the \*\*checkout\*\* the caller names" "$p/agents/$a-reviewer.md" || exit 1; done)'
 check "the step numbers read 1 to 6 in order" '[ "$(sed -n "/^## Steps/,\$p" "$rev" | grep -o "^[0-9]\." | tr -d . | tr "\n" " ")" = "1 2 3 4 5 6 " ]'
+check "review gathers rules kept outside the repo into a checked law file, and a repo with none skips it" 'grep -q "^4\. \*\*Gather the outside law\.\*\*" "$rev" && grep -q "test -s <file> && realpath <file>" "$rev" && grep -q "skips this step and writes no law file" "$rev"'
+for a in standards spec simplicity; do
+  check "$a-reviewer stops with LAW MISSING when the law file is absent" "grep -q 'report only \`LAW MISSING: <path>\` and stop' \"\$(dirname \"\$rev\")/../../../agents/$a-reviewer.md\""
+done
 exit $fail

@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
-# PreToolUse hook (Agent): refuses a reviewer brief that names a file outside any
+# PreToolUse hook (Agent, Task): refuses a reviewer brief that names a file outside any
 # git checkout that does not exist. A reviewer told to read a missing law file
 # reviews without the repo's outside rules, and its report reads clean. The usual
 # cause is a scratch path typed with a session id remembered from an earlier
 # session. A file inside a checkout may be one the diff deletes, so it passes.
 # Always on, with no setting: a reviewer only reads, so a missing file it is told
-# to read is always a broken brief.
+# to read is always a broken brief. It reads absolute paths with an extension
+# only: a ~/ path or a file with no extension passes unchecked.
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without jq the reads below come back empty and nothing is refused
 input=$(cat)
 type=$(jq -r '.tool_input.subagent_type // ""' <<<"$input" 2>/dev/null)

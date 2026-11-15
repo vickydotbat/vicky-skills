@@ -134,7 +134,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/review-brief-guard.sh\""
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/review-brief-guard.sh\"",
+            "timeout": 5
           }
         ]
       }
