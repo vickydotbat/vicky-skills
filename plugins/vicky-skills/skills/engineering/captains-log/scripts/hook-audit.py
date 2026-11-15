@@ -66,9 +66,7 @@ def outcome(refused, seq, k):
     return "skill" if nxt and nxt["name"] == "Skill" else "stopped"
 
 
-def present(hook):
-    here = os.path.dirname(os.path.abspath(__file__))
-    places = [os.path.join(here, "..", "..", "..", "..", "scripts"), os.path.join(os.getcwd(), ".claude", "hooks")]
+def present(hook, places):
     return any(os.path.exists(os.path.join(d, hook + x)) for d in places for x in (".sh", ".py"))
 
 
@@ -90,10 +88,12 @@ def main():
             counts[m.group(1)]["refusals"] += 1
             if e[1] in calls:
                 counts[m.group(1)][outcome(calls[e[1]], seq, k)] += 1
+    places = [os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "..", "scripts"),
+              os.path.join(os.getcwd(), ".claude", "hooks")]
     if not counts:
         print(f"no hook refusals in {days} days")
     for hook, c in sorted(counts.items(), key=lambda x: -x[1]["refusals"]):
-        print(hook, " ".join(f"{k}={v}" for k, v in c.most_common()) + ("" if present(hook) else " gone"))
+        print(hook, " ".join(f"{k}={v}" for k, v in c.most_common()) + ("" if present(hook, places) else " gone"))
 
 
 if __name__ == "__main__":

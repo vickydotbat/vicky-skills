@@ -1,6 +1,6 @@
 # shellcheck shell=bash
-# Sourced by the Stop hooks that read the agent's last reply (read-before-asking). Reads the hook's payload from stdin. Exits 0, letting the stop
-# through, on the second stop of a turn, so a misjudged reply never loops, and
+# Sourced by the Stop hooks that read the agent's last reply (read-before-asking).
+# Reads the hook's payload from stdin. Exits 0, letting the stop through, on the second stop of a turn, so a misjudged reply never loops, and
 # when the transcript is missing. Leaves `turn` and `said`, the agent's text since the
 # user's last typed message: its chat text and the messages it sent with
 # SendUserMessage. `prose` prints it with code in backticks dropped, since

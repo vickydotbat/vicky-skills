@@ -25,16 +25,26 @@ fi
 grep -Eq 'commit[^;&|]*[[:space:]](-[a-zA-Z]*a[a-zA-Z]*|--all)([[:space:]]|$)' <<<"$code" &&
   changes=$(git diff HEAD --name-status --no-renames)
 # Git itself says what each `git add` would stage: --dry-run resolves its
-# files, folders, globs and flags the way the real add will. A quoted word
-# with no space in it is a path and keeps its letters; any other quoted text,
-# such as a commit message, is cut first.
-words=$(awk -f "$(dirname "$0")/heredoc-strip.awk" <<<"$command" | sed -E "s/'([^' ]*)'/\\1/g; s/\"([^\" ]*)\"/\\1/g; s/'[^']*'//g; s/\"([^\"\\\\]|\\\\.)*\"//g")
-adds=$(grep -oE 'git[[:space:]]+add[[:space:]][^;&|]*' <<<"$words")
-staged=$(while IFS= read -r a; do
-  # shellcheck disable=SC2086 # the add's own words, split as the shell will
-  [ -n "$a" ] && git add --dry-run --ignore-errors ${a#git*add} 2>/dev/null
-done <<<"$adds" | sed -nE "s/^(add|remove) '(.*)'$/\2/p")
-changes=$(printf '%s\n%s\n' "$changes" "$(everything | awk -F '\t' 'NR == FNR {want[$0]; next} $2 in want' <(printf '%s\n' "$staged") -)")
+# files, folders, globs and flags the way the real add will. The paths a
+# `git commit <paths>` names count the same way. A quoted word with no space
+# in it is a path and keeps its letters; any other quoted text, such as a
+# commit message, is cut first. `code` can't serve: it cuts every quoted word.
+words=$(awk -f "$(dirname "$0")/heredoc-strip.awk" <<<"$command" | sed -E "s/'([^' ]*)'/\1/g; s/\"([^\" ]*)\"/\1/g; s/'[^']*'//g; s/\"([^\"\\\\]|\\\\.)*\"//g")
+git_opts='git([[:space:]]+-[Cc][[:space:]]+[^[:space:]]+)*[[:space:]]+'
+adds=$(grep -oE "${git_opts}add[[:space:]][^;&|]*" <<<"$words" | sed -E "s/^${git_opts}add//")
+# A commit's own paths: its words after the flags and the value of -m, -F, -C or -c.
+paths=$(grep -oE "${git_opts}commit([[:space:]][^;&|]*)?" <<<"$words" | sed -E "s/^${git_opts}commit//" |
+  awk '{for (i = 1; i <= NF; i++) if ($i ~ /^-[mFCc]$/) i++; else if ($i !~ /^-/) printf " %s", $i; print ""}' | grep -v '^$')
+if grep -Eq "${git_opts}add[[:space:]][^;&|]*([\"'][^\"']* [^\"']*[\"'])" <<<"$command"; then
+  # A quoted path with a space in it can't be told from a message: count every change.
+  changes=$(everything)
+elif [ -n "$adds$paths" ]; then
+  staged=$(while IFS= read -r a; do
+    # shellcheck disable=SC2086 # the add's own words, split as the shell will
+    git add --dry-run --ignore-errors $a 2>/dev/null
+  done <<<"$(printf '%s\n%s\n' "$adds" "$paths" | grep -v '^$')" | sed -nE "s/^(add|remove) '(.*)'$/\2/p")
+  changes=$(printf '%s\n%s\n' "$changes" "$(everything | awk -F '\t' 'NR == FNR {want[$0]; next} $2 in want' <(printf '%s\n' "$staged") -)")
+fi
 # A backup copy (.new, .bak, .orig, a trailing ~) is no approved test, the same list approved-spec.sh keeps: change both.
 new_tests=$(awk -F '\t' '$1 == "A" && tolower($2) ~ /approved_?examples/ && $2 !~ /\.(new|bak|orig)$|~$/ {print $2}' <<<"$changes")
 [ -n "$new_tests" ] || exit 0
