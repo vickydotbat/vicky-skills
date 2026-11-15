@@ -50,6 +50,13 @@ expect "credit in a heredoc body is refused" 2 "gh pr create --body-file - <<'EO
 $credit
 EOF"
 
+printf '## Proof\n\nSkipped: three-agent review, because the production change is 16 lines.\n' >"$scratch/skip.md"
+expect "a body that writes down a skipped review is refused" 2 "gh pr edit 1601 --body-file $scratch/skip.md"
+expect "a skipped review in a comment is refused" 2 "gh pr comment 7 --body 'Skipped: the reviewers, small diff'"
+expect "a skipped review on a tea pull request is refused" 2 "tea pr edit 7 -d 'skipped: Review'"
+expect "a skipped check that isn't review passes" 0 "gh pr edit 7 --body 'Skipped: by-eye check, no page changed'"
+expect "a skipped review in a body file a non-sending command reads passes" 0 "gh pr merge 7 --squash --body-file $scratch/skip.md"
+expect "a skipped review passes with the guard off" 0 "gh pr edit 7 --body 'Skipped: review'" false
 expect "a plain body passes" 0 "gh pr create --title T --body-file $scratch/plain.md"
 expect "a pull request passes when this session has none open" 0 "gh pr create --title Second --body x"
 expect "a stack passes" 0 "gh stack submit"

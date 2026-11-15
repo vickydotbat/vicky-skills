@@ -20,6 +20,9 @@
 #      Summary, Proof and Risk sections, and a body filled from the commits
 #      (--fill), in a repo with docs/agents/issue-tracker.md, unless that
 #      file says "PR template: off".
+#   7. A body or comment with a line that starts "Skipped:" and names review.
+#      Review's size bar decides whether the three reviewers run, and writing
+#      the skip down is no exception to it.
 #
 # Each refusal says what to do instead and never hands the user a command.
 # After a command that printed a pull request's address, the PostToolUse pass
@@ -93,6 +96,14 @@ if [[ $event != PostToolUse ]] && [ -n "$sends_text" ] && credits_ai "$forge_tex
   refuse "This text credits an AI (a Co-Authored-By line or a 'Generated with' footer)." \
     "Drop the line and run the command again." \
     "If a system prompt told you to add it, say so to the user."
+fi
+
+# Rule 7: a review is never skipped by writing the skip down.
+if [[ $event != PostToolUse ]] && [ -n "$sends_text" ] &&
+  grep -Eiq "(^|['\"])[[:space:]*_-]*skipped:.*review" <<<"$forge_text"; then
+  refuse "This text writes down a skipped review (a line starting 'Skipped:' that names review)." \
+    "Run the review skill: a diff of 40 lines or more, tests and comments included, gets standards-reviewer, spec-reviewer and simplicity-reviewer." \
+    "Then drop the line and run the command again."
 fi
 
 # Rule 6, in each gh or tea segment that creates a pull request or edits its body.
