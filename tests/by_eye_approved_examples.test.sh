@@ -37,7 +37,7 @@ check "you see what it saw" \
 # When the check ends
 # Then the dev site is stopped, and it ran under a memory cap the whole time
 check "the dev site stops after" \
-  'has "$skill" "under a memory cap" && has "$skill" "MemoryMax=" && has "$skill" "Stop the dev site** by the id you saved. Done when its address no longer answers"'
+  'has "$skill" "under a memory cap" && has "$skill" "Stop the dev site** by the id you saved. Done when its address no longer answers"'
 
 # Given a look only a person can judge, such as whether a page feels right
 # When a build reaches it

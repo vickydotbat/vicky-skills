@@ -20,7 +20,7 @@ prompt="You are the familiar. Below is a watched session's event log on stdin. L
 $shapes"
 model() {
   if [ -n "${FAMILIAR_REPLAY_MODEL:-}" ]; then timeout 300 "$FAMILIAR_REPLAY_MODEL"
-  else systemd-run --user --scope -q -p MemoryMax=4G -p MemorySwapMax=0 timeout 300 claude -p --tools "" --max-budget-usd 1 "$prompt"; fi
+  else timeout 300 claude -p --tools "" --max-budget-usd 1 "$prompt"; fi
 }
 seen=$(mktemp); trap 'rm -f "$seen"' EXIT
 for run in $(seq 1 "$runs"); do

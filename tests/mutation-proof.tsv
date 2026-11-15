@@ -41,7 +41,7 @@ skills/engineering/decision-record/scripts/check-adr.sh	effe0e9e46b6073d	d036f4d
 skills/engineering/lay-course/scripts/draw-chart.py	0c5de7696438df4a	e90e4934d5d55f2a	80/80
 skills/productivity/drawing-board/scripts/board.py	511cd6695d270424	0746732e467fe7f1	140/140
 skills/productivity/drawing-board/scripts/fetch-drawio.sh	e69344201d3866d9	e8e138b40ea6e9d8	24/24
-skills/productivity/familiar/scripts/familiar-replay.sh	f1d7733cc3a3a34b	c2d98799f55b9581	41/41
+skills/productivity/familiar/scripts/familiar-replay.sh	97db63da8c1beba8	c2d98799f55b9581	41/41
 skills/productivity/familiar/scripts/familiar-sessions.sh	a6d057056cae9b4b	3533194a9eb04386	47/47
 skills/productivity/familiar/scripts/familiar-shapes.sh	5c68c101c08e4a1f	0d8b9477e13eac62	32/32
 skills/productivity/familiar/scripts/familiar-visibility.py	38fc0f4a6d3fa052	b1c5b8127b3d1c12	35/35

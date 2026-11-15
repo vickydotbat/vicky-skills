@@ -20,11 +20,10 @@ liveness from Codex's own files before you wait, retry or report.
    it, and the edit wrecks it. Done when the file holds those instructions.
 2. Attach references with `-i <path>` from where they live. Never copy them
    into the workspace. Done when every reference is passed from its own location.
-3. Run it in the background, capped, with stdin from the prompt file:
+3. Run it in the background, under a time limit, with stdin from the prompt file:
 
    ```sh
-   systemd-run --user --scope -p MemoryMax=4G -p MemorySwapMax=0 \
-     timeout 900 codex exec --skip-git-repo-check -s workspace-write \
+   timeout 900 codex exec --skip-git-repo-check -s workspace-write \
      -i <ref.png> < <scratch>/prompt.txt > <scratch>/out 2>&1; echo "exit=$?"
    ```
 

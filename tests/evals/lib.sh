@@ -11,7 +11,7 @@ evals_out=$(mktemp -d) # kept after the run, so each result can be read back
 echo "eval results: $evals_out" >&2
 eval_case() {
   local plugin=$1 name=$2 out=$3; shift 3
-  systemd-run --user --scope -q -p MemoryMax=4G -p MemorySwapMax=0 timeout 900 \
+  timeout 900 \
     claude plugin eval "$plugin" --case "$name" --scaffold --trust-plugin --ablation none \
     --runs 1 --max-cost-usd 3 --allow-tools Write Edit "$@" --no-publish --json "$evals_out/$out.json" >"$evals_out/$out.out" 2>&1
 }
