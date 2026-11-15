@@ -40,11 +40,11 @@ Before you write a test a pass will run, and whenever a pass runs slow or hangs,
    Done when you can name the tool, or "manual".
 2. **Narrow the target**: the changed lines of the production files with decision logic (rules, limits, parsers), with the tool's diff mode or line spans. Done when you have a list of files, each with its line span.
 3. **Estimate before you run**: the mutants in the span x the time of the tests that reach them / the workers. Over 50 minutes, narrow the span or speed up the tests first: a test that sleeps, starts a container or a server per case, or touches the network is the usual cause, and a shared fixture or a fake fixes it. Done when the estimate is under 50 minutes.
-4. **Run it under a cap and a timeout**, logging to your scratch folder:
+4. **Run it under a timeout**, logging to your scratch folder:
    ```bash
    timeout 3600 <command> > <scratch>/mutate.log 2>&1; echo "exit=$?"
    ```
-   The cap keeps one pass from starving the rest of the agent's capped scope.
+   The session's own memory cap covers the pass, so it needs no cap of its own.
    Size the workers from the memory free, about half the cores at most. A repo wrapper sizes its own: leave its defaults alone. When the tool takes a budget (this plugin's `tests/mutate-hooks.sh --budget <seconds>`), set `--budget` below the outer timeout, so the tool stops itself and names what it left unrun, rather than being killed with nothing written. After fixing a survivor, rerun only the survivors first (`--survivors`), then the full pass once. Done when the run exits.
 5. **When a run dies, read why from the system**, before you guess a cause:
    ```bash
