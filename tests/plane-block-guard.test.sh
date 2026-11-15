@@ -13,4 +13,5 @@ check "a variable blocker is named as its blocker" 'steer "bin/$pb GAME-2 \$B" |
 check "a help call links nothing and passes" '[ -z "$(steer "timeout 30 bin/$pb -h 2>&1 | sed -n 1,8p")" ] && [ -z "$(steer "bin/$pb --help")" ]'
 check "a redirect is no blocker" '[ -z "$(steer "bin/$pb GAME-2 2>&1")" ]'
 check "a real block before a comment is still refused" 'steer "bin/$pb GAME-2 GAME-1; echo done" | grep -q "in GAME-2.s body"'
+check "the steer says a block must hold until its blocker closes, since a dependency that reverses strands the link" 'steer "bin/$pb GAME-1096 GAME-978" | grep -q "until GAME-978 closes"'
 exit $fail

@@ -18,5 +18,5 @@ grep -Eq '#[[:space:]]*hard:[[:space:]]*[^[:space:]]' <<<"$command" && exit 0
 [[ $item == *'$'* ]] && item="each ticket the command blocks"
 [[ $blocker == *'$'* ]] && blocker="its blocker"
 echo "plane-block-guard: a blocked-by link is one only a person can remove, in Plane's web interface." >&2
-echo "Write \"Waits on: $blocker (<why>)\" in $item's body instead. Block only when $item calls code or needs an answer $blocker produces, and say so: end the command with \"# hard: <what of $blocker's work it needs>\". Nothing in this command ran, not even its other steps: rerun the ones that need no change on their own." >&2
+echo "Write \"Waits on: $blocker (<why>)\" in $item's body instead. Block only when $item calls code or needs an answer $blocker produces, and will still need it until $blocker closes. An order that may reverse or be met partway is a Waits on: line, because a stale link strands the order. Say so: end the command with \"# hard: <what of $blocker's work it needs>\". Nothing in this command ran, not even its other steps: rerun the ones that need no change on their own." >&2
 exit 2
