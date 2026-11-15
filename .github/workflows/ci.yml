@@ -139,8 +139,6 @@ jobs:
         run: tests/over_to_you_lint_checklist.test.sh
       - name: Hooks read SendUserMessage
         run: tests/sendusermessage-mode.test.sh
-      - name: Review fresh guard
-        run: tests/review-fresh-guard.test.sh
       - name: Read before asking
         run: tests/read-before-asking.test.sh
       - name: Refusals say nothing ran

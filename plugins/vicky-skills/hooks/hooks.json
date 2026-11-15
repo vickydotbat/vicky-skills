@@ -91,11 +91,6 @@
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/skill-ledger.sh\"",
             "timeout": 5
-          },
-          {
-            "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/review-fresh-guard.sh\"",
-            "timeout": 10
           }
         ]
       },
@@ -296,11 +291,6 @@
     "Stop": [
       {
         "hooks": [
-          {
-            "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/review-fresh-guard.sh\"",
-            "timeout": 10
-          },
           {
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/read-before-asking.sh\"",
