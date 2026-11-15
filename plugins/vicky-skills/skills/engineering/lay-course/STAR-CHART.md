@@ -93,6 +93,14 @@ A chart with no black hole seen yet keeps the section, with the one line "None s
 
 A ticket in the chart's orbit is a related link on the tracker, never a section.
 
+## Ready to warp
+
+A chart is ready to warp when a warp can clear it with the user away. The label `starchart:afk` marks it, so the tracker's "List charts ready to warp" sorts AFK work from work that needs the user.
+
+- **Add** `starchart:afk` to an open chart when every one of these holds: no open anomaly or probe, no `Confirm:` line under Knowns, every open star's examples approved, and no open task that needs the user's account or a deploy.
+- **Remove** it the moment one stops holding: an anomaly, probe, `Confirm:` line or star without approved examples is filed on the chart, or a task that needs the user is added.
+- Check after every write that answers, files or closes a ticket on the chart. Red tests on a warp branch are not part of it: they live on the branch, not the chart.
+
 ## Sorting the knowns
 
 Every chart sorts what its stars rest on into the four boxes of the Rumsfeld matrix, and each box routes its items to an action. A line in a box names the stars it sits behind.
@@ -149,6 +157,7 @@ Found work, such as a bug a test caught or a gap a review named, is filed this w
 1. **Slice.** Each star is a vertical slice: a thin path through every layer, shown working on its own, sized to one session, and landing green on the base the repo's rules name. A change that can't land green in one step goes expand–contract: build the new form beside the old, move the callers, then delete the old. A plan that takes something away and puts it back later ("reset to stock, then re-add") is no slice: re-cut it. An integration branch is a last resort, for a wide refactor only. Where any star lands follows `lay-course`'s "Where work lands". Done when every star stands on its own.
 2. **Draft** each star's Given / When / Then examples with `examples`, steps 1 and 2. Done when every star has its examples, or "Examples: not written yet".
 3. **Approve the examples before filing.** Put every star's examples in the effort's one `red-pen` draft file, a section per star with an approve box. The star bodies stay out of it. The user approves, edits or cuts there. A star waits on the close, and is filed with the examples the user left. A star whose examples the user cut is filed with "Examples: not written yet". Done when each star filed holds the user's examples.
+4. **Check the label.** Apply "Ready to warp" to the chart. Done when the chart's `starchart:afk` label matches it.
 
 ## Sharding
 

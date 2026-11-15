@@ -119,6 +119,8 @@ jobs:
         run: tests/marie-kondo-fast-forward.test.sh
       - name: Every tracker can move a state and list what changed
         run: tests/tracker_operations_approved_examples.test.sh
+      - name: warp-ready charts carry the AFK label
+        run: tests/afk_label_approved_examples.test.sh
       - name: gamma-shift reads every waiting ticket
         run: tests/waiting-list.test.sh
       - name: Springboard examples

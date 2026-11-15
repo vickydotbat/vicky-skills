@@ -8,6 +8,7 @@ kind: anomaly        # chart, anomaly, away-team, probe, task or star
 status: open         # open, claimed, waiting or done
 parent: "[[<chart note name>]]"
 blocked_by: ["[[<blocker note title>]]"]
+labels: []          # a chart ready to warp holds starchart:afk
 ---
 ```
 
@@ -26,6 +27,7 @@ blocked_by: ["[[<blocker note title>]]"]
 - **List a chart's tickets**: `grep -l 'parent: "\[\[[0-9]* Star Chart - <effort>\]\]"' "<vault>/vicky-skills/"*.md`
 - **Blocking**: the `blocked_by` links. A ticket is unblocked when every note it links is `status: done`.
 - **Frontier**: the chart's tickets with `status: open` and no blocker still open.
+- **List charts ready to warp**: `grep -l '^labels:.*starchart:afk' "<vault>/vicky-skills/"*.md`, keeping notes with `kind: chart` and `status: open`. The `labels:` frontmatter list holds `starchart:afk`, as STAR-CHART.md's "Ready to warp" says.
 - **Chart**: a Mermaid block under `## Chart` in the chart note. Obsidian draws it.
 - **Claim**: set `status: claimed` and save, before any other work.
 

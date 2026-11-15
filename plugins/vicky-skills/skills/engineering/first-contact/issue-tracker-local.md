@@ -8,6 +8,7 @@ Tickets are Markdown files under `.scratch/`, one folder per effort. Comments go
 - **Ticket**: `.scratch/<effort>/issues/NN-<slug>.md`, numbered from `01`. A `Kind:` line holds the kind (`anomaly`, `away-team`, `probe`, `task` or `star`), and a `Status:` line holds `open`, `claimed`, `waiting` or `done`.
 - **Blocking**: a `Blocked by: NN, NN` line near the top. A ticket is unblocked when every file it lists is `done`.
 - **Frontier**: the open, unblocked tickets, lowest number first.
+- **List charts ready to warp**: `grep -l 'starchart:afk'` over the open charts' files. Charts that STAR-CHART.md's "Ready to warp" labels `starchart:afk`.
 - **Chart**: a Mermaid block under `## Chart` in `chart.md`.
 - **Claim**: set `Status: claimed` and save, before any other work.
 - **Close**: add the answer under `## Answer` and set `Status: done`.
