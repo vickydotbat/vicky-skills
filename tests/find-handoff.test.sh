@@ -68,8 +68,15 @@ check "an earlier worktree session naming the branch links the handoff" "found: 
 lacks "a session that never names the branch or a key is skipped" "forge.example/wrong" "$out"
 lacks "the current session is skipped" "forge.example/self" "$out"
 mkdir -p "$dir/projects/$prefix-x"
-echo '{"text":"plain-branch **Handoff** https://forge.example/plain"}' > "$dir/projects/$prefix-x/p.jsonl"
-check "a session that names only the branch is matched" "https://forge.example/plain" "$(FIND_HANDOFF_BRANCH=plain-branch run "$tea_repo")"
+echo '{"text":"plain-branch **Handoff** https://forge.example/sibling"}' > "$dir/projects/$prefix-x/p.jsonl"
+echo '{"text":"plain-branch **Handoff** https://forge.example/plain"}' > "$dir/projects/$prefix--claude-worktrees-x/p.jsonl"
+out=$(FIND_HANDOFF_BRANCH=plain-branch run "$tea_repo")
+check "a session that names only the branch is matched" "https://forge.example/plain" "$out"
+lacks "a repo whose name only starts with this one's is skipped" "forge.example/sibling" "$out"
+echo '{"text":"main **Handoff** https://forge.example/main"}' > "$dir/projects/$prefix/m.jsonl"
+out=$(FIND_HANDOFF_BRANCH=main run "$tea_repo")
+lacks "the default branch name matches no session" "forge.example/main" "$out"
+check "with no term no session is read" "not read: earlier sessions, no branch other than the default and no ticket key to match" "$out"
 for i in 1 2 3 4 5 6; do echo '{"text":"feat-ABC-7 no link"}' > "$dir/projects/$prefix/n$i.jsonl"; done
 out=$(run "$tea_repo")
 check "at most five matching sessions are read" "5 earlier session transcripts naming feat-ABC-7" "$out"
@@ -96,8 +103,8 @@ lacks "a blank line is never read as a key, at the end" "ticket $" "$(tr ';' '\n
 norow=$(repo norow git@forge.example:o/n.git); echo '| Read, whole | Open the note. |' > "$norow/docs/agents/issue-tracker.md"
 check "a tracker with no read command names the ticket as not read" "not read: ticket ABC-7, read it by hand" "$(run "$norow")"
 mkdir -p "$dir/plain"
-check "outside a repo the earlier sessions are not read" "not read: earlier sessions, no branch or ticket key to match" "$(run "$dir/plain")"
-check "outside a repo a ticket key still reads no sessions" "not read: earlier sessions, no branch or ticket key to match" "$(run "$dir/plain" QQ-1)"
+check "outside a repo the earlier sessions are not read" "not read: earlier sessions, no branch other than the default and no ticket key to match" "$(run "$dir/plain")"
+check "outside a repo a ticket key still reads no sessions" "not read: earlier sessions, no branch other than the default and no ticket key to match" "$(run "$dir/plain" QQ-1)"
 git -C "$tea_repo" switch -q --detach
 check "a detached HEAD names the pull request as not read" "not read: pull request, HEAD is detached" "$(run "$tea_repo")"
 check "an extra argument is read as a ticket key" "ticket QQ-1" "$(run "$tea_repo" QQ-1)"
