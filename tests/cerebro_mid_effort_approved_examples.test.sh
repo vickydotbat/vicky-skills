@@ -15,7 +15,7 @@ check "cerebro lists, under each proposal, the questions I'd ask about it, and f
 check "a proposal that raises no question I'd ask stands alone, with no empty question list" \
   'grep -q "no empty question list" <<<"$ask"'
 check "review runs cerebro as a forecast on what it found, once its report ends mid-effort" \
-  'step "$skills/engineering/review/SKILL.md" 5 | grep -q "run \`cerebro\` as a forecast on the findings"'
+  'step "$skills/engineering/review/SKILL.md" 6 | grep -q "run \`cerebro\` as a forecast on the findings"'
 check "a design decision recorded mid-effort, an anomaly answered or a council ended, runs cerebro as a forecast on what it makes due" \
   'step "$skills/engineering/lay-course/SKILL.md" 4 | grep -q "run \`cerebro\` as a forecast on what the decision makes due" && step "$skills/productivity/council-of-elrond/SKILL.md" 5 | grep -q "run \`cerebro\` as a forecast on what the decision makes due"'
 exit $fail

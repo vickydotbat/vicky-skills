@@ -87,6 +87,7 @@ TESTS = {
     "tea-stdin.awk": ["tea-stdin"],
     "tea-stdin.sh": ["tea-stdin", "refusal-note"],
     "pkill-guard.sh": ["pkill_guard_approved_examples", "pkill-guard", "refusal-note"],
+    "review-brief-guard.sh": ["review-brief-guard"],
     "read-item.sh": ["read_item_approved_examples", "read-item"],
     "gate-state-guard.sh": ["gate-state-guard"],
     "ticket-drift.sh": ["ticket_drift_approved_examples", "no-remote-quiet"],

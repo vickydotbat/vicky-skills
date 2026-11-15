@@ -413,6 +413,8 @@ jobs:
         run: tests/hint_once_approved_examples.test.sh
       - name: pkill guard decisions
         run: tests/pkill-guard.test.sh
+      - name: review-brief guard decisions
+        run: tests/review-brief-guard.test.sh
       - name: read-item edges
         run: tests/read-item.test.sh
       - name: todo.sh edges

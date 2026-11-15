@@ -19,6 +19,7 @@ for script in $(jq -r '.hooks[][].hooks[].command' "$plugin/hooks/hooks.json" | 
   # A hook with no setting needs a line here naming its row.
   case "$script" in
     pkill-guard.sh) name='No `pkill -f`' ;;
+    review-brief-guard.sh) name="Reviewer briefs name real files" ;;
     stale-copy-hint.sh) name="Stale copy" ;;
     todo-reminder.sh) name="Todo reminder" ;;
     *) name="" ;;
