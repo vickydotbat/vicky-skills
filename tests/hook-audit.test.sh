@@ -7,7 +7,7 @@ fail=0
 check() { if [ "$2" = "$3" ]; then echo "ok   $1"; else echo "FAIL $1: got '$3', want '$2'"; fail=1; fi; }
 use() { jq -nc --arg id "$1" --arg c "$2" '{type:"assistant",message:{content:[{type:"tool_use",id:$id,name:"Bash",input:{command:$c}}]}}'; }
 res() { jq -nc --arg id "$1" --arg t "$2" '{type:"user",message:{content:[{type:"tool_result",tool_use_id:$id,content:$t}]}}'; }
-counts() { python3 -I "$audit" 30 "$1" | tr " " "\n" | sed 1d | sort | tr "\n" " " | sed "s/ $//"; }
+counts() { python3 -I "$audit" 30 "$1" | tr " " "\n" | sed 1d | grep -vx gone | sort | tr "\n" " " | sed "s/ $//"; }
 refused='PreToolUse:Bash hook error: ["/x/scripts/demo-guard.sh"]: no'
 mkdir -p "$dir/p"
 { use a "ls -la one"; res a "$refused"; use b "ls -la one two"; res b ok
@@ -38,4 +38,11 @@ mkdir -p "$dir/s" "$dir/t"
 check "the first call after a refusal is the one judged, not a later one" "refusals=1 retry-passed=1" "$(counts "$dir/s")"
 { use x "make it"; res x "$refused"; use y "make it"; res zz "$refused"; res y ok; } > "$dir/t/s.jsonl"
 check "another call's result is not the next call's" "refusals=2 retry-passed=1" "$(counts "$dir/t")"
+mkdir -p "$dir/u" "$dir/w/.claude/hooks"; : > "$dir/w/.claude/hooks/repo-guard.sh"
+{ use a "x"; res a "$refused"; use b "y"; res b 'PreToolUse:Bash hook error: ["/x/scripts/git-guard.sh"]: no'
+  use c "z"; res c 'PreToolUse:Bash hook error: ["/x/.claude/hooks/scripts/repo-guard.sh"]: no'; } > "$dir/u/s.jsonl"
+lines=$(cd "$dir/w" && python3 -I "$audit" 30 "$dir/u")
+check "a hook with no script in the plugin or the repo is marked gone" 1 "$(grep -c '^demo-guard .* gone$' <<<"$lines")"
+check "a plugin hook that still ships is not marked gone" 0 "$(grep -c '^git-guard .*gone' <<<"$lines")"
+check "a repo's own hook is not marked gone" 0 "$(grep -c '^repo-guard .*gone' <<<"$lines")"
 exit $fail

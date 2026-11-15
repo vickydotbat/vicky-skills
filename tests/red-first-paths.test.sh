@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# The commit guard reads what `git add <files> && git commit` stages: only the
-# files it names, so an unrelated change left unstaged never counts. A flag,
-# a folder or a glob stages more, and then every change counts.
+# The commit guard asks git what `git add <args> && git commit` stages, so a
+# folder, a glob or a flag counts exactly the changes it takes, and an
+# unrelated change left unstaged never counts.
 set -u
 scripts="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/scripts"
 dir=$(mktemp -d)
@@ -22,13 +22,21 @@ printf 'exit 1\n' >"$repo/$t"
 printf 'new\n' >"$repo/ci.yml"
 expect "git add of the test alone runs, with another file changed and unstaged" 0 "$(guard "git add $t && git commit -m red")"
 expect "git add of the test and the changed file is refused" 2 "$(guard "git add $t ci.yml && git commit -m both")"
-expect "git add of a folder counts every change" 2 "$(guard "git add tests/ && git commit -m red")"
-expect "git add of . counts every change" 2 "$(guard "git add . && git commit -m red")"
-expect "git add -u counts every change" 2 "$(guard "git add -u && git commit -m red")"
-expect "git add of a glob counts every change" 2 "$(guard "git add tests/*.sh && git commit -m red")"
-expect "git add of a path that isn't a file counts every change" 2 "$(guard "git add gone.sh $t && git commit -m red")"
+expect "git add of a folder that holds only the test runs" 0 "$(guard "git add tests/ && git commit -m red")"
+printf 'code\n' >"$repo/tests/helper.sh"
+expect "git add of a folder that also holds code is refused" 2 "$(guard "git add tests/ && git commit -m red")"
+rm "$repo/tests/helper.sh"
+expect "git add of . takes every change" 2 "$(guard "git add . && git commit -m red")"
+expect "git add -u leaves the untracked test out, so the commit holds no new test" 0 "$(guard "git add -u && git commit -m red")"
+expect "git add of a glob that matches only the test runs" 0 "$(guard "git add tests/*.sh && git commit -m red")"
+expect "git add of a glob that matches code too is refused" 2 "$(guard "git add *.yml tests/*.sh && git commit -m red")"
+expect "git add of a path that isn't there stages nothing, as the real add fails" 0 "$(guard "git add gone.sh $t && git commit -m red")"
 git -C "$repo" add ci.yml
 expect "what is already staged still counts" 2 "$(guard "git add $t && git commit -m red")"
 git -C "$repo" restore --staged ci.yml
-expect "commit -a counts every change" 2 "$(guard "git add $t && git commit -am red")"
+expect "commit -a takes the changed tracked file" 2 "$(guard "git add $t && git commit -am red")"
+git -C "$repo" restore ci.yml
+expect "commit -a with nothing tracked changed takes only the test" 0 "$(guard "git add $t && git commit -am red")"
+printf 'new\n' >"$repo/ci.yml"
+expect "a quoted git add in a commit message stages nothing" 0 "$(guard "git add $t && git commit -m 'no git add . here'")"
 exit $fail
