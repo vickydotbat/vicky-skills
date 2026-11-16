@@ -16,7 +16,8 @@ session=$(jq -r '.session_id // empty' <<<"$input" 2>/dev/null)
 case "$session" in ''|*/*|.*) exit 0 ;; esac
 dir="${KEEP_AWAKE_DIR:-${XDG_RUNTIME_DIR:-/tmp}/vicky-skills-keep-awake-$(id -u)}"
 poll="${KEEP_AWAKE_POLL:-5}"  # mutant-ok delete: without it sleep fails and the holder busy-loops, a CPU cost no output shows
-idle="${KEEP_AWAKE_IDLE:-30}"
+# KEEP_AWAKE_IDLE: minutes a mark may sit untouched. Anything but a whole number means 30.
+case "${KEEP_AWAKE_IDLE:-}" in ''|*[!0-9]*) idle=30 ;; *) idle=$KEEP_AWAKE_IDLE ;; esac
 
 case "$event" in
   UserPromptSubmit)

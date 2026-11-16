@@ -27,9 +27,12 @@ check "the owner's death releases it with no Stop" 'free && [ ! -e "$fx/state/li
 
 # An Esc interrupt fires no hook: the owner lives on, but an idle mark drops out.
 sleep 30 & idler=$!
-KEEP_AWAKE_OWNER=$idler send UserPromptSubmit idle
-held; touch -d '-31 min' "$fx/state/idle"
+KEEP_AWAKE_IDLE=1 KEEP_AWAKE_OWNER=$idler send UserPromptSubmit idle
+held; touch -d '-2 min' "$fx/state/idle"
 check "a mark idle past the cap releases the lock while its owner lives" 'free && [ ! -e "$fx/state/idle" ] && kill -0 $idler'
+KEEP_AWAKE_IDLE=soon KEEP_AWAKE_OWNER=$idler send UserPromptSubmit idle
+held; touch -d '-31 min' "$fx/state/idle"
+check "a cap that is not a number means 30 minutes" 'free'
 KEEP_AWAKE_OWNER=$idler send UserPromptSubmit fresh
 check "a fresh mark under the cap keeps the lock" 'held && sleep 0.4 && [ -f "$fx/lock" ]'
 rm -f "$fx/state/fresh"; free; kill $idler; wait $idler 2>/dev/null
