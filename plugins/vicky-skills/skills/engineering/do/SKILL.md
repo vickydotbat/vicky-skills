@@ -34,6 +34,7 @@ The user may be away once the examples are approved, and a question or an open e
 - **Commit messages** name only the checks that ran before the commit. A check still to come goes in the pull request's Status section.
 - **Shared stores**: an upload to a store others pull from (a depot, CDN, registry, package index or release) happens once per effort, when the change is complete and proven through a local override. Every fix before then is tested locally, never uploaded.
 - **A guess too costly to undo, or an approved example the build shows is wrong**: park that slice. Add it to Check these with what it waits on, and build the rest.
+- **Inside a `warp`**, a slice parked on the user's decision, and a review finding that waits on it, follow `warp`'s "Mid-flight questions": they are built in the warp's pull request, never filed as a ticket.
 
 `make-it-so`, run by `warp` or when the user asks for it, hands the drafts and the list to the user before the pull request goes ready. Done when step 6 ends with no question asked since step 1.
 

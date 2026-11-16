@@ -69,6 +69,8 @@ The Sensor log above.
 ### Unknown unknowns
 
 - Riskiest star: [<star title>](<link>), covered by <a timebox or a probe>
+- Seen before: fallout on content no star names, checked by `warp`'s fallout sweep
+- Seen before: an approved example whose test can't fail, checked by `warp`'s pre-flight review of the tests
 - Seen before: <a kind of surprise an earlier chart logged>, checked by <how>
 - Surfaced: <the surprise>, while building [<star title>](<link>), cost <what it cost>
 

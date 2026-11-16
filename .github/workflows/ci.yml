@@ -363,6 +363,8 @@ jobs:
         run: tests/red_pen_samples_approved_examples.test.sh
       - name: Warp writes tests up front
         run: tests/warp_up_front_approved_examples.test.sh
+      - name: Warp does its homework in pre-flight
+        run: tests/warp_homework.test.sh
       - name: Warp zero friction
         run: tests/warp_zero_friction_approved_examples.test.sh
       - name: User prompts are training wheels
