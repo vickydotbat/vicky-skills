@@ -13,7 +13,7 @@ gate-state-guard.sh	71c338f183976bce	8a8a8a438ed67e88	71/71
 git-guard.sh	77dedc9bf5718121	d09d965a61a737d2	51/51
 git-hook-lib.sh	5b23f2ed23f960ca	1d7ab166bdcae9eb	51/51
 heredoc-strip.awk	f4f00a43ef2fd634	7e0bfdcef9b4d278	6/6
-keep-awake.sh	64e8be754351199c	ecfc01b8cf98bd99	25/25
+keep-awake.sh	8731b4e3b36120ab	13dc1b69364ee61d	28/28
 lesson-hint.sh	7a82ca13330f28fd	f3fdb12d08eef12f	11/11
 lesson-ledger.sh	4c88dc2d0aebcfe6	4cb925598f2dbcc8	18/18
 local-path-guard.sh	d427caa9a875a87c	939f20348d896e77	29/29

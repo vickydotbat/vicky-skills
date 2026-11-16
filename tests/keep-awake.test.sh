@@ -8,7 +8,7 @@ fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 mkdir -p "$fx/bin" "$fx/nojq"
 printf '#!/bin/sh\necho called >> "%s/calls"\n' "$fx" > "$fx/bin/systemd-inhibit"; chmod +x "$fx/bin/systemd-inhibit"
-for t in jq flock setsid ls sleep sh mkdir touch rm id cat; do ln -s "$(command -v $t)" "$fx/nojq/$t"; done
+for t in jq flock setsid ls sleep sh mkdir touch rm id cat find; do ln -s "$(command -v $t)" "$fx/nojq/$t"; done
 ln -s "$fx/bin/systemd-inhibit" "$fx/nojq/systemd-inhibit"
 export KEEP_AWAKE_OWNER=$$ CLAUDE_PLUGIN_OPTION_KEEP_AWAKE=1 KEEP_AWAKE_DIR="$fx/state" KEEP_AWAKE_POLL=0.1
 run() { printf '%s' "$1" | PATH="${2:-$fx/bin:$PATH}" "$BASH" "$hook" || echo "$1" >> "$fx/nonzero"; }
@@ -39,6 +39,14 @@ CLAUDE_PLUGIN_OPTION_KEEP_AWAKE=0 run '{"hook_event_name":"Stop","session_id":"s
 check "the setting at 0 does nothing" '[ -f "$fx/state/s" ]'
 run '{"hook_event_name":"Stop","session_id":"s"}'
 check "Stop clears the mark" '[ ! -e "$fx/state/s" ]'
+run '{"hook_event_name":"PostToolUse","session_id":"s"}'
+check "a tool call with no mark marks nothing" '[ ! -e "$fx/state/s" ]'
+run '{"hook_event_name":"UserPromptSubmit","session_id":"s"}'
+touch -d '-10 min' "$fx/state/s"
+run '{"hook_event_name":"PostToolUse","session_id":"s"}'
+check "a tool call refreshes the mark" '[ -n "$(find "$fx/state/s" -mmin -1)" ]'
+run '{"hook_event_name":"StopFailure","session_id":"s"}'
+check "StopFailure clears the mark" '[ ! -e "$fx/state/s" ]'
 touch "$fx/afile"; rm -f "$fx/calls"
 KEEP_AWAKE_DIR="$fx/afile/state" run '{"hook_event_name":"UserPromptSubmit","session_id":"s"}' 2>/dev/null
 check "an unwritable state folder takes no lock" '[ "$(calls)" = 0 ]'

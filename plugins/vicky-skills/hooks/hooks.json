@@ -200,6 +200,15 @@
             "timeout": 60
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/keep-awake.sh\"",
+            "timeout": 5
+          }
+        ]
       }
     ],
     "SessionStart": [
@@ -311,6 +320,17 @@
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/read-before-asking.sh\"",
             "timeout": 10
           },
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/keep-awake.sh\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "StopFailure": [
+      {
+        "hooks": [
           {
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/keep-awake.sh\"",

@@ -25,6 +25,15 @@ check "a live owner holds the lock" 'held && sleep 0.4 && [ -f "$fx/lock" ] && [
 kill $alive; wait $alive 2>/dev/null
 check "the owner's death releases it with no Stop" 'free && [ ! -e "$fx/state/live" ]'
 
+# An Esc interrupt fires no hook: the owner lives on, but an idle mark drops out.
+sleep 30 & idler=$!
+KEEP_AWAKE_OWNER=$idler send UserPromptSubmit idle
+held; touch -d '-31 min' "$fx/state/idle"
+check "a mark idle past the cap releases the lock while its owner lives" 'free && [ ! -e "$fx/state/idle" ] && kill -0 $idler'
+KEEP_AWAKE_OWNER=$idler send UserPromptSubmit fresh
+check "a fresh mark under the cap keeps the lock" 'held && sleep 0.4 && [ -f "$fx/lock" ]'
+rm -f "$fx/state/fresh"; free; kill $idler; wait $idler 2>/dev/null
+
 # A stand-in named claude runs the hook through a shell, the way Claude Code does.
 cp "$(command -v bash)" "$fx/claude"
 jq -nc '{hook_event_name:"UserPromptSubmit",session_id:"walk"}' > "$fx/in"
