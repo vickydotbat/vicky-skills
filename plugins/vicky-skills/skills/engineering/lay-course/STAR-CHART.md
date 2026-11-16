@@ -17,7 +17,7 @@ The reference `lay-course` and `warp` both read: the words, the chart body, the 
 | **task** | Work that has to happen before a decision can, such as getting access to a service. |
 | **nebula** | A question too loose to ticket yet. It may hold several tickets or none. |
 | **black hole** | A part of the work that eats effort without end, which the course steers around. Unlike a nebula, it is plain to see. It is never a ticket: the chart names it under Black holes, with its way around, such as a timebox or a path that skips it. |
-| **asteroid belt** | A question found during a build that the target can't ship without. `warp` builds around it and asks once, at the end of the course. |
+| **asteroid belt** | A question found during a build that the target can't ship without. `warp` builds around it, asks once at the end of the course, and builds the answers in the same pull request. |
 | **neutral zone** | Tickets closed because they're past the mission. |
 | **frontier** | The chart's open, unblocked, unassigned children, less any star an open line under Knowns sits in front of: a known unknown whose ticket is open, or a `Confirm:` line the user hasn't answered. |
 | **course** | The open blockers from the frontier to each target star, and the targets, in the order they must close. A target on the frontier is its own whole course. |
@@ -108,7 +108,7 @@ Every chart sorts what its stars rest on into the four boxes of the Rumsfeld mat
 - **Known knowns**: facts with a source. Each goes in the Sensor log with its source line quoted, so the box only points there. A fact every star rests on says "behind every star".
 - **Known unknowns**: open questions you can state. Each is an anomaly or an away team ticket that blocks the stars behind it. A question too loose to ticket stays under Nebulae until it sharpens.
 - **Unknown knowns**: facts that likely sit in a record or in the user's head but were never written down, such as a rule the user always applies or how the work crosses an existing feature. Each gets an away team to find the record, or a `Confirm:` line the user answers in one word, before any star rests on it. Take the `Confirm:` line when no record is likely. Once the user confirms, the fact moves to the Sensor log, quoting the user, and its star loses that unknown at the next redraw.
-- **Unknown unknowns**: these can't be listed. Name the riskiest star and the timebox or probe that covers it. Then search the tracker's earlier charts for their `Surfaced:` lines, and name each kind of surprise seen before on a `Seen before:` line, with the check that covers it here. `make-it-so`'s SETTLE.md adds a `Surfaced:` line for each asteroid belt a build hit.
+- **Unknown unknowns**: these can't be listed. Name the riskiest star and the timebox or probe that covers it. Then search the tracker's earlier charts for their `Surfaced:` lines, and name each kind of surprise seen before on a `Seen before:` line, with the check that covers it here. Every chart names two on its own: fallout on content no star names, checked by `warp`'s fallout sweep, and an approved example whose test can't fail, checked by `warp`'s pre-flight review of the tests. `make-it-so`'s SETTLE.md adds a `Surfaced:` line for each asteroid belt a build hit.
 
 A box is never left empty without saying why: a box with nothing in it holds one line with the reason, such as "None: the spec answers every question."
 
