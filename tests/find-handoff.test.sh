@@ -120,6 +120,8 @@ lacks "an open pull request keeps .todo unread" "found: ticket TODO-1" "$(FIND_H
 echo '[]' > "$dir/tea-prs"
 out=$(FIND_HANDOFF_BRANCH=main run "$todo_repo")
 check "on main with nothing else, .todo is named as searched" "searched: .todo" "$out"
+printf -- '- Finish it (TODO-1)\n- Then ship it (TODO-1)\n' > "$todo_repo/.todo"
+check "a key .todo names twice is listed once" 1 "$(FIND_HANDOFF_BRANCH=main run "$todo_repo" | head -1 | grep -o 'ticket TODO-1' | wc -l)"
 rm "$dir/ticket-TODO-1"
 
 bare=$(repo bare git@forge.example:o/s.git)

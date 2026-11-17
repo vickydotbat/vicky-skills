@@ -161,8 +161,6 @@ jobs:
         run: tests/find-handoff.test.sh
       - name: handoff pointer examples
         run: tests/handoff_pointer_approved_examples.test.sh
-      - name: handoff pointer examples
-        run: tests/handoff_pointer_approved_examples.test.sh
       - name: sup-handoff-hint
         run: tests/sup-handoff-hint.test.sh
       - name: Session-start hooks stay quiet with no remote

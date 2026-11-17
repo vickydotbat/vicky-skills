@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
-# approved-spec: sup finds a handoff posted from the default branch, ticked on
-# the drafts page 2026-11-17. conn's half is the agent's, so it reads conn's
-# text and runs the commands it names; sup's half runs find-handoff.sh in a
-# throwaway repo on main, with tea stubbed so no test reaches a real tracker.
+# approved-spec: sup finds a handoff posted from the default branch. conn's half
+# reads conn's text and runs the commands it names; sup's half runs the finder.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
 plugin="$root/plugins/vicky-skills"
@@ -31,7 +29,7 @@ check "E1 conn leaves a pointer in .todo" \
 # When you type /conn again and it posts somewhere else
 # Then .todo holds only the new Handoff line
 check "E2 a newer handoff replaces the older pointer" \
-  'grep -qF "so \`.todo\` holds one Handoff line, the newest" "$conn" && echo "- Finish the parser (GAME-1)" >> "$r/.todo"; point GAME-2883 && [ "$(grep -c "Handoff:" "$r/.todo")" = 1 ] && grep -qx -- "- Handoff: GAME-2883 (2026-11-17)" "$r/.todo" && grep -qF "Finish the parser" "$r/.todo"'
+  'grep -qF "so \`.todo\` holds one Handoff line, the newest" "$conn" && echo "- Finish the parser (GAME-1)" >> "$r/.todo" && point GAME-2883 && [ "$(grep -c "Handoff:" "$r/.todo")" = 1 ] && grep -qx -- "- Handoff: GAME-2883 (2026-11-17)" "$r/.todo" && grep -qF "Finish the parser" "$r/.todo"'
 
 # Given a checkout on main with no open pull request and no ticket key in its name
 # And its .todo names a ticket whose thread holds a Handoff comment

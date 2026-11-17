@@ -7,6 +7,7 @@ plugin=${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "$0")/../../../.." && pwd)}
 projects=${FIND_HANDOFF_PROJECTS_DIR:-$HOME/.claude/projects}
 searched=() unread=() found=0
 hit() { printf 'found: %s: %s\n' "$1" "$2"; found=1; }
+keys_in() { grep -oE '\b[A-Z][A-Z0-9]+-[0-9]+\b' | awk '!seen[$0]++'; } # ticket keys look like ABC-123
 branch=${FIND_HANDOFF_BRANCH:-$(git branch --show-current 2>/dev/null)}
 [ -n "$branch" ] || unread+=("pull request, HEAD is detached")
 pr_text="" # mutant-ok delete: every later read is "${pr_text}" in a quoted printf or jq, and an unset name prints the same empty text
@@ -34,16 +35,14 @@ if [ -n "$branch" ]; then
     else unread+=("pull request, no open one for $branch"); fi
   else unread+=("pull request, neither gh nor tea is installed"); fi
 fi
-# Ticket keys look like ABC-123.
-mapfile -t keys < <({ printf '%s\n' "$@"; printf '%s\n%s\n' "$branch" "$pr_text" | grep -oE '\b[A-Z][A-Z0-9]+-[0-9]+\b'; } | awk 'NF && !seen[$0]++')
-# With no pull request text and no key, .todo is the pointer: conn leaves a
-# "- Handoff: <key or link> (<date>)" line there, and standing orders name their tickets.
+mapfile -t keys < <({ printf '%s\n' "$@"; printf '%s\n%s\n' "$branch" "$pr_text" | keys_in; } | awk 'NF && !seen[$0]++')
+# No pull request text and no key: .todo is the pointer (conn's Handoff line, or a standing order's ticket).
 top=$(git rev-parse --show-toplevel 2>/dev/null)
 if [ -z "$pr_text" ] && [ "${#keys[@]}" = 0 ] && [ -n "$top" ] && [ -f "$top/.todo" ]; then
   searched+=(".todo")
   url=$(grep -E '^- Handoff:' "$top/.todo" | grep -oE 'https?://[^ )]*' | tail -n 1)
   [ -n "$url" ] && hit ".todo Handoff line" "$url"
-  mapfile -t keys < <(grep -oE '\b[A-Z][A-Z0-9]+-[0-9]+\b' "$top/.todo" | awk '!seen[$0]++')
+  mapfile -t keys < <(keys_in < "$top/.todo")
 fi
 for k in "${keys[@]}"; do
   out=$(timeout 15 bash "$plugin/scripts/read-item.sh" "$k" </dev/null 2>/dev/null)
