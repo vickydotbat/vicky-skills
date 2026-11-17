@@ -11,7 +11,8 @@ the exact command, in backticks, that puts the thing in reach.
 An item whose kit or action is a terminal read (grep, cat, ls, tail...) is the agent's to
 run. A kit run in a game console or chat needs a `source:` line saying where its exact
 spelling comes from. A kit that turns state on (a toggle, a debug view, a mode) needs a
-later item that turns it off with the same command. A repo whose docs/agents files
+later item that turns it off with the same command. A `person: second client` item names
+the gap no simulated-player harness reaches ("second client, no harness reaches ..."). A repo whose docs/agents files
 say "Checklist lint: basic" keeps only the person, kit and proof checks.
 """
 import glob
@@ -56,6 +57,9 @@ def lint(lines, basic=False):
             problems.append((number, "item has no `person:` line"))
         elif not reason.startswith(REASONS):
             problems.append((number, f"`person: {reason}` is not one of: {', '.join(REASONS)}"))
+        elif reason.startswith("second client") and "harness" not in reason:
+            problems.append((number, "a second-client check goes to the repo's simulated-player harness as an integration test, run green; "
+                             "keep it here only as `person: second client, no harness reaches <the gap>`"))
         if basic:
             continue
         if TERMINAL.search(action) or any(TERMINAL.search(k) for k in kits):
