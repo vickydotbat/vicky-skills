@@ -53,6 +53,8 @@ jobs:
         run: tests/chart-read.test.sh
       - name: Do runs its plan check first
         run: tests/do_imp_pass_approved_examples.test.sh
+      - name: Machine spirit runs a CI job locally first, and stops after one try
+        run: tests/machine_spirit_local_ci_approved_examples.test.sh
       - name: Skill steps
         run: tests/skill-steps.test.sh
       - name: Familiar intent and repo examples
