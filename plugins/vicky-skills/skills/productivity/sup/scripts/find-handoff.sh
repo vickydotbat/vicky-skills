@@ -36,13 +36,15 @@ if [ -n "$branch" ]; then
   else unread+=("pull request, neither gh nor tea is installed"); fi
 fi
 mapfile -t keys < <({ printf '%s\n' "$@"; printf '%s\n%s\n' "$branch" "$pr_text" | keys_in; } | awk 'NF && !seen[$0]++')
-# No pull request text and no key: .todo is the pointer (conn's Handoff line, or a standing order's ticket).
+# .todo is the fallback pointer: its Handoff line first, else every ticket it names.
 top=$(git rev-parse --show-toplevel 2>/dev/null)
-if [ -z "$pr_text" ] && [ "${#keys[@]}" = 0 ] && [ -n "$top" ] && [ -f "$top/.todo" ]; then
+if [ -z "$pr_text" ] && [ "${#keys[@]}" = 0 ] && [ -f "$top/.todo" ]; then
   searched+=(".todo")
-  url=$(grep -E '^- Handoff:' "$top/.todo" | grep -oE 'https?://[^ )]*' | tail -n 1)
-  [ -n "$url" ] && hit ".todo Handoff line" "$url"
-  mapfile -t keys < <(keys_in < "$top/.todo")
+  pointer=$(grep -E '^- Handoff:' "$top/.todo" | tail -n 1)
+  url=$(grep -oE 'https?://[^ )]*' <<<"$pointer")
+  if [ -n "$url" ]; then hit ".todo Handoff line" "$url"
+  elif [ -n "$pointer" ]; then mapfile -t keys < <(keys_in <<<"$pointer")
+  else mapfile -t keys < <(keys_in < "$top/.todo"); fi
 fi
 for k in "${keys[@]}"; do
   out=$(timeout 15 bash "$plugin/scripts/read-item.sh" "$k" </dev/null 2>/dev/null)
