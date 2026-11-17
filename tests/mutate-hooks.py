@@ -97,6 +97,7 @@ TESTS = {
     "gate-state-guard.sh": ["gate-state-guard"],
     "ticket-drift.sh": ["ticket_drift_approved_examples", "no-remote-quiet"],
     "plane-block-guard.sh": ["plane_block_approved_examples", "plane-block-guard", "refusal-note"],
+    "whole-read-guard.sh": ["whole-read-guard"],
     "watch.sh": ["watch", "watch_approved_examples"],
     "assign-expand.sh": ["pr-guard", "worktree-place"],
     "worktree-place.sh": ["worktree-place", "worktree_place_approved_examples", "worktree_cleanup_approved_examples", "worktree_drop_approved_examples"],

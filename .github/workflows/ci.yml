@@ -343,6 +343,8 @@ jobs:
         run: tests/plane_block_approved_examples.test.sh
       - name: plane-block-guard steers by ticket
         run: tests/plane-block-guard.test.sh
+      - name: whole-read-guard refuses a clipped ticket read
+        run: tests/whole-read-guard.test.sh
       - name: Goal-driven do, proof guard and hints
         run: tests/goal_driven_approved_examples.test.sh
       - name: Red-first hooks and mutation proof

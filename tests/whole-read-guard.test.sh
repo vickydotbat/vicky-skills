@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# whole-read-guard refuses a ticket read piped into a cutter, and passes a
+# whole read, other commands, the setting off and bad input.
+set -u
+guard="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/scripts/whole-read-guard.sh"
+tmp=$(mktemp -d); trap 'rm -rf "$tmp"' EXIT
+git -C "$tmp" init -q && mkdir -p "$tmp/docs/agents"
+printf '| Operation | How |\n| --- | --- |\n| Read, whole | `tracker view --comments <id>` |\n' >"$tmp/docs/agents/issue-tracker.md"
+fail=0
+run() { jq -nc --arg c "$1" --arg d "$tmp" '{tool_name:"Bash",tool_input:{command:$c},cwd:$d}' | bash "$guard" 2>&1 >/dev/null; echo "exit=$?"; }
+check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
+check "plane show into head is refused and names the id" 'run "bin/plane show GAME-2819 | head -30" | grep -q "read-item.sh GAME-2819"'
+check "the refusal exits 2" 'run "bin/plane show GAME-1 | head" | grep -q "exit=2"'
+check "read-item.sh into tail is refused" 'run "read-item.sh GAME-3 | tail -5" | grep -q "exit=2"'
+check "sed -n is refused" 'run "plane show GAME-3 2>&1 | sed -n 1,40p" | grep -q "exit=2"'
+check "grep is refused" 'run "read-item.sh 7 | grep Decision" | grep -q "exit=2"'
+check "the repo row command into head is refused" 'run "tracker view --comments 12 | head" | grep -q "read-item.sh 12"'
+check "a whole read passes" 'run "bin/plane show GAME-2819" | grep -qx "exit=0"'
+check "a whole read redirected to a file passes" 'run "read-item.sh GAME-1 > /tmp/x" | grep -qx "exit=0"'
+check "sed without -n passes" 'run "plane show GAME-1 | sed s/a/b/" | grep -qx "exit=0"'
+check "a pipe after a separate command is not the read" 'run "plane show GAME-1; git log | head" | grep -qx "exit=0"'
+check "an unrelated head passes" 'run "git log | head -3" | grep -qx "exit=0"'
+check "the setting off passes" '[ "$(jq -nc "{tool_input:{command:\"plane show G-1 | head\"}}" | CLAUDE_PLUGIN_OPTION_GUARD_WHOLE_READ=false bash "$guard" 2>&1; echo $?)" = 0 ]'
+check "bad input passes" '[ "$(echo notjson | bash "$guard" 2>&1; echo $?)" = 0 ]'
+check "no jq: says so and passes" 'out=$(echo "{}" | PATH=/nonexistent "$BASH" "$guard" 2>&1); [ $? = 0 ] && grep -q "jq is missing" <<<"$out"'
+exit $fail

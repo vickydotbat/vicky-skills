@@ -76,6 +76,12 @@
       "description": "The most open pull requests one session's stack holds.",
       "default": "3"
     },
+    "guard_whole_read": {
+      "type": "boolean",
+      "title": "Read a ticket whole",
+      "description": "Refuse a ticket read piped into head, tail, sed -n, grep, cut or awk, since the comments below the body hold decisions already made.",
+      "default": true
+    },
     "guard_tea_stdin": {
       "type": "boolean",
       "title": "Close tea's stdin",

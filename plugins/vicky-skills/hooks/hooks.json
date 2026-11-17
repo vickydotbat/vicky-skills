@@ -84,6 +84,11 @@
           },
           {
             "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/whole-read-guard.sh\"",
+            "timeout": 10
+          },
+          {
+            "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/merged-branch-guard.sh\"",
             "timeout": 15
           }
