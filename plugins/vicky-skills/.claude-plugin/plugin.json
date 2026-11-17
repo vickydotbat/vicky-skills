@@ -271,6 +271,12 @@
       "description": "When an agent writes or edits a decision record (adr/NNNN-*.md), add a reminder that a record holds a broad architecture rule, and that one feature's reason goes in a comment at its code.",
       "default": true
     },
+    "patch_tell_hint": {
+      "type": "boolean",
+      "title": "Flag CI patches",
+      "description": "When an agent's edit to a CI workflow adds a retry, a sleep, continue-on-error, a switched-off step, a skipped test or a raised timeout, remind it that a patch never lands as the fix.",
+      "default": true
+    },
     "fetch_place_hint": {
       "type": "boolean",
       "title": "Fetched data in a lasting place",
