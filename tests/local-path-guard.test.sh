@@ -31,6 +31,9 @@ stage 'see /Users/someone/Library/x';        expect 2 "refuses /Users/<name>/" "
 stage 'uses /nix/store/abc-foo/bin/foo';     expect 2 "refuses /nix/store/" "$commit"; unstage
 stage "open $HOME/notes";                    expect 2 "refuses the home directory" "$commit"; unstage
 stage "cd /srv/$USER/project";               expect 2 "refuses /<user>/ segment" "$commit"; unstage
+stage "cd /data/x/$USER/project";            expect 2 "refuses /<user>/ deep in an absolute path" "$commit"; unstage
+stage "imports ../../users/$USER/system.nix";  expect 0 "a repo-relative users/<user>/ folder passes" "$commit"; unstage
+stage "see \`users/$USER/profiles/x.nix\`";    expect 0 "a repo path naming a user folder passes" "$commit"; unstage
 stage "ssh $USER@somehost";                  expect 2 "refuses <user>@" "$commit"; unstage
 stage "author ${USER}dotbat, plugin ${USER}-skills, ${USER} said hi"
                                              expect 0 "bare or longer user name passes" "$commit"; unstage
