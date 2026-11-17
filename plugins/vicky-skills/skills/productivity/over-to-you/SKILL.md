@@ -80,7 +80,7 @@ Mark each item: [x] completed as expected, [~] completed with changes, [-] faile
 ## <section>
 
 1. [ ] <verb first: what to do> → <what you should see>
-   person: <look | feel | real client | second client | extender | hardware | outside account | timing>
+   person: <look | feel | real client | second client, no harness reaches <the gap> | extender | hardware | outside account | timing>
    kit: <for an item that reaches a thing: `the exact command` and where to run it>
    notes:
 

@@ -81,7 +81,7 @@ proven by: integration.sh --branch, 15 fixtures green
    person: look
 MD
 check "an item's lines end at the next heading" 'python3 "$lint" "$dir/heading.md" | grep -q "^4: item has no \`person:\` line"'
-# A second-client check names the harness gap, or becomes a harness test (sow-codebase PR 1609)
+# A second-client check names the harness gap, or becomes a harness test
 sed 's/person: look/person: second client/' "$dir/good.md" > "$dir/second.md"
 check "a second-client item that names no harness gap is refused" 'python3 "$lint" "$dir/second.md" | grep -q "simulated-player harness"'
 sed 's/person: look/person: second client, no harness reaches the hot reload/' "$dir/good.md" > "$dir/second-gap.md"
