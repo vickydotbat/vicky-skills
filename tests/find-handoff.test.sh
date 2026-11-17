@@ -109,6 +109,19 @@ git -C "$tea_repo" switch -q --detach
 check "a detached HEAD names the pull request as not read" "not read: pull request, HEAD is detached" "$(run "$tea_repo")"
 check "an extra argument is read as a ticket key" "ticket QQ-1" "$(run "$tea_repo" QQ-1)"
 
+# .todo is read only when the branch gave no pull request and no key.
+todo_repo=$(repo todo git@forge.example:o/t.git)
+echo '- 2026-01-01: **Handoff** from the todo' > "$dir/ticket-TODO-1"
+printf -- '- Finish it (TODO-1)\n' > "$todo_repo/.todo"
+echo '[]' > "$dir/tea-prs"
+lacks "a key in the branch name keeps .todo unread" "found: ticket TODO-1" "$(run "$todo_repo")"
+echo '[{"index":"8","head":"plain","url":"https://forge.example/o/t/pulls/8","title":"t","body":"no key here"}]' > "$dir/tea-prs"; echo '[]' > "$dir/tea-comments"
+lacks "an open pull request keeps .todo unread" "found: ticket TODO-1" "$(FIND_HANDOFF_BRANCH=plain run "$todo_repo")"
+echo '[]' > "$dir/tea-prs"
+out=$(FIND_HANDOFF_BRANCH=main run "$todo_repo")
+check "on main with nothing else, .todo is named as searched" "searched: .todo" "$out"
+rm "$dir/ticket-TODO-1"
+
 bare=$(repo bare git@forge.example:o/s.git)
 mkdir -p "$dir/nobin"; for t in bash git jq sed grep awk sort dirname basename timeout ls cat; do ln -s "$(command -v "$t")" "$dir/nobin/$t"; done
 out=$(cd "$bare" && PATH="$dir/nobin" FIND_HANDOFF_PROJECTS_DIR="$dir/projects" bash "$finder" 2>&1)

@@ -120,7 +120,7 @@ TESTS = {
     "skills/engineering/lay-course/scripts/draw-chart.py": ["draw-chart", "black_hole_drawing_approved_examples"],
     "skills/productivity/drawing-board/scripts/board.py": ["board-edges", "drawing-board", "drawing_board_approved_examples"],
     "skills/productivity/drawing-board/scripts/fetch-drawio.sh": ["fetch-drawio"],
-    "skills/productivity/sup/scripts/find-handoff.sh": ["find-handoff"],
+    "skills/productivity/sup/scripts/find-handoff.sh": ["find-handoff", "handoff_pointer_approved_examples"],
     "skills/productivity/familiar/scripts/familiar-replay.sh": ["familiar-replay", "familiar_replay_approved_examples", "familiar_evidence_approved_examples"],
     "skills/productivity/familiar/scripts/familiar-sessions.sh": ["familiar", "familiar-sessions-off", "familiar_approved_examples", "familiar_catchup_approved_examples", "familiar_handoff_id_approved_examples", "familiar_intent_approved_examples"],
     "skills/productivity/familiar/scripts/familiar-shapes.sh": ["familiar-shapes", "familiar_shapes_approved_examples"],
