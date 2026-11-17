@@ -12,8 +12,11 @@ note() { printf '%b' "$2" > "$fx/t/$1"; }
 run() { bash "$ts" "$fx/t" > "$fx/out" 2>"$fx/err"; }
 mkdir -p "$fx/t/sub"
 for s in open claimed waiting done; do note "20261101120000 A $s.md" "---\nkind: task\nstatus: $s\n---\n# A\n"; done
-note "sub/no status.md" "# not a top-level note\n"
-check "a folder of valid notes passes and says how many it read" 'run; [ $? = 0 ] && grep -qx "tracker-status: 4 notes, all on the tracker" "$fx/out"'
+note "sub/20261101121000 E.md" "---\nstatus: open\n---\n"
+check "a folder of valid notes, a subfolder included, passes and says how many it read" 'run; [ $? = 0 ] && grep -qx "tracker-status: 5 notes, all on the tracker" "$fx/out"'
+note "sub/no status.md" "# in a subfolder\n"
+check "a note in a subfolder is read too, as the since counts read it" 'run; [ $? = 1 ] && grep -qF "no status: sub/no status.md" "$fx/out"'
+rm "$fx/t/sub/no status.md"
 note "20261101130000 B.md" "# B\n\nStatus: built in #17.\n"
 check "a note with no frontmatter is listed as having no status" 'run; [ $? = 1 ] && grep -qF "no status: 20261101130000 B.md" "$fx/out"'
 rm "$fx/t/20261101130000 B.md"; note "20261101140000 C.md" "---\ntags: [familiar-debt]\n---\n# C\nstatus: done\n"
