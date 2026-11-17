@@ -277,6 +277,12 @@
       "description": "When an agent's edit to a CI workflow adds a retry, a sleep, continue-on-error, a switched-off step, a skipped test or a raised timeout, remind it that a patch never lands as the fix.",
       "default": true
     },
+    "guard_workflow_lint": {
+      "type": "boolean",
+      "title": "Lint CI workflows as they are written",
+      "description": "Run actionlint, with shellcheck on each run: script, on every CI workflow an agent writes, and hand its findings back. Needs actionlint installed.",
+      "default": true
+    },
     "fetch_place_hint": {
       "type": "boolean",
       "title": "Fetched data in a lasting place",
