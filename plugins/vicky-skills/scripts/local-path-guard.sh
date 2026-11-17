@@ -3,6 +3,7 @@
 # machine. Such a path means nothing to a reader and shows a stranger how the
 # machine is laid out. Scanned in the added lines only: your home directory,
 # /home/<name>/, /Users/<name>/, /nix/store/, /<your user>/ and <your user>@.
+# The /<your user>/ rule reads only paths that start at the root.
 # On unless the plugin option guard_local_paths is false or 0. Repositories listed
 # in local_path_exempt_repos (space-separated owner/repo, matched against the
 # end of origin's URL) are skipped. Binary untracked files are not scanned.
@@ -38,7 +39,9 @@ user=${USER:-$(id -un 2>/dev/null || true)}
 pattern='(^|[^[:alnum:]_.}/-])(/home/|/Users/)[^/[:space:]]+/|/nix/store/' # local-path-ok
 [ "${#HOME}" -gt 1 ] && pattern="$pattern|$(esc "$HOME")"
 if [ -n "$user" ]; then
-  pattern="$pattern|/$(esc "$user")/|(^|[^[:alnum:]_.-])$(esc "$user")@"
+  # /<user>/ counts only inside a path that starts at the root, such as
+  # /srv/<user>/. A repo path like users/<user>/ starts inside the repo.
+  pattern="$pattern|(^|[^[:alnum:]_.~}/-])(/[^/[:space:]]+)*/$(esc "$user")/|(^|[^[:alnum:]_.-])$(esc "$user")@"
 fi
 # A line marked local-path-ok holds a path on purpose, such as a test fixture.
 hits=$(grep -n -E -- "$pattern" <<<"$added" | grep -v 'local-path-ok' | cut -c1-160 | head -5 || true)
