@@ -155,6 +155,8 @@ jobs:
         run: tests/review_cause_approved_examples.test.sh
       - name: assimilate and review opt-outs
         run: tests/assimilate-optout.test.sh
+      - name: assimilate grades before it claims
+        run: tests/assimilate-grade.test.sh
       - name: find-handoff
         run: tests/find-handoff.test.sh
       - name: sup-handoff-hint

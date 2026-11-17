@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 # A repo switches off assimilate's Borg line and review's Cause section with
 # a line in its tracker doc, which first-contact writes.
+# E16 and E17, ticked on the drafts page 2026-11-17, as regression tests:
 #   Given a repo whose tracker doc says Claim voice: plain
 #   When an agent claims someone else's pull request there
-#   Then the claim comment has no Borg line
+#   Then the pull request is assigned to you and other agents are told to keep off, with no Borg line
 #   Given a repo whose tracker doc says Review cause: off
-#   When a branch there claims a fix and is reviewed
-#   Then the report has no Cause section
+#   When a branch there claims a fix and you review it
+#   Then the report has no Cause section and no Cause: no fix claimed line
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
 skills="$root/plugins/vicky-skills/skills"
