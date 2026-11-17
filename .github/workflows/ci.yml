@@ -55,6 +55,8 @@ jobs:
         run: tests/do_imp_pass_approved_examples.test.sh
       - name: Machine spirit runs a CI job locally first, and stops after one try
         run: tests/machine_spirit_local_ci_approved_examples.test.sh
+      - name: Machine spirit's CI doctrine
+        run: tests/machine_spirit_doctrine_approved_examples.test.sh
       - name: An example the unit seam can't reach gets a harness test
         run: tests/examples_harness_approved_examples.test.sh
       - name: Tracker notes stay on the tracker
