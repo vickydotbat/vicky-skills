@@ -237,6 +237,14 @@ jobs:
         run: tests/patch-tell-hint.test.sh
       - name: Workflow lint
         run: tests/workflow-lint.test.sh
+      - name: Ready-resume hint
+        run: tests/ready-resume-hint.test.sh
+      - name: Promise guard
+        run: tests/promise-guard.test.sh
+      - name: Eval spend gate
+        run: tests/eval-spend-gate.test.sh
+      - name: Engrave serious snags
+        run: tests/engrave-serious.test.sh
       - name: Restack-origin guard
         run: tests/restack-origin-guard.test.sh
       - name: Stacks and rebases build on origin's trunk

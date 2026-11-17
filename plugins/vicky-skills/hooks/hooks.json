@@ -328,6 +328,11 @@
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/sup-handoff-hint.sh\"",
             "timeout": 60
+          },
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/ready-resume-hint.sh\"",
+            "timeout": 5
           }
         ]
       }
@@ -344,6 +349,11 @@
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/keep-awake.sh\"",
             "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/promise-guard.sh\"",
+            "timeout": 10
           }
         ]
       }

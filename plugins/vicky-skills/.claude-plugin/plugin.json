@@ -235,6 +235,18 @@
       "description": "When do, warp, examples, review, sentinels, over-to-you, make-it-so, council-of-elrond, gamma-shift, away-team or lay-course starts, add one line of context naming what its steps need.",
       "default": false
     },
+    "guard_promise": {
+      "type": "boolean",
+      "title": "A promise to do better goes through engrave",
+      "description": "When the agent's reply promises to do better (\"from now on I'll...\") and the turn ran no engrave, send it back to turn the mistake into a law first.",
+      "default": true
+    },
+    "ready_resume_hint": {
+      "type": "boolean",
+      "title": "make-it-so resumes after your ready mark",
+      "description": "When your own ! command marks a pull request ready, remind the agent that make-it-so goes on: check a CI run started, watch it to green, fix red, settle the tickets.",
+      "default": true
+    },
     "sup_handoff_hint": {
       "type": "boolean",
       "title": "sup finds the handoff",

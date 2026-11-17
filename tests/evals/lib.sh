@@ -5,6 +5,10 @@
 #   exits as `claude plugin eval` does: 0 when the case passes.
 # plugin_before <commit> <dir>: the plugin as it stood just before <commit>,
 #   with today's eval cases copied in, so a case can run against old skill text.
+[ "${EVAL_SPEND:-}" = yes ] || {
+  echo "evals: every run here is a paid Claude session on your own credential. Read this runner's header for what it runs, then start it again with EVAL_SPEND=yes." >&2
+  exit 2
+}
 evals_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 evals_plugin="$evals_root/plugins/vicky-skills"
 evals_out=$(mktemp -d) # kept after the run, so each result can be read back

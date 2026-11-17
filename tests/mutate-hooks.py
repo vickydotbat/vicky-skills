@@ -82,6 +82,8 @@ TESTS = {
     "push-behind-guard.sh": ["push-behind-guard"],
     "patch-tell-hint.sh": ["patch-tell-hint"],
     "workflow-lint.sh": ["workflow-lint"],
+    "ready-resume-hint.sh": ["ready-resume-hint"],
+    "promise-guard.sh": ["promise-guard"],
     "restack-origin-guard.sh": ["restack-origin-guard"],
     "red-first-check.sh": ["red-first", "red_first_approved_examples"],
     "red-first-guard.sh": ["red-first", "red-first-paths", "red_first_approved_examples"],
