@@ -5,7 +5,7 @@
 # rebases onto the local branch, so a stale one replays commits a squash merge
 # already holds, and the conflicts hide the cause. Trunk is origin's default
 # branch; origin is fetched first (10 seconds at most), and a failed fetch lets
-# the command through. A trunk sync earlier in the same command (gs repo sync,
+# the command through with a note on stderr. A trunk sync earlier in the same command (gs repo sync,
 # a fetch into trunk, or trunk reset to origin's) passes.
 # On unless the plugin option guard_restack_origin is false or 0.
 case "${CLAUDE_PLUGIN_OPTION_GUARD_RESTACK_ORIGIN:-true}" in true|1) ;; *) exit 0 ;; esac
@@ -18,7 +18,9 @@ command=$(jq -r '.tool_input.command // ""' <<<"$payload" 2>/dev/null) || exit 0
 cwd=$(jq -r '.cwd // ""' <<<"$payload")
 grep -Eq '(^|[[:space:];&|(])gs[[:space:]]' <<<"$command" || exit 0 # mutant-ok delete: a fast path: the loop below refuses nothing in a command with no gs
 [ -n "$cwd" ] && { cd "$cwd" 2>/dev/null || exit 0; }
-# Quoted strings and heredoc bodies are text, not commands.
+# Quoted strings and heredoc bodies are text, not commands. git-hook-lib.sh
+# holds the same strip, and its trunk lookup below, but exits for any command
+# without git in it, so a bare gs never reaches them there.
 code=$(awk -f "$(dirname "$0")/heredoc-strip.awk" <<<"$command" | sed -zE "s/'[^']*'//g; s/\"([^\"\\\\]|\\\\.)*\"//g")
 
 # restack_key <words after gs>: prints the command as group:verb, such as

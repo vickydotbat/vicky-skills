@@ -39,9 +39,8 @@ for dflt in main master; do
   expect 2 "$dflt: via gs -C" "$scratch" "gs -C $w stack restack"
   expect 2 "$dflt: via cd" "$scratch" "cd $w && gs sr"
   expect 2 "$dflt: after another command" "$w" "git status; gs sr"
-  check_msg() { grep -q "gs repo sync" "$scratch/err" && grep -q "git fetch origin $dflt:$dflt" "$scratch/err" && grep -q "Nothing in this command ran" "$scratch/err"; }
   expect 2 "$dflt: the refusal names the fixes" "$w" "gs sr"
-  if check_msg; then echo "ok   $dflt: refusal text"; else echo "FAIL $dflt: refusal text"; fail=1; fi
+  if grep -q "gs repo sync" "$scratch/err" && grep -q "git fetch origin $dflt:$dflt" "$scratch/err" && grep -q "Nothing in this command ran" "$scratch/err"; then echo "ok   $dflt: refusal text"; else echo "FAIL $dflt: refusal text"; fail=1; fi
   expect 0 "$dflt: a sync earlier in the command passes" "$w" "gs repo sync && gs stack restack"
   expect 0 "$dflt: a short sync earlier passes" "$w" "gs rs && gs sr"
   expect 0 "$dflt: a trunk fetch earlier passes" "$w" "git fetch origin $dflt:$dflt && gs sr"
