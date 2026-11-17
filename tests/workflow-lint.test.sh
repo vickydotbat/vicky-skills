@@ -46,8 +46,13 @@ check "another tool is left alone" 'run "{\"tool_name\":\"Bash\",\"tool_input\":
 check "input that isn't JSON is left alone" 'run "not json"; [ $? = 0 ] && [ ! -e "$STUB_ARGS" ]'
 opt=false; check "setting off lints nothing" 'run "$(pl Write "$r/.gitea/workflows/a.yml")"; [ $? = 0 ] && [ ! -e "$STUB_ARGS" ]'
 opt=0; check "setting 0 lints nothing" 'run "$(pl Write "$r/.gitea/workflows/a.yml")"; [ $? = 0 ] && [ ! -e "$STUB_ARGS" ]'; opt=true
-mkdir -p "$fx/nolint"; for t in jq bash cat dirname; do ln -s "$(command -v $t)" "$fx/nolint/$t"; done
+mkdir -p "$fx/nolint"; ln -s "$(command -v jq)" "$fx/nolint/jq"
 check "without actionlint it says so and passes" 'run "$(pl Write "$r/.gitea/workflows/a.yml")" "$fx/nolint"; [ $? = 0 ] && grep -q "actionlint is missing, so this guard is off" "$fx/err"'
+mkdir -p "$fx/nosc"; ln -s "$(command -v jq)" "$fx/nosc/jq"; ln -s "$BASH" "$fx/nosc/bash"; ln -s "$fx/bin/actionlint" "$fx/nosc/actionlint"
+check "without shellcheck it still lints, and says run: scripts go unchecked" 'run "$(pl Write "$r/.gitea/workflows/a.yml")" "$fx/nosc"; [ $? = 0 ] && [ -s "$STUB_ARGS" ] && grep -q "shellcheck is missing" "$fx/err"'
+mkdir -p "$fx/.gx/repo2/.github/workflows"; echo 'jobs: {}' > "$fx/.gx/repo2/.github/workflows/e.yml"
+check "a folder above the repo whose name starts .g does not move the root" 'run "$(pl Write "$fx/.gx/repo2/.github/workflows/e.yml")"; grep -qx "$fx/.gx/repo2" "$STUB_ARGS.cwd"'
+check "machine-spirit step 4 names this hook and when to lint by hand" 'awk "/^4\\. /{on=1} /^5\\. /{on=0} on" "$(dirname "$hook")/../skills/engineering/machine-spirit/SKILL.md" | grep -q "The \`workflow-lint\` hook runs actionlint" && awk "/^4\\. /{on=1} /^5\\. /{on=0} on" "$(dirname "$hook")/../skills/engineering/machine-spirit/SKILL.md" | grep -q "actionlint not installed, or the hook switched off"'
 check "without jq it passes quietly" 'run "$(pl Write "$r/.gitea/workflows/a.yml")" /nonexistent; [ $? = 0 ] && [ ! -e "$STUB_ARGS" ]'
 # The real-lint cases, where a real actionlint is installed.
 if command -v actionlint >/dev/null 2>&1; then
@@ -56,6 +61,10 @@ if command -v actionlint >/dev/null 2>&1; then
   check "real actionlint: a clean Gitea workflow with an unlisted label passes" '[ "$(real "$q/.gitea/workflows/ok.yml" own-runner "echo ok")" = 0 ]'
   check "real actionlint: an apostrophe that ends bash -c early is refused" "[ \"\$(real \"\$q/.gitea/workflows/quote.yml\" own-runner \"bash -c 'it's broken'\")\" = 2 ]"
   check "real actionlint: a broken expression is refused" '[ "$(real "$q/.gitea/workflows/expr.yml" "\${{ matrix. }}" "echo ok")" = 2 ]'
+  check "real actionlint: a clean GitHub workflow passes" '[ "$(real "$q/.github/workflows/ok.yaml" ubuntu-24.04 "echo ok")" = 0 ]'
+  l="$fx/listed"; mkdir -p "$l/.github"; printf 'self-hosted-runner:\n  labels:\n    - own-runner\n' > "$l/.github/actionlint.yaml"
+  check "real actionlint: a label the repo lists passes" '[ "$(real "$l/.gitea/workflows/ok.yml" own-runner "echo ok")" = 0 ]'
+  check "real actionlint: a label the repo's list lacks is refused" '[ "$(real "$l/.gitea/workflows/label.yml" other-runner "echo ok")" = 2 ]'
 else
   echo "note real-lint cases need actionlint on PATH; the stub cases above cover the hook's decisions"
 fi
