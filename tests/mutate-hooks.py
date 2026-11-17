@@ -124,6 +124,7 @@ TESTS = {
     "skills/productivity/familiar/scripts/familiar-shapes.sh": ["familiar-shapes", "familiar_shapes_approved_examples"],
     "skills/productivity/familiar/scripts/familiar-visibility.py": ["familiar-visibility", "familiar_visibility_approved_examples", "familiar_evidence_approved_examples"],
     "skills/productivity/familiar/scripts/familiar-watch.sh": ["familiar", "familiar_watch_approved_examples", "familiar_watch_moves_approved_examples", "familiar_catchup_approved_examples", "familiar-visibility", "familiar-watch-move-empty"],
+    "skills/productivity/summit/scripts/tracker-status.sh": ["tracker-status"],
     "skills/productivity/human-voice/scripts/lint-tells.py": ["lint-tells", "lint_tells_approved_examples"],
     "skills/productivity/interactive-page/scripts/open-draft.sh": ["open-draft", "open-draft-page"],
     "skills/productivity/interactive-page/scripts/open-page.sh": ["open-draft", "interactive_page_approved_examples", "open-draft-page"],
