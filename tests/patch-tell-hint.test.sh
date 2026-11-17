@@ -29,6 +29,10 @@ hint "a step switched off is named" "$(edit "$wf" '      - run: make test' $'   
 hint "a step switched off by expression is named" "$(edit "$wf" '      - run: make test' $'      - if: ${{ false }}\n        run: make test')" "switched off"
 hint "an added test skip is named" "$(edit "$wf" '      - run: make test' '      - run: go test -skip TestFlaky ./...')" "a skipped test"
 hint "a raised timeout is named" "$(edit "$wf" '    timeout-minutes: 20' '    timeout-minutes: 40')" "a raised timeout"
+hint "a timeout raised beside a larger one is named" "$(edit "$wf" $'    timeout-minutes: 10\n  other:\n    timeout-minutes: 30' $'    timeout-minutes: 15\n  other:\n    timeout-minutes: 30')" "a raised timeout"
+hint "a retry named only in a comment is quiet" "$(edit "$wf" '      - run: make test' $'      # no retry needed here\n      - run: make test # retry-free')" ""
+hint "a health-check retries option is quiet" "$(edit "$wf" '      - run: make test' '        options: --health-retries 5')" ""
+hint "a step switched off with a trailing comment is named" "$(edit "$wf" '      - run: make test' $'      - if: false # off for now\n        run: make test')" "switched off"
 hint "a lowered timeout is quiet" "$(edit "$wf" '    timeout-minutes: 20' '    timeout-minutes: 10')" ""
 hint "a first timeout, a crash guard, is quiet" "$(edit "$wf" '    steps:' $'    timeout-minutes: 15\n    steps:')" ""
 hint "a tell already in the old text is quiet" "$(edit "$wf" $'      - run: sleep 5 && make test' $'      - run: sleep 5 && make test\n      - run: make lint')" ""
@@ -45,6 +49,10 @@ out=$(run "$(edit "$wf" '      - run: make test' '      - run: sleep 9 && pytest
 if jq -e '.hookSpecificOutput.additionalContext | (contains("a retry") and contains("a sleep") and contains("not the scripts it calls") and contains("Patch-tell hint: off"))' >/dev/null 2>&1 <<<"$out"; then echo "ok   two tells are named together, with the hint's limit and its opt-out"; else echo "FAIL two tells together: $out"; fail=1; fi
 printf 'Patch-tell hint: off\n' > "$fx/r/docs/agents/domain.md"
 hint "a repo that switched it off in docs/agents is quiet" "$(edit "$wf" '      - run: make test' '      - run: sleep 30')" ""
+w=$(jq -nc --arg p "$fx/r/.forgejo/workflows/new.yml" --arg c $'jobs:\n  t:\n    steps:\n      - run: sleep 30\n' '{tool_name:"Write",cwd:"/",tool_input:{file_path:$p,content:$c}}')
+hint "a Write that creates the workflow folder still reads the repo's opt-out" "$w" ""
+printf -- '- Patch-tell hint: off\n' > "$fx/r/docs/agents/domain.md"
+hint "a bulleted opt-out line counts" "$(edit "$wf" '      - run: make test' '      - run: sleep 30')" ""
 rm "$fx/r/docs/agents/domain.md"; printf '# Agents\n\nPatch-tell hint: off\n' > "$fx/r/AGENTS.md"
 hint "a repo that switched it off in AGENTS.md is quiet" "$(edit "$wf" '      - run: make test' '      - run: sleep 30')" ""
 rm "$fx/r/AGENTS.md"

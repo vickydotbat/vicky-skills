@@ -17,7 +17,7 @@ Found work check: on
 
 Patch-tell hint: on
 
-Write `Patch-tell hint: off` to stop the reminder when an edit to a CI workflow adds a retry, a sleep or a raised timeout.
+Write `Patch-tell hint: off` to stop the reminder when an edit to a CI workflow adds a patch tell: a retry, a sleep, `continue-on-error`, a switched-off step, a skipped test or a raised timeout.
 
 Checklist lint: full
 

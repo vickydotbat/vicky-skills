@@ -19,7 +19,7 @@ lesson-ledger.sh	4c88dc2d0aebcfe6	4cb925598f2dbcc8	18/18
 local-path-guard.sh	d427caa9a875a87c	939f20348d896e77	29/29
 merge-point.sh	a19dbe9167831b34	4ae7007ff5ee698a	2/2
 merged-branch-guard.sh	eddb14559b662ad4	19120906bae20d5e	41/41
-patch-tell-hint.sh	e816233af91fc8b5	3f91101e1f986fb0	47/47
+patch-tell-hint.sh	256a998db4051de9	db1e1785f0efc73d	50/50
 pkill-guard.sh	b7b411516636d988	2cdcc91629969504	7/7
 plane-block-guard.sh	a2ced0e121b33f36	1f2aaa04f3e3f875	20/20
 plugin-data.sh	b183a483ba56dfc4	70f1bfb11afc42ce	3/3
