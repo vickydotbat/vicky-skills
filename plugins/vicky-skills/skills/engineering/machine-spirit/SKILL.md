@@ -7,7 +7,7 @@ description: Write, change or debug CI. Use before editing a workflow under .git
 
 > _The machine spirit is appeased by proof, not prayer._
 
-A workflow change is a guess until the platform, the diff and the runner have each been checked. Every claim about how the CI platform behaves comes from the running server's version and a source you can quote. Memory is the usual source of CI mistakes, because Gitea changes behaviour between releases. CI is a long war: each change removes a class of failure or waste, never one red run. The doctrine's primary sources are quoted in [SOURCES.md](SOURCES.md).
+A workflow change is a guess until the platform, the diff and the runner have each been checked. Every claim about how the CI platform behaves comes from the running server's version and a source you can quote. Memory is the usual source of CI mistakes, because Gitea changes behaviour between releases. The doctrine's primary sources are quoted in [SOURCES.md](SOURCES.md).
 
 ## Steps
 
@@ -23,7 +23,7 @@ Run them in order for every workflow change. Diagnosing a run starts at step 7.
    | Which targets a change affects, and what is cached | The build system (Nix, Bazel, the repo's own build) and cache keys from its inputs | A CI step that rebuilds what the build system already holds |
    | Tools and their versions | The job's declared shell (`nix develop .#ci` in a Nix repo) | An install step, or a tool assumed to be on the runner |
    | Runner limits | The runner's config, declared in code | A raised `timeout-minutes` |
-   | Slow and flaky tests | The test harness: test sizes, isolation, fixtures | A retry or a sleep in the workflow |
+   | Slow and flaky tests | The test harness: test sizes, isolation, fixtures. A flaky test is red, as `make-it-so` step 6 says | A retry or a sleep in the workflow |
 
    Write shell only for what the syntax cannot say. Then the data is a list with one item per line, the logic is a few lines, and one comment says why the declarative form fails. Done when each change in the diff names its layer in the PR body, and every shell block in the diff has that reason.
 
@@ -40,7 +40,7 @@ Run them in order for every workflow change. Diagnosing a run starts at step 7.
    b. **When the runner cannot start** (no Nix, no host-mode runner, a runner label or secret the machine cannot supply): make one attempt. Then run the job's own `run:` steps in the shell its workflow sets up (`nix develop .#ci --command ...` in a Nix repo). When that fails too, stop. Never retry in a loop, swap tools or rebuild the runner by hand to force a local run. Write in the PR body which jobs and steps are unproven locally, and why. The pull request's first run on the shared runner proves them: the run once it is marked ready behind a draft gate, the draft's own run where CI runs on drafts.
    Done when each job the change reaches has a `Success` line per step in a local log, or the PR body names what is unproven and why.
 
-6. **Budget, and fight the biggest cost first.** The baseline is the base branch's recent runs: `gh run list --branch <base> --limit 5`, or `tea actions runs list` on Gitea, with each job's time from its log. Name what each job costs: time, peak memory and disk. Rank the jobs by measured cost, fix the biggest measured cost first, then measure again: one structural fix to the top job beats tuning every cheap one. A docs-only change builds nothing. Release work (cross-builds, images, packaging) stays on the release trigger. Push once, and push again to a green pull request only when the result can change. Done when the PR body states the expected cost against the baseline and names the top cost, and the cost of a new step comes from the runner log after its first run.
+6. **Budget, and fight the biggest cost first.** The baseline is the base branch's recent runs: `gh run list --branch <base> --limit 5`, or `tea actions runs list` on Gitea, with each job's time from its log. Name what each job costs: time, peak memory and disk. Rank the jobs by measured cost, fix the biggest measured cost first, then measure again. CI is a long war: one structural fix to the top job beats tuning every cheap one. A docs-only change builds nothing. Release work (cross-builds, images, packaging) stays on the release trigger. Push once, and push again to a green pull request only when the result can change. Done when the PR body states the expected cost against the baseline and names the top cost, and the cost of a new step comes from the runner log after its first run.
 
 7. **Watch every terminal state.** Poll the commit status until every required context is final, matching failure, cancelled and timeout as well as success. Read the failing job's log before you change anything: `tea api repos/<owner>/<repo>/actions/jobs/<id>/logs </dev/null`. On GitHub, the job's step list and `gh run view --log` can come back partial. To prove a step ran, read the run's log archive: `gh api repos/<owner>/<repo>/actions/runs/<id>/logs > <scratch>/logs.zip`, then `0_<job>.txt` inside it. Name the cause before you edit: one line, from the log. A fix removes the cause or its whole class. A patch hides it: a retry, a raised timeout, a sleep, a skipped or deleted test, `continue-on-error`, a loosened assertion or a cache cleared by hand. A patch never lands as the fix. When one must hold the line while the fix lands, the PR body names the cause and the ticket that removes it. A local run says which step is slow; only the runner log says why. Done when you quote each required context's final state, and each fix has its cause line.
 
@@ -55,7 +55,6 @@ Run them in order for every workflow change. Diagnosing a run starts at step 7.
 - **Runner and host configuration is declared in code.** Hand no one a `systemctl set-property` or a manual edit as the fix.
 - **CI automation never widens who can approve or merge.**
 - **A run already going is spent.** Do not hold, re-push or rebase a pull request, or park a merge-ready one behind a CI fix, just so a cheaper gate applies. Fix the gate for future pull requests and let the current run finish. The `run-already-going` eval case backs this line.
-- **Flaky is red.** A test that fails some runs is fixed at its cause in the harness, as `make-it-so` step 6 says. A retry only delays that fix.
 - **Write for a hostile reader.** Workflow comments name no run numbers, runner, host or cache, so a public copy maps nothing. A value a command needs (a `runs-on:` label, a URL it fetches) stays as config, with no prose around it, or moves to a CI variable.
 
 ## Gate rules

@@ -1,6 +1,6 @@
 ---
 type: regex
 target: last_message
-pattern: '\b(retry|retries)\b[^\n]{0,120}\b(patch|hides|masks|delays|symptom|stopgap|not (the|a) (fix|cure))|\b(patch|hides|masks|symptom|stopgap)\b[^\n]{0,120}\b(retry|retries)\b'
+pattern: '\b(retry|retries)\b[^\n]{0,160}(is a patch|\bhides|\bmasks|only delays|\bsymptom|\bstopgap|not (the|a) (fix|cure)|treats a flaky test as noise|nobody sees it|never lands)|\bboth changes are patches'
 flags: i
 ---
