@@ -8,11 +8,13 @@
 # `tea pr edit -t` with a title that drops `WIP:`), adds make-it-so's
 # remaining steps as context. On unless the plugin option ready_resume_hint
 # is false or 0.
+set -u
 case "${CLAUDE_PLUGIN_OPTION_READY_RESUME_HINT:-true}" in false | 0) exit 0 ;; esac
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every read below comes back empty, and the hook exits 0 the same way
 input=$(cat)
 prompt=$(jq -r '.prompt // ""' <<<"$input" 2>/dev/null)
 transcript=$(jq -r '.transcript_path // ""' <<<"$input" 2>/dev/null)
+inputs="" ready=""
 if [ -f "$transcript" ]; then
   # The user entries after the last assistant entry, each a plain string.
   inputs=$(tail -n 400 "$transcript" | jq -rs '

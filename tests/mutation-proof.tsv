@@ -31,7 +31,7 @@ push-behind-guard.sh	25522357ee259b6a	b5142565911dab4e	48/48
 quote-mask.awk	b04578521f7edc95	39c3be4ee1e354e7	52/52
 read-before-asking.sh	ecf3d5154a3c9ca6	0db3e83abcb263cd	21/21
 read-item.sh	81e4d8d4ff057aba	e9dc2de4d74f9ea4	14/14
-ready-resume-hint.sh	bf22a765932c4d4d	c61cfafc0acd7059	21/21
+ready-resume-hint.sh	7790bb36a9046171	77a907359d725496	22/22
 red-first-check.sh	e585449df8cf7aee	7f52e584fd9c528f	20/20
 red-first-guard.sh	ec04caecb4fc2494	8a632befa8a5ee0a	44/44
 restack-origin-guard.sh	cb150444008a2d6b	5da51779e8fb4626	74/74
