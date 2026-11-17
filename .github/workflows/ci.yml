@@ -149,6 +149,10 @@ jobs:
         run: tests/review-checkout.test.sh
       - name: conn examples
         run: tests/conn_approved_examples.test.sh
+      - name: assimilate examples
+        run: tests/assimilate_approved_examples.test.sh
+      - name: review cause examples
+        run: tests/review_cause_approved_examples.test.sh
       - name: find-handoff
         run: tests/find-handoff.test.sh
       - name: sup-handoff-hint
