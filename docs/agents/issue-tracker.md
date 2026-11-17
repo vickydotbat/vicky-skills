@@ -62,3 +62,15 @@ Change `on` to `off` to stop the `ticket-drift` check in this repo.
 PR template: on
 
 Change `on` to `off` to stop `pr-guard` refusing a pull request body that lacks `ship-it`'s Status, Summary, Proof and Risk sections in this repo.
+
+## Pull request claims
+
+Claim voice: Borg
+
+Change `Borg` to `plain` to have `assimilate` claim another person's pull request in this repo without its Borg line.
+
+## Review cause
+
+Review cause: on
+
+Change `on` to `off` to stop `review` adding a Cause section for a branch that claims a fix in this repo.

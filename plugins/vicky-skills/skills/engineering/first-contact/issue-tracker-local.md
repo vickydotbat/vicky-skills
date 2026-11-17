@@ -41,6 +41,18 @@ PR drafts: on
 
 Change `on` to `off` to stop `draft-guard` refusing a pull request opened ready for review, or marked ready before `make-it-so` starts, in this repo.
 
+## Pull request claims
+
+Claim voice: Borg
+
+Change `Borg` to `plain` to have `assimilate` claim another person's pull request in this repo without its Borg line.
+
+## Review cause
+
+Review cause: on
+
+Change `on` to `off` to stop `review` adding a Cause section for a branch that claims a fix in this repo.
+
 ## Familiar
 
 Familiar: on
