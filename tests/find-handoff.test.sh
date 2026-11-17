@@ -130,6 +130,7 @@ out=$(cd "$bare" && PATH="$dir/nobin" FIND_HANDOFF_PROJECTS_DIR="$dir/projects" 
 check "with neither gh nor tea it names the pull request as not read" "not read: pull request, neither gh nor tea is installed" "$out"
 skill=$(cat "$root/plugins/vicky-skills/skills/productivity/sup/SKILL.md")
 check "sup step 1 runs the finder" "scripts/find-handoff.sh" "$skill"
+check "sup step 1 names the .todo pointer among the places" "the \`.todo\` pointer \`conn\` leaves when the branch names neither" "$skill"
 check "sup quotes where it looked when no handoff is found" "quotes the script's \`none found in:\` and \`not read:\` lines" "$skill"
 check "conn names /sup as the one resume command" "Name \`/sup\` as the only command that resumes the work" "$(cat "$root/plugins/vicky-skills/skills/productivity/conn/SKILL.md")"
 exit $fail
