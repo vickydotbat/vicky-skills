@@ -59,6 +59,8 @@ jobs:
         run: tests/tracker-status.test.sh
       - name: Summit and familiar keep tracker notes on the tracker
         run: tests/tracker_status_approved_examples.test.sh
+      - name: A closed ticket counts by its closed date
+        run: tests/tracker-closed-date.test.sh
       - name: Skill steps
         run: tests/skill-steps.test.sh
       - name: Familiar intent and repo examples

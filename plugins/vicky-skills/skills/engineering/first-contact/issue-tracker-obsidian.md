@@ -6,6 +6,7 @@ Tickets are notes in the user's Obsidian vault, in `<vault>/<Project>/`, one not
 ---
 kind: anomaly        # chart, anomaly, away-team, probe, task or star
 status: open         # open, claimed, waiting or done
+closed:              # the date it was set done, YYYY-MM-DD
 parent: "[[<chart note name>]]"
 blocked_by: ["[[<blocker note title>]]"]
 labels: []           # a chart ready to warp holds starchart:afk
@@ -18,7 +19,7 @@ labels: []           # a chart ready to warp holds starchart:afk
 | File | Write a new note in `<vault>/<Project>/` with the frontmatter above. |
 | Comment | Append `- YYYY-MM-DD: <text>` under `## Comments`. |
 | Find | `grep -l '<text>' "<vault>/<Project>/"*.md` |
-| Close | Comment the reason, then set `status: done`. |
+| Close | Comment the reason, then set `status: done` and `closed: YYYY-MM-DD`. |
 
 ## Star chart operations
 
@@ -40,7 +41,7 @@ A waiting ticket can't go on until the thing its `Waits on:` line names is done.
 - **Move a ticket to <state>**: set `status:` in the frontmatter to `open` for not-started, `claimed` for started, `waiting` when parked or `done`.
 - **List notes off the tracker**: `bash ${CLAUDE_PLUGIN_ROOT}/skills/productivity/summit/scripts/tracker-status.sh "<vault>/<Project>/"`. It lists each note with no `status:` in its frontmatter, a status outside the four above, or no timestamp in its name. The "since" operations miss such a note, so give each one its status from its own text (a note with no word of being done stays `open`) and its timestamped name, stamped with the note's own creation time so it never counts as new, and update the links to a renamed note.
 - **List items created or changed since <time>**: `find "<vault>/<Project>/" -name '*.md' -newermt '<time>'`. A note whose name's timestamp is at or after `<time>` is new, any other is edited. Show at most five, then a count of the rest.
-- **List items closed since <time>**: `find "<vault>/<Project>/" -name '*.md' -newermt '<time>' -exec grep -l '^status: done' {} +`. Give the count.
+- **List items closed since <time>**: `find "<vault>/<Project>/" -name '*.md' -exec grep -l '^status: done' {} +`, keeping each note whose `closed:` date is on or after `<time>`'s date, and each note with no `closed:` date that changed since `<time>`. A later edit to a closed note never counts it again. Give the count.
 - **Park a ticket**: set `status: waiting` and add a `Waits on: <who or what>` line under the frontmatter.
 - **Claim a waiting ticket**: set `status: claimed` and delete its `Waits on:` line, before any other work.
 
