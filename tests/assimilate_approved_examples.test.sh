@@ -10,6 +10,8 @@ cause="$plugin/skills/engineering/review/CAUSE.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 has() { grep -qF -- "$2" "$1"; }
+# The Borg line opens the comment, and the plain paragraph comes after it.
+borg_first() { awk '/Open the verdict comment with/{o=NR} /Then a plain paragraph/{p=NR} END{exit !(o && p && o<p)}' "$sk"; }
 
 # Given any pull request, a fix, a feature or a refactor
 # When you tell an agent to assimilate it
@@ -36,7 +38,7 @@ check "E3 a guard is asked whether the bad state could be made impossible" \
 # And its comment opens in the Borg voice, such as We Are Borg. Your PR has been assimilated. Resistance is futile.
 # And a plain second paragraph tells other agents not to push to it
 check "E4 claiming someone else's pull request assigns it and posts the Borg lines" \
-  'has "$sk" "**Claim it**" && has "$sk" "Assign the pull request to the user" && has "$sk" "We Are Borg. Your PR has been assimilated. Resistance is futile." && has "$sk" "Other agents: do not push to this PR. The agent that claimed it is repurposing it."'
+  'has "$sk" "**Claim it**" && has "$sk" "Assign the pull request to the user" && has "$sk" "We Are Borg. Your PR has been assimilated. Resistance is futile." && has "$sk" "Other agents: do not push to this PR. The agent that claimed it is repurposing it." && borg_first'
 
 # Given a pull request you or one of your agents opened
 # When an agent assimilates it

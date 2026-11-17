@@ -30,5 +30,5 @@ check "E10 a branch that fixes nothing gets the no-fix line" \
 # When an agent next assimilates a pull request
 # Then its verdict asks the changed questions, because both skills read them from one place
 check "E11 assimilate reads the cause questions from review, and keeps no copy" \
-  'has "$sk" "[CAUSE.md](../review/CAUSE.md)" && ! has "$sk" "Reinvent the wheel" && ! has "$review" "Reinvent the wheel"'
+  'has "$sk" "[CAUSE.md](../review/CAUSE.md)" && ( for q in "Reinvent the wheel" "**Is the principle met?**" "**Cause or symptom?**" "**Is there a better way?**"; do ! has "$sk" "$q" && ! has "$review" "$q" || exit 1; done )'
 exit $fail
