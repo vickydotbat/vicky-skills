@@ -9,11 +9,13 @@ printf '| Operation | How |\n| --- | --- |\n| Read, whole | `tracker view --comm
 fail=0
 run() { jq -nc --arg c "$1" --arg d "$tmp" '{tool_name:"Bash",tool_input:{command:$c},cwd:$d}' | bash "$guard" 2>&1 >/dev/null; echo "exit=$?"; }
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
-check "plane show into head is refused and names the id" 'run "bin/plane show GAME-2819 | head -30" | grep -q "read-item.sh GAME-2819"'
+check "plane show into head is refused with the whole-thread steer" 'run "bin/plane show GAME-2819 | head -30" | grep -q "Read the whole thread: read-item.sh GAME-2819"'
 check "the refusal exits 2" 'run "bin/plane show GAME-1 | head" | grep -q "exit=2"'
 check "read-item.sh into tail is refused" 'run "read-item.sh GAME-3 | tail -5" | grep -q "exit=2"'
 check "sed -n is refused" 'run "plane show GAME-3 2>&1 | sed -n 1,40p" | grep -q "exit=2"'
 check "grep is refused" 'run "read-item.sh 7 | grep Decision" | grep -q "exit=2"'
+check "a cutter later in the pipeline is refused" 'run "plane show G-1 | jq . | head -5" | grep -q "exit=2" && run "plane show G-1 | tee f | tail" | grep -q "exit=2"'
+check "a cutter reading it through a process substitution is refused" 'run "head -30 <(plane show G-1)" | grep -q "read-item.sh G-1$"'
 check "the repo row command into head is refused" 'run "tracker view --comments 12 | head" | grep -q "read-item.sh 12"'
 check "a whole read passes" 'run "bin/plane show GAME-2819" | grep -qx "exit=0"'
 check "a whole read redirected to a file passes" 'run "read-item.sh GAME-1 > /tmp/x" | grep -qx "exit=0"'

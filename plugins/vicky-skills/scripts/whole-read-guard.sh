@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# PreToolUse hook (Bash): refuses a ticket read cut short by a pipe into head,
-# tail, sed -n, grep, cut or awk. A ticket's comments sit below its body, and
+# PreToolUse hook (Bash): refuses a ticket read cut short by head, tail, sed -n,
+# grep, cut or awk, piped later in its pipeline or reading it through <( ). A ticket's comments sit below its body, and
 # they hold the decisions already made, so a clipped read leads to asking the
 # user again. A ticket read is read-item.sh, `plane show`, or the command in
 # the repo's "Read, whole" row of docs/agents/issue-tracker.md. On unless the
@@ -20,9 +20,10 @@ if [ -f "$doc" ]; then
   row=$(grep -m1 -E '^\|[[:space:]]*Read, whole' "$doc" | sed -nE 's/^\|[^|]*\|[[:space:]]*`([^`<]+)[^`]*`.*/\1/p' | sed -E 's/[[:space:]]+$//')
   [ -n "$row" ] && reads="$reads|$(sed -E 's/[][\.*^$+?(){}|/]/\\&/g; s/[[:space:]]+/[[:space:]]+/g' <<<"$row")"
 fi
-cut='\|[[:space:]]*(head|tail|grep|cut|awk|sed[[:space:]]+(-[a-zA-Z]*n|--quiet|--silent))([[:space:]]|$)'
-grep -Eq "($reads)[^|;&]*$cut" <<<"$command" || exit 0
-id=$(grep -oE "($reads)[[:space:]]+[^[:space:]|;&]+" <<<"$command" | head -1 | awk '{print $NF}')
+tools='(head|tail|grep|cut|awk|sed[[:space:]]+(-[a-zA-Z]*n|--quiet|--silent))'
+# A cutter anywhere later in the read's pipeline, or one reading it through <( ).
+grep -Eq "($reads)[^;&]*\\|[[:space:]]*$tools([[:space:]]|\$)|$tools[^;&|]*<\\([[:space:]]*($reads)" <<<"$command" || exit 0
+id=$(grep -oE "($reads)[[:space:]]+[^[:space:]|;&)]+" <<<"$command" | head -1 | awk '{print $NF}')
 echo "whole-read-guard: a ticket's comments hold the decisions already made, and this pipe cuts them off. Read the whole thread: read-item.sh ${id:-<id>}" >&2
 echo "Search the full output afterwards if it is long. Nothing in this command ran, not even its other steps: rerun the ones that need no change on their own." >&2
 exit 2

@@ -74,6 +74,6 @@ ticket-drift.sh	1bc60db2e95d9227	cbdb7e2f644687db	36/36
 ticket-filing-guard.sh	13841080ab73f460	d88626b76e3ac06b	23/23
 todo-reminder.sh	87bab188b0686e79	a8ca61c6f02f86c9	9/9
 watch.sh	8361b0cd96435e12	a15ce89a2f7fa094	33/33
-whole-read-guard.sh	f8f881805a68e2b8	b64831f5afe15f0f	17/17
+whole-read-guard.sh	28a648d3b1a48a47	dcf42150b128fe9a	17/17
 workflow-lint.sh	31fd4d7feb0edf4c	8a78108350d8a96d	26/26
 worktree-place.sh	019f7c975eb4a099	e332e7a8fba90fe7	71/71
