@@ -33,12 +33,13 @@ check "E3 a guard is asked whether the bad state could be made impossible" \
   'has "$cause" "For a guard, ask whether the design could make the bad state impossible instead" && has "$cause" "the better way describes that design"'
 
 # Given a pull request someone else opened
+# And its verdict finds the agent can make it better: a change that doesn't hold, a principle missed, a symptom fixed in place of the cause, or a better way than the branch
 # When an agent assimilates it
 # Then the pull request is assigned to you
 # And its comment opens in the Borg voice, such as We Are Borg. Your PR has been assimilated. Resistance is futile.
 # And a plain second paragraph tells other agents not to push to it
-check "E4 claiming someone else's pull request assigns it and posts the Borg lines" \
-  'has "$sk" "**Claim it**" && has "$sk" "Assign the pull request to the user" && has "$sk" "We Are Borg. Your PR has been assimilated. Resistance is futile." && has "$sk" "Other agents: do not push to this PR. The agent that claimed it is repurposing it." && borg_first'
+check "E4 claiming someone else's pull request, when the verdict finds work, assigns it and posts the Borg lines" \
+  'has "$sk" "**Claim it only when the verdict finds work to do**" && has "$sk" "a change that doesn'"'"'t hold, a principle missed, a symptom fixed in place of the cause, or a better way than the branch" && has "$sk" "Assign the pull request to the user" && has "$sk" "We Are Borg. Your PR has been assimilated. Resistance is futile." && has "$sk" "Other agents: do not push to this PR. The agent that claimed it is repurposing it." && borg_first'
 
 # Given a pull request you or one of your agents opened
 # When an agent assimilates it
@@ -71,4 +72,12 @@ check "E8 the assimilate skill holds the claim rule" \
 # And only then compares that solution with the branch, and says which is better and why
 check "E12 the better way starts from the problem, not the branch" \
   'has "$cause" "Reinvent the wheel" && has "$cause" "from the problem alone, as if the branch and main as they stand did not exist" && has "$cause" "Only then compare it with the change, and say which is better and why"'
+
+# Given a pull request someone else opened
+# And its verdict finds the changes hold, the principle is met, the cause is fixed, and there's no better way
+# When an agent assimilates it
+# Then it posts the verdict as a grade only, with no Borg line and no change of assignee
+# And it asks you how to proceed, with two options at most and its pick
+check "E13 a sound pull request is graded, not claimed" \
+  'has "$sk" "post the verdict as a grade only, with no Borg line and no change of assignee" && has "$sk" "ask the user how to proceed, with two options at most and your pick"'
 exit $fail
