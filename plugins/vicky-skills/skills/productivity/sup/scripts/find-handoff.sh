@@ -36,6 +36,15 @@ if [ -n "$branch" ]; then
 fi
 # Ticket keys look like ABC-123.
 mapfile -t keys < <({ printf '%s\n' "$@"; printf '%s\n%s\n' "$branch" "$pr_text" | grep -oE '\b[A-Z][A-Z0-9]+-[0-9]+\b'; } | awk 'NF && !seen[$0]++')
+# With no pull request text and no key, .todo is the pointer: conn leaves a
+# "- Handoff: <key or link> (<date>)" line there, and standing orders name their tickets.
+top=$(git rev-parse --show-toplevel 2>/dev/null)
+if [ -z "$pr_text" ] && [ "${#keys[@]}" = 0 ] && [ -n "$top" ] && [ -f "$top/.todo" ]; then
+  searched+=(".todo")
+  url=$(grep -E '^- Handoff:' "$top/.todo" | grep -oE 'https?://[^ )]*' | tail -n 1)
+  [ -n "$url" ] && hit ".todo Handoff line" "$url"
+  mapfile -t keys < <(grep -oE '\b[A-Z][A-Z0-9]+-[0-9]+\b' "$top/.todo" | awk '!seen[$0]++')
+fi
 for k in "${keys[@]}"; do
   out=$(timeout 15 bash "$plugin/scripts/read-item.sh" "$k" </dev/null 2>/dev/null)
   if [ -z "$out" ] || grep -q "^Read $k whole: " <<<"$out"; then unread+=("ticket $k, read it by hand: read-item.sh printed no comments"); continue; fi
