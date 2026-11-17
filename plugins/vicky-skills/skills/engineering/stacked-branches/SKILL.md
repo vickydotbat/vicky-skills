@@ -19,7 +19,7 @@ The forge picks the tool:
   `gh pr merge`.
 - **Gitea**: `git-spice` (`gs`). Once per repo, `git config spice.submit.draft true`, so new pull requests open as drafts and `draft-guard` lets a submit through. `gs branch create <name>` from the branch it
   depends on, then `gs stack submit -l stacked`. After any branch merges: `gs repo sync`,
-  `gs stack restack`, `gs stack submit`.
+  `gs stack restack`, `gs stack submit`. A restack builds on the local trunk, so sync it to origin first, never `gs branch onto <trunk>` alone: `restack-origin-guard` refuses a restack while local trunk differs from origin's.
 - **Any other forge**: plain branches. Branch each one from the one it depends on, open its pull request against that branch, and after a merge rebase the next one onto the new base with `git rebase --onto <new base> <old base> <branch>`.
 
 Both tools record each branch's base, so a squash merge upstream replays only

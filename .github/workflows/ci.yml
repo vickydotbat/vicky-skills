@@ -219,6 +219,10 @@ jobs:
         run: tests/local-path-guard.test.sh
       - name: Push-behind guard
         run: tests/push-behind-guard.test.sh
+      - name: Restack-origin guard
+        run: tests/restack-origin-guard.test.sh
+      - name: Stacks and rebases build on origin's trunk
+        run: tests/restack_origin_approved_examples.test.sh
       - name: Lesson hint
         run: tests/lesson-hint.test.sh
       - name: Token savings

@@ -123,6 +123,12 @@
       "description": "Refuse a push from a branch that lacks the tip of origin's default branch.",
       "default": true
     },
+    "guard_restack_origin": {
+      "type": "boolean",
+      "title": "No restack onto a stale main",
+      "description": "Refuse a git-spice restack while local trunk differs from origin's.",
+      "default": true
+    },
     "guard_worktree_place": {
       "type": "boolean",
       "title": "Worktrees in each repo's .claude/worktrees",
