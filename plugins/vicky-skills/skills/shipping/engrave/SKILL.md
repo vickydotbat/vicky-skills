@@ -24,6 +24,8 @@ Build every law for the next agent: it sees only the files it opened, copies the
    - **A plugin gap** goes to the plugin's repo, when the user can push to it: `gh repo view <repository in plugin.json> --json viewerPermission` says `ADMIN`, `MAINTAIN` or `WRITE`. Hand it to an idle session in the plugin's repo (`ListAgents`, then `SendMessage`), else build it on a fresh branch from its main in a worktree, without asking. Never switch a checkout another session uses. When the repo is not pushable, or `gh` can't answer, it goes to the user's own agent setup: their `CLAUDE.md` (`~/.claude/CLAUDE.md`), or the repo that declares it when their setup lives in one.
    - **A repo gap** goes to the repo you work in, in a test, a standard or its agent docs, on the current effort's branch.
 
+   In the ledger (step 5), a plugin gap is `plugin`, or `setup` where it went to the user's agent file, and a repo gap is `repo`.
+
    Done when each part is labelled `plugin gap` or `repo gap` and has one destination.
    Proven by: plugins/vicky-skills/evals/engrave/gap-swap-test
 4. **Retire the old rule.** When the law replaces or reverses a rule written anywhere (a doc, a skill, a decision record, a ticket), run `plot-twist` with the old rule as the decision it replaces. When a structural law (rung 1 or 2) now holds what a written line said, delete that line, or cut it to a pointer at the check. Done when `plot-twist` has reported and no line restates a rule a check now holds, or the law replaces no written rule.
