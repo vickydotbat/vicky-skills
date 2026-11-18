@@ -42,8 +42,8 @@ Give the user's repo an opt-out in the same pull request: a line in a `docs/agen
 
 A test stops only the processes it started, by the id it saved: `pkill -f <pattern>` also matches the shell that ran the test.
 
-A test or hook script that calls a tool beyond bash and coreutils names it in `tests/tools`, so it runs on any machine with the listed tools, not only the one that wrote it.
-Proven by: tests/tools-declared.test.sh
+- A test or hook script that calls a tool beyond bash and coreutils names it in `tests/tools`, so it runs on any machine with the listed tools, not only the one that wrote it.
+  Proven by: tests/tools-declared.test.sh
 
 ## Evals
 
