@@ -87,6 +87,7 @@ TESTS = {
     "promise-guard.sh": ["promise-guard"],
     "restack-origin-guard.sh": ["restack-origin-guard"],
     "red-first-check.sh": ["red-first", "red_first_approved_examples"],
+    "law-lint.sh": ["law-lint", "law_lint_approved_examples", "laws_line_approved_examples"],
     "red-first-guard.sh": ["red-first", "red-first-paths", "red_first_approved_examples"],
     "skill-ledger.sh": ["skill_ledger_approved_examples"],
     "spark-joy.sh": ["spark-joy", "no-remote-quiet"],
