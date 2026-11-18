@@ -24,4 +24,17 @@ for mode in --since reach prove; do
   out=$("$lint" $mode 2>&1); rc=$?
   check "$mode with no base ref says it needs one and fails" '[ $rc -ne 0 ] && grep -q "needs a base ref" <<<"$out"'
 done
+cd "$t" && rm -rf r && mkdir r && cd r && git init -q
+printf -- '- After a heading.\n# Next\n  Proven by: AGENTS.md\n- After a note.\nA note.\n  Proven by: AGENTS.md\n' > AGENTS.md
+out=$("$lint" 2>&1)
+check "a Proven by line after a heading or a plain line belongs to no law above it" \
+  'grep -q "^unproven AGENTS.md:1: After a heading" <<<"$out" && grep -q "^unproven AGENTS.md:4: After a note" <<<"$out"'
+
+git config user.email t@t && git config user.name t
+mkdir -p tests; printf '#!/usr/bin/env bash\nsleep 30\n' > tests/slow.test.sh; chmod +x tests/slow.test.sh
+printf -- '- Slow.\n  Proven by: tests/slow.test.sh\n' > AGENTS.md; git add -A; git commit -qm base; base=$(git rev-parse HEAD)
+echo "# x" >> tests/slow.test.sh; git commit -qam touch
+start=$SECONDS; out=$(LAW_LINT_TIMEOUT=1 "$lint" prove "$base" 2>&1); rc=$?
+check "a proof that outlives LAW_LINT_TIMEOUT counts as failed, and prove stops waiting" \
+  '[ $rc = 1 ] && grep -q "Slow. (tests/slow.test.sh: failed)" <<<"$out" && [ $((SECONDS - start)) -lt 10 ]'
 exit $fail

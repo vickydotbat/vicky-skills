@@ -14,6 +14,7 @@ git-guard.sh	77dedc9bf5718121	d09d965a61a737d2	51/51
 git-hook-lib.sh	5b23f2ed23f960ca	7028317eb43a587b	51/51
 heredoc-strip.awk	f4f00a43ef2fd634	5622f720b45d6356	6/6
 keep-awake.sh	feff08832e938e61	413a5f283466e99b	27/27
+law-lint.sh	73a206a01f7fe091	e6187d4bae10abb5	160/160
 lesson-hint.sh	7a82ca13330f28fd	53c1dbd246d11bc3	11/11
 lesson-ledger.sh	4c88dc2d0aebcfe6	4119823c54b0164c	18/18
 local-path-guard.sh	6250febeeda4bb1c	0ce0e2b566b06217	29/29

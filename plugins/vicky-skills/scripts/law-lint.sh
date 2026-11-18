@@ -14,7 +14,7 @@
 # A "Law proofs: off" line in docs/agents/ switches the lint off.
 set -u
 root=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
-cd "$root" || exit 2
+cd "$root" || exit 2 # mutant-ok: the folder git or pwd just printed exists
 exec python3 - "$@" <<'PY'
 import os, re, subprocess, sys
 
@@ -22,6 +22,7 @@ SKIP_DIRS = {".git", "node_modules", "vendor"}
 SKIP_HEADINGS = {"examples", "pointers", "comments", "notes"}
 ITEM = re.compile(r"^(?:- |\d+\. )(.*)")
 PROOF = re.compile(r"^\s*Proven by:\s*(.*?)\s*$")
+TIMEOUT = float(os.environ.get("LAW_LINT_TIMEOUT", "600"))  # seconds per proof
 POINTER = re.compile(r"^(See\b.*|\[[^\]]*\]\([^)]*\)\.?)$")
 
 
@@ -159,7 +160,7 @@ def prove(base):
             continue
         if os.path.isfile(proof) and os.access(proof, os.X_OK):
             try:
-                ok = subprocess.run([os.path.abspath(proof)], capture_output=True, timeout=600).returncode == 0
+                ok = subprocess.run([os.path.abspath(proof)], capture_output=True, timeout=TIMEOUT).returncode == 0
             except subprocess.TimeoutExpired:
                 ok = False
             result = "passed" if ok else "failed"
