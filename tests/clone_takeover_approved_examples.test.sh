@@ -40,43 +40,46 @@ setup() {
   [ "${1:-}" = keep ] || g -C "$dir/origin.git" branch -q -D feat
 }
 on() { git -C "$dir/repo" symbolic-ref --short -q HEAD; }
+# What you see, and whether the agent hears anything: JSON whose only field is systemMessage.
+seen() { jq -r '.systemMessage // empty' <<<"$1" 2>/dev/null; }
+agent_silent() { [ -z "$1" ] || jq -e 'keys == ["systemMessage"]' <<<"$1" >/dev/null 2>&1; }
 at_main() { [ "$(git -C "$dir/repo" rev-parse HEAD)" = "$(git -C "$dir/repo" rev-parse origin/main)" ]; }
 
 # Given your clone sits on a branch whose pull request merged, with no uncommitted changes
 # When a session starts in it
-# Then before its first reply the clone stands on the latest main, and the reply says so in one line
+# Then the clone stands on the latest main, and you see one line saying so
 setup; echo MERGED > "$dir/pr-feat"
 out=$(run "$dir/repo")
-check "E1 a merged branch hands the clone back to the latest main" '[ "$(on)" = main ] && at_main && grep -q "now stands on main" <<<"$out"'
+check "E1 a merged branch hands the clone back to the latest main" '[ "$(on)" = main ] && at_main && seen "$out" | grep -q "now stands on main"'
 
 # Given your clone sits on a branch whose pull request merged, and the branch was never deleted on GitHub
 # When a session starts in it
 # Then the clone stands on the latest main, the same as when the branch is gone
 setup keep; echo MERGED > "$dir/pr-feat"
 out=$(run "$dir/repo")
-check "E2 merged with the branch still on origin, the clone stands on main" '[ "$(on)" = main ] && at_main && grep -q "now stands on main" <<<"$out"'
+check "E2 merged with the branch still on origin, the clone stands on main" '[ "$(on)" = main ] && at_main && seen "$out" | grep -q "now stands on main"'
 
 # Given your clone sits on a branch with an open pull request
 # When a session starts in it
-# Then the clone stays on that branch, and the session does its work in a worktree of its own
+# Then the clone stays on that branch
 setup keep; echo OPEN > "$dir/pr-feat"
 out=$(run "$dir/repo")
-check "E3 an open pull request keeps the clone and sends the work to a worktree" '[ "$(on)" = feat ] && grep -q "worktree of its own" <<<"$out"'
+check "E3 an open pull request keeps the clone" '[ "$(on)" = feat ] && agent_silent "$out"'
 
 # Given your clone sits on a merged branch and holds uncommitted changes
 # When a session starts in it
-# Then the clone stays put, and the first reply names the changed files without asking what to do with them
+# Then the clone stays put, and you see one line naming the changed files
 setup; echo MERGED > "$dir/pr-feat"; echo half > "$dir/repo/notes.txt"
 out=$(run "$dir/repo")
-check "E4 uncommitted changes keep the clone where it is, and are named" '[ "$(on)" = feat ] && grep -q "notes.txt" <<<"$out" && grep -q "do not ask" <<<"$out"'
+check "E4 uncommitted changes keep the clone where it is, and you see them named" '[ "$(on)" = feat ] && seen "$out" | grep -q "notes.txt" && agent_silent "$out"'
 
 # Given your clone sits on a merged branch that has commits made after the merge
 # When a session starts in it
-# Then those commits move to a fresh branch from the latest main, and the reply names that branch
+# Then those commits move to a fresh branch from the latest main, and you see one line naming that branch
 setup; echo MERGED > "$dir/pr-feat"
 echo more > "$dir/repo/more.txt"; g -C "$dir/repo" add more.txt; g -C "$dir/repo" commit -q -m "after the merge"
 out=$(run "$dir/repo")
 check "E5 commits after the merge move to a fresh branch from main" '[ "$(on)" = feat-after-merge ] \
-  && [ "$(git -C "$dir/repo" log --format=%s origin/main..HEAD)" = "after the merge" ] && grep -q "feat-after-merge" <<<"$out"'
+  && [ "$(git -C "$dir/repo" log --format=%s origin/main..HEAD)" = "after the merge" ] && seen "$out" | grep -q "feat-after-merge" && agent_silent "$out"'
 
 exit $fail
