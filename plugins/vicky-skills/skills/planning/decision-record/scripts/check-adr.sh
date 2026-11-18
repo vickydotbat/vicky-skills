@@ -9,6 +9,7 @@ tpl=0; [ "${1:-}" = "--template" ] && { tpl=1; shift; }
 categories='Architecture|Data|Interface|Infrastructure|Security|Dependencies|Tooling|Process|Other'
 ref='([a-z0-9][a-z0-9-]* )?ADR-[0-9]{4}'
 date='[0-9]{4}-[0-9]{2}-[0-9]{2}'
+dated_since=2026-11-19
 fail=0
 for f in "$@"; do
   [ -r "$f" ] || { echo "$f: cannot read"; fail=1; continue; }
@@ -35,7 +36,7 @@ for f in "$@"; do
         else if ($0 ~ "^Amended by " ref " on " date "\\.$") print "later"
         else print "other"
         next }
-      sec == "context" { print ($0 ~ /^- F[0-9]+: ./ ? "force" : "other"); next }
+      sec == "context" { print ($0 ~ /^- F[0-9]+( \([^)]*\))?: ./ ? "force" : "other"); next }
       sec == "decision" && !inpara { print ($0 ~ /^While ./ ? "while" : "para"); inpara = 1; next }
       sec != "" { if (!inpara) print "para"; inpara = 1; next }
       /^Because ./ { print "why"; next }
@@ -51,13 +52,30 @@ for f in "$@"; do
       "what category status accepted context force decision while consequences para guard para "|\
       "what category status accepted later context force decision while consequences para guard para ")
         limit=180
-        forces=$(grep -oE '^- F[0-9]+:' "$f" | grep -oE 'F[0-9]+' | sort)
+        forces=$(grep -oE '^- F[0-9]+( \([^)]*\))?:' "$f" | grep -oE 'F[0-9]+' | sort)
         [ "$(printf '%s\n' "$forces" | uniq -d)" = "" ] || { echo "$f: a force number is used twice in Context"; fail=1; }
         cited=$(awk '/^## Decision$/{d=1;next} /^## /{d=0} d' "$f" | grep -oE '\bF[0-9]+\b' | sort -u)
         [ -n "$cited" ] || { echo "$f: the Decision names no force it rests on"; fail=1; }
         for c in $cited; do printf '%s\n' "$forces" | grep -qx "$c" || { echo "$f: the Decision cites $c, which Context lacks"; fail=1; }; done
         for c in $(grep -oE 'F[0-9]+ no longer holds' "$f" | grep -oE '^F[0-9]+'); do
-          printf '%s\n' "$forces" | grep -qx "$c" || { echo "$f: Status cites $c, which Context lacks"; fail=1; }; done ;;
+          printf '%s\n' "$forces" | grep -qx "$c" || { echo "$f: Status cites $c, which Context lacks"; fail=1; }; done
+        # A force's tag says where it came from: an incident, linked, or a foreseen failure.
+        while read -r n tag; do
+          case "$tag" in
+            foreseen) ;;
+            incident) echo "$f: $n is tagged incident but links no ticket or post-mortem"; fail=1 ;;
+            incident\ *) [[ "${tag#incident }" =~ ^([A-Z][A-Z0-9]*-[0-9]+|#[0-9]+|$ref|\[\[.+\]\]|https?://[^[:space:]]+)$ ]] || { echo "$f: $n is tagged incident but links no ticket or post-mortem"; fail=1; } ;;
+            *) echo "$f: $n has an unknown tag: use (incident <ticket>) or (foreseen)"; fail=1 ;;
+          esac
+        done < <(grep -oE '^- F[0-9]+ \([^)]*\):' "$f" | sed -E 's/^- (F[0-9]+) \((.*)\):$/\1 \2/')
+        # A kept record is never edited, so only records accepted once the
+        # date rule landed must date every force.
+        accepted=$(grep -m1 -oE "^Accepted $date\." "$f" | grep -oE "$date")
+        if [[ ! "$accepted" < "$dated_since" ]]; then
+          while read -r n line; do
+            [[ "$line" =~ $date ]] || { echo "$f: $n has no date"; fail=1; }
+          done < <(awk '/^## Context$/{c=1;next} /^## /{c=0} c && /^- F[0-9]+/' "$f" | sed -E 's/^- (F[0-9]+)[^:]*: /\1 /')
+        fi ;;
       *) echo "$f: needs what, category, Status, Context, Decision, Consequences and Guard (or an older shape), and nothing else; found: $report"; fail=1 ;;
     esac
   fi

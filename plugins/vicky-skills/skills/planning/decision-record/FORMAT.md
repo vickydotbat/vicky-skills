@@ -49,7 +49,7 @@ While F1 holds, <the rule a reader applies>.
 ```
 
 - **Title and Decision** give the choice, never how it is built.
-- **Context** holds one to five forces, each a `- F<n>: ` line. A force is an outside limit: a platform, a cost, a law, a measured failure. A preference is not a force.
+- **Context** holds one to five forces, each a `- F<n>: ` line with a date. A force is an outside limit: a platform, a cost, a law, a measured failure. A preference is not a force. A force that came from an incident is tagged `- F<n> (incident <ticket or post-mortem link>): `, and one that guards a failure foreseen before it happened is tagged `- F<n> (foreseen): `. A record accepted before the check required dates keeps its undated forces.
 - **Category** is exactly one of these, the first that fits:
   - **Architecture**: the system's parts and how they talk to each other.
   - **Data**: what is stored, who owns it, and its form.
