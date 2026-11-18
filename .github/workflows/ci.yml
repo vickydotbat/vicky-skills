@@ -343,8 +343,10 @@ jobs:
         run: tests/todo-sh.test.sh
       - name: Hook audit counts refusals
         run: tests/hook-audit.test.sh
-      - name: AGENTS.md is one path
+      - name: Every AGENTS.md step has a Done when
         run: tests/agents-doc.test.sh
+      - name: Review principles are named by leading words
+        run: tests/principles-leading-words.test.sh
       - name: Every relative path in the skills resolves
         run: tests/skill-paths-resolve.test.sh
       - name: Law lint lists laws with no proof

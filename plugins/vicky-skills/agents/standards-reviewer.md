@@ -16,7 +16,7 @@ When the caller names a **law file**, read it whole first: it holds the repo's r
 4. **Run the tight checks** against the diff: every item below, then every item in the repo's own review checklist when its standards files have one. Done when each check has run.
    - A blocking wait on async work, or async work started with nobody handling its failure.
    - A suppression (a lint disable, a mutant ignore, a skipped test) with no reason, or a reason that says only that the right fix is hard.
-   - A comment that breaks PRINCIPLES.md's "A comment is a one-line why": narration, history or a change note, a banner, a why over two lines, or a why deleted with no new one.
+   - A comment that breaks PRINCIPLES.md's "Why-comments": narration, history or a change note, a banner, a why over two lines, or a why deleted with no new one.
    - A new Markdown file that is a plan, spec, handoff, tracker or session learnings.
    - A literal repeated where a named constant belongs.
    - A test that greps source text, where a banned-symbol list or analyzer belongs.
