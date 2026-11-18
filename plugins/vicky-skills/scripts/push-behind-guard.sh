@@ -71,9 +71,8 @@ while IFS= read -r segment; do
   fi
   if ! git merge-base --is-ancestor "origin/$dflt" "$src" 2>/dev/null; then
     refuse "push-behind-guard: '$src' lacks commits that origin/$dflt has." \
-      "Bring it up to date first:" \
-      "  git fetch origin && git rebase origin/$dflt" \
-      "Settle each conflict, rerun the checks, push, then mark it ready or reopen it."
+      "Bring it up to date with the history-monks skill: it rebases onto origin/$dflt by the intent of what landed." \
+      "Then rerun the checks, push, and mark it ready or reopen it."
   fi
 done < <(tr ';&|' '\n' <<<"$command")
 exit 0 # mutant-ok delete: the loop above ends with status 0 on every path

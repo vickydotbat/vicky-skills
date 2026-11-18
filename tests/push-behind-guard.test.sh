@@ -83,4 +83,6 @@ git push origin topic"
   expect 0 "$dflt: HEAD on the default is out of scope" "$w" 'git push origin HEAD'
 done
 expect 0 "not a push passes" "$w" 'git status'
+msg=$(jq -n --arg c 'git push origin topic' --arg d "$scratch/work-main" '{cwd:$d,tool_input:{command:$c}}' | CLAUDE_PLUGIN_OPTION_GUARD_PUSH_BEHIND=true "$hook" 2>&1 >/dev/null)
+if grep -q history-monks <<<"$msg" && ! grep -q 'git rebase' <<<"$msg"; then echo "ok   the refusal steers to history-monks, not a bare rebase"; else echo "FAIL the refusal steers to history-monks: $msg"; fail=1; fi
 exit $fail
