@@ -21,9 +21,10 @@ An agent document is a program the model runs. Good ergonomics means the agent t
 2. **List the branches**: each distinct case the document handles, which sends different runs down different paths. Done when every case you have seen in a real session is on the list.
 3. **Write the pointer** (the description, or the `AGENTS.md` line). Lead with the trigger word. Give one trigger per branch. Done when it would fire on every branch and on nothing else.
 4. **Write the steps**, each ending in **Done when** plus a condition the agent can see. Done when no step ends on a feeling ("understood", "thorough").
-5. **Push reference down.** Inline what every branch needs. Move what only some branches need into a sibling file behind a pointer. Done when the steps fit on one screen.
-6. **Lint it** against the checklist below. Done when every item passes.
-7. **Run it.** Start a fresh agent on two different branches and read its transcript. A wrong path is fixed by sharpening the wording first, and by inlining material only when sharpening fails. When the skill already has cases under the plugin's `evals/<skill>/`, rerun them once, by hand, with `--max-cost-usd` set. Done when both runs take the path you meant, and every existing case of an edited skill passes.
+5. **Name each rule.** Find the known term for the property each rule protects (_deterministic_, _idempotent_, _single source of truth_, _fail closed_, _zero drift_), and put it first: `<Leading word>: <the rule that pins its meaning here>.` Then use that word, and only that word, everywhere the rule comes up again: in steps, checks, pointers and the findings a review writes. Coin a word only when none fits, and define it once where it first appears. Done when every rule opens with a term a reviewer could quote as the finding, and no later line names the rule by a paraphrase.
+6. **Push reference down.** Inline what every branch needs. Move what only some branches need into a sibling file behind a pointer. Done when the steps fit on one screen.
+7. **Lint it** against the checklist below. Done when every item passes.
+8. **Run it.** Start a fresh agent on two different branches and read its transcript. A wrong path is fixed by sharpening the wording first, and by inlining material only when sharpening fails. When the skill already has cases under the plugin's `evals/<skill>/`, rerun them once, by hand, with `--max-cost-usd` set. Done when both runs take the path you meant, and every existing case of an edited skill passes.
 
 ## Lint checklist
 
@@ -36,7 +37,10 @@ An agent document is a program the model runs. Good ergonomics means the agent t
 - [ ] Every command is exact and ready to paste, with placeholders in `<angle brackets>`.
 - [ ] Where the output matters, a template shows its form.
 - [ ] Every step says what to do when it can't finish (stop and ask, file a ticket, say "unchecked").
+- [ ] Every law and heading opens with a leading word, not a sentence that describes one ("Every X ships its Y").
+- [ ] A rule is named by its one leading word everywhere it appears. A paraphrase ("one point of entry" for _single source of truth_) is a second name, and two names drift into two rules.
 - [ ] A leading word is repeated, never re-explained.
+- [ ] No filler: "make sure to", "it is important that", "always try to", "in order to", "please note". Delete it, or replace it with the verb.
 - [ ] No sentence states what the model does by default. Delete each one that fails the test of changing behaviour. A line marked `<!-- kept` stays: `captains-log` saw it cause a high point.
 - [ ] Nothing restates what the environment already says: `package.json`, `--help`, the directory listing.
 
@@ -53,6 +57,8 @@ A skill an agent should reach on its own keeps its description and pays context 
 
 A word the model already knows (_red_, _frontier_, _seam_, _tracer bullet_, _fog of war_) anchors a whole behaviour in one token. Hunt for a passage that spells out an idea at length and collapse it into one such word. Coin a new word only when none fits, and define it once.
 
+A law opens with its leading word: `Deterministic: the same commit builds the same Home on every host.` The word names the behaviour, and the rule after it sets the bounds. Use the word throughout, not only at the top: the heading, the steps, the checklist line and the review finding all say _deterministic_. Each repeat recalls the whole rule for one token, and a reviewer cites it in two words a stranger understands. A heading written as a sentence ("Every schema change ships its migration") is filler: name the property it protects instead (_atomic schema changes_).
+
 Every skill opens with an **epigraph**: one italic quote line under its title that bends a famous line from film, TV, games or books to state the skill's rule (`> _It's never lupus. It's whatever turns the loop red._`). The reference is the leading word, and the rule after it pins down what the reference means. Pick a line the model surely knows, whose shape matches the rule. A quote that states no rule is decoration: cut it.
 
 A skill whose report marks a key moment opens it with one **headline** carrying one emote: `🧠 Cerebro`, `🖖 Dropped out of warp.` One per report, at its top, and never in a commit, pull request, ticket or code.
@@ -67,6 +73,7 @@ Split a document when it sprawls past one screen of steps, when its branches sha
 2. Is the instruction in context at that moment? If not, the pointer didn't fire: sharpen its trigger.
 3. Is it in context and outranked? Find what outranks it: a default, a louder line, an example that contradicts it.
 4. Is it a ban? Rewrite it as the target behaviour.
-5. Is it mechanical? Move it to a check, and let the check say no.
+5. Does the agent satisfy the letter and miss the point? Replace the description with the property's name: an agent can honour "one entry" on a technicality, but not _deterministic_.
+6. Is it mechanical? Move it to a check, and let the check say no.
 
 Charter: C1 ([CHARTER.md](../../CHARTER.md)).
