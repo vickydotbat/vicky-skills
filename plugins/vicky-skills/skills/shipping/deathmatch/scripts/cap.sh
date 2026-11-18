@@ -7,7 +7,6 @@ set -u
 secs=${1:?usage: cap.sh <seconds> <memory> -- <command...>}
 mem=${2:?usage: cap.sh <seconds> <memory> -- <command...>}
 shift 2
-[ "${1:-}" = -- ] && shift
 bytes=$(numfmt --from=iec "$mem") || exit 2
 err=$(mktemp)
 trap 'rm -f "$err"' EXIT # mutant-ok delete: the temporary file is the only effect, and no caller reads it

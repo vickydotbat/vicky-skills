@@ -62,6 +62,8 @@ expect "a body naming the review skill as its proof is refused" 2 "gh pr edit 7 
 expect "a body naming review beside deathmatch passes" 0 "gh pr edit 7 --body 'Deathmatch replaced the review skill: 0 proven findings.'"
 printf 'Ran `review` on it.\n' >"$scratch/tick.md"
 expect "a body naming review in backticks is refused" 2 "gh pr edit 7 --body-file $scratch/tick.md"
+got=$(jq -nc --arg c "gh pr edit 7 --body 'The review skill found nothing.'" --arg d "$scratch" '{hook_event_name: "PostToolUse", tool_name: "Bash", cwd: $d, session_id: "sid1", tool_input: {command: $c}}' | bash "$hook" >/dev/null 2>&1; echo $?)
+if [ "$got" = 0 ]; then echo "ok   the review-only body rule never refuses after the command ran"; else echo "FAIL the review-only body rule never refuses after the command ran: exit $got"; fail=1; fi
 expect "a plain body passes" 0 "gh pr create --title T --body-file $scratch/plain.md"
 expect "a pull request passes when this session has none open" 0 "gh pr create --title Second --body x"
 expect "a stack passes" 0 "gh stack submit"
