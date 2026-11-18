@@ -38,8 +38,8 @@ out=$(CAP_NO_SCOPE=1 bash "$dm/cap.sh" 10 32M -- python3 -c 'b = bytearray(256 *
 check "with no scope, the memory cap still holds" '[ $r = 125 ]'
 out=$(bash "$dm/cap.sh" 10 64M -- bash -c 'exit 143'); r=$?
 check "a command's own exit 143 is no time cap" '[ $r = 143 ] && [ -z "$out" ]'
-before=$(pgrep -cx sleep); bash "$dm/cap.sh" 30 64M -- true; after=$(pgrep -cx sleep)
-check "a fast command leaves no timer behind" '[ "$after" -le "$before" ]'
+bash "$dm/cap.sh" 4271 64M -- true
+check "a fast command leaves no timer behind" '! pgrep -fx "sleep 4271" >/dev/null'
 out=$(bash "$dm/cap.sh" 10 64M -- python3 -c 'import os; os.kill(os.getpid(), 9)'); r=$?
 check "a command that kills itself is no time cap" '[ $r = 137 ] && ! grep -q "time cap" <<<"$out"'
 h=$(bash "$dm/halfway.sh" 010)
