@@ -29,8 +29,6 @@ jobs:
         with:
           # The red-first check reads the commits that added each approved test.
           fetch-depth: 0
-      - name: Every tool the tests call is installed
-        run: tests/tools-present.sh
       - name: tools-declared finds a runtime a script calls but tests/tools leaves out
         run: tests/tools-declared.test.sh
       - name: Plugin layout

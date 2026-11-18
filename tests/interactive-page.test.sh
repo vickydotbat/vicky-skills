@@ -181,9 +181,8 @@ check "a heading that holds boxes gets Tick all and Untick all, one that holds n
   '[ "$tick_btns" = 3 ] && [ "$(grep -c "Untick all" <<<"$ticks")" = 3 ] && grep -q "</h2>.<p class=tick>" <<<"$(tr "\n" "." <<<"$ticks")" && ! grep -A1 "<h2>Questions</h2>" <<<"$ticks" | grep -q tick && grep -q "<span class=tick data-page=1>.*Done" <<<"$ticks" && ! grep -q "Tick all" <<<"$no_box"'
 check "every box ticked as the buttons leave the form comes back as if each were ticked by hand" 'cmp -s "$scratch/ticks.want" "$scratch/ticks.md"'
 
-# tick() itself runs in node against a stand-in for the page: a Course heading
-# with two boxes, a Questions heading with a radio, a Sign-off heading with an
-# approve box, and the page pair beside approve all.
+# tick() runs in node against a stand-in page, since the markup checks above
+# cannot see what a click does.
 PYTHONPATH="$(dirname "$page")" python3 -c 'import page; print(page.TICK_JS)' >"$scratch/tick.js"
 tick_run=$(node - "$scratch/tick.js" <<'JS' 2>&1
 const fs = require("fs");
@@ -196,10 +195,10 @@ function el(tag, kids = [], props = {}) {
 const box = name => el("INPUT", [], { type: "checkbox", name, checked: false });
 const b0 = box("box.0"), b1 = box("box.1"), radio = el("INPUT", [], { type: "radio", name: "choice.0", checked: false });
 const ap = box("approve.0"), all = box("approve_all");
-const course = el("P"), page = el("SPAN");
+const course = el("P"), signoff = el("P"), page = el("SPAN");
 page.dataset.page = "1";
 const form = el("FORM", [el("H2"), course, el("LABEL", [b0]), el("LABEL", [b1]), el("H2"), el("LABEL", [radio]),
-  el("H2"), el("P"), el("LABEL", [ap]), el("P", [el("LABEL", [all]), page])]);
+  el("H2"), signoff, el("LABEL", [ap]), el("P", [el("LABEL", [all]), page])]);
 form.elements = { approve_all: all };
 globalThis.document = { forms: [form] };
 eval(fs.readFileSync(process.argv[2], "utf8") + ";globalThis.tick=tick");
@@ -208,13 +207,15 @@ const btn = p => ({ parentNode: p });
 const out = [];
 tick(btn(course), true); out.push(state());
 tick(btn(course), false); out.push(state());
+tick(btn(signoff), true); out.push(state());
+tick(btn(signoff), false); out.push(state());
 tick(btn(page), true); out.push(state());
 all.checked = true; tick(btn(page), false); out.push(state());
 console.log(out.join(" "));
 JS
 )
 check "Tick all under a heading ticks only its boxes, the page pair ticks every box but leaves approve all, and Untick all clears approve all too" \
-  '[ "$tick_run" = "11000 00000 11010 00000" ]'
+  '[ "$tick_run" = "11000 00000 00010 00000 11010 00000" ]'
 
 printf '#!/usr/bin/env bash\necho "${LD_LIBRARY_PATH-unset}" >"%s/libpath"\necho "$1" >"%s/url"\n' "$scratch" "$scratch" >"$scratch/env-browser"
 chmod +x "$scratch/env-browser"
