@@ -37,4 +37,6 @@ check "a parked slice moves its ticket back" \
 # Then the ticket shows In Progress, and the report names the move
 check "settling fixes a state that lags" \
   'grep -q "A ticket whose state lags the work moves now" "$skills/shipping/make-it-so/SETTLE.md" && grep -q "the report names each move" "$skills/shipping/make-it-so/SETTLE.md"'
+check "the Status rule has one home, in ship-it" \
+  'grep -q "^## State at every stop" "$status_rule" && ! (for s in do make-it-so gamma-shift warp; do grep -q "a slice parked, a gate reached, the run ended" "$skills"/*/$s/SKILL.md && exit 0; done; exit 1)'
 exit $fail

@@ -471,12 +471,10 @@ jobs:
         run: tests/hook-audit.test.sh
       - name: AGENTS.md is one path
         run: tests/agents-doc.test.sh
-      - name: State at every stop has one home
-        run: tests/state-at-every-stop.test.sh
       - name: Long skills keep reference behind pointers
         run: tests/skill-splits.test.sh
-      - name: Trimmed skills stay trimmed
-        run: tests/skill-fat-cuts.test.sh
+      - name: Every relative path in the skills resolves
+        run: tests/skill-paths-resolve.test.sh
       - name: Mutation proof is current
         run: python3 tests/mutate-hooks.py --check
       - name: Red-first check

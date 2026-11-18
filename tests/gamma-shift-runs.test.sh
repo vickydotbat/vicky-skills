@@ -10,6 +10,6 @@ check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 check "one shared branch and one draft pull request per repo" 'grep -q "one draft pull request per repo" "$skill"'
 check "never the branch the user has checked out" 'grep -q "never the branch the user has checked out" "$skill"'
 check "her work stacks on the gamma-shift pull request only when it needs it" 'grep -q "stacks on the gamma-shift pull request only when it needs a change from it" "$skill"'
-check "an item with no approved examples stops at drafts" 'grep -q "No approved examples on the ticket: write drafts" "$root/skills/housekeeping/gamma-shift/BRIEF.md"'
+check "an item with no approved examples stops at drafts" 'grep -q "No approved examples on the ticket: write drafts" "$root/skills/housekeeping/gamma-shift/SKILL.md"'
 check "setting off adds nothing at session start" 'out=$(cd "$root/../.." && CLAUDE_PROJECT_DIR=$PWD CLAUDE_PLUGIN_OPTION_GAMMA_SHIFT=off bash "$root/scripts/gamma-shift.sh"); [ -z "$out" ]'
 exit $fail

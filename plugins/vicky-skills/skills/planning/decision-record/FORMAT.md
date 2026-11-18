@@ -6,7 +6,7 @@ The structure follows the community ADR guide (architecture-decision-record on G
 
 Which repos take this format: see the skill's opening ([SKILL.md](SKILL.md)). Write a record only for a decision that is hard to reverse, would surprise a reader without context, and came from a real trade-off.
 
-A record holds an architecture rule, macro and never micro: a broad, reusable why that many decisions rest on and the code can't show. Before you write one, state its rule in one sentence and name the later decisions it will govern. When you can't name any, it is a code comment. A rule that names one class, item, window or value is one feature's why: write it as a comment at the code that builds it, and write no record. A change against a record or a why comment follows the review principles' "No drift from a recorded why" ([PRINCIPLES.md](../review/PRINCIPLES.md)).
+A record holds an architecture rule, macro and never micro: a broad, reusable why that many decisions rest on and the code can't show. Before you write one, state its rule in one sentence and name the later decisions it will govern. When you can't name any, it is a code comment. A rule that names one class, item, window or value is one feature's why: write it as a comment at the code that builds it, and write no record. A change against a record or a why comment follows the review principles' "No drift from a recorded why" ([PRINCIPLES.md](../../shipping/review/PRINCIPLES.md)).
 
 ## Stays true forever
 

@@ -11,7 +11,7 @@ Your tests are the **sentinels**, and a **mutant** is a small deliberate bug: a 
 
 A pass always ends in counts or in "unrun, because <the log line>". It never ends in silence.
 
-A mutation loop you write yourself never replaces this skill, whatever the language or file kind (shell, workflow YAML, config). Code no tool fits takes "The manual pass" ([MANUAL.md](MANUAL.md)). No `Skipped: sentinels` line in a pull request body counts. A script of your own named for mutation, or a hand mutation (an in-place `sed -i` run with the tests, a `.bak` copy taken before breaking a file, or an Edit-tool break), starts this skill first.
+A mutation loop you write yourself never replaces this skill, whatever the language or file kind (shell, workflow YAML, config). Code no tool fits takes "The manual pass" below. No `Skipped: sentinels` line in a pull request body counts. A script of your own named for mutation, or a hand mutation (an in-place `sed -i` run with the tests, a `.bak` copy taken before breaking a file, or an Edit-tool break), starts this skill first.
 
 **A pass ends within an hour, in the worst case, and usually within minutes.** A slow pass means it mutates too much or runs the wrong tests. Fix the scope or the tests, never the budget. The cuts, largest first ([SPEED.md](SPEED.md) has the flags and sources):
 
@@ -44,6 +44,7 @@ Before you write a test a pass will run, and whenever a pass runs slow or hangs,
    ```bash
    timeout 3600 <command> > <scratch>/mutate.log 2>&1; echo "exit=$?"
    ```
+   The session's own memory cap covers the pass, so it needs no cap of its own.
    Size the workers from the memory free, about half the cores at most. A repo wrapper sizes its own: leave its defaults alone. When the tool takes a budget (this plugin's `tests/mutate-hooks.sh --budget <seconds>`), set `--budget` below the outer timeout, so the tool stops itself and names what it left unrun, rather than being killed with nothing written. After fixing a survivor, rerun only the survivors first (`--survivors`), then the full pass once. Done when the run exits.
 5. **When a run dies, read why from the system**, before you guess a cause:
    ```bash
@@ -67,6 +68,11 @@ Before you write a test a pass will run, and whenever a pass runs slow or hangs,
 
 ## The manual pass
 
-Follow [MANUAL.md](MANUAL.md) when no tool fits the language, or a tool can't finish one file.
+Use it when no tool fits the language, or a tool can't finish one file.
+
+1. Start from a clean tree. Done when `git status --short` lists nothing in the file; otherwise stop and ask the user.
+2. List the decision points in the changed lines: comparisons and their boundaries, boolean operators, arithmetic operators, returned constants, calls whose effect matters, early returns. Done when each one is on the list, up to the ten a bug is most likely to hide in.
+3. For each point: make one mutation, run the tests that reach the file, write down red or green, and put the line back. Done when `git diff <file>` is empty and every point has a result.
+4. A green result is a survivor: answer it as SKILL.md step 6 says. Done when every survivor has its answer.
 
 Charter: C2, C7 ([CHARTER.md](../../CHARTER.md)).

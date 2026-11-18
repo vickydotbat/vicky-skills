@@ -7,7 +7,7 @@ description: Deepen one shallow module in a repo's busiest code and open a draft
 
 > _Does it spark joy? A module stays only if deleting it would spread its mess into its callers._
 
-A **shallow module** fails the deletion test in [PRINCIPLES.md](../review/PRINCIPLES.md): its interface is nearly as big as its body, or it only passes calls through. A run folds one shallow module into its caller or the module it wraps, and changes no behaviour. The busiest code goes first, because that's where the next change lands.
+A **shallow module** fails the deletion test in [PRINCIPLES.md](../../shipping/review/PRINCIPLES.md): its interface is nearly as big as its body, or it only passes calls through. A run folds one shallow module into its caller or the module it wraps, and changes no behaviour. The busiest code goes first, because that's where the next change lands.
 
 The hook's run is part of the gamma shift: it fires only with `gamma_shift` at `engage`, every `${user_config.deepen_every_days}` days, and joins `gamma-shift`'s queue as its last build, on the shift's shared branch.
 
