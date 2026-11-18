@@ -20,10 +20,6 @@ Before step 1 writes a word, check what the brief rests on. A ticket written fro
 
 Done when each claim in the brief has its quoted source, a tracker search names the tickets it found or says it found none, and a codebase search names what looks like it or says it found nothing.
 
-## Pre-mortem
-
-Before step 4 files the chart, run the pre-mortem in [STAR-CHART.md](../../commands/lay-course/STAR-CHART.md)'s "Sorting the knowns". Done when its `check-foreseen.sh` exits 0 on the chart.
-
 ## Steps
 
 1. **Write the spec**, after the checks above, from the conversation and the code it touches: the mission in three sentences at most, what the user will see, the decisions made and why, what is out of scope, and the open questions. Sort what the slices rest on into the four Rumsfeld boxes, as "Sorting the knowns" in STAR-CHART.md says, each with its action: **known knowns**, stated in a source, become the spec and the slices' examples; **known unknowns**, the open questions, each become an anomaly or an away team; **unknown knowns**, rules the user holds but never wrote down and how the work crosses existing features, become `Confirm:` examples for the user to tick; **unknown unknowns** can't be listed, so name the riskiest slice and draft its edge, mode and stillness examples, or file a probe. Use the repo's glossary words. Then cut it into **slices** and draft their examples. A slice whose whole change is prose (a doc, a skill's guidance, a decision record) is a **task**: it gets a `Done when` line and no examples, since prose is never tested or proven. Draft the others' examples as STAR-CHART.md's "Filing a star" steps 1 and 2 say, each with the slices it waits on. Where they land follows "Where work lands" in [the lay-course skill](../../commands/lay-course/SKILL.md). Quote each value an example names from its source of record, and read the slices' examples against each other for a contradiction, as `examples` step 2 says. Done when every settled point is in the spec, each of the four boxes holds its items or says why it is empty, every slice has its examples and its blockers, and every named value has its quoted source.
