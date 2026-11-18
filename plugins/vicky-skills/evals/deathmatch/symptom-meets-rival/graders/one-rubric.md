@@ -1,6 +1,6 @@
 ---
 type: regex
 target: { source: file, path: deathmatch.md }
-pattern: '(branch|try/except|except TypeError)[^\n]{0,200}(scor|rubric)[^\n]{0,200}(rival|candidate)|(rival|candidate)[^\n]{0,200}(scor|rubric)[^\n]{0,200}(branch|try/except|except TypeError)'
+pattern: '(rubric|scor)[\s\S]{0,300}branch[\s\S]{0,100}rival|(rubric|scor)[\s\S]{0,300}rival[\s\S]{0,100}branch'
 flags: i
 ---
