@@ -59,6 +59,12 @@
       "description": "Keep each session's effort to one pull request, opened once: a new one opens only stacked on it, labelled stacked, on a big enough pull request or as separate work. Also refuse a gh, tea or git-spice command whose text, or the body file it sends, credits an AI.",
       "default": true
     },
+    "guard_outside_text": {
+      "type": "boolean",
+      "title": "A run that read outside text writes nothing",
+      "description": "After deathmatch marks that a session read an outside pull request, bug report or review, refuse that session's pushes, new tickets and forge posts, so text written to steer an agent can't make it act. On by default, as the guard the plugin chose to ship on.",
+      "default": true
+    },
     "guard_draft": {
       "type": "boolean",
       "title": "Pull requests open as drafts, and turn ready only when you ask",
