@@ -9,6 +9,6 @@ files=$(cat)
 skills=$(printf '%s\n' "$files" | grep -E '^plugins/vicky-skills/skills/.+\.md$')
 [ -z "$skills" ] && exit 0
 printf '%s\n' "$files" | grep -qE '^plugins/vicky-skills/evals/' && exit 0
-echo "skill text changed with no eval case: add or change an eval case under plugins/vicky-skills/evals/ that fails on the old text and passes on the new (AGENTS.md, Change a skill):"
+echo "skill text changed with no eval case: a skill change is proven by an eval case. Add or change an eval case under plugins/vicky-skills/evals/ that fails on the old text and passes on the new (AGENTS.md, Change a skill):"
 printf '  %s\n' $skills
 exit 1

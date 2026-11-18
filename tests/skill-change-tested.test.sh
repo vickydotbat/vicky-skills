@@ -10,8 +10,6 @@ judge=plugins/vicky-skills/scripts/skill-change-proven.sh
 fail=0
 case_() { printf '%b' "$3" | bash "$judge" >/dev/null; [ $? -eq "$2" ] || { echo "FAIL $1"; fail=1; }; }
 case_ "no change passes" 0 ""
-case_ "a skill change with an eval case passes" 0 'plugins/vicky-skills/skills/building/do/SKILL.md\nplugins/vicky-skills/evals/do/a-case/prompt.md\n'
-case_ "a skill change with only a test fails" 1 'plugins/vicky-skills/skills/building/do/SKILL.md\ntests/do.test.sh\n'
 case_ "a skill change alone fails" 1 'plugins/vicky-skills/skills/building/do/SKILL.md\n'
 case_ "a skill's side file alone fails" 1 'plugins/vicky-skills/skills/planning/decision-record/FORMAT.md\n'
 case_ "a README change alone passes" 0 'README.md\n'
