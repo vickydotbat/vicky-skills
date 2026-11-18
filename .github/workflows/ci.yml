@@ -469,6 +469,8 @@ jobs:
         run: tests/todo-sh.test.sh
       - name: Hook audit counts refusals
         run: tests/hook-audit.test.sh
+      - name: AGENTS.md is one path
+        run: tests/agents-doc.test.sh
       - name: Mutation proof is current
         run: python3 tests/mutate-hooks.py --check
       - name: Red-first check

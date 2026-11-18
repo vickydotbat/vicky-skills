@@ -1,55 +1,62 @@
 # vicky-skills: agent rules
 
-This repo is a public Claude Code plugin. Every commit on `main` reaches users as an update.
+This repo is a public Claude Code plugin. Every commit on `main` reaches users as an update. Every file stays free of local paths, hostnames and any project's infrastructure: run `loose-lips` before a commit.
 
-## Branching
-
-- Work on a branch and open a pull request on GitHub. `main` gets finished work only and merges by squash once `checks` passes.
-- CI refuses a draft pull request and runs once it is marked ready.
-- Merge your own pull request once `make-it-so` has finished it (Q0 to Q13 pass, `checks` green): `gh pr merge <n> --squash`. It needs no human approval.
-
-## Tests
-
-- A test stops only the processes it started, by the id it saved. `pkill -f <pattern>` also matches the shell that ran the test, whose command line holds the same text.
-
-## Before every push
-
-Run `claude plugin validate .` and `tests/run-all.sh`, which runs every script in `tests/` (CI runs each as a step in `.github/workflows/ci.yml`). A new test script also gets a step in that workflow.
-
-## Public repo
-
-Every file stays free of local paths, hostnames and any project's infrastructure. Run `loose-lips` before a commit.
+Develop a skill or hook in this order: Add a skill or Change a skill (or Add or change a hook), Before every push, Evals, Pull request.
 
 ## Add a skill
 
 1. Create `plugins/vicky-skills/skills/<engineering|productivity>/<name>/SKILL.md`. Done when its `name:` equals the folder name.
-2. List `./skills/<group>/<name>` in `skills` in `plugins/vicky-skills/.claude-plugin/plugin.json`. Done when `tests/plugin-layout.test.sh` passes.
-3. Add a row to the README table that starts `**\`<name>\`**`. Done when the same test passes.
-4. Write the description with `robot-voice`: it begins with the trigger and holds "Use when", "Use whenever" or "Use before". A skill only a person starts sets `disable-model-invocation: true` and its README row says "When you type it". Done when `tests/skill-descriptions.test.sh` passes.
-5. Every numbered step under a `## Steps` heading ends in "Done when", and the file has a `# ` title. Done when `tests/skill-steps.test.sh` passes.
-6. A skill the agent can start asks the user to type a typed-only skill and never starts it itself. Done when `tests/skill-links.test.sh` passes.
-7. End the skill with a `Charter:` line naming the lines of `plugins/vicky-skills/skills/CHARTER.md` it serves. Done when `tests/charter_approved_examples.test.sh` passes.
-
-## Where a rule lives
-
-- A rule for agents lives in this repo, as a hook, a test or a skill line. The user's own global agent file changes only where it contradicts a rule here, and the pull request names that line.
+2. List `./skills/<group>/<name>` in `skills` in `plugins/vicky-skills/.claude-plugin/plugin.json`, and add a README table row that starts `**\`<name>\`**`. Done when `tests/plugin-layout.test.sh` passes.
+3. Write the skill with `robot-voice`. The description begins with the trigger and holds "Use when", "Use whenever" or "Use before". A skill only a person starts sets `disable-model-invocation: true`, and its README row says "When you type it". Done when `tests/skill-descriptions.test.sh` passes.
+4. Give the file a `# ` title, and end every numbered step under `## Steps` in "Done when". Done when `tests/skill-steps.test.sh` passes.
+5. A skill the agent can start asks the user to type a typed-only skill and never starts it itself. Done when `tests/skill-links.test.sh` passes.
+6. End the skill with a `Charter:` line naming the lines of `plugins/vicky-skills/skills/CHARTER.md` it serves. Done when `tests/charter_approved_examples.test.sh` passes.
+7. Add the test of step "Change a skill" below. Done when it fails on a checkout without the skill and passes with it.
 
 ## Change a skill
 
-- A branch that changes a skill's text adds or changes a test that proves the change works as intended: it fails on the skill text from before the change and passes after. `tests/skill-change-tested.test.sh` fails a branch that changes skill text and no test; whether the test proves the intent is the review's call.
+1. Change the text, then add or change a `tests/*.test.sh` assertion that fails on the text from before and passes after (a new pointer, a heading, a removed duplicate). Done when you have seen that assertion fail on the old text.
+2. Keep each meaning in one home and point at it from elsewhere. Keep a line marked `<!-- kept`. Done when `grep -rn` for a phrase you moved finds it in one skill file.
+
+`tests/skill-change-tested.test.sh` fails a branch that changes skill text and no test. Whether the test proves the intent is the review's call.
 
 ## Add or change a hook
 
-- Back each rule with the strongest of these that fits: a hook that refuses or asks; a test or CI step that proves it; a hint a hook injects at the moment the rule applies (when a skill starts, or before the tool call it governs). A skill line comes last, and names what backs it.
-- A hook that asks the user is training wheels, the last resort. Refuse with a steer, or inject context that leads the agent elsewhere. When asking is all that fits for now, say in the script's header comment what would replace it.
-- Script in `plugins/vicky-skills/scripts/`, registered in `plugins/vicky-skills/hooks/hooks.json`.
-- An optional guard is off until the user turns it on: declare a `userConfig` option in `plugin.json` (default `false`) and have the script exit early unless `CLAUDE_PLUGIN_OPTION_<NAME>` is `true` or `1`. The exception is a guard the user chose to have on by default, such as `guard_read_before_asking`: its option defaults to `true`, and the script exits early only when it is `false` or `0`.
-- In brief mode every word the user reads is a `SendUserMessage` call, so a hook that reads the agent's words reads those bodies too (source `stop-reply.sh`), and its test sends a case through `SendUserMessage`. A "Going with" or other exemption covers only the text above it, never a later ask. Done when `tests/sendusermessage-mode.test.sh` passes.
-- Add `tests/<hook>.test.sh`, a CI step for it, and a row in the README's hooks table, tagged (recommended) when it only refuses, asks or warns and (experimental) when it starts work on its own. The test covers every decision the hook makes: each refusal or ask, each pass, the setting off, and a missing tool or bad input. Done when a mutation pass over the script (`sentinels`) leaves no survivor.
+1. Choose the container. Back each rule with the strongest that fits: a hook that refuses or asks; a test or CI step; a hint a hook injects when the rule applies (a skill starting, or before the tool call it governs). A skill line comes last and names what backs it. A hook that asks the user is training wheels, the last resort: refuse with a steer, or inject context. When asking is all that fits, say in the script's header comment what would replace it. Done when the chosen container is the first one down that list that can decide the rule.
+2. Put the script in `plugins/vicky-skills/scripts/` and register it in `plugins/vicky-skills/hooks/hooks.json`. Done when `tests/hook-audit.test.sh` passes.
+3. Optional guard: declare a `userConfig` option in `plugin.json` (default `false`) and have the script exit early unless `CLAUDE_PLUGIN_OPTION_<NAME>` is `true` or `1`. A guard the user chose to have on by default (`guard_read_before_asking`) defaults to `true` and exits early only when the option is `false` or `0`. Done when the test covers the setting off.
+4. Brief mode: every word the user reads is a `SendUserMessage` call, so a hook that reads the agent's words reads those bodies too (source `stop-reply.sh`), and its test sends a case through `SendUserMessage`. A "Going with" exemption covers only the text above it, never a later ask. Done when `tests/sendusermessage-mode.test.sh` passes.
+5. Add `tests/<hook>.test.sh` and a CI step for it. It covers every decision the hook makes: each refusal or ask, each pass, the setting off, a missing tool, bad input. Done when `tests/<hook>.test.sh` passes.
+6. Add a row to the README hooks table, tagged (recommended) when the hook only refuses, asks or warns, and (experimental) when it starts work on its own. Done when `tests/hooks_table_approved_examples.test.sh` passes.
+7. Refresh the mutation proof: `python3 tests/mutate-hooks.py --record`, then commit `tests/mutation-proof.tsv` with the script. Done when `python3 tests/mutate-hooks.py --check` passes and a `sentinels` pass leaves no survivor.
 
 ## Add a check a skill runs on the user's repo
 
-- The same pull request gives the user's repo a way to opt out: a line in a `docs/agents/` file that `first-contact` writes, like `ADR format:` in `domain.md`. Done when a repo with its own way of working on purpose can switch the check off.
+Give the user's repo an opt-out in the same pull request: a line in a `docs/agents/` file that `first-contact` writes, like `ADR format:` in `docs/agents/domain.md`. Done when a repo with its own way of working can switch the check off.
+
+## Before every push
+
+1. Run `claude plugin validate .`. Done when it exits 0.
+2. Run `tests/run-all.sh`, which runs every `tests/*.test.sh`; CI runs each as a step in `.github/workflows/ci.yml`. Done when it exits 0 and every new test script has a CI step.
+
+A test stops only the processes it started, by the id it saved: `pkill -f <pattern>` also matches the shell that ran the test.
+
+## Evals
+
+Run an eval for each skill whose steps changed and that has a folder under `plugins/vicky-skills/evals/`. Each run starts a real Claude session on your credential, so CI never runs them.
+
+1. `EVAL_SPEND=yes tests/evals/every_case.sh <skill>`. Done when every case passes.
+2. A skill with no case: `tests/eval-coverage.sh plugins/vicky-skills` lists it. Done when you have added a case or accepted the gap in the pull request body.
+
+## Pull request
+
+1. Open the pull request as a draft. CI refuses a draft and runs once it is marked ready. Done when `gh pr view --json isDraft` says `true`.
+2. Finish it with `make-it-so`, then merge it yourself: `gh pr merge <n> --squash`. It needs no human approval. Done when `checks` is green and the pull request is merged.
+
+## Where a rule lives
+
+A rule for agents lives in this repo, as a hook, a test or a skill line. The user's own global agent file changes only where it contradicts a rule here, and the pull request names that line.
 
 ## Voice
 
