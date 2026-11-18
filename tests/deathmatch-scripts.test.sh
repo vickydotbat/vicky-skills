@@ -60,4 +60,12 @@ git reset -q --hard "$base" && printf 'see /home/ for the layout\n' >> o.txt && 
 bash "$dm/prefight.sh" "$base" >/dev/null; r=$?
 check "a bare /home/ with no user passes" '[ $r = 0 ]'
 cd - >/dev/null
+bash "$dm/batch.sh" none >/dev/null 2>&1; r=$?
+check "batch refuses a count that is no number" '[ $r = 2 ]'
+bash "$dm/batch.sh" 0 >/dev/null 2>&1; r=$?
+check "batch refuses no opponents" '[ $r = 2 ]'
+h=$(bash "$dm/batch.sh" 03)
+check "batch reads a leading zero as decimal" 'grep -qx "at once: 3" <<<"$h"'
+h=$(bash "$dm/batch.sh" 1)
+check "one opponent fights alone" 'grep -qx "at once: 1" <<<"$h"'
 exit $fail

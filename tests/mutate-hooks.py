@@ -92,6 +92,7 @@ TESTS = {
     "skills/shipping/deathmatch/scripts/cap.sh": ["deathmatch_approved_examples", "deathmatch-scripts"],
     "skills/shipping/deathmatch/scripts/prefight.sh": ["deathmatch_approved_examples", "deathmatch-scripts"],
     "skills/shipping/deathmatch/scripts/halfway.sh": ["deathmatch_approved_examples", "deathmatch-scripts"],
+    "skills/shipping/deathmatch/scripts/batch.sh": ["deathmatch_approved_examples", "deathmatch-scripts"],
     "skills/shipping/deathmatch/scripts/verdict.sh": ["deathmatch_approved_examples", "deathmatch-scripts"],
     "skills/shipping/deathmatch/scripts/mark-outside.sh": ["deathmatch_approved_examples", "deathmatch-scripts"],
     "skills/shipping/engrave/scripts/law-lint.sh": ["law-lint", "law_lint_approved_examples", "laws_line_approved_examples"],
