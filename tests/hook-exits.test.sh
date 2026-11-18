@@ -72,10 +72,14 @@ quiet "a project folder that is gone" auto-tidy.sh '{}' CLAUDE_PLUGIN_OPTION_AUT
 quiet "a repo with nothing gone" auto-tidy.sh '{}' CLAUDE_PLUGIN_OPTION_AUTO_TIDY=true CLAUDE_PROJECT_DIR="$dir/repo"
 git init -q --bare "$dir/remote.git"; git clone -q "$dir/remote.git" "$dir/clone" 2>/dev/null
 git -C "$dir/clone" -c user.name=t -c user.email=t@example.invalid commit -q --allow-empty -m one
-git -C "$dir/clone" push -q origin HEAD:main 2>/dev/null; git -C "$dir/clone" switch -q -c merged
-git -C "$dir/clone" push -q -u origin merged 2>/dev/null
+git -C "$dir/clone" push -q -u origin HEAD:merged 2>/dev/null; git -C "$dir/clone" branch -q --set-upstream-to=origin/merged
 git -C "$dir/remote.git" branch -q -D merged
-speaks "a branch whose upstream is gone" auto-tidy.sh '{}' CLAUDE_PLUGIN_OPTION_AUTO_TIDY=true CLAUDE_PROJECT_DIR="$dir/clone"
+# auto-tidy speaks only once it tidies, so its repo has a main and a merged branch.
+git init -q --bare "$dir/tidy.git"; git clone -q "$dir/tidy.git" "$dir/tidy" 2>/dev/null
+git -C "$dir/tidy" -c user.name=t -c user.email=t@example.invalid commit -q --allow-empty -m one
+git -C "$dir/tidy" push -q origin HEAD:main 2>/dev/null; git -C "$dir/tidy" switch -q -c merged
+git -C "$dir/tidy" push -q -u origin merged 2>/dev/null; git -C "$dir/tidy.git" branch -q -D merged
+speaks "a branch whose upstream is gone" auto-tidy.sh '{}' CLAUDE_PLUGIN_OPTION_AUTO_TIDY=true CLAUDE_PROJECT_DIR="$dir/tidy"
 
 # The guard counts approved tests only inside a git checkout.
 git init -q "$dir/plain"
