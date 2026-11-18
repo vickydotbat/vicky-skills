@@ -38,8 +38,7 @@ An agent document is a program the model runs. Good ergonomics means the agent t
 - [ ] Where the output matters, a template shows its form.
 - [ ] Every step says what to do when it can't finish (stop and ask, file a ticket, say "unchecked").
 - [ ] Every law and heading opens with a leading word, not a sentence that describes one ("Every X ships its Y").
-- [ ] A rule is named by its one leading word everywhere it appears. A paraphrase ("one point of entry" for _single source of truth_) is a second name, and two names drift into two rules.
-- [ ] A leading word is repeated, never re-explained.
+- [ ] A rule is named by its one leading word everywhere it appears, repeated and never re-explained. A paraphrase ("one point of entry" for _single source of truth_) is a second name, and two names drift into two rules.
 - [ ] No filler: "make sure to", "it is important that", "always try to", "in order to", "please note". Delete it, or replace it with the verb.
 - [ ] No sentence states what the model does by default. Delete each one that fails the test of changing behaviour. A line marked `<!-- kept` stays: `captains-log` saw it cause a high point.
 - [ ] Nothing restates what the environment already says: `package.json`, `--help`, the directory listing.
