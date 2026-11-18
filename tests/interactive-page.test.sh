@@ -175,12 +175,46 @@ check "approve all on a page with one approve box brings that box back approved"
 
 printf '# Plan\n\n## Course\n- [ ] K-1 one\n- [ ] K-2 two\n\n## Questions\n- ( ) A\n\n## Sign-off\na:1\n- [ ] approve\n' >"$scratch/ticks.md"
 start "$scratch/ticks.md"; ticks=$(curl -s "$url"); post /done box.0=on box.1=on approve.0=on >/dev/null; finish
-cp "$scratch/ticks.md" "$scratch/ticks.hand.md"
 printf '# Plan\n\n## Course\n- [x] K-1 one\n- [x] K-2 two\n\n## Questions\n- ( ) A\n\n## Sign-off\na:1\n- [x] approve\n' >"$scratch/ticks.want"
 tick_btns=$(grep -c 'onclick="tick(this,true)">Tick all' <<<"$ticks")
 check "a heading that holds boxes gets Tick all and Untick all, one that holds none gets neither, and the page gets one pair beside Done" \
   '[ "$tick_btns" = 3 ] && [ "$(grep -c "Untick all" <<<"$ticks")" = 3 ] && grep -q "</h2>.<p class=tick>" <<<"$(tr "\n" "." <<<"$ticks")" && ! grep -A1 "<h2>Questions</h2>" <<<"$ticks" | grep -q tick && grep -q "<span class=tick data-page=1>.*Done" <<<"$ticks" && ! grep -q "Tick all" <<<"$no_box"'
 check "every box ticked as the buttons leave the form comes back as if each were ticked by hand" 'cmp -s "$scratch/ticks.want" "$scratch/ticks.md"'
+
+# tick() itself runs in node against a stand-in for the page: a Course heading
+# with two boxes, a Questions heading with a radio, a Sign-off heading with an
+# approve box, and the page pair beside approve all.
+PYTHONPATH="$(dirname "$page")" python3 -c 'import page; print(page.TICK_JS)' >"$scratch/tick.js"
+tick_run=$(node - "$scratch/tick.js" <<'JS' 2>&1
+const fs = require("fs");
+function el(tag, kids = [], props = {}) {
+  const n = { tagName: tag, children: kids, dataset: {}, ...props };
+  kids.forEach((k, i) => { k.parentNode = n; k.nextElementSibling = kids[i + 1] || null; });
+  n.querySelectorAll = () => kids.flatMap(k => (k.tagName === "INPUT" ? [k] : []).concat(k.querySelectorAll()));
+  return n;
+}
+const box = name => el("INPUT", [], { type: "checkbox", name, checked: false });
+const b0 = box("box.0"), b1 = box("box.1"), radio = el("INPUT", [], { type: "radio", name: "choice.0", checked: false });
+const ap = box("approve.0"), all = box("approve_all");
+const course = el("P"), page = el("SPAN");
+page.dataset.page = "1";
+const form = el("FORM", [el("H2"), course, el("LABEL", [b0]), el("LABEL", [b1]), el("H2"), el("LABEL", [radio]),
+  el("H2"), el("P"), el("LABEL", [ap]), el("P", [el("LABEL", [all]), page])]);
+form.elements = { approve_all: all };
+globalThis.document = { forms: [form] };
+eval(fs.readFileSync(process.argv[2], "utf8") + ";globalThis.tick=tick");
+const state = () => [b0, b1, radio, ap, all].map(i => +i.checked).join("");
+const btn = p => ({ parentNode: p });
+const out = [];
+tick(btn(course), true); out.push(state());
+tick(btn(course), false); out.push(state());
+tick(btn(page), true); out.push(state());
+all.checked = true; tick(btn(page), false); out.push(state());
+console.log(out.join(" "));
+JS
+)
+check "Tick all under a heading ticks only its boxes, the page pair ticks every box but leaves approve all, and Untick all clears approve all too" \
+  '[ "$tick_run" = "11000 00000 11010 00000" ]'
 
 printf '#!/usr/bin/env bash\necho "${LD_LIBRARY_PATH-unset}" >"%s/libpath"\necho "$1" >"%s/url"\n' "$scratch" "$scratch" >"$scratch/env-browser"
 chmod +x "$scratch/env-browser"

@@ -67,9 +67,8 @@ details.quick label{display:block;margin:.2rem 0}"""
 # Each click zooms a chart to 2x, then 3x the window width, then back to fit.
 ZOOM = """function zoom(c){const s=c.querySelector("svg"),n=(+c.dataset.z||1)%3+1;c.dataset.z=n;
 s.style.maxWidth=n>1?"none":"";s.style.width=n>1?c.clientWidth*n+"px":""}"""
-# Tick all and Untick all set the boxes under their heading (up to the next
-# one), or every box in the form. Unticking also clears approve_all, which
-# would otherwise approve every approve box again on Done.
+# Tick all and Untick all set the boxes up to the next heading, or the whole form.
+# Untick also clears approve_all, which would otherwise approve every box again on Done.
 TICK_JS = """function tick(b,on){const s=b.parentNode,f=document.forms[0];let els=[];
 if(s.dataset.page)els=[f];else for(let n=s.nextElementSibling;n&&!/^H[1-6]$/.test(n.tagName);n=n.nextElementSibling)els.push(n);
 els.forEach(n=>[n,...n.querySelectorAll("input")].forEach(i=>{if(i.type==="checkbox"&&i.name!=="approve_all")i.checked=on}));
