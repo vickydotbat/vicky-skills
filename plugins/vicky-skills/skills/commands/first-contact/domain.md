@@ -21,7 +21,7 @@ Write `Patch-tell hint: off` to stop the reminder when an edit to a CI workflow 
 
 Law proofs: on
 
-Write `Law proofs: off` to stop `law-lint.sh` listing rule lines that name no `Proven by:` check, and to stop review and make-it-so running a Laws line.
+Write `Law proofs: off` to stop `law-lint.sh` listing rule lines that name no `Proven by:` check, and to stop deathmatch and make-it-so running a Laws line.
 
 Post-mortems: docs/post-mortems/
 

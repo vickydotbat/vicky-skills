@@ -1,6 +1,6 @@
 ---
 name: standards-reviewer
-description: Reviews a diff against the repo's written standards and the house review principles. Use for the standards axis of a code review, a pre-merge check, or "does this follow the rules of this repo".
+description: Reviews a diff against the repo's written standards and the house standards in STANDARDS.md. Use for the standards axis of a code review, a pre-merge check, or "does this follow the rules of this repo".
 tools: Read, Grep, Glob, Bash
 ---
 

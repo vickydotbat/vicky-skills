@@ -73,4 +73,4 @@ Change `Borg` to `plain` to have `assimilate` claim another person's pull reques
 
 Review cause: on
 
-Change `on` to `off` to stop `review` adding a Cause section for a branch that claims a fix in this repo.
+Change `on` to `off` to stop `deathmatch` running its Cause opponent for a branch that claims a fix in this repo.
