@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# approved-spec: the keep-awake examples, approved 2026-11-04. The hook runs
+# approved-spec: the keep-awake examples, approved 2026-11-04, and the
+# subagent ones, approved 2026-11-18. The hook runs
 # on events shaped the way Claude Code sends them, with a stand-in
 # systemd-inhibit on PATH that marks a lock file while it holds the lock.
 set -u
@@ -67,5 +68,17 @@ check "closing a session releases it" '[ -f "$hook" ] && send UserPromptSubmit e
 # When no other session is working
 # Then the sleep lock stays until that session's next turn ends or the session closes
 check "an interrupted turn keeps it until the next end" '[ -f "$hook" ] && send UserPromptSubmit f && held && sleep 0.5 && [ -f "$fx/lock" ] && send UserPromptSubmit f && send Stop f && free'
+
+sub() { jq -nc --arg e "$1" --arg s "$2" --arg a "$3" '{hook_event_name:$e,session_id:$s,agent_id:$a}' | PATH="$fx/bin:$PATH" bash "$hook"; }
+
+# Given keep-awake is on and a session's turn has ended while a background subagent it started still works
+# When you look at systemd-inhibit --list
+# Then a Claude Code sleep lock is still held, released once that subagent stops
+check "a working subagent holds it past its turn's end" '[ -f "$hook" ] && send UserPromptSubmit g && sub SubagentStart g bg && send Stop g && held && sleep 0.5 && [ -f "$fx/lock" ] && sub SubagentStop g bg && free'
+
+# Given a session has a subagent working
+# When you close the session
+# Then the subagent's share of the sleep lock is released
+check "closing a session releases its subagents" '[ -f "$hook" ] && sub SubagentStart h bg && held && send SessionEnd h && free'
 
 exit $fail
