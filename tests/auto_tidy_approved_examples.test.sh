@@ -3,6 +3,8 @@
 # session start and after a merge, and tells the agent nothing.
 set -u
 . "$(dirname "$0")/lib/auto-tidy-fixture.sh"
+manifest="$root/plugins/vicky-skills/.claude-plugin/plugin.json"
+skills="$root/plugins/vicky-skills/skills"
 
 # Given a local branch whose pull request merged
 # When a session starts in the repo

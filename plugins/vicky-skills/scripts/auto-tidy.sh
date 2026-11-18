@@ -11,6 +11,8 @@
 set -u
 # shellcheck source=merge-point.sh
 . "$(dirname "$0")/merge-point.sh"
+# shellcheck source=drop-worktree.sh
+. "$(dirname "$0")/drop-worktree.sh"
 case "${CLAUDE_PLUGIN_OPTION_AUTO_TIDY:-}" in false|0) exit 0 ;; esac
 # Read without jq, so a machine without it still tidies: after a tool call,
 # only a command that merged a pull request starts the tidy.
@@ -70,14 +72,6 @@ in_use() {
   fi
   awk -v p="$1/" 'index($0 "/", p) == 1 { f = 1 } END { exit !f }' <<<"$cwds"
 }
-# The repo's own worktree removal script, from a "Drop worktree: <path>" line.
-drop_script() {
-  local rel # mutant-ok delete: a local declaration: no caller reads this name
-  rel=$(sed -n 's/^Drop worktree:[[:space:]]*//p' "$top/docs/agents/testing.md" 2>/dev/null | head -n1)
-  case "$rel" in /* | *..*) return 0 ;; esac
-  [ -n "$rel" ] && [ -f "$top/$rel" ] && [ -x "$top/$rel" ] && printf '%s' "$top/$rel" # mutant-ok: a blank line names the main clone, a folder, and -x alone then runs a folder, which fails and keeps the worktree
-}
-
 clone() {
   # Only the first working tree is the clone: a worktree is some session's own.
   [ "$(git rev-parse --git-dir)" = "$(git rev-parse --git-common-dir)" ] || return 0
@@ -123,10 +117,10 @@ git worktree prune >/dev/null 2>&1 # mutant-ok delete: a worktree whose folder i
 # Each local branch: delete it, and its worktree, when it merged and its work landed.
 while read -r b track; do
   [ "$b" = "$main_name" ] && continue # mutant-ok delete: the default branch never counts as merged, so the loop skips it anyway
-  sha=$(git rev-parse "refs/heads/$b")
-  [ "$(pr "$b" 2)" = OPEN ] && continue
+  sha=$(git rev-parse "refs/heads/$b") state=$(pr "$b" 2)
+  [ "$state" = OPEN ] && continue
   merged "$b" "$track" || continue
-  if ! { { [ "$(pr "$b" 2)" = MERGED ] && [ "$sha" = "$(pr "$b" 3)" ]; } || [ -n "$(git branch -r --contains "$sha" 2>/dev/null)" ] || landed "$b" || all_picked "$b"; }; then
+  if ! { { [ "$state" = MERGED ] && [ "$sha" = "$(pr "$b" 3)" ]; } || [ -n "$(git branch -r --contains "$sha" 2>/dev/null)" ] || landed "$b" || all_picked "$b"; }; then
     kept+=("$b (commits made after the merge)")
     continue
   fi
@@ -136,8 +130,8 @@ while read -r b track; do
     if [ -n "$(git -C "$wt" status --porcelain 2>/dev/null)" ]; then kept+=("$b (uncommitted changes)"); continue; fi
     if git worktree list --porcelain | awk -v p="worktree $wt" '$0 == p {f = 1; next} /^worktree /{f = 0} f && /^locked/ {l = 1} END {exit !l}'; then kept+=("$b (locked worktree)"); continue; fi
     if in_use "$wt"; then kept+=("$b (a session is working in it)"); continue; fi
-    drop=$(drop_script)
-    if [ -n "$drop" ]; then (cd "$top" && "$drop" "$wt") >/dev/null 2>&1; else git worktree remove "$wt" >/dev/null 2>&1; fi
+    drop=$(drop_script "$top")
+    if [ -n "$drop" ]; then (cd "$top" && "$top/$drop" "$wt") >/dev/null 2>&1; else git worktree remove "$wt" >/dev/null 2>&1; fi
     [ -d "$wt" ] && { kept+=("$b (its worktree would not come off)"); continue; }
     git worktree prune >/dev/null 2>&1 # mutant-ok delete: the next git worktree list only lists a removed worktree as prunable
   fi

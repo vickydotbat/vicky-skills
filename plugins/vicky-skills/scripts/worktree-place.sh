@@ -26,6 +26,8 @@ OPTION=${CLAUDE_PLUGIN_OPTION_GUARD_WORKTREE_PLACE:-}
 . "$(dirname "$0")/git-hook-lib.sh"
 # shellcheck source=assign-expand.sh
 . "$(dirname "$0")/assign-expand.sh"
+# shellcheck source=drop-worktree.sh
+. "$(dirname "$0")/drop-worktree.sh"
 
 event=$(jq -r '.hook_event_name // "PreToolUse"' <<<"$payload")
 common=$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)
@@ -42,14 +44,6 @@ worktree_of() {
   git worktree list --porcelain | awk -v ref="refs/heads/$1" -v main="$main" '
     /^worktree / { path = substr($0, 10) }
     $0 == "branch " ref && path != main { print path; exit }'
-}
-
-# The repo's own worktree removal script, or nothing.
-drop_script() {
-  local rel # mutant-ok delete: the name would only be global, and nothing else reads it
-  rel=$(sed -n 's/^Drop worktree:[[:space:]]*//p' "$main/docs/agents/testing.md" 2>/dev/null | head -n1)
-  case "$rel" in /* | *..*) return 0 ;; esac # a path stays inside the main clone
-  [ -n "$rel" ] && [ -f "$main/$rel" ] && [ -x "$main/$rel" ] && printf '%s' "$rel" # mutant-ok: a blank line names the main clone, a folder, and -f refuses it
 }
 
 check_add() {
@@ -81,7 +75,7 @@ check_add() {
 
 check_merge() {
   local words=(${1#*merge}) i branch wt left dirty drop out how
-  drop=$(drop_script)
+  drop=$(drop_script "$main")
   [ -e "$(git rev-parse --git-dir)/MERGE_HEAD" ] && return 0
   for ((i = 0; i < ${#words[@]}; i++)); do
     case "${words[i]}" in

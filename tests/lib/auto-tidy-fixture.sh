@@ -4,11 +4,11 @@
 # and check. A test stops only the processes busy() started.
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 hook="$root/plugins/vicky-skills/scripts/auto-tidy.sh"
-manifest="$root/plugins/vicky-skills/.claude-plugin/plugin.json"
-skills="$root/plugins/vicky-skills/skills"
 dir=$(mktemp -d)
 pids=()
-cleanup() { for p in "${pids[@]}"; do kill "$p" 2>/dev/null; done; rm -rf "$dir"; }
+# reap: stop only the processes busy() started.
+reap() { for p in "${pids[@]}"; do kill "$p" 2>/dev/null; done; pids=(); }
+cleanup() { reap; rm -rf "$dir"; }
 trap cleanup EXIT
 export GIT_CONFIG_GLOBAL=/dev/null
 export GIT_AUTHOR_NAME=t GIT_AUTHOR_EMAIL=t@example.invalid GIT_COMMITTER_NAME=t GIT_COMMITTER_EMAIL=t@example.invalid
@@ -44,7 +44,7 @@ seen() { jq -r '.systemMessage // empty' <<<"$1" 2>/dev/null; }
 has_local() { git -C "$dir/repo" rev-parse -q --verify "refs/heads/$1" >/dev/null; }
 has_remote() { git -C "$dir/origin.git" rev-parse -q --verify "refs/heads/$1" >/dev/null; }
 setup() {
-  for p in "${pids[@]}"; do kill "$p" 2>/dev/null; done; pids=()
+  reap
   rm -rf "$dir/origin.git" "$dir/repo" "$dir/prs" "$dir"/wt-* "$dir/other"
   git init -q --bare -b main "$dir/origin.git"
   git clone -q "$dir/origin.git" "$dir/repo" 2>/dev/null

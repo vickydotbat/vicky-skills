@@ -118,6 +118,7 @@ TESTS = {
     "sup-handoff-hint.sh": ["sup-handoff-hint"],
     "lesson-hint.sh": ["lesson-hint", "engrave_approved_examples", "hint_once_approved_examples"],
     "merged-branch-guard.sh": ["merged-branch-guard", "merged_branch_approved_examples"],
+    "drop-worktree.sh": ["worktree_drop_approved_examples", "auto_tidy_approved_examples", "auto-tidy"],
     "merge-point.sh": ["merged-branch-guard", "merged_branch_approved_examples", "auto-tidy-clone", "clone_takeover_approved_examples"],
     # Skill scripts, by their path under the plugin.
     "skills/commands/captains-log/scripts/hook-audit.py": ["hook-audit"],
