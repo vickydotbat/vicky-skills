@@ -185,6 +185,8 @@ jobs:
         run: tests/promise-guard.test.sh
       - name: Eval spend gate
         run: tests/eval-spend-gate.test.sh
+      - name: Eval proof record
+        run: tests/eval-proof-record.test.sh
       - name: Restack-origin guard
         run: tests/restack-origin-guard.test.sh
       - name: Lesson hint

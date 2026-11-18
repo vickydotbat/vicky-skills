@@ -1,7 +1,7 @@
 ---
 type: regex
 target: { source: file, path: next.md }
-pattern: 'going with'
-flags: i
+pattern: '^[\s>*_"`-]*going with'
+flags: im
 match: not_contains
 ---

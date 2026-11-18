@@ -55,7 +55,7 @@ echo "model-b 2026-11-18" > evals/s/new/passed
 echo "model-a 2026-10-02" > evals/s/other/passed
 printf -- '- Old law.\n  Proven by: evals/s/old\n- New law.\n  Proven by: evals/s/new\n- Bare law.\n  Proven by: evals/s/bare\n- Other law.\n  Proven by: evals/s/other\n- Test law.\n  Proven by: AGENTS.md\n' > AGENTS.md
 git add -A; git commit -qm base; base=$(git rev-parse HEAD)
-touch evals/s/old/prompt.md evals/s/bare/prompt.md; git add -A; git commit -qm touch
+touch evals/s/old/prompt.md evals/s/bare/prompt.md; echo 'A plain line.' >> AGENTS.md; git add -A; git commit -qm touch
 
 # Given a law whose proof is an eval case folder
 # When law-lint prove reaches it
@@ -64,6 +64,8 @@ touch evals/s/old/prompt.md evals/s/bare/prompt.md; git add -A; git commit -qm t
 out=$("$lint" prove "$base" 2>&1)
 check "T1-3 the Laws line shows the model and date an eval proof passed on, or that none was recorded" \
   'line=$(grep "^Laws:" <<<"$out") && grep -qF "(evals/s/old: not run, passed on model-a 2026-10-01)" <<<"$line" && grep -qF "(evals/s/bare: not run, never recorded)" <<<"$line"'
+check "a proof that is a plain file, neither a command nor an eval case, reads not run" \
+  'grep -qF "(AGENTS.md: not run)" <<<"$(grep "^Laws:" <<<"$out")"'
 
 # Given laws proven by eval cases, some passed on model A, one passed on model B and one never recorded
 # When law-lint stale B runs

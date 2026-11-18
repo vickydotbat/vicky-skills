@@ -59,7 +59,7 @@ skills/housekeeping/sup/scripts/find-handoff.sh	425f97e5829c194b	ccfb164cf1816e5
 skills/planning/decision-record/scripts/check-adr.sh	effe0e9e46b6073d	d073d6b6196cb455	80/80
 skills/planning/drawing-board/scripts/board.py	511cd6695d270424	6fd635ca7c3ae576	140/140
 skills/planning/drawing-board/scripts/fetch-drawio.sh	e69344201d3866d9	24c3bdd937c83529	24/24
-skills/shipping/engrave/scripts/law-lint.sh	fc43fd4bfa792523	7c99e4824e2cdad5	158/158
+skills/shipping/engrave/scripts/law-lint.sh	0d42d504c127150b	6c6199abec9e22cc	181/181
 skills/writing/human-voice/scripts/lint-tells.py	d51373996ad8ae9c	a188c25f71567933	47/47
 skills/writing/interactive-page/scripts/open-draft.sh	09ebb597b65041c8	df92af7062cf9322	50/50
 skills/writing/interactive-page/scripts/open-page.sh	9da7be591b0eb684	5253f46f12411d94	9/9

@@ -196,7 +196,7 @@ tests/run-all.sh
 
 Run both before every push. CI runs every test once a pull request is marked ready, and refuses a draft.
 
-The skills' eval cases live in `plugins/vicky-skills/evals/`, and you run them by hand with the scripts in `tests/evals/`. Each run starts a real Claude session on your own credential, so CI never runs them, and each script refuses to start until you set `EVAL_SPEND=yes`. A run is capped at $3, and one mission-brief run cost $0.22. `tests/eval-coverage.sh plugins/vicky-skills` names each skill with no case yet.
+The skills' eval cases live in `plugins/vicky-skills/evals/`, and you run them by hand with the scripts in `tests/evals/`. Each run starts a real Claude session on your own credential, so CI never runs them, and each script refuses to start until you set `EVAL_SPEND=yes` and name the model under test in `EVAL_MODEL`. A case that passes writes that model and the date to a `passed` file in its folder. After a model upgrade, `law-lint.sh stale <model>` lists the laws whose proof passed on an older model, or never recorded a pass. A run is capped at $3, and one mission-brief run cost $0.22. `tests/eval-coverage.sh plugins/vicky-skills` names each skill with no case yet.
 
 ## Thanks
 
