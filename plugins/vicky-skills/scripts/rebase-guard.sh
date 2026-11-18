@@ -29,12 +29,15 @@ hit=""
 # The rebase's target is its --onto value, else its first argument.
 while IFS= read -r segment; do
   read -ra words <<<"$segment"
-  seen=0
+  seen=0 skip=0
   for word in ${words[@]+"${words[@]}"}; do
     if [ "$seen" = 0 ]; then [ "$word" = rebase ] && seen=1; continue; fi
+    # A flag that takes its value as the next word: the value is no target.
+    if [ "$skip" = 1 ]; then skip=0; continue; fi
     case "$word" in
       --continue|--abort|--skip|--quit|--edit-todo) break ;;
       --onto) continue ;;
+      -X|-s|-x|-C|--strategy|--strategy-option|--exec) skip=1; continue ;;
       --onto=*) word=${word#--onto=} ;;
       -*) continue ;;
     esac

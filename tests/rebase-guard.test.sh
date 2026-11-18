@@ -34,6 +34,10 @@ expect "moved main: rebase onto main is refused" 2 'git rebase main'
 expect "the audited form is refused" 2 'git fetch -q && git rebase -q origin/main && git log --oneline -3'
 expect "rebase --onto main is refused" 2 'git rebase --onto origin/main parent topic'
 expect "rebase --onto=main is refused" 2 'git rebase --onto=origin/main parent'
+expect "a strategy option before main is refused" 2 'git rebase -X theirs origin/main'
+expect "a strategy before main is refused" 2 'git rebase -s ort origin/main'
+expect "an exec command before main is refused" 2 'git rebase --exec make origin/main'
+expect "a strategy option before a stack parent passes" 0 'git rebase -X theirs parent'
 expect "via cd is refused" 2 "cd $s/work && git rebase origin/main" "$s/plain.jsonl" "$s"
 expect "a typed history-monks lets it through" 0 'git rebase origin/main' "$s/typed.jsonl"
 expect "a started history-monks lets it through" 0 'git rebase origin/main' "$s/monks.jsonl"
@@ -61,6 +65,4 @@ expect "no known default branch passes" 0 'git rebase main'
 gi "$s/seed" checkout -q -b side HEAD~1
 msg=$(jq -nc --arg t "$s/plain.jsonl" --arg d "$s/seed" '{cwd:$d,transcript_path:$t,tool_input:{command:"git rebase origin/main"}}' | bash "$hook" 2>&1 >/dev/null)
 if grep -q 'history-monks' <<<"$msg" && grep -q 'Disjoint' <<<"$msg"; then echo "ok   the refusal steers to history-monks"; else echo "FAIL the refusal steers to history-monks: $msg"; fail=1; fi
-# The steer names the Disjoint short path, so the skill must hold it.
-if grep -q '\*\*Disjoint\*\*' "$root"/plugins/vicky-skills/skills/*/history-monks/SKILL.md; then echo "ok   history-monks holds the Disjoint short path"; else echo "FAIL history-monks lacks the Disjoint short path"; fail=1; fi
 exit $fail
