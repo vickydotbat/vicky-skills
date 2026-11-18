@@ -29,4 +29,14 @@ printf '%s\n' '- Foreseen: a renumber breaks favourites, accepted: rare' > "$dir
 out=$(bash "$fs" "$dir/chart.md"); rc=$?
 check "Foreseen check fails an undated line" '[ $rc -eq 1 ] && grep -q "has no date" <<<"$out"'
 
+# A chart in a tracker folder outside any repo takes the off line from the repo the command runs in.
+vault=$(mktemp -d); trap 'rm -rf "$dir" "$vault"' EXIT
+mkdir -p "$dir/docs/agents"; printf 'Pre-mortems: off\n' > "$dir/docs/agents/domain.md"
+printf '%s\n' '- Foreseen 2026-11-18: a renumber breaks favourites' > "$vault/chart.md"
+out=$(cd "$dir" && bash "$fs" "$vault/chart.md"); rc=$?
+check "Foreseen check reads the off line from the repo it runs in" '[ $rc -eq 0 ]'
+rm "$dir/docs/agents/domain.md"
+out=$(cd "$dir" && bash "$fs" "$vault/chart.md"); rc=$?
+check "Foreseen check still checks a vault chart when the repo is on" '[ $rc -eq 1 ]'
+
 exit $fail

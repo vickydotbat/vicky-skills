@@ -63,8 +63,7 @@ for f in "$@"; do
         while read -r n tag; do
           case "$tag" in
             foreseen) ;;
-            incident) echo "$f: $n is tagged incident but links no ticket or post-mortem"; fail=1 ;;
-            incident\ *) [[ "${tag#incident }" =~ ^([A-Z][A-Z0-9]*-[0-9]+|#[0-9]+|$ref|\[\[.+\]\]|https?://[^[:space:]]+)$ ]] || { echo "$f: $n is tagged incident but links no ticket or post-mortem"; fail=1; } ;;
+            incident|incident\ *) [[ "${tag#incident}" =~ ^\ ([A-Z][A-Z0-9]*-[0-9]+|#[0-9]+|$ref|\[\[.+\]\]|https?://[^[:space:]]+)$ ]] || { echo "$f: $n is tagged incident but links no ticket or post-mortem"; fail=1; } ;;
             *) echo "$f: $n has an unknown tag: use (incident <ticket>) or (foreseen)"; fail=1 ;;
           esac
         done < <(grep -oE '^- F[0-9]+ \([^)]*\):' "$f" | sed -E 's/^- (F[0-9]+) \((.*)\):$/\1 \2/')

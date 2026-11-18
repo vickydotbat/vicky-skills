@@ -22,7 +22,7 @@ Done when each claim in the brief has its quoted source, a tracker search names 
 
 ## Pre-mortem
 
-Before step 4 files the chart, run the pre-mortem in [STAR-CHART.md](../../commands/lay-course/STAR-CHART.md)'s "Sorting the knowns": a `Foreseen` line with a disposition for each way the effort could fail, or one `None foreseen:` line, then its check. Done when `check-foreseen.sh` exits 0 on the chart.
+Before step 4 files the chart, run the pre-mortem in [STAR-CHART.md](../../commands/lay-course/STAR-CHART.md)'s "Sorting the knowns". Done when its `check-foreseen.sh` exits 0 on the chart.
 
 ## Steps
 
