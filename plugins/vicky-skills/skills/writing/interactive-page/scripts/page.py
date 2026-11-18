@@ -215,7 +215,6 @@ def page(name, parts):
     home = os.environ.get("DRAWIO_HOME", "")
     canvas = bool(home) and os.path.isfile(os.path.join(home, "index.html"))
     card = quick = False
-    quick_at = 0
     header = [part[1] for part in parts if part[0] == "line" and part[1].startswith(HEADER)]
 
     def close():
@@ -235,7 +234,7 @@ def page(name, parts):
                 level = min(len(line) - len(line.lstrip("#")), 6)
                 out.append(f"<h{level}>{inline(line.lstrip('#').strip())}</h{level}>")
             elif line.startswith("Mark each item:"):
-                continue
+                continue  # mutant-ok: the last branch of the loop, so pass acts the same
             elif line.startswith(HEADER):
                 # Signed off and proven by fold into one small header, where the first stands.
                 if line == header[0]:
@@ -402,7 +401,6 @@ def serve_form(text, path, on_post, timeout, on_drawing=None):
     done = threading.Event()
     # Read before use_desktop_env swaps the environment for the desktop's.
     home = os.environ.get("DRAWIO_HOME", "")
-    origin = ""
 
     def foreign(headers):
         # Any other web page open in the browser can post a form here, and
@@ -413,7 +411,7 @@ def serve_form(text, path, on_post, timeout, on_drawing=None):
 
     class Handler(http.server.BaseHTTPRequestHandler):
         def log_message(self, *args):
-            pass
+            pass  # mutant-ok: a pass line has no other form
 
         def reply(self, code, body):
             self.send_response(code)

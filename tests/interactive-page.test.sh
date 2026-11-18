@@ -46,7 +46,7 @@ EOF
 
 start() { # file [timeout]
   rm -f "$scratch/url"
-  BROWSER="$scratch/browser" python3 -I "$page" "$1" --timeout "${2:-30}" 2>/dev/null &
+  PATH="${PYPATH:-$PATH}" BROWSER="$scratch/browser" python3 -I "$page" "$1" --timeout "${2:-30}" 2>/dev/null &
   pid=$!
   for _ in $(seq 50); do [ -s "$scratch/url" ] && break; sleep 0.1; done
   url=$(cat "$scratch/url" 2>/dev/null)
@@ -89,8 +89,8 @@ cp "$scratch/template.md" "$scratch/d.md"
 start "$scratch/d.md"
 wrong=$(post /elsewhere "${same[@]}")
 { printf 'text.0='; head -c 34000000 /dev/zero | tr '\0' 'x'; } >"$scratch/huge"
-big=$(curl -s -o /dev/null -w '%{http_code}' -X POST --data-binary "@$scratch/huge" "${url%/}/done")
-check "an answer over 32 MB is refused with a page that says so" '[ "$big" = 413 ] && ! grep -q xxxxxxxx "$scratch/d.md"'
+big=$(curl -s -o "$scratch/big.body" -w '%{http_code}' -X POST --data-binary "@$scratch/huge" "${url%/}/done")
+check "an answer over 32 MB is refused once, with a page that says so" '[ "$big" = 413 ] && grep -q "Too large" "$scratch/big.body" && ! grep -q "Not taken" "$scratch/big.body" && ! grep -q xxxxxxxx "$scratch/d.md"'
 kill -0 "$pid" 2>/dev/null && alive=yes || alive=no
 code=$(post /done text.0=Changed text.1=Other comment.0= comment.1= mark.0=x field.0=)
 again=$(post /done text.0=Again)
@@ -196,9 +196,9 @@ check "the browser gets the desktop session's environment, with nothing the dev 
   '[ "$(cat "$scratch/libpath" 2>/dev/null)" = "from-the-desktop unset unset unset" ]'
 cp "$scratch/plain-browser" "$scratch/browser"
 
-python3 -I "$page" >/dev/null 2>&1; none=$?
+python3 -I "$page" 2>"$scratch/usage" >/dev/null; none=$?
 python3 -I "$page" a b >/dev/null 2>&1; two=$?
-check "no file, or two, is a usage error" '[ "$none" = 2 ] && [ "$two" = 2 ]'
+check "no file, or two, is a usage error that says how to call it" '[ "$none" = 2 ] && [ "$two" = 2 ] && grep -qx "Usage: page.py <file.md> \[--timeout SECONDS\]" "$scratch/usage"'
 # A checklist draws as cards, with Markdown drawn and the legend as mark labels.
 cat >"$scratch/cards.md" <<'MD'
 # Over to you, Bob!
@@ -242,4 +242,260 @@ printf '# Sketch\n\n```drawio\n<mxfile>a</mxfile>```\n\n## Two\n\n```drawio\n<mx
 unglued=$(python3 -I -c "import sys; sys.path.insert(0, sys.argv[1]); import page; print(page.unglue(open(sys.argv[2]).read()), end='')" "$(dirname "$page")" "$scratch/glued.md")
 check "a fence glued to a sketch's last line closes that sketch, and only it" \
   '[ "$unglued" = "$(printf "# Sketch\n\n\`\`\`drawio\n<mxfile>a</mxfile>\n\`\`\`\n\n## Two\n\n\`\`\`drawio\n<mxfile>b</mxfile>\n\`\`\`\n")" ]'
+# The page's own markup, byte for byte, for a document that uses every part:
+# each close of a card or quick-notes block, and each mark of a drawing.
+cat >"$scratch/view.py" <<'PY'
+import os, sys
+sys.path.insert(0, sys.argv[1])
+import page
+if len(sys.argv) > 3:
+    os.environ["DRAWIO_HOME"] = sys.argv[3]
+else:
+    os.environ.pop("DRAWIO_HOME", None)
+text = open(sys.argv[2]).read()
+out = page.page("x", page.parse(text, os.path.dirname(os.path.abspath(sys.argv[2]))))
+print(out[out.index(page.DRAWING_JS) + len(page.DRAWING_JS) + len("</script>\n"):])
+PY
+cat >"$scratch/doc.md" <<'MD'
+# Title
+Mark each item: [x] completed as expected, [~] completed with changes, [-] failed to complete, [ ] not tested at all.
+signed off: nobody
+between the two
+proven by: nothing
+
+1. [ ] First `a` → shows
+   person: me
+2. [x] Second
+Plain right after a card
+3. [ ] Third → ok
+4. [ ] Fourth
+
+- [x] boxed after a blank
+5. [ ] Fifth
+quick notes:
+- BUG: found
+5. [ ] Sixth
+## Heading after a card
+   person: stray
+- [ ] approve
+- [x] a box _with_ style
+![Chart](c.svg)
+1. [ ] Seventh
+```text
+l1
+l2
+l3
+l4
+l5
+```
+## Choose
+- (x) red
+- ( ) blue
+quick notes:
+- IDEA:
+- RULE: later
+MD
+cat >"$scratch/doc.golden" <<'MD'
+<h1>Title</h1>
+<details><summary>Signed off and proven by</summary><p class=text>signed off: nobody</p><p class=text>proven by: nothing</p></details>
+<p class=text>between the two</p>
+<div class=card><div class=act>1. First <code>a</code></div>
+<div class=exp>→ shows</div>
+<div class=marks><label><input type=radio name="mark.0" value="x"> completed as expected</label><label><input type=radio name="mark.0" value="~"> completed with changes</label><label><input type=radio name="mark.0" value="-"> failed to complete</label><label><input type=radio name="mark.0" value=" " checked> not tested at all</label></div>
+<div class=meta>person: me</div>
+</div>
+<div class=card><div class=act>2. Second</div>
+<div class=marks><label><input type=radio name="mark.1" value="x" checked> completed as expected</label><label><input type=radio name="mark.1" value="~"> completed with changes</label><label><input type=radio name="mark.1" value="-"> failed to complete</label><label><input type=radio name="mark.1" value=" "> not tested at all</label></div>
+</div>
+<p class=text>Plain right after a card</p>
+<div class=card><div class=act>3. Third</div>
+<div class=exp>→ ok</div>
+<div class=marks><label><input type=radio name="mark.2" value="x"> completed as expected</label><label><input type=radio name="mark.2" value="~"> completed with changes</label><label><input type=radio name="mark.2" value="-"> failed to complete</label><label><input type=radio name="mark.2" value=" " checked> not tested at all</label></div>
+</div>
+<div class=card><div class=act>4. Fourth</div>
+<div class=marks><label><input type=radio name="mark.3" value="x"> completed as expected</label><label><input type=radio name="mark.3" value="~"> completed with changes</label><label><input type=radio name="mark.3" value="-"> failed to complete</label><label><input type=radio name="mark.3" value=" " checked> not tested at all</label></div>
+</div>
+<label><input type=checkbox name="box.0" checked> boxed after a blank</label><br>
+<div class=card><div class=act>5. Fifth</div>
+<div class=marks><label><input type=radio name="mark.4" value="x"> completed as expected</label><label><input type=radio name="mark.4" value="~"> completed with changes</label><label><input type=radio name="mark.4" value="-"> failed to complete</label><label><input type=radio name="mark.4" value=" " checked> not tested at all</label></div>
+</div>
+<details class=quick open><summary>Quick notes: BUG, QUIRK, FRICTION, UGLY, IDEA, RULE, WIP, QUESTION</summary>
+<label>BUG: <input type=text name="field.0" value="found"></label>
+</details>
+<div class=card><div class=act>5. Sixth</div>
+<div class=marks><label><input type=radio name="mark.5" value="x"> completed as expected</label><label><input type=radio name="mark.5" value="~"> completed with changes</label><label><input type=radio name="mark.5" value="-"> failed to complete</label><label><input type=radio name="mark.5" value=" " checked> not tested at all</label></div>
+</div>
+<h2>Heading after a card</h2>
+<p class=text>   person: stray</p>
+<label><input type=checkbox name="approve.0"> approve</label>
+<label><input type=checkbox name="box.1" checked> a box <em>with</em> style</label><br>
+<div class=chart onclick="zoom(this)"><svg id=c></svg>
+</div>
+<div class=card><div class=act>1. Seventh</div>
+<div class=marks><label><input type=radio name="mark.6" value="x"> completed as expected</label><label><input type=radio name="mark.6" value="~"> completed with changes</label><label><input type=radio name="mark.6" value="-"> failed to complete</label><label><input type=radio name="mark.6" value=" " checked> not tested at all</label></div>
+<textarea name="text.0" rows="6">l1
+l2
+l3
+l4
+l5</textarea>
+</div>
+<textarea name="comment.0" placeholder="Comment"></textarea>
+<h2>Choose</h2>
+<label><input type=radio name="choice.0" value="red" checked> red</label><br>
+<label><input type=radio name="choice.0" value="blue"> blue</label><br>
+<details class=quick open><summary>Quick notes: BUG, QUIRK, FRICTION, UGLY, IDEA, RULE, WIP, QUESTION</summary>
+<label>IDEA: <input type=text name="field.1" value=""></label>
+<label>RULE: <input type=text name="field.2" value="later"></label>
+</details>
+<h2>Anything else</h2><textarea name="note" placeholder="Comment"></textarea>
+<p><label><input type=checkbox name="approve_all"> approve all</label> <button type=submit>Done</button></p></form>
+MD
+dir=$(dirname "$page")
+python3 -I "$scratch/view.py" "$dir" "$scratch/doc.md" >"$scratch/doc.out"
+check "a page with every part draws its exact markup, each card and quick-notes block closed where it ends" 'cmp -s "$scratch/doc.out" "$scratch/doc.golden"'
+printf '```drawio\n<a/>\n```\n\n## Two\n\n```drawio\n<b/>\n```\n' >"$scratch/draw.md"
+mkdir -p "$scratch/dio"; echo '<html/>' >"$scratch/dio/index.html"
+cat >"$scratch/draw-canvas.golden" <<'MD'
+<script>frames[0]=1</script><iframe id="dio0" src="/drawio/index.html?embed=1&proto=json&spin=1&stealth=1&offline=1&noExitBtn=1&noSaveBtn=1&saveAndExit=0" style="width:100%;height:80vh;border:1px solid #8886"></iframe><input type=hidden name="drawing_xml.0" value="&lt;a/&gt;"><input type=hidden name="drawing_png.0" value="">
+<h2>Two</h2>
+<script>frames[1]=1</script><iframe id="dio1" src="/drawio/index.html?embed=1&proto=json&spin=1&stealth=1&offline=1&noExitBtn=1&noSaveBtn=1&saveAndExit=0" style="width:100%;height:80vh;border:1px solid #8886"></iframe><input type=hidden name="drawing_xml.1" value="&lt;b/&gt;"><input type=hidden name="drawing_png.1" value="">
+<h2>Anything else</h2><textarea name="note" placeholder="Comment"></textarea>
+<p><button type=submit>Done</button></p></form>
+MD
+cat >"$scratch/draw-text.golden" <<'MD'
+<textarea name="drawing_xml.0" rows="8">&lt;a/&gt;</textarea>
+<h2>Two</h2>
+<textarea name="drawing_xml.1" rows="8">&lt;b/&gt;</textarea>
+<h2>Anything else</h2><textarea name="note" placeholder="Comment"></textarea>
+<p><button type=submit>Done</button></p></form>
+MD
+python3 -I "$scratch/view.py" "$dir" "$scratch/draw.md" "$scratch/dio" >"$scratch/draw-canvas.out"
+python3 -I "$scratch/view.py" "$dir" "$scratch/draw.md" >"$scratch/draw-text.out"
+mkdir -p "$scratch/empty-app"
+python3 -I "$scratch/view.py" "$dir" "$scratch/draw.md" "$scratch/empty-app" >"$scratch/draw-empty.out"
+check "a drawing is an app frame where the draw.io app is there, and its XML as text where it is not or its folder has no app" \
+  'cmp -s "$scratch/draw-canvas.out" "$scratch/draw-canvas.golden" && cmp -s "$scratch/draw-text.out" "$scratch/draw-text.golden" && cmp -s "$scratch/draw-empty.out" "$scratch/draw-text.golden"'
+
+# parse, unglue and answered, part by part.
+cat >"$scratch/unit.py" <<'PY'
+import sys
+sys.path.insert(0, sys.argv[1])
+import page
+bad = 0
+def eq(name, got, want):
+    global bad
+    if got != want:
+        bad = 1
+        print("FAIL", name, repr(got), "wanted", repr(want))
+text = "```text\na\n```\n```drawio\n<x/>\n<y/>\n```\n```text\nb\n```\ntail"
+eq("parse", page.parse(text, "/"), [
+    ("line", "```text"), ("block", ["a"]), ("line", "```"), ("comment",),
+    ("line", "```drawio"), ("drawing", ["<x/>", "<y/>"]), ("line", "```"),
+    ("line", "```text"), ("block", ["b"]), ("line", "```"), ("comment",),
+    ("line", "tail")])
+eq("parse open drawing", page.parse("```drawio\n<x/>", "/"), [("line", "```drawio"), ("drawing", ["<x/>"])])
+eq("fence_end", page.fence_end(["```", "```drawio", "<x/>", "```"], 1), 3)
+eq("fence_end open", page.fence_end(["```drawio", "<x/>"], 0), 2)
+glued = "```drawio\n<a>\n<b>```\n\nplain```\n```drawio\n<c>\n```\nafter```\n```text\nabc```\n"
+want = "```drawio\n<a>\n<b>\n```\n\nplain```\n```drawio\n<c>\n```\nafter```\n```text\nabc```\n"
+eq("unglue", page.unglue(glued), want)
+eq("unglue plain", page.unglue("# T\nfoo```\n"), "# T\nfoo```\n")
+parts = page.parse("```drawio\n<a/>\n```\n```text\nt\n```\n", "/")
+eq("picture once, after the closing fence",
+   page.answered(parts, {"drawing_png_file.0": ["p.png"]}),
+   "```drawio\n<a/>\n```\n![drawing 0](p.png)\n```text\nt\n```\n")
+eq("note after a last line with text", page.answered(page.parse("## A\nx", "/"), {"note": ["n"]}),
+   "## A\nx\n\n## Anything else\nComment: n")
+eq("note on nothing", page.answered([], {"note": ["n"]}), "\n## Anything else\nComment: n")
+sys.exit(bad)
+PY
+python3 -I "$scratch/unit.py" "$dir" >"$scratch/unit.out" 2>&1; unit=$?
+check "parse, unglue and answered keep each block, fence, picture and note where it belongs" '[ "$unit" = 0 ]'
+[ "$unit" = 0 ] || cat "$scratch/unit.out"
+
+# The draw.io app's files are served from its own folder, and nothing outside it.
+mkdir -p "$scratch/app/sub"; printf JS >"$scratch/app/app.js"; printf INDEX >"$scratch/app/index.html"; printf BIN >"$scratch/app/data.bin"
+echo secret >"$scratch/outside.txt"
+printf '```drawio\n<a/>\n```\n\n## Two\n\n```drawio\n<b/>\n```\n\n```text\nt\n```\n' >"$scratch/m.md"
+DRAWIO_HOME="$scratch/app" start "$scratch/m.md"
+base=${url%/}
+curl -s -D "$scratch/hdr.page" -o /dev/null "$base/"
+curl -s -D "$scratch/hdr.js" -o "$scratch/body.js" "$base/drawio/app.js?v=1"
+curl -s -D "$scratch/hdr.bin" -o "$scratch/body.bin" "$base/drawio/data.bin"
+root=$(curl -s "$base/drawio/")
+missing=$(curl -s -w '|%{http_code}' "$base/drawio/nope.js")
+folder=$(curl -s -o /dev/null -w '%{http_code}' "$base/drawio/sub")
+escape=$(curl -s --path-as-is -w '|%{http_code}' "$base/drawio/../outside.txt")
+check "the page is served as UTF-8 HTML, and a draw.io file as its own type, once, with nothing after it" \
+  'grep -qi "^content-type: text/html; charset=utf-8" "$scratch/hdr.page" && grep -qi "^content-type: text/javascript" "$scratch/hdr.js" && [ "$(cat "$scratch/body.js")" = JS ] && grep -qi "^content-type: application/octet-stream" "$scratch/hdr.bin" && [ "$(cat "$scratch/body.bin")" = BIN ]'
+check "the draw.io folder's own address gives its index, and a missing file, a folder or a path out of it is 404" \
+  '[ "$root" = INDEX ] && [ "$missing" = "Not found.|404" ] && [ "$folder" = 404 ] && [ "${escape#*|}" = 404 ] && ! grep -q secret <<<"$escape"'
+kept=$(curl -s -w '|%{http_code}' -X POST --data-urlencode xml='<new/>' "$base/drawing/1")
+live=$(cat "$scratch/m.md")
+post /done text.0=t comment.0= >/dev/null
+finish
+check "a live drawing change is kept at once in its own block, answers Kept. once, and survives Done" \
+  '[ "$kept" = "Kept.|200" ] && [ "$live" = "$(cat "$scratch/m.md")" ] && [ "$(cat "$scratch/m.md")" = "$(printf "\`\`\`drawio\n<a/>\n\`\`\`\n\n## Two\n\n\`\`\`drawio\n<new/>\n\`\`\`\n\n\`\`\`text\nt\n\`\`\`\n")" ]'
+
+# A fence glued to a sketch's last line is fixed in the file at once, and the
+# page is drawn from the fixed text.
+printf '# Sketch\n\n```drawio\n<mxfile>a</mxfile>```\n\n## Two\n\n```drawio\n<mxfile>b</mxfile>\n```\n' >"$scratch/gl.md"
+cp "$scratch/gl.md" "$scratch/gl2.md"
+fixed_text=$(printf '# Sketch\n\n```drawio\n<mxfile>a</mxfile>\n```\n\n## Two\n\n```drawio\n<mxfile>b</mxfile>\n```\n')
+DRAWIO_HOME= start "$scratch/gl.md"
+html=$(curl -s "$url")
+post /done "drawing_xml.0=<mxfile>a</mxfile>" "drawing_xml.1=<mxfile>b</mxfile>" >/dev/null
+finish
+DRAWIO_HOME= start "$scratch/gl2.md" 1
+finish
+check "a glued fence is split in the file, even with no answer, and the page shows each sketch on its own" \
+  '[ "$(grep -c "name=\"drawing_xml\." <<<"$html")" = 2 ] && [ "$(cat "$scratch/gl.md")" = "$fixed_text" ] && [ "$status" = 2 ] && [ "$(cat "$scratch/gl2.md")" = "$fixed_text" ]'
+
+# A drawing's picture is saved beside the file and named after its closing fence.
+printf '```drawio\n<a/>\n```\n\n```text\nt\n```\n' >"$scratch/png.md"
+DRAWIO_HOME= start "$scratch/png.md"
+post /done drawing_xml.0='<a/>' drawing_png.0='data:image/png;base64,aGk=' text.0=t comment.0= >/dev/null
+finish
+check "a drawing's PNG is saved as <file>.drawing-<n>.png and named once, after its closing fence" \
+  '[ "$(cat "$scratch/png.drawing-0.png" 2>/dev/null)" = hi ] && [ "$(cat "$scratch/png.md")" = "$(printf "\`\`\`drawio\n<a/>\n\`\`\`\n![drawing 0](png.drawing-0.png)\n\n\`\`\`text\nt\n\`\`\`\n")" ]'
+
+# What the page says on stderr, with a browser that opens and with none.
+cp "$scratch/template.md" "$scratch/s.md"
+BROWSER="$scratch/browser" timeout 30 python3 -I "$page" "$scratch/s.md" --timeout 1 2>"$scratch/err.open"; st_open=$?
+bare="$scratch/bare"; mkdir -p "$bare"
+for tool in python3 bash; do ln -sf "$(command -v "$tool")" "$bare/$tool"; done
+timeout 30 env -u BROWSER -u DISPLAY -u WAYLAND_DISPLAY PATH="$bare" python3 -I "$page" "$scratch/s.md" --timeout 1 2>"$scratch/err.none"; st_none=$?
+check "the page names its address on stderr, and says no browser opened only when none did" \
+  '[ "$st_open" = 2 ] && grep -q "^page: open http://127.0.0.1:[0-9]*/$" "$scratch/err.open" && ! grep -q "no browser opened" "$scratch/err.open" && grep -q "^page: no browser opened; give the user http://127.0.0.1:[0-9]*/$" "$scratch/err.none"'
+# With no systemctl at all, a dev shell's LD_LIBRARY_PATH still stays out of the browser.
+cp "$scratch/env-browser" "$scratch/browser"
+cp "$scratch/template.md" "$scratch/e.md"
+PYPATH="$bare" LD_LIBRARY_PATH=/stale/dev-shell/lib start "$scratch/e.md"; post /done >/dev/null; finish
+check "with no systemctl to run, a dev shell's LD_LIBRARY_PATH still stays out of the browser the page starts" \
+  '[ "$(cat "$scratch/libpath" 2>/dev/null)" = unset ]'
+cp "$scratch/plain-browser" "$scratch/browser"
+
+# The server stops answering once the page has its answer.
+cat >"$scratch/late.py" <<'PY'
+import sys, threading, urllib.request, webbrowser
+sys.path.insert(0, sys.argv[1])
+import page
+page.use_desktop_env = lambda: None
+def fake_open(url):
+    def run():
+        urllib.request.urlopen(url, timeout=5).read()
+        urllib.request.urlopen(urllib.request.Request(url + "done", data=b"a=1", method="POST"), timeout=5).read()
+    threading.Thread(target=run, daemon=True).start()
+    seen["url"] = url
+    return True
+seen = {}
+webbrowser.open = fake_open
+got = page.serve_form(b"<p>x</p>", "/done", lambda body: None, 10)
+try:
+    urllib.request.urlopen(seen["url"], timeout=2).read()
+    print("answered after Done")
+except OSError:
+    print("silent after Done", got)
+PY
+check "after Done the page serves nothing more" '[ "$(timeout 30 python3 -I "$scratch/late.py" "$dir" 2>/dev/null)" = "silent after Done True" ]'
 exit $fail
