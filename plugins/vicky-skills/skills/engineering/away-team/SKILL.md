@@ -5,7 +5,7 @@ description: Answer a question from primary sources in a background agent, and p
 
 # Away team
 
-> _Beam down, scan, report to the bridge. The ship keeps flying._
+> _Beam down, scan, report: primary sources only, and the ship keeps flying._
 
 Start a **background agent** for the reading, so the session keeps working. Its brief:
 

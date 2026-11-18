@@ -11,7 +11,7 @@ A **mission brief** writes down what a conversation already settled, and files i
 
 ## Check first
 
-Before step 1 writes a word, check what the brief rests on. A ticket written from memory carries invented premises, and misses a premise already decided elsewhere. Do all four:
+Before step 1 writes a word, check what the brief rests on. A ticket written from memory carries invented premises. Do all four:
 
 - **Source material.** Read the rulebook, spec, docs, decision records and API each claim rests on, and quote the line. Start `away-team` for a fact no source in hand answers.
 - **The tracker.** Search it for every term and claim the brief makes: tickets, comments and decisions that already settle it. A premise decided there binds the brief, quoted, and is never re-opened.

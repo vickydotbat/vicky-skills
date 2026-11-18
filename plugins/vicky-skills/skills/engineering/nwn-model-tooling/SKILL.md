@@ -16,7 +16,7 @@ The plugin settings under `/plugin` name the tools. A blank setting means the to
 | `cleanmodels` | on `PATH` | Check, repair, compile and decompile `.mdl` files. |
 | `nwn_erf` and the other `nwn_*` tools from neverwinter.nim | on `PATH` | Pack and unpack HAK and ERF files, read 2da, TLK and GFF files. |
 
-Render, inspect, import and edit `.mdl` files with these tools only: headless Blender with Neverblender, and `cleanmodels` for check and repair. Never write your own renderer, parser or mesh editor. A hand-made rasteriser aliases and blurs exactly where the faults are, so a fault gets misread.
+Render, inspect, import and edit `.mdl` files with these tools only: headless Blender with Neverblender, and `cleanmodels` for check and repair. Never write your own renderer, parser or mesh editor.
 
 Stock game resources, unpacked one folder per BIF, are in `${user_config.nwn_refs}`. Read that folder's `AGENTS.md` first when it has one. Copy a stock file into your scratch folder before you edit it.
 
@@ -26,7 +26,6 @@ Stock game resources, unpacked one folder per BIF, are in `${user_config.nwn_ref
 - `cleanmodels check <input>...` reports and writes nothing. With `--fix`, its last argument is the output.
 - Output is flat: subfolders are not mirrored.
 - With one input file, name an output file. An output folder fails.
-- `cleanmodels <command> --help` lists each command's flags.
 
 ## Packing
 

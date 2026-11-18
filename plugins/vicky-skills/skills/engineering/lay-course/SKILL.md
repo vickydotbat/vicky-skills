@@ -18,7 +18,7 @@ A plan that says where work lands (a side branch, a stack, a pull request base, 
 
 ## Start an effort
 
-The user brings a loose idea. When they bring the result of a council or an interrogation instead, start at step 4.
+When the user brings a loose idea, start at step 1. When they bring the result of a council or an interrogation instead, start at step 4.
 
 1. **Pick the method.** Ask once: "Council, where we argue ideas, or interrogation, where you answer questions?" The council is `council-of-elrond`, the easy mode. Interrogation is `interrogation`, the hard mode, which makes the user say what they want. Done when the user has picked one.
 2. **Name the mission** with that method, and write each settled word into the repo's glossary. Done when the user agrees to a mission of at most three sentences.

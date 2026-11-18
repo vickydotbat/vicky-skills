@@ -5,7 +5,7 @@ description: Warp through a star chart in a single run, whatever it takes: every
 
 # Warp
 
-> _Engage, and never drop out of warp: every obstacle is cleared, gone around or waited out, and the run ends at the last star with CI green._
+> _Engage, and never drop out of warp: clear, bypass or outwait every obstacle, and end at the last star with CI green._
 
 A **warp** clears a whole star chart in one run, or the stars the user names: it achieves `do` on every star of the course, whatever it takes. Each star it means to build is a **target**. It clears the targets' **course**, which is every open blocker from the frontier to each target, then builds the targets. A target is **in reach** when nothing on its course waits on another person, or on an account or deploy the user can't give this run. Out of reach, it stays open and the landing report names it. The words and ticket forms are in [STAR-CHART.md](../lay-course/STAR-CHART.md), and the tracker's commands in `docs/agents/issue-tracker.md`, "Star chart operations".
 
@@ -42,7 +42,7 @@ A warp is one effort: every star, edge case, fallout item and piece of found wor
 
 ## Mid-flight questions
 
-A question only the user can answer that turns up after pre-flight is pre-flight's miss: take your pick, record it in the pull request's Check these with the pre-flight step that should have caught it, build it, and fly on. Your pick is the answer cheapest to undo. A question too costly to guess is an **asteroid belt** ([STAR-CHART.md](../lay-course/STAR-CHART.md), "Words"): build around it and gather every such question. At the end of the course, before step 6, drop out once, among the rocks, to take readings: one round of questions, each with your pick. Their answers re-engage the warp: build each one on the same branch and pull request, with its approved tests red first, then go on to step 6.
+A question only the user can answer that turns up after pre-flight is pre-flight's miss: take your pick, record it in the pull request's Check these with the pre-flight step that should have caught it, build it, and fly on. A question too costly to guess is an **asteroid belt** ([STAR-CHART.md](../lay-course/STAR-CHART.md), "Words"): build around it and gather every such question. At the end of the course, before step 6, drop out once, among the rocks, to take readings: one round of questions, each with your pick. Their answers re-engage the warp: build each one on the same branch and pull request, with its approved tests red first, then go on to step 6.
 
 ## Punch through
 
