@@ -1,14 +1,12 @@
 #!/usr/bin/env bash
-# AGENTS.md is the one development path: each section ends its steps in
-# "Done when", and the path names the commands that prove each step.
+# Every numbered step in AGENTS.md ends in "Done when". It checks the form,
+# never a heading or a phrase: agents never test prose.
 set -u
 cd "$(dirname "$0")/.."
-fail=0
-chk() { grep -qF -- "$2" AGENTS.md || { echo "FAIL $1: AGENTS.md lacks: $2"; fail=1; }; }
-for h in "## Add a skill" "## Change a skill" "## Add or change a hook" "## Before every push" "## Evals" "## Pull request"; do chk "section" "$h"; done
-for sec in "Add a skill" "Change a skill" "Add or change a hook" "Before every push" "Evals" "Pull request"; do
-  n=$(awk -v s="## $sec" '$0==s{f=1;next} /^## /{f=0} f&&/^[0-9]+\. /' AGENTS.md | grep -vc "Done when")
-  [ "$n" -eq 0 ] || { echo "FAIL $sec: $n numbered step(s) without Done when"; fail=1; }
-done
-[ $fail -eq 0 ] && echo "ok   agents-doc: AGENTS.md is one path with a Done when per step"
-exit $fail
+check() { awk '/^[0-9]+\. /' "$1" | grep -vc "Done when"; }
+fixture=$(mktemp); trap 'rm -f "$fixture"' EXIT
+printf '## Any\n\n1. A step. Done when it is.\n2. A step with no end.\n' > "$fixture"
+[ "$(check "$fixture")" -eq 1 ] || { echo "FAIL a step with no Done when is counted"; exit 1; }
+n=$(check AGENTS.md)
+[ "$n" -eq 0 ] || { echo "FAIL AGENTS.md: $n numbered step(s) without Done when"; exit 1; }
+echo "ok   agents-doc: every numbered step in AGENTS.md has a Done when"
