@@ -167,7 +167,8 @@ def prove(base):
             red |= not ok
         else:
             result = "not run"  # an eval case costs money, and a plain file is no command
-        parts.append(f"{law['text']} ({proof}: {result})")
+        short = law["text"] if len(law["text"]) <= 60 else law["text"][:57].rstrip() + "..."
+        parts.append(f"{law['file']}:{law['line']} {short} ({proof}: {result})")
     print("Laws: " + ("; ".join(parts) if parts else "none touched"))
     new, backlog = sort_problems(base)
     report(new, backlog)

@@ -38,4 +38,12 @@ echo "# x" >> tests/slow.test.sh; git commit -qam touch
 start=$SECONDS; out=$(LAW_LINT_TIMEOUT=1 "$lint" prove "$base" 2>&1); rc=$?
 check "a proof that outlives LAW_LINT_TIMEOUT counts as failed, and prove stops waiting" \
   '[ $rc = 1 ] && grep -q "Slow. (tests/slow.test.sh: failed)" <<<"$out" && [ $((SECONDS - start)) -lt 10 ]'
+cd "$t" && rm -rf r && mkdir r && cd r && git init -q && git config user.email t@t && git config user.name t
+mkdir -p tests; printf '#!/usr/bin/env bash\n' > tests/a.test.sh; chmod +x tests/a.test.sh
+long=$(printf 'word%.0s ' $(seq 60))
+printf -- '- Long law %s\n  Proven by: tests/a.test.sh\n' "$long" > AGENTS.md; git add -A; git commit -qm base; base=$(git rev-parse HEAD)
+echo "# x" >> tests/a.test.sh; git commit -qam touch
+out=$("$lint" prove "$base" 2>&1)
+check "a Laws line names each law by its file and line and a short start, never its whole text" \
+  'line=$(grep "^Laws:" <<<"$out") && grep -q "AGENTS.md:1 " <<<"$line" && [ ${#line} -lt 160 ] && grep -q "tests/a.test.sh: passed" <<<"$line"'
 exit $fail
