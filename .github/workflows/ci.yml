@@ -207,6 +207,8 @@ jobs:
         run: tests/decision-record-skill.test.sh
       - name: Skill changes come with a test
         run: tests/skill-change-tested.test.sh
+      - name: a skill change is proven by an eval case
+        run: tests/skill_change_proven_approved_examples.test.sh
       - name: ADR scope hint
         run: tests/adr-scope-hint.test.sh
       - name: Skill links
