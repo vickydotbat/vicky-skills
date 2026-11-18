@@ -145,6 +145,10 @@ jobs:
         run: tests/check-adr.test.sh
       - name: ADR retire approved examples
         run: tests/adr_retire_approved_examples.test.sh
+      - name: Dated and tagged forces (approved examples)
+        run: tests/dated_forces_approved_examples.test.sh
+      - name: Post-mortem and pre-mortem checks (approved examples)
+        run: tests/post_mortem_check_approved_examples.test.sh
       - name: Skill changes come with a test
         run: tests/skill-change-tested.test.sh
       - name: Skill changes are proven by an eval case
