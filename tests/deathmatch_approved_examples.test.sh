@@ -109,4 +109,55 @@ echo x > new.txt; git add -A; git commit -qm next
 bash "$dm/verdict.sh" due "$t/pr.md" "$(git rev-parse HEAD)"; r2=$?
 check "E27 once per effort, per head commit" '[ $r1 = 1 ] && [ $r2 = 0 ]'
 
+# Given any branch
+# When deathmatch runs
+# Then Intent and Standards fight, whatever the diff holds
+repo; echo more >> README.md; git commit -qam docs
+out=$(bash "$dm/triggers.sh" main 2>&1)
+check "E29 Intent and Standards always fight" 'grep -qx "fight: intent" <<<"$out" && grep -qx "fight: standards" <<<"$out"'
+
+# Given a branch that changes only Markdown
+# When deathmatch runs
+# Then Holds and Simplicity don't fight, and the report names each as out of reach
+check "E30 a docs-only branch leaves Holds and Simplicity out of reach" \
+  'grep -qx "out of reach: holds" <<<"$out" && grep -qx "out of reach: simplicity" <<<"$out" && ! grep -qE "^fight: (holds|simplicity)" <<<"$out"'
+
+# Given a branch that changes a script
+# When deathmatch runs
+# Then Holds and Simplicity fight
+repo; printf '#!/usr/bin/env bash\necho hi\n' > run.sh; git add -A; git commit -qm script
+out=$(bash "$dm/triggers.sh" main 2>&1)
+check "E31 a script brings Holds and Simplicity" 'grep -qx "fight: holds" <<<"$out" && grep -qx "fight: simplicity" <<<"$out"'
+
+# Given a branch whose commits and pull request body claim no fix
+# When deathmatch runs
+# Then Cause doesn't fight, and the report names it as out of reach
+printf '## Summary\nAdds a greeting.\n## Proof\nTests pass.\n' > "$t/body.md"
+out=$(bash "$dm/triggers.sh" main "$t/body.md" 2>&1)
+check "E32 no claimed fix leaves Cause out of reach" 'grep -qx "out of reach: cause" <<<"$out" && ! grep -qx "fight: cause" <<<"$out"'
+
+# Given a branch with a commit that says it fixes a bug
+# When deathmatch runs
+# Then Cause fights
+echo 'echo bye' >> run.sh; git commit -qam "Fix the greeting crash on an empty name"
+out=$(bash "$dm/triggers.sh" main "$t/body.md" 2>&1)
+check "E33 a fix brings Cause" 'grep -qx "fight: cause" <<<"$out"'
+
+# Given a pull request body with no Proof section, or no pull request yet
+# When deathmatch runs
+# Then Claims doesn't fight, and the report names it as out of reach
+printf '## Summary\nAdds a greeting.\n' > "$t/noproof.md"
+a=$(bash "$dm/triggers.sh" main "$t/noproof.md" 2>&1); b=$(bash "$dm/triggers.sh" main 2>&1); c=$(bash "$dm/triggers.sh" main "$t/body.md" 2>&1)
+check "E34 Claims fights only a body with proof" \
+  'grep -qx "out of reach: claims" <<<"$a" && grep -qx "out of reach: claims" <<<"$b" && grep -qx "fight: claims" <<<"$c"'
+
+# Given a deathmatch with more than three opponents to send
+# When it fights
+# Then no more than three run at once, the next starts when one reports, and each command's memory cap times the opponents running fits in the memory free
+free=$(awk '/^MemAvailable:/ {print $2 * 1024}' /proc/meminfo)
+b7=$(bash "$dm/batch.sh" 7 2>&1); b2=$(bash "$dm/batch.sh" 2 2>&1)
+at=$(sed -n 's/^at once: //p' <<<"$b7"); capb=$(numfmt --from=iec "$(sed -n 's/^memory cap: //p' <<<"$b7")" 2>/dev/null)
+check "E35 opponents fight three at a time, their caps within the memory free" \
+  '[ "$at" = 3 ] && [ -n "$capb" ] && [ $((capb * at)) -le "$free" ] && grep -qx "at once: 2" <<<"$b2"'
+
 exit $fail
