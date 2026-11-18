@@ -16,6 +16,9 @@ answers:
   "- ( ) option" lines       one choice per run of them (choice.N)
   the end of the page        a comment box           (note)
   any approve box            "approve all" beside Done, ticking every one (approve_all)
+  any box or approve box     "Tick all" and "Untick all" under each heading that holds
+                             boxes, and beside Done for the whole page; they set the
+                             boxes in the browser, so the answers are the same as by hand
 
 When the user presses Done, the answers are written back into the file in
 its own form, and the script exits 0. A comment lands as a "Comment: ..."
@@ -64,6 +67,15 @@ details.quick label{display:block;margin:.2rem 0}"""
 # Each click zooms a chart to 2x, then 3x the window width, then back to fit.
 ZOOM = """function zoom(c){const s=c.querySelector("svg"),n=(+c.dataset.z||1)%3+1;c.dataset.z=n;
 s.style.maxWidth=n>1?"none":"";s.style.width=n>1?c.clientWidth*n+"px":""}"""
+# Tick all and Untick all set the boxes under their heading (up to the next
+# one), or every box in the form. Unticking also clears approve_all, which
+# would otherwise approve every approve box again on Done.
+TICK_JS = """function tick(b,on){const s=b.parentNode,f=document.forms[0];let els=[];
+if(s.dataset.page)els=[f];else for(let n=s.nextElementSibling;n&&!/^H[1-6]$/.test(n.tagName);n=n.nextElementSibling)els.push(n);
+els.forEach(n=>[n,...n.querySelectorAll("input")].forEach(i=>{if(i.type==="checkbox"&&i.name!=="approve_all")i.checked=on}));
+if(!on&&f.elements.approve_all)f.elements.approve_all.checked=false}"""
+TICK_BUTTONS = ('<button type=button onclick="tick(this,true)">Tick all</button> '
+                '<button type=button onclick="tick(this,false)">Untick all</button>')
 CHECK = re.compile(r"^(\d+\. )\[(.)\] (.*)$")
 FIELD = re.compile(r"^(\s*(?:notes|- [A-Z]+)):\s?(.*)$")
 APPROVE = re.compile(r"^- \[( |x)\] approve$")
@@ -210,12 +222,20 @@ def numbered(parts):
 
 def page(name, parts):
     e = html.escape
-    out = [f"<!doctype html><meta charset=utf-8><title>{e(name)}</title><style>{STYLE}</style><script>{ZOOM}</script>",
+    out = [f"<!doctype html><meta charset=utf-8><title>{e(name)}</title><style>{STYLE}</style><script>{ZOOM}{TICK_JS}</script>",
            '<form method=post action="/done" onsubmit="return done(event)">', f"<script>{DRAWING_JS}</script>"]
     home = os.environ.get("DRAWIO_HOME", "")
     canvas = bool(home) and os.path.isfile(os.path.join(home, "index.html"))
     card = quick = False
     header = [part[1] for part in parts if part[0] == "line" and part[1].startswith(HEADER)]
+
+    # A heading whose section (up to the next heading) holds a box gets tick buttons.
+    ticks, heading = set(), None
+    for at, part in enumerate(parts):
+        if part[0] == "line" and part[1].startswith("#"):
+            heading = at
+        elif part[0] in ("approve", "box") and heading is not None:
+            ticks.add(heading)
 
     def close():
         nonlocal card, quick
@@ -225,7 +245,7 @@ def page(name, parts):
             out.append("</div>")
         card = quick = False
 
-    for part, n in numbered(parts):
+    for at, (part, n) in enumerate(numbered(parts)):
         kind = part[0]
         if kind == "line":
             line = part[1]
@@ -233,6 +253,8 @@ def page(name, parts):
                 close()
                 level = min(len(line) - len(line.lstrip("#")), 6)
                 out.append(f"<h{level}>{inline(line.lstrip('#').strip())}</h{level}>")
+                if at in ticks:
+                    out.append(f"<p class=tick>{TICK_BUTTONS}</p>")
             elif line.startswith("Mark each item:"):
                 continue  # mutant-ok: the last branch of the loop, so pass acts the same
             elif line.startswith(HEADER):
@@ -302,7 +324,9 @@ def page(name, parts):
     # Any approve box gets one more beside Done that ticks them all.
     approve_all = ('<label><input type=checkbox name="approve_all"> approve all</label> '
                    if any(part[0] == "approve" for part in parts) else "")
-    out.append(f"<p>{approve_all}<button type=submit>Done</button></p></form>")
+    page_ticks = (f"<span class=tick data-page=1>{TICK_BUTTONS}</span> "
+                  if any(part[0] in ("approve", "box") for part in parts) else "")
+    out.append(f"<p>{approve_all}{page_ticks}<button type=submit>Done</button></p></form>")
     return "\n".join(out)
 
 

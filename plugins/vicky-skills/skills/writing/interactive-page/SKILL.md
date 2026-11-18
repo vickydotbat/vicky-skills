@@ -26,6 +26,7 @@ The user answers in the browser, never in a Markdown editor. The file stays the 
 | a run of `- ( ) <option>` lines, `(x)` on your pick | one choice: the user clicks an option, written back as `(x)` |
 | the end of every page | a comment box, written back under a closing `## Anything else` heading |
 | one or more `- [ ] approve` lines | an "approve all" box beside Done, which ticks every one |
+| a heading over one or more `- [ ]` boxes | "Tick all" and "Untick all" under it, and one pair beside Done for the whole page; they set the boxes in the browser, so the file comes back as if each were ticked by hand |
 
 Every other line shows as text. A Done that changes nothing leaves the file byte for byte as it was.
 

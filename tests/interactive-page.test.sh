@@ -167,11 +167,20 @@ start "$scratch/two-box.md"; two_box=$(curl -s "$url"); post /done >/dev/null; f
 printf '## A\na:1\n\n```text\nA\n```\n' >"$scratch/no-box.md"
 start "$scratch/no-box.md"; no_box=$(curl -s "$url"); post /done >/dev/null; finish
 check "approve all shows on a page with one approve box and on a page with two, and not on a page with none" \
-  'grep -q "name=\"approve_all\"" <<<"$two_box" && grep -q "name=\"approve_all\"" <<<"$one_box" && ! grep -q "approve_all" <<<"$no_box"'
+  'grep -q "name=\"approve_all\"" <<<"$two_box" && grep -q "name=\"approve_all\"" <<<"$one_box" && ! grep -q "name=\"approve_all\"" <<<"$no_box"'
 printf '## A\na:1\n- [ ] approve\n' >"$scratch/one-tick.md"
 start "$scratch/one-tick.md"; post /done approve_all=on >/dev/null; finish
 check "approve all on a page with one approve box brings that box back approved" \
   'grep -qx -- "- \[x\] approve" "$scratch/one-tick.md"'
+
+printf '# Plan\n\n## Course\n- [ ] K-1 one\n- [ ] K-2 two\n\n## Questions\n- ( ) A\n\n## Sign-off\na:1\n- [ ] approve\n' >"$scratch/ticks.md"
+start "$scratch/ticks.md"; ticks=$(curl -s "$url"); post /done box.0=on box.1=on approve.0=on >/dev/null; finish
+cp "$scratch/ticks.md" "$scratch/ticks.hand.md"
+printf '# Plan\n\n## Course\n- [x] K-1 one\n- [x] K-2 two\n\n## Questions\n- ( ) A\n\n## Sign-off\na:1\n- [x] approve\n' >"$scratch/ticks.want"
+tick_btns=$(grep -c 'onclick="tick(this,true)">Tick all' <<<"$ticks")
+check "a heading that holds boxes gets Tick all and Untick all, one that holds none gets neither, and the page gets one pair beside Done" \
+  '[ "$tick_btns" = 3 ] && [ "$(grep -c "Untick all" <<<"$ticks")" = 3 ] && grep -q "</h2>.<p class=tick>" <<<"$(tr "\n" "." <<<"$ticks")" && ! grep -A1 "<h2>Questions</h2>" <<<"$ticks" | grep -q tick && grep -q "<span class=tick data-page=1>.*Done" <<<"$ticks" && ! grep -q "Tick all" <<<"$no_box"'
+check "every box ticked as the buttons leave the form comes back as if each were ticked by hand" 'cmp -s "$scratch/ticks.want" "$scratch/ticks.md"'
 
 printf '#!/usr/bin/env bash\necho "${LD_LIBRARY_PATH-unset}" >"%s/libpath"\necho "$1" >"%s/url"\n' "$scratch" "$scratch" >"$scratch/env-browser"
 chmod +x "$scratch/env-browser"
@@ -297,6 +306,7 @@ quick notes:
 MD
 cat >"$scratch/doc.golden" <<'MD'
 <h1>Title</h1>
+<p class=tick><button type=button onclick="tick(this,true)">Tick all</button> <button type=button onclick="tick(this,false)">Untick all</button></p>
 <details><summary>Signed off and proven by</summary><p class=text>signed off: nobody</p><p class=text>proven by: nothing</p></details>
 <p class=text>between the two</p>
 <div class=card><div class=act>1. First <code>a</code></div>
@@ -326,6 +336,7 @@ cat >"$scratch/doc.golden" <<'MD'
 <div class=marks><label><input type=radio name="mark.5" value="x"> completed as expected</label><label><input type=radio name="mark.5" value="~"> completed with changes</label><label><input type=radio name="mark.5" value="-"> failed to complete</label><label><input type=radio name="mark.5" value=" " checked> not tested at all</label></div>
 </div>
 <h2>Heading after a card</h2>
+<p class=tick><button type=button onclick="tick(this,true)">Tick all</button> <button type=button onclick="tick(this,false)">Untick all</button></p>
 <p class=text>   person: stray</p>
 <label><input type=checkbox name="approve.0"> approve</label>
 <label><input type=checkbox name="box.1" checked> a box <em>with</em> style</label><br>
@@ -348,7 +359,7 @@ l5</textarea>
 <label>RULE: <input type=text name="field.2" value="later"></label>
 </details>
 <h2>Anything else</h2><textarea name="note" placeholder="Comment"></textarea>
-<p><label><input type=checkbox name="approve_all"> approve all</label> <button type=submit>Done</button></p></form>
+<p><label><input type=checkbox name="approve_all"> approve all</label> <span class=tick data-page=1><button type=button onclick="tick(this,true)">Tick all</button> <button type=button onclick="tick(this,false)">Untick all</button></span> <button type=submit>Done</button></p></form>
 MD
 dir=$(dirname "$page")
 python3 -I "$scratch/view.py" "$dir" "$scratch/doc.md" >"$scratch/doc.out"
