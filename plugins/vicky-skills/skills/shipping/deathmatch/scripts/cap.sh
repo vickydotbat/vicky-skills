@@ -50,8 +50,8 @@ wait "$pid" 2>/dev/null
 rc=$?
 result=""
 if [ -n "$unit" ]; then
-  result=$(systemctl --user show "$unit.scope" -p Result --value 2>/dev/null)
-  systemctl --user reset-failed "$unit.scope" 2>/dev/null
+  result=$(systemctl --user show "$unit.scope" -p Result --value 2>/dev/null) # mutant-ok delete: only a real kill in a scope reads it; mutant runs make none, to spare the desktop, and the plain test run checks the memory cap finding
+  systemctl --user reset-failed "$unit.scope" 2>/dev/null # mutant-ok delete: only a real kill in a scope leaves a failed unit; the plain test run checks none is left
 fi
 if [ "$timed_out" = 1 ]; then
   echo "finding: over the time cap of ${secs}s"

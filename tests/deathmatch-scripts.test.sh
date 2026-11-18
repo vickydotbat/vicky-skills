@@ -5,6 +5,13 @@
 set -u
 dm="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/shipping/deathmatch/scripts"
 fail=0
+tick=$((40000 + $$)); tick2=$((90000 + $$)) # unique to this run, so a run beside it never matches
+# Mutant runs repeat the memory-hog checks many times. Each kill in a systemd scope
+# raises a desktop notice, so inside a mutant run they take the fallback.
+hog=(python3 -c 'b = bytearray(256 * 1024 * 1024)'); quiet=()
+# A mutant that flips the scope choice would still kill a real hog, so in a
+# mutant run the hog only prints the memory error the fallback reads.
+[ -n "${MUTATE_HOOKS_INNER:-}" ] && { quiet=(CAP_NO_SCOPE=1); hog=(bash -c 'echo "Cannot allocate memory" >&2; exit 1'); }
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 bash "$dm/cap.sh" 10 64M -- bash -c 'exit 3'; r=$?
 check "cap passes a command's own exit code through" '[ $r = 3 ]'
@@ -14,7 +21,7 @@ s=$(date +%s); bash "$dm/cap.sh" 10 64M -- true; r=$?; e=$(( $(date +%s) - s ))
 check "cap returns as soon as a fast command ends" '[ $r = 0 ] && [ $e -lt 5 ]'
 bash "$dm/cap.sh" 1 64M -- sleep 5 >/dev/null 2>&1; r=$?
 check "cap exits 124 over the time cap" '[ $r = 124 ]'
-out=$(bash "$dm/cap.sh" 10 32M -- python3 -c 'b = bytearray(256 * 1024 * 1024)' 2>/dev/null); r=$?
+out=$(env ${quiet[@]+"${quiet[@]}"} bash "$dm/cap.sh" 10 32M -- "${hog[@]}" 2>/dev/null); r=$?
 check "cap exits 125 over the memory cap" '[ $r = 125 ] && grep -q "memory cap" <<<"$out"'
 out=$(bash "$dm/cap.sh" 10 64M -- bash -c 'echo plain failure >&2; exit 1' 2>/dev/null); r=$?
 check "a failure that is no memory error stays the command's" '[ $r = 1 ] && [ -z "$out" ]'
@@ -34,12 +41,12 @@ bash "$dm/cap.sh" 1 64M -- bash -c 'setsid sleep 302 >/dev/null 2>&1 & echo $! >
 check "a setsid grandchild dies with the time cap" '! kill -0 $ss 2>/dev/null'
 kill "$ss" 2>/dev/null
 else echo "skip a setsid grandchild dies with the time cap: no systemd user manager"; fi
-out=$(CAP_NO_SCOPE=1 bash "$dm/cap.sh" 10 32M -- python3 -c 'b = bytearray(256 * 1024 * 1024)' 2>/dev/null); r=$?
+out=$(CAP_NO_SCOPE=1 bash "$dm/cap.sh" 10 32M -- "${hog[@]}" 2>/dev/null); r=$?
 check "with no scope, the memory cap still holds" '[ $r = 125 ]'
 out=$(bash "$dm/cap.sh" 10 64M -- bash -c 'exit 143'); r=$?
 check "a command's own exit 143 is no time cap" '[ $r = 143 ] && [ -z "$out" ]'
-bash "$dm/cap.sh" 4271 64M -- true
-check "a fast command leaves no timer behind" '! pgrep -fx "sleep 4271" >/dev/null'
+bash "$dm/cap.sh" "$tick" 64M -- true
+check "a fast command leaves no timer behind" '! pgrep -fx "sleep $tick" >/dev/null'
 out=$(bash "$dm/cap.sh" 10 64M -- python3 -c 'import os; os.kill(os.getpid(), 9)'); r=$?
 check "a command that kills itself is no time cap" '[ $r = 137 ] && ! grep -q "time cap" <<<"$out"'
 h=$(bash "$dm/halfway.sh" 010)
@@ -68,4 +75,26 @@ h=$(bash "$dm/batch.sh" 03)
 check "batch reads a leading zero as decimal" 'grep -qx "at once: 3" <<<"$h"'
 h=$(bash "$dm/batch.sh" 1)
 check "one opponent fights alone" 'grep -qx "at once: 1" <<<"$h"'
+# Found by the mutation pass.
+lim=$(CAP_NO_SCOPE=1 bash "$dm/cap.sh" 10 64M -- bash -c 'ulimit -v' 2>/dev/null)
+check "CAP_NO_SCOPE runs the fallback's address-space cap" '[ "$lim" = 65536 ]'
+CAP_NO_SCOPE=1 bash "$dm/cap.sh" 10 64M -- bash -c "sleep $tick2 & exit 0" >/dev/null 2>&1
+check "the fallback kills what the command left running" '! pgrep -fx "sleep $tick2" >/dev/null'
+g=$(mktemp -d)
+bash "$dm/cap.sh" 1 64M -- bash -c "trap 'sleep 0.3; echo graceful > $g/term; exit 0' TERM; while :; do sleep 0.1; done" >/dev/null 2>&1
+check "over the time cap, a command gets a moment to stop after TERM" '[ -s "$g/term" ]'
+failed() { systemctl --user list-units --failed --plain --no-legend "cap-*" 2>/dev/null | wc -l; }
+f0=$(failed); env ${quiet[@]+"${quiet[@]}"} bash "$dm/cap.sh" 10 32M -- "${hog[@]}" >/dev/null 2>&1; f1=$(failed)
+check "a memory cap leaves no failed unit behind" '[ "$f1" -le "$f0" ]'
+out=$(CAP_NO_SCOPE=1 bash "$dm/cap.sh" 10 64M -- bash -c 'echo out of memory >&2; exit 0' 2>/dev/null); r=$?
+check "the fallback calls no memory cap on a command that succeeded" '[ $r = 0 ] && [ -z "$out" ]'
+out=$(CAP_NO_SCOPE=1 bash "$dm/cap.sh" 10 64M -- bash -c 'echo plain failure >&2; exit 3' 2>/dev/null); r=$?
+check "the fallback calls no memory cap on a plain failure" '[ $r = 3 ] && [ -z "$out" ]'
+(cd "$g" && git init -q -b main && git -c user.email=t@t -c user.name=t commit -q --allow-empty -m base && git switch -qc b && echo x > a.sh && git add a.sh && git -c user.email=t@t -c user.name=t commit -qm add)
+printf '## Summary\nFixes the crash on an empty name.\n' > "$g/body.md"
+out=$(cd "$g" && bash "$dm/triggers.sh" main "$g/body.md" 2>&1)
+check "a fix claimed only in the body brings Cause" 'grep -qx "fight: cause" <<<"$out"'
+out=$(bash "$dm/batch.sh" 08 2>&1)
+check "batch takes 08 as eight" 'grep -qx "at once: 3" <<<"$out"'
+rm -rf "$g"
 exit $fail

@@ -9,6 +9,12 @@ root="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills"
 dm="$root/skills/shipping/deathmatch/scripts"
 hooks="$root/scripts"
 fail=0
+# Mutant runs repeat the memory-hog checks many times. Each kill in a systemd scope
+# raises a desktop notice, so inside a mutant run they take the fallback.
+hog=(python3 -c 'b = bytearray(256 * 1024 * 1024)'); quiet=()
+# A mutant that flips the scope choice would still kill a real hog, so in a
+# mutant run the hog only prints the memory error the fallback reads.
+[ -n "${MUTATE_HOOKS_INNER:-}" ] && { quiet=(CAP_NO_SCOPE=1); hog=(bash -c 'echo "Cannot allocate memory" >&2; exit 1'); }
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 t=$(mktemp -d); trap 'rm -rf "$t"' EXIT
 export HOME="$t/home" CLAUDE_PLUGIN_DATA="$t/data"; mkdir -p "$HOME" "$CLAUDE_PLUGIN_DATA"
@@ -32,7 +38,7 @@ sleep 300 & bystander=$!
 # The time case waits out a one-second cap: the shortest the cap takes.
 cap=$(bash "$dm/cap.sh" 1 64M -- bash -c 'echo $$ > "'"$t"'/child"; exec sleep 30' 2>&1); rc=$?
 child=$(cat "$t/child" 2>/dev/null)
-mem=$(bash "$dm/cap.sh" 10 32M -- python3 -c 'b = bytearray(256 * 1024 * 1024)' 2>&1); mrc=$?
+mem=$(env ${quiet[@]+"${quiet[@]}"} bash "$dm/cap.sh" 10 32M -- "${hog[@]}" 2>&1); mrc=$?
 check "E6 Runaway fights a server, the cap stops only its own run" \
   'grep -qi "^runaway" <<<"$out" && [ $rc -ne 0 ] && grep -qi "finding: .*time" <<<"$cap" && [ -n "$child" ] && ! kill -0 "$child" 2>/dev/null && [ $mrc -ne 0 ] && grep -qi "finding: .*memory" <<<"$mem" && kill -0 $bystander 2>/dev/null'
 kill $bystander 2>/dev/null
