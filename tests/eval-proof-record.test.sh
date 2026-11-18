@@ -29,9 +29,9 @@ check "T1-1 with no EVAL_MODEL the runner refuses, names EVAL_MODEL and starts n
 # Given EVAL_MODEL is set and an eval case passes
 # When the runner finishes that case
 # Then the case folder holds a passed file with the model and the date of the run
-STUB_EXIT=0 run model-a >/dev/null; rc=$?
+day0=$(date +%F); STUB_EXIT=0 run model-a >/dev/null; rc=$?; day1=$(date +%F)
 check "T1-2 a passing case runs on EVAL_MODEL and records it with today's date" \
-  '[ $rc = 0 ] && grep -qF -- "--model model-a" "$t/calls" && [ "$(cat "$case_dir/passed" 2>/dev/null)" = "model-a $(date +%F)" ]'
+  '[ $rc = 0 ] && grep -qF -- "--model model-a" "$t/calls" && grep -qxE "model-a ($day0|$day1)" "$case_dir/passed"'
 
 # And a case that fails leaves any earlier passed file as it was
 echo "model-a 2026-01-01" > "$case_dir/passed"

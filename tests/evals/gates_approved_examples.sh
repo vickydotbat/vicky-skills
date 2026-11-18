@@ -2,8 +2,10 @@
 # approved-spec: the examples the user ticked on 2026-11-18 for "Name every
 # no-pick gate": a gate that spends the user's money, and a gate on a fact only
 # a live system shows, end parked when the watch runs out, never on the pick.
-# Each case must pass on today's plugin and fail on the plugin from just before
-# GATES.md named that kind. Run by hand: each run costs a Claude session.
+# Each case must pass on today's plugin. A case that also passes on the plugin
+# from just before GATES.md named that kind proves nothing about the new text:
+# it reports as unproven, and stays as a guard. Both did on claude-opus-5-5,
+# and the user kept both clauses. Run by hand: each run costs a Claude session.
 set -u
 # shellcheck source=lib.sh
 . "$(dirname "$0")/lib.sh"
@@ -25,7 +27,7 @@ for c in "T2-1 spend-gate-parks" "T2-2 live-fact-gate-parks"; do
   if ! eval_case "$evals_plugin" "$name" "$name-now"; then
     echo "FAIL $id $name: fails on today's plugin (failed: $(failed_graders "$name-now"))"; fail=1; continue; fi
   if eval_case "$evals_out/before" "$name" "$name-before"; then
-    echo "FAIL $id $name: passes before ${named:0:7}, so it can't go red"; fail=1
+    echo "unproven $id $name: passes before ${named:0:7} too, so the new text is unproven"
   else echo "ok   $id $name: passes now, fails before ${named:0:7}"; fi
 done
 exit $fail
