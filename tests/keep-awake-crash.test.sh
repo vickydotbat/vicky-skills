@@ -39,7 +39,7 @@ rm -f "$fx/state/fresh"; free; kill $idler; wait $idler 2>/dev/null
 
 # A subagent is an agent at work: it holds the lock past its session's turn end.
 sub() { jq -nc --arg e "$1" --arg s "$2" --arg a "$3" '{hook_event_name:$e,session_id:$s,agent_id:$a}' | PATH="$fx/bin:$PATH" bash "$hook"; }
-sleep 30 & sess=$!; export KEEP_AWAKE_OWNER=$sess
+sleep 30 & sess=$!; trap 'kill $sess 2>/dev/null; rm -rf "$KEEP_AWAKE_DIR"; sleep 0.3; rm -rf "$fx"' EXIT; export KEEP_AWAKE_OWNER=$sess
 send UserPromptSubmit main; sub SubagentStart main bg1; send Stop main
 check "a background subagent holds the lock after its session's turn ends" 'held && sleep 0.4 && [ -f "$fx/lock" ] && [ -f "$fx/state/main.bg1" ] && [ ! -e "$fx/state/main" ]'
 touch -d '-10 min' "$fx/state/main.bg1"; sub PostToolUse main bg1

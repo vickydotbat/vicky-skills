@@ -1,13 +1,10 @@
 #!/usr/bin/env bash
 # keep-awake: holds one systemd-inhibit sleep lock while any Claude Code
-# agent on the machine is working: a session's turn, or a subagent it started,
-# foreground or background. A prompt marks the session as working, and a
-# subagent's start marks that subagent. Each tool call refreshes the mark of
-# the agent that made it. The turn's end (Stop, or StopFailure on an API
-# error) clears the session's mark, a subagent's stop clears its own, and the
-# session's close clears them all. A mark left
-# idle past KEEP_AWAKE_IDLE minutes drops out, since an Esc interrupt fires no
-# hook. One holder process keeps the lock while any mark is left, then exits.
+# agent on the machine works. A mark is a file per working agent: a session's
+# turn, or each subagent it starts. The turn's or subagent's end clears its
+# mark, and the session's close clears them all. A mark idle past
+# KEEP_AWAKE_IDLE minutes drops out, since an Esc interrupt fires no hook.
+# One holder process keeps the lock while any mark is left, then exits.
 # Off unless the keep_awake option is on.
 case "${CLAUDE_PLUGIN_OPTION_KEEP_AWAKE:-}" in true|1) ;; *) exit 0 ;; esac
 command -v systemd-inhibit >/dev/null 2>&1 || exit 0
