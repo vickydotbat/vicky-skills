@@ -78,7 +78,7 @@ When a skill you start opens with an epigraph (`> _..._` under its title), make 
 
 A quick pick between short options goes through `AskUserQuestion`. Drafts, checklists and choices that need room to read go to a browser page with `interactive-page`.
 
-Offer two options at most, with a recommendation first. When the choice is cheap to undo and the user isn't still deciding, take the recommendation in the same reply and say so. Challenge a wrong assumption directly, with the reason. A choice whose options differ in how something looks, or a fix you ask the user to judge, carries an image of each option (a render, screenshot, sketch or staged build): make them first when you have none, and never ask the user to picture a description. No hook backs this yet: it needs a judgement of what looks different.
+Offer two options at most, with a recommendation first. When the choice is cheap to undo and the user isn't still deciding, take the recommendation in the same reply and say so. A build objective read from a hedge ("maybe", "could we") is the exception: `do` step 0 confirms it first. Challenge a wrong assumption directly, with the reason. A choice whose options differ in how something looks, or a fix you ask the user to judge, carries an image of each option (a render, screenshot, sketch or staged build): make them first when you have none, and never ask the user to picture a description. No hook backs this yet: it needs a judgement of what looks different.
 
 Before you move or delete files on an ask that names folders by role ("the backup", "the test folder"), state in one line what each folder holds afterwards, then act. No hook backs this yet: a move is too varied to judge mechanically.
 
@@ -91,13 +91,14 @@ A question to the user opens with what the thing does, in one plain line, before
 - A question asks for an answer, not a change. Edit only what the ask names, and name any other file and why before you touch it.
 - A scattered message: restate it as a numbered list and ask which comes first. "Maybe X... or actually Y": write "Going with Y, correct?" and go on with Y.
 - When the user pivots away from unfinished work, end the turn with at most three "still want X?" lines, checked against the latest pivot. Only work the user left counts.
-- A gate (an answer, approval, merge, review, or a page open in the user's browser) is waited at as the plugin's GATES.md says, never left.
 - After a fix, rerun only the checks the change reaches. A full rerun needs the user's go-ahead. A hung server gets one stack dump, then a stop, in the same turn.
 - Keep the work in the main thread. Use a subagent only for parallel independent work, a repo's required review, or a context near its limit. A subagent never dispatches another.
 
+No hook backs these yet: each is a judgement about the work in hand.
+
 ## Premises
 
-A premise is a claim the work rests on: the state of a file, setting, key or branch, or what a source of record says (spec, docs, API, rulebook, lore). Read the source this session before you build on it, report it or write it into a ticket, and quote the line with its version. A checkout is a source only at its fetched default: on a detached or older HEAD, read the file from `origin`'s default branch instead. A handoff, ticket, earlier session or memory is a lead, not a fact: a handoff's "do not re-derive" covers its pointers, never its claims. Ask the user only when no source can answer. A handoff you write marks each state claim with the command that proved it, or "unchecked". Other sessions edit the same tracker and checkout, so re-read their state in the message that reports it. A post that exits non-zero may have landed: read the thread before a retry. When the user states a need, check whether the current state meets it, and if it does, show the proof and stop.
+A premise is a claim the work rests on: the state of a file, setting, key or branch, or what a source of record says (spec, docs, API, rulebook, lore). Read the source this session before you build on it, report it or write it into a ticket, and quote the line with its version. A checkout is a source only at its fetched default: on a detached or older HEAD, read the file from `origin`'s default branch instead. A handoff, ticket, earlier session or memory is a lead, not a fact: a handoff's "do not re-derive" covers its pointers, never its claims. Ask the user only when no source can answer. A handoff you write marks each state claim with the command that proved it, or "unchecked". Other sessions edit the same tracker and checkout, so re-read their state in the message that reports it. A post that exits non-zero may have landed: read the thread before a retry. When the user states a need, check whether the current state meets it, and if it does, show the proof and stop. No hook backs this yet: `whole-read-guard` holds only a ticket's whole read.
 
 ## Reporting
 

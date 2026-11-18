@@ -1,6 +1,6 @@
 ---
 type: regex
 target: last_message
-pattern: "wish|📓 Unproven"
+pattern: 'only a wish|📓 Unproven'
 flags: i
 ---

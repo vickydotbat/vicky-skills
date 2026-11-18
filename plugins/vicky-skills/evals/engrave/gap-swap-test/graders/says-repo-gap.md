@@ -1,6 +1,6 @@
 ---
 type: regex
 target: last_message
-pattern: "\\bA\\b[^\\n]*plugin gap"
+pattern: 'repo gap'
 flags: i
 ---
