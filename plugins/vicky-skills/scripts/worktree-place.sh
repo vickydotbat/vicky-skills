@@ -12,7 +12,7 @@
 # merge is still in progress, it removes the worktree and the branch once every
 # commit has landed and nothing is uncommitted. Otherwise the worktree stays,
 # and the agent is told what is left: the commits still to land, or the
-# uncommitted changes. A pull request merged on the forge is marie-kondo's.
+# uncommitted changes. A pull request merged on the forge is auto-tidy's.
 #
 # A repo that names its own removal script on a "Drop worktree: <path>" line of
 # docs/agents/testing.md (the path is relative to the main clone, and the file

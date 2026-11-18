@@ -33,4 +33,7 @@ setup; branch 'q"b'; merge 'q"b'; on_main; echo x > "$dir/repo/back\\slash.txt"
 git -C "$dir/repo" switch -q -c sticky origin/main; echo "sticky MERGED $(git -C "$dir/repo" rev-parse sticky)" >> "$dir/prs"
 out=$(run); check "a quote and a backslash in the report stay valid JSON" 'jq -e . <<<"$out" >/dev/null && seen "$out" | grep -qF "q\"b" && seen "$out" | grep -qF "slash.txt"'
 
+# The tidy needs no agent, so no skill, hook or eval sends one to a cleanup skill.
+check "no skill, hook or eval names marie-kondo" '! grep -rq marie-kondo "$root/plugins/vicky-skills/skills" "$root/plugins/vicky-skills/scripts" "$root/plugins/vicky-skills/evals" "$root/README.md"'
+
 exit $fail

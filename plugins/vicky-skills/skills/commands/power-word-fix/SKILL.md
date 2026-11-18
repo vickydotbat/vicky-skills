@@ -30,7 +30,7 @@ The user names something broken. Sort it, run the skills its kind calls for, and
 | **Stale decision** | a ticket, doc or agent file that says the old thing | `plot-twist` |
 | **Wrong text** | a typo, a tone, a doc that says something false | `human-voice` for what people read, through `red-pen` when it meets an audience; `robot-voice` for what agents read |
 | **Broken skill or agent file** | an agent keeps skipping, misreading or overdoing an instruction | `robot-voice`, "Debugging an instruction the agent ignores" |
-| **Mess** | stale branches, worktrees or scratch files | `marie-kondo` |
+| **Mess** | stale branches or worktrees | none: the `auto-tidy` hook deletes merged ones at session start and after each merge. What it keeps holds unpushed work, so leave it and say so |
 | **Unknown** | none of the above fits | `interrogation` until a kind fits |
 
 A leak goes first, whatever else is broken: anyone can copy it while it stands.
