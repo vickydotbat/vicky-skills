@@ -30,7 +30,7 @@ Read the repo's testing standards first, where the `Testing standards:` line in 
    A merge or approval only someone else can give is a gate: handle it as `warp`'s "Punch through" says, in a warp or not. Stop after three red rounds, or when the cause sits outside the repository, and report what you found. Done when Q11 passes.
 7. **Report** in one or two lines: the pull request link, the run, its result, the checklist (`Q0-Q13 pass`, or each item that failed and why), and anything left for the user, such as the merge. Once the pull request merges, run `marie-kondo` on the repo. Then run `cerebro` as a forecast. Done when the reply holds all of it.
 
-**State at every stop.** At every stop, write the pull request body's Status section, as `ship-it` says: a draft opened, a slice parked, a gate reached, the run ended.
+**State at every stop.** Write the Status section at every stop, as `ship-it`'s "State at every stop" says.
 
 ## QA checklist
 

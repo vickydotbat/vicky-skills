@@ -38,7 +38,7 @@ A warp is one effort: every star, edge case, fallout item and piece of found wor
 6. **Finish the build.** Run `review` over the whole branch, then `make-it-so`. A warp through several stars passes `make-it-so`'s size item with the body line "A warp through <n> stars, one pull request per effort." Done when the pull request's required checks are green.
 7. **Land.** Redraw each chart the course crossed, without the course. Settle the tickets with `make-it-so`'s [SETTLE.md](../make-it-so/SETTLE.md). Open the landing report with one sign-off line that drops out of warp, in the voice the session's output style sets ("🖖 Dropped out of warp. <n> stars are Done."). Then give the pull request, each target still open with what keeps it out of reach, and what is left. Done when every ticket the warp touched is settled and the landing report is sent.
 
-**State at every stop.** At every stop, write the pull request body's Status section, as `ship-it` says: a draft opened, a slice parked, a gate reached, the run ended. A ticket whose slice waits on another person, an account or a deploy: park its ticket with the tracker's "Park a ticket" action, with a `Waits on:` line, as "Waiting work" in `docs/agents/issue-tracker.md` says.
+**State at every stop.** Write the Status section at every stop, as `ship-it`'s "State at every stop" says. A ticket whose slice waits on another person, an account or a deploy: park its ticket with the tracker's "Park a ticket" action, with a `Waits on:` line, as "Waiting work" in `docs/agents/issue-tracker.md` says.
 
 ## Mid-flight questions
 

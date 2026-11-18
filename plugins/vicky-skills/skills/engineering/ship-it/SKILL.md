@@ -58,4 +58,8 @@ Closes <ticket>
 - **Status, Summary, Proof and Risk always stay.** Leave out an optional section with nothing in it: no approved examples, no Examples section. Check these comes from `do` and is gone by the time the pull request is ready.
 - **Settle the tickets** with `make-it-so`'s [SETTLE.md](../make-it-so/SETTLE.md) after every push, and keep this template while it rewrites the body. A body whose branch, commits and tickets name no ticket drops the `Closes` line.
 
+## State at every stop
+
+At every stop, write the pull request body's Status section: a draft opened, a slice parked, a gate reached, the run ended. `do`, `warp`, `gamma-shift` and `make-it-so` point here.
+
 Charter: C3, C4 ([CHARTER.md](../../CHARTER.md)).

@@ -12,7 +12,7 @@ status_rule="$skills/ship-it/SKILL.md"
 # When do, make-it-so, gamma-shift or warp stops, for any reason
 # Then the pull request body has a Status section with a Done line, a Next line and a Waits on line, true at that moment
 check "a stop leaves the pull request saying where it stands" \
-  '(for s in do make-it-so gamma-shift warp; do grep -q "At every stop, write the pull request body'"'"'s Status section" "$skills/$s/SKILL.md" || exit 1; done) && grep -q "^## Status" "$status_rule" && grep -q "\`Done:\`" "$status_rule" && grep -q "\`Next:\`" "$status_rule" && grep -q "\`Waits on:\`" "$status_rule"'
+  '(for s in do make-it-so gamma-shift warp; do grep -qF "Write the Status section at every stop" "$skills/$s/SKILL.md" || exit 1; done) && grep -q "^## Status" "$status_rule" && grep -q "\`Done:\`" "$status_rule" && grep -q "\`Next:\`" "$status_rule" && grep -q "\`Waits on:\`" "$status_rule"'
 
 # Given a stop where nothing waits on anyone
 # When the skill writes the Status section
