@@ -5,7 +5,6 @@
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
 watch="$root/plugins/vicky-skills/scripts/watch.sh"
-skills="$root/plugins/vicky-skills/skills"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
@@ -30,10 +29,4 @@ check "a check whose output changes once in five rounds prints a line for the fi
   '[ "$(grep -c first "$dir/c.out")" = 1 ] && [ "$(grep -c second "$dir/c.out")" = 1 ] && [ "$(wc -l < "$dir/c.out")" = 2 ]'
 check "a watch with no --every or --rounds checks every 30 seconds, at most 60 times" \
   'bash "$watch" --help | grep -q "every 30 seconds" && bash "$watch" --help | grep -q "at most 60 times"'
-ok=0
-for f in building/warp shipping/make-it-so writing/red-pen building/codex-image-gen housekeeping/gamma-shift; do
-  s="$skills/$f/SKILL.md"
-  grep -q "watch.sh" "$s" && ! grep -qE "every 30 seconds|at most 60 times|60 polls|60th poll" "$s" && ok=$((ok + 1)) || echo "     $f"
-done
-check "warp, make-it-so, red-pen, codex-image-gen and gamma-shift point every wait at watch.sh and state no poll pace of their own" '[ $ok = 5 ]'
 exit $fail

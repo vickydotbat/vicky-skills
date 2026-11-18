@@ -49,4 +49,7 @@ touch "$data/afile"; CLAUDE_PLUGIN_OPTION_SKILL_LEDGER=true CLAUDE_PLUGIN_DATA="
 check "a data folder that cannot be made leaves the skill unblocked: exit 0" '[ $code = 0 ]'
 mkdir -p "$data/blocked/skill-ledger.tsv"; err=$(CLAUDE_PLUGIN_OPTION_SKILL_LEDGER=true CLAUDE_PLUGIN_DATA="$data/blocked" bash "$hook" <<<"$started" 2>&1 >/dev/null); code=$?
 check "a ledger it cannot write leaves the skill unblocked: exit 0, and nothing on stderr" '[ $code = 0 ] && [ -z "$err" ]'
+nojq="$data/nojq"; mkdir -p "$nojq"; for tool in date mkdir; do ln -s "$(command -v $tool)" "$nojq/$tool"; done
+rm -f "$ledger"; out=$(PATH="$nojq" CLAUDE_PLUGIN_OPTION_SKILL_LEDGER=true CLAUDE_PLUGIN_DATA="$data" "$(command -v bash)" "$hook" <<<"$started" 2>&1); code=$?
+check "with no jq on PATH, it exits 0, prints nothing and records nothing" '[ $code = 0 ] && [ -z "$out" ] && [ ! -e "$ledger" ]'
 exit $fail

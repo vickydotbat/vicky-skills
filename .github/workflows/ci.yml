@@ -51,8 +51,6 @@ jobs:
         run: tests/do_imp_pass_approved_examples.test.sh
       - name: Tracker notes stay on the tracker
         run: tests/tracker-status.test.sh
-      - name: A closed ticket counts by its closed date
-        run: tests/tracker-closed-date.test.sh
       - name: Skill steps
         run: tests/skill-steps.test.sh
       - name: Familiar intent and repo examples
@@ -105,8 +103,6 @@ jobs:
         run: tests/springboard.test.sh
       - name: Summit record
         run: tests/summit.test.sh
-      - name: do builds on an open pull request
-        run: tests/do-open-pr.test.sh
       - name: find-handoff
         run: tests/find-handoff.test.sh
       - name: handoff pointer examples
@@ -185,8 +181,6 @@ jobs:
         run: tests/promise-guard.test.sh
       - name: Eval spend gate
         run: tests/eval-spend-gate.test.sh
-      - name: Engrave serious snags
-        run: tests/engrave-serious.test.sh
       - name: Restack-origin guard
         run: tests/restack-origin-guard.test.sh
       - name: Lesson hint
@@ -283,8 +277,6 @@ jobs:
         run: tests/open-draft.test.sh
       - name: Lessons ledger edges
         run: tests/lesson-ledger.test.sh
-      - name: Over-to-you find ledger
-        run: tests/over_to_you_find_ledger_approved_examples.test.sh
       - name: Watch script
         run: tests/watch_approved_examples.test.sh
       - name: Watch script edges

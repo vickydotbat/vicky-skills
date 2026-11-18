@@ -38,7 +38,7 @@ restack-origin-guard.sh	cb150444008a2d6b	5da51779e8fb4626	74/74
 review-brief-guard.sh	c38256e20cc0c332	318b2cab9a1eba3b	22/22
 since-user.sh	32eda50d00adbb86	21915eedaedec1f2	6/6
 skill-change-proven.sh	2a77ba5faffc92ea	48a4dec954f812af	13/13
-skill-ledger.sh	5a29eb7f617f6f60	f24caf2542991725	17/17
+skill-ledger.sh	5a29eb7f617f6f60	4298772ca98afbff	17/17
 skill-started.sh	efccf28986c36af3	3494157313d20506	5/5
 skills/building/over-to-you/scripts/checklist.py	d1a94f409c1fb889	fcf10d9b710e5711	56/56
 skills/building/over-to-you/scripts/lint-checklist.py	e46a5f97af84eae0	252317ddda28377b	56/56
@@ -75,7 +75,7 @@ tea-stdin.sh	c631fcfccdb1abf0	d89e8c223456c7f6	15/15
 ticket-drift.sh	1bc60db2e95d9227	36698b9a1415571e	36/36
 ticket-filing-guard.sh	13841080ab73f460	d88626b76e3ac06b	24/24
 todo-reminder.sh	87bab188b0686e79	d392aa30747c4ef8	9/9
-watch.sh	8361b0cd96435e12	45139492145e19fe	33/33
+watch.sh	8361b0cd96435e12	f024a40638601b6e	33/33
 whole-read-guard.sh	28a648d3b1a48a47	dcf42150b128fe9a	17/17
 workflow-lint.sh	31fd4d7feb0edf4c	8025c866e5ae17bb	26/26
 worktree-place.sh	019f7c975eb4a099	e332e7a8fba90fe7	71/71
