@@ -1,0 +1,10 @@
+# Every tool beyond bash and coreutils that a test or hook script calls, one per
+# line. tests/run-all.sh and CI check each is installed before any test runs, and
+# tests/tools-declared.test.sh fails a script that calls a runtime missing here.
+awk
+curl
+git
+jq
+node
+python3
+sed
