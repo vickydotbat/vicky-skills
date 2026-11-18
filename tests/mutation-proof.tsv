@@ -63,7 +63,7 @@ skills/shipping/engrave/scripts/law-lint.sh	fc43fd4bfa792523	7c99e4824e2cdad5	15
 skills/writing/human-voice/scripts/lint-tells.py	d51373996ad8ae9c	a188c25f71567933	47/47
 skills/writing/interactive-page/scripts/open-draft.sh	09ebb597b65041c8	df92af7062cf9322	50/50
 skills/writing/interactive-page/scripts/open-page.sh	9da7be591b0eb684	5253f46f12411d94	9/9
-skills/writing/interactive-page/scripts/page.py	6febb5f1df381f13	a2ed6daa7d964085	324/324
+skills/writing/interactive-page/scripts/page.py	92bb400ba83ea99a	f8f4de5f2b4eb9e4	334/334
 skills/writing/interactive-page/scripts/write-page.py	a938fb35f036f46f	1ccfcb8f6242f205	68/68
 spark-joy.sh	e88c476e7a612966	84c3f7983c224b84	29/29
 springboard.sh	2b1a555e07899495	e44c92cbd0de6ba1	53/53
