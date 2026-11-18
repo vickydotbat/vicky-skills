@@ -7,4 +7,4 @@ set -u
 [ "${1:-}" = due ] || { echo "usage: verdict.sh due <body file> <head sha>" >&2; exit 2; }
 body=${2:?}; sha=${3:?}
 grep -q "Deathmatch verdict for $sha" "$body" 2>/dev/null && exit 1
-exit 0
+exit 0 # mutant-ok delete: a no-op in its place also ends the script with status 0

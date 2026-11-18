@@ -1,4 +1,4 @@
 schema_version: "1.1"
-name: prose-pin-flagged
+name: review-blacklist-flagged
 context:
   scaffold_script: scaffold.sh

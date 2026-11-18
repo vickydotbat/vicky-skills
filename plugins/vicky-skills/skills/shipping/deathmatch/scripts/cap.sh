@@ -10,7 +10,7 @@ shift 2
 [ "${1:-}" = -- ] && shift
 bytes=$(numfmt --from=iec "$mem") || exit 2
 err=$(mktemp)
-trap 'rm -f "$err"' EXIT
+trap 'rm -f "$err"' EXIT # mutant-ok delete: the temporary file is the only effect, and no caller reads it
 setsid bash -c 'ulimit -v "$1"; shift; exec "$@"' _ "$((bytes / 1024))" "$@" 2> >(tee "$err" >&2) &
 pid=$!
 (sleep "$secs"; kill -TERM -- -"$pid" 2>/dev/null; sleep 1; kill -KILL -- -"$pid" 2>/dev/null) &
@@ -18,7 +18,7 @@ timer=$!
 wait "$pid"
 rc=$?
 kill "$timer" 2>/dev/null
-wait "$timer" 2>/dev/null
+wait "$timer" 2>/dev/null # mutant-ok delete: the timer is already killed, so waiting on it changes no result
 if [ "$rc" -eq 143 ] || [ "$rc" -eq 137 ]; then
   echo "finding: over the time cap of ${secs}s"
   exit 124

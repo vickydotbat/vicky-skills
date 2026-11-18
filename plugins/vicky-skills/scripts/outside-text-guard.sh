@@ -6,7 +6,7 @@
 # acts on them. On unless the plugin option guard_outside_text is false or 0.
 set -u
 case "${CLAUDE_PLUGIN_OPTION_GUARD_OUTSIDE_TEXT:-true}" in false | 0) exit 0 ;; esac
-command -v jq >/dev/null || exit 0
+command -v jq >/dev/null || exit 0 # mutant-ok delete: without jq every read below comes back empty and the guard exits 0
 input=$(cat)
 sid=$(jq -r '.session_id // ""' <<<"$input" 2>/dev/null)
 [ -n "$sid" ] && [ -s "${CLAUDE_PLUGIN_DATA:-/nonexistent}/outside-read/$sid" ] || exit 0
