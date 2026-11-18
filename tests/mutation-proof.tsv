@@ -38,7 +38,7 @@ rebase-guard.sh	a91211a7a5fbb37c	c6396e7b0e9e7663	45/45
 red-first-check.sh	e585449df8cf7aee	c217ecd017b88c7a	20/20
 red-first-guard.sh	ec04caecb4fc2494	9fb7a035039df3e7	44/44
 restack-origin-guard.sh	cb150444008a2d6b	c2e62bcdcbfa90fa	74/74
-review-brief-guard.sh	560dd59ae4621bd2	3a5a89a9ed9483dc	22/22
+review-brief-guard.sh	560dd59ae4621bd2	061ae4183f8db8f6	22/22
 since-user.sh	32eda50d00adbb86	9e1e10052f014ca4	6/6
 skill-change-proven.sh	2a77ba5faffc92ea	8ef9dd19b5849f95	13/13
 skill-ledger.sh	5a29eb7f617f6f60	3b7646d3e9454f37	17/17
