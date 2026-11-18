@@ -71,7 +71,7 @@ The Sensor log above.
 - Riskiest star: [<star title>](<link>), covered by <a timebox or a probe>
 - Foreseen YYYY-MM-DD: <a way the effort could fail>, <guarded by <record, test or star> | accepted: <why> | ticketed: <link>>
 - Seen before: fallout on content no star names, checked by `warp`'s fallout sweep
-- Seen before: an approved example whose test can't fail, checked by `warp`'s pre-flight review of the tests
+- Seen before: an approved example whose test can't fail, checked by `warp`'s pre-flight check of the tests
 - Seen before: <a kind of surprise an earlier chart logged>, checked by <how>
 - Surfaced: <the surprise>, while building [<star title>](<link>), cost <what it cost>
 
@@ -157,7 +157,7 @@ The Examples are the star's spec, and the only one: the sentence and the Pointer
 
 Every new star, and every anomaly, probe or task that holds build work, is filed this way, whichever skill files it. A research ticket closed as it opens is a record and skips it. A parked waiting ticket skips it only while it holds no build work.
 
-Found work, such as a bug a test caught or a gap a review named, is filed this way too, as "Sharding" step 4 says.
+Found work, such as a bug a test caught or a gap a deathmatch named, is filed this way too, as "Sharding" step 4 says.
 
 1. **Slice.** A ticket whose whole change is prose is filed as a task with a `Done when` line, never as a star. Each star is a vertical slice: a thin path through every layer, shown working on its own, sized to one session, and landing green on the base the repo's rules name. A change that can't land green in one step goes expand–contract: build the new form beside the old, move the callers, then delete the old. A plan that takes something away and puts it back later ("reset to stock, then re-add") is no slice: re-cut it. An integration branch is a last resort, for a wide refactor only. Where any star lands follows `lay-course`'s "Where work lands". Done when every star stands on its own.
 2. **Draft** each star's Given / When / Then examples with `examples`, steps 1 and 2. Done when every star has its examples, or "Examples: not written yet".

@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 > _Captain's log, supplemental. The ship gets the fix, never the crew's excuses._
 
-A **retro** improves the agent's environment, never the agent's excuses. Implementation has the most context pressure and review the least, so a rule belongs to review, and a rule a machine can check belongs to a machine.
+A **retro** improves the agent's environment, never the agent's excuses. Implementation has the most context pressure and deathmatch the least, so a rule belongs to deathmatch, and a rule a machine can check belongs to a machine.
 
 ## Steps
 
@@ -17,7 +17,7 @@ A **retro** improves the agent's environment, never the agent's excuses. Impleme
 3. **Find candidates** in these places, and read the repo's own check commands and CI first, so a check that exists but is unwired is the finding:
    - **Navigation**: the agent searched long for something a pointer in `AGENTS.md` or a doc would have named.
    - **Checks**: a mistake a linter, type, test or hook would have caught. A mechanical rule (a banned call, a file location, an import form) becomes a check, never prose. A repo with no pre-commit hook and no CI lint is a finding on its own.
-   - **Standards**: a judgement call review missed goes in `CODING_STANDARDS.md` or the review principles.
+   - **Standards**: a judgement call deathmatch missed goes in `CODING_STANDARDS.md` or [STANDARDS.md](../../STANDARDS.md).
    - **Agent files**: an always-loaded line that belongs in a standard, a check or a skill, and lines that change nothing. A line marked `<!-- kept` stays as it is.
    - **Tools**: a costly call a cheaper one would have answered.
    - **Follow-ups**: read them as `cerebro`'s [FOLLOW-UPS.md](../../housekeeping/cerebro/FOLLOW-UPS.md) says. For each need, name the skill or agent file that would have proposed it unasked.

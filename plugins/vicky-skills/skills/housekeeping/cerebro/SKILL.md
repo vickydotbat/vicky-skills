@@ -12,7 +12,7 @@ Cerebro looks forwards, and `captains-log` looks backwards. A question about the
 It runs one of two ways:
 
 - **Question**: the user asked about the setup. Run steps 1, 2 and 4 to 7.
-- **Forecast**: a report just closed a stretch of work, a review reported, a decision was recorded mid-effort, or a retrospective handed over its follow-up trends. Run steps 2 to 7, and skip the answer.
+- **Forecast**: a report just closed a stretch of work, a deathmatch reported, a decision was recorded mid-effort, or a retrospective handed over its follow-up trends. Run steps 2 to 7, and skip the answer.
 
 ## Steps
 

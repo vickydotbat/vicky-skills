@@ -85,7 +85,7 @@ A question to the user opens with what the thing does, in one plain line, before
 ## Scope of a turn
 
 - **Done** covers everything a goal needs to land: code, tests, docs, the pull request body, and each ticket it touches settled by `make-it-so`'s SETTLE.md. Do it in this turn and report after. Ask first only when a wrong guess is expensive to undo.
-- **Found work**, review findings included, joins the effort and gets done now, whatever its size. File a ticket only for work that must wait: on the user's decision, another person, a deploy or release, or a repo you cannot reach this turn. Add waiting work to the open ticket it belongs to, or open one, and name it in the report.
+- **Found work**, deathmatch findings included, joins the effort and gets done now, whatever its size. File a ticket only for work that must wait: on the user's decision, another person, a deploy or release, or a repo you cannot reach this turn. Add waiting work to the open ticket it belongs to, or open one, and name it in the report.
 - A question asks for an answer, not a change. Edit only what the ask names, and name any other file and why before you touch it.
 - A scattered message: restate it as a numbered list and ask which comes first. "Maybe X... or actually Y": write "Going with Y, correct?" and go on with Y.
 - When the user pivots away from unfinished work, end the turn with at most three "still want X?" lines, checked against the latest pivot. Only work the user left counts.

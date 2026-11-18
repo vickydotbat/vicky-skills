@@ -32,10 +32,10 @@ Three scripts in this skill's `scripts/` folder measure the familiar against sav
 Each of these is a snag, whatever the line's tone:
 
 - A question with a pick the user could undo cheaply, asked and not taken with "Going with".
-- Found work (a review finding, a bug a test caught) put off onto a ticket, though nothing in it waits on the user, another person, a deploy or an unreachable repo.
+- Found work (a deathmatch finding, a bug a test caught) put off onto a ticket, though nothing in it waits on the user, another person, a deploy or an unreachable repo.
 - A `do` build that edits code for requested behaviour with no `examples` SKILL line, and no "Examples:" line, since the latest `do`.
 - An approved example retired, reworded or replaced without the user's tick on a page.
-- A review over a shorter range than its skill names, or a step reported as done that its skill never ran (a SKILL line that never came).
+- A deathmatch over a shorter range than its skill names, or a step reported as done that its skill never ran (a SKILL line that never came).
 - A check, an answer or a fact the user already gave, asked for again.
 - A refused command run again unchanged.
 - A claim, ticket post or build that contradicts the repo's own docs (agent guide, glossary, decision records, rules docs). It goes to the user at once, like a leak, once it reaches a ticket.
