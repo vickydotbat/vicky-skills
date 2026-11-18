@@ -37,6 +37,23 @@ KEEP_AWAKE_OWNER=$idler send UserPromptSubmit fresh
 check "a fresh mark under the cap keeps the lock" 'held && sleep 0.4 && [ -f "$fx/lock" ]'
 rm -f "$fx/state/fresh"; free; kill $idler; wait $idler 2>/dev/null
 
+# A subagent is an agent at work: it holds the lock past its session's turn end.
+sub() { jq -nc --arg e "$1" --arg s "$2" --arg a "$3" '{hook_event_name:$e,session_id:$s,agent_id:$a}' | PATH="$fx/bin:$PATH" bash "$hook"; }
+sleep 30 & sess=$!; export KEEP_AWAKE_OWNER=$sess
+send UserPromptSubmit main; sub SubagentStart main bg1; send Stop main
+check "a background subagent holds the lock after its session's turn ends" 'held && sleep 0.4 && [ -f "$fx/lock" ] && [ -f "$fx/state/main.bg1" ] && [ ! -e "$fx/state/main" ]'
+touch -d '-10 min' "$fx/state/main.bg1"; sub PostToolUse main bg1
+check "a subagent's tool call refreshes its own mark and makes no session mark" '[ -n "$(find "$fx/state/main.bg1" -mmin -1)" ] && [ ! -e "$fx/state/main" ]'
+sub SubagentStop main bg1
+check "the subagent's stop releases the lock" 'free && [ ! -e "$fx/state/main.bg1" ]'
+send UserPromptSubmit main; sub SubagentStart main fg1; sub SubagentStop main fg1
+check "a subagent's stop leaves its session's turn holding" 'sleep 0.4 && [ -f "$fx/lock" ] && [ -f "$fx/state/main" ]'
+sub SubagentStart main bg2; send SessionEnd main
+check "closing the session releases its subagents too" 'free && [ -z "$(ls -A "$fx/state")" ]'
+sub SubagentStart main .x; c1=$?; sub SubagentStart main a/b; c2=$?
+check "a bad agent id marks nothing and exits 0" '[ -z "$(ls -A "$fx/state")" ] && [ $c1 = 0 ] && [ $c2 = 0 ]'
+kill $sess; wait $sess 2>/dev/null; unset KEEP_AWAKE_OWNER
+
 # A stand-in named claude runs the hook through a shell, the way Claude Code does.
 cp "$(command -v bash)" "$fx/claude"
 jq -nc '{hook_event_name:"UserPromptSubmit",session_id:"walk"}' > "$fx/in"

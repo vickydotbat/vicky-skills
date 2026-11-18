@@ -321,7 +321,7 @@
     "keep_awake": {
       "type": "boolean",
       "title": "Keep the computer awake while an agent works",
-      "description": "Hold a sleep lock while any Claude Code session on this machine has a turn running, and release it when every turn has ended. Needs systemd-inhibit.",
+      "description": "Hold a sleep lock while any Claude Code session or subagent on this machine is working, and release it when every turn and subagent has ended. Needs systemd-inhibit.",
       "default": false
     },
     "guard_publickey_hint": {
