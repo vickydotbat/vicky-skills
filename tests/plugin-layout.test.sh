@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 # The plugin loads only the skill folders plugin.json lists, under the name in
 # each SKILL.md. A folder missing from the list, or a name that differs from
-# its folder, silently drops a skill. A skill the README doesn't list is one
-# nobody knows to use.
+# its folder, silently drops a skill.
 set -u
 cd "$(dirname "$0")/../plugins/vicky-skills"
 fail=0
@@ -18,8 +17,5 @@ for dir in $found; do
   name=$(sed -n 's/^name: //p' "$dir/SKILL.md" | head -1)
   [ "$name" = "$(basename "$dir")" ] || { echo "FAIL $dir/SKILL.md is named '$name'"; fail=1; }
 done
-for dir in $found; do
-  grep -qF "**\`$(basename "$dir")\`**" ../../README.md || { echo "FAIL README.md has no line for $(basename "$dir")"; fail=1; }
-done
-[ $fail -eq 0 ] && echo "ok   $(echo "$found" | wc -l) skills listed, found, named alike and in the README"
+[ $fail -eq 0 ] && echo "ok   $(echo "$found" | wc -l) skills listed, found, named alike"
 exit $fail

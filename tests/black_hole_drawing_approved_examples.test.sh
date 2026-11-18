@@ -36,7 +36,4 @@ warp=$(draw '[{"key": "K-1", "kind": "anomaly", "title": "Ask", "open": true},
 check "a black hole drawn beside a frontier ticket during a warp is never marked as frontier or course" \
   'grep -q "^  class T1 frontier$" <<<"$warp" && ! grep -E "^  class .*H1.* (frontier|course)$" <<<"$warp" | grep -q .'
 
-chart="$here/STAR-CHART.md"
-check "a new chart's Black holes line names the tickets the black hole threatens, then its way around" \
-  'grep -qF -- "- <the black hole>, threatening <links to the tickets it threatens>, and its way around:" "$chart" && grep -qF "\"black_hole\"" "$chart"'
 exit $fail

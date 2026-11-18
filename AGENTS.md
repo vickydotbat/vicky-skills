@@ -7,7 +7,7 @@ Develop a skill or hook in this order: Add a skill or Change a skill (or Add or 
 ## Add a skill
 
 1. Create `plugins/vicky-skills/skills/<group>/<name>/SKILL.md`, where `<group>` is the README section the skill sits in: `commands`, `planning`, `building`, `shipping`, `writing` or `housekeeping`. Done when its `name:` equals the folder name.
-2. List `./skills/<group>/<name>` in `skills` in `plugins/vicky-skills/.claude-plugin/plugin.json`, and add a README table row that starts `**\`<name>\`**`. Done when `tests/plugin-layout.test.sh` passes.
+2. List `./skills/<group>/<name>` in `skills` in `plugins/vicky-skills/.claude-plugin/plugin.json`, and add a README table row that starts `**\`<name>\`**`. Done when `tests/plugin-layout.test.sh` passes and the README row is there.
 3. Write the skill with `robot-voice`. The description begins with the trigger and holds "Use when", "Use whenever" or "Use before". A skill only a person starts sets `disable-model-invocation: true`, and its README row says "When you type it". Done when `tests/skill-descriptions.test.sh` passes.
 4. Give the file a `# ` title, and end every numbered step under `## Steps` in "Done when". Done when `tests/skill-steps.test.sh` passes.
 5. A skill the agent can start asks the user to type a typed-only skill and never starts it itself. Done when `tests/skill-links.test.sh` passes.
@@ -28,7 +28,7 @@ Develop a skill or hook in this order: Add a skill or Change a skill (or Add or 
 3. Optional guard: declare a `userConfig` option in `plugin.json` (default `false`) and have the script exit early unless `CLAUDE_PLUGIN_OPTION_<NAME>` is `true` or `1`. A guard the user chose to have on by default (`guard_read_before_asking`) defaults to `true` and exits early only when the option is `false` or `0`. Done when the test covers the setting off.
 4. Brief mode: every word the user reads is a `SendUserMessage` call, so a hook that reads the agent's words reads those bodies too (source `stop-reply.sh`), and its test sends a case through `SendUserMessage`. A "Going with" exemption covers only the text above it, never a later ask. Done when `tests/sendusermessage-mode.test.sh` passes.
 5. Add `tests/<hook>.test.sh` and a CI step for it. It covers every decision the hook makes: each refusal or ask, each pass, the setting off, a missing tool, bad input. Done when `tests/<hook>.test.sh` passes.
-6. Add a row to the README hooks table, tagged (recommended) when the hook only refuses, asks or warns, and (experimental) when it starts work on its own. Done when `tests/hooks_table_approved_examples.test.sh` passes.
+6. Add a row to the README hooks table, tagged (recommended) when the hook only refuses, asks or warns, and (experimental) when it starts work on its own. Done when the row is in the table.
 7. Refresh the mutation proof: `python3 tests/mutate-hooks.py --record`, then commit `tests/mutation-proof.tsv` with the script. Done when `python3 tests/mutate-hooks.py --check` passes and a `sentinels` pass leaves no survivor.
 
 ## Add a check a skill runs on the user's repo

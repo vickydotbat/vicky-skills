@@ -15,6 +15,9 @@ case_ "a skill's side file alone fails" 1 'plugins/vicky-skills/skills/planning/
 case_ "a README change alone passes" 0 'README.md\n'
 case_ "a skill script change alone passes (its own test rules hold it)" 0 'plugins/vicky-skills/skills/planning/decision-record/scripts/check-adr.sh\n'
 [ $fail -eq 0 ] || exit 1
+# The branch check reads this repo's state, not the script: a mutation pass runs
+# the cases above only.
+[ -n "${MUTATE_HOOKS_INNER:-}" ] && { echo "ok   skill-change-tested: cases only, inside a mutation pass"; exit 0; }
 base=$(git merge-base HEAD origin/main 2>/dev/null) || { echo "skill-change-tested: no origin/main to compare with: run git fetch origin"; exit 1; }
 git diff --name-only "$base" HEAD | bash "$judge" || exit 1
 echo "ok   skill-change-tested: every skill text change on this branch comes with an eval case change"

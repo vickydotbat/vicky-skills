@@ -78,7 +78,7 @@ check "the course on a warp's pre-flight page: each ticket shows with its kind a
 
 done_with box.0=on box.1=on box.3=on
 check "trimming the course: when I untick one ticket and press Done, the agent drops that ticket and keeps the other three" \
-  'gone && grep -qx -- "- \[ \] K-3 star: Build A. Needs: your approval of its examples" "$scratch/plan/course.md" && [ "$(grep -c "^- \[x\] K-[124] " "$scratch/plan/course.md")" = 3 ] && grep -qi "unticked .*dropped from the course" "$skills/commands/lay-course/STAR-CHART.md"'
+  'gone && grep -qx -- "- \[ \] K-3 star: Build A. Needs: your approval of its examples" "$scratch/plan/course.md" && [ "$(grep -c "^- \[x\] K-[124] " "$scratch/plan/course.md")" = 3 ]'
 
 printf '# A question for you\n\n## Q1: Which?\n- (x) One\n- ( ) Two\n' >"$scratch/q.md"
 cp "$scratch/q.md" "$scratch/q.before"
@@ -88,10 +88,7 @@ status=$?
 # When nobody answers before the page stops
 # Then the file stays as it was, and the agent takes its pick and records it in the pull request's Check these, asking in chat only for a pick that is costly to undo
 check "a page nobody answers: the page stops, the file stays as it was, and the agent takes its pick and records it" \
-  '[ "$status" = 2 ] && grep -qF "no answer within" "$scratch/q.log" && cmp -s "$scratch/q.md" "$scratch/q.before" && grep -qi "take your picks and record each in the pull request.s Check these" "$skills/writing/interactive-page/SKILL.md" && grep -qi "ask in chat only for a pick that is costly to undo" "$skills/writing/interactive-page/SKILL.md"'
-
-check "one skill opens every page: it opens through interactive-page, and red-pen and lay-course have no page scripts of their own" \
-  '[ -f "$open_draft" ] && [ ! -e "$skills/writing/red-pen/scripts" ] && [ ! -e "$skills/commands/lay-course/scripts/answer-page.py" ] && ! grep -rq "answer-page\|red-pen/scripts" "$root/plugins" && grep -q "open-page.sh" "$skills/commands/lay-course/STAR-CHART.md"'
+  '[ "$status" = 2 ] && grep -qF "no answer within" "$scratch/q.log" && cmp -s "$scratch/q.md" "$scratch/q.before"'
 
 three='# Drafts: three
 

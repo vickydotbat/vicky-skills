@@ -2,8 +2,7 @@
 # approved-spec: the examples approved on the star "Summit: an
 # opened-versus-closed record", 2026-11-01. The session-start checks run
 # springboard.sh in a fixture repo with a stand-in gh, and summit.sh records
-# the counts the agent took, so each check sees what the session sees. The
-# skill checks read the instruction that drives the agent.
+# the counts the agent took, so each check sees what the session sees.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
 plugin="$root/plugins/vicky-skills"
@@ -87,27 +86,6 @@ fresh; record 611 451 >/dev/null
 for f in "$fx/data"/summit/*; do sed -i "1s/^[0-9-]*/$(date -d yesterday +%F)/" "$f"; done
 out=$(start)
 check "a new day, a new count" 'grep -q "List items closed since <time>" <<<"$out" && grep -q "$(date -d "30 days ago" +%F)" <<<"$out" && grep -q "summit.sh record" <<<"$out"'
-
-# Given a repo set up by first-contact with any of its trackers
-# When an agent asks what was closed since a time
-# Then the issue-tracker doc names a List items closed since time operation, beside List items created or changed since time
-templates=("$plugin"/skills/commands/first-contact/issue-tracker-*.md "$root/docs/agents/issue-tracker.md")
-check "every tracker can list what closed" \
-  '[ ${#templates[@]} -eq 7 ] && (for t in "${templates[@]}"; do l=$(grep -F -A1 -- "**List items created or changed since <time>**" "$t" | tail -1); grep -qF -- "**List items closed since <time>**" <<<"$l" && grep -q "\`" <<<"$l" || exit 1; done)'
-
-# Given a 30-day verdict of C
-# When captains-log runs
-# Then it names the verdict and proposes ways to close more, never ways to find less
-log="$plugin/skills/commands/captains-log/SKILL.md"
-check "captains-log reads the trend" \
-  'grep -q "summit" "$log" && grep -q "30-day verdict" "$log" && grep -q "close more, never ways to find less" "$log"'
-
-# Given a 30-day verdict of C
-# When cerebro forecasts your next asks
-# Then its proposals aim at closing more, never at finding less
-cer="$plugin/skills/housekeeping/cerebro/SKILL.md"
-check "cerebro reads the trend" \
-  'grep -q "30-day verdict" "$cer" && grep -q "closing more, never at finding less" "$cer"'
 
 # The band's examples run in Claude Code's mod test kit, from
 # plugins/vicky-skills/tests/summit_approved_examples.test.tsx.

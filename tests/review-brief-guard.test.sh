@@ -9,6 +9,8 @@ fail=0
 code() { jq -nc --arg t "$1" --arg p "$2" '{tool_input:{subagent_type:$t,prompt:$p}}' | bash "$guard" >/dev/null 2>&1; echo $?; }
 check() { if [ "$2" = "$3" ]; then echo "ok   $1"; else echo "FAIL $1: got $3, want $2"; fail=1; fi; }
 check "a reviewer brief naming a missing scratch file is refused" 2 "$(code vicky-skills:standards-reviewer "Read the law file $tmp/gone/law.md first.")"
+steer=$(jq -nc --arg p "Law: $tmp/gone/law.md" '{tool_input:{subagent_type:"standards-reviewer",prompt:$p}}' | bash "$guard" 2>&1 >/dev/null)
+check "the refusal names the missing file and the command that proves a path" yes "$(grep -qF "$tmp/gone/law.md" <<<"$steer" && grep -qF 'test -s <file> && realpath <file>' <<<"$steer" && echo yes || echo no)"
 check "a missing file in an existing scratch folder is refused" 2 "$(code spec-reviewer "Law: $tmp/other.md.")"
 check "a reviewer brief naming a file that exists passes" 0 "$(code vicky-skills:simplicity-reviewer "Law file: $tmp/law.md")"
 check "a missing file inside a checkout passes, since the diff may delete it" 0 "$(code standards-reviewer "Checkout $root, see $root/no-such-file.md")"

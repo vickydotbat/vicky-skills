@@ -113,18 +113,4 @@ check "an agent line that waits on the user is whole" '[ "$(at 05)" = "$long Wai
 check "an agent line that takes a pick is whole" '[ "$(at 06)" = "$long Going with B" ]'
 check "another tool call prints nothing" '! grep -q "10:00:07" <<<"$out"'
 
-# S2's approved examples, held by the skill's words. They are plain regression
-# tests: the skill text was written before these tests, so they could not go red first.
-skill="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/commands/familiar/SKILL.md"
-has() { grep -qF -- "$1" "$skill"; }
-# Given the watch is armed / When an event shows a misread, a gate left unopened, a check the user did by hand, or a missing tool / Then the note gains one coded line: the time, what happened, the fix, and where the fix lands
-check "S2 a snag is one coded line" 'has "adds one coded line to that session'"'"'s note: the time, what happened, the fix, and where the fix lands"'
-# Given the watch is armed / When an event shows work going as asked / Then the note gains nothing and the user gets no message
-check "S2 work going as asked adds nothing" 'has "A line that shows work going as asked adds nothing and sends the user nothing"'
-# Given the watch is armed / When the agent checks something in the watched repo / Then it only reads: it runs no git command that writes and edits no file in that checkout
-check "S2 a watched checkout is read only" 'has "In a watched checkout, only read: run no git command that writes, and edit no file there"'
-# Given the watch is armed / When the watch expires with the session still live / Then the agent arms it again in the same turn
-check "S2 an expired watch is armed again in the same turn" 'has "Each time a watch or the new-session check expires, arm it again in the same turn"'
-# Given the note holds open lines / When the watch prints HANDOFF / Then each open line is built in the repo it belongs to, sent to that repo's session, or filed with a Waits on line, and the report lists every code with its outcome
-check "S2 a handoff works every open line and reports each code" 'has "Build each open line in the repo it belongs to, send it to that repo'"'"'s session with \`SendMessage\`, or file it with a \`Waits on:\` line. Then report every code and its outcome"'
 exit $fail

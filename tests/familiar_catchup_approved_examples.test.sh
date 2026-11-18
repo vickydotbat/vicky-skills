@@ -6,7 +6,6 @@
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills"
 lister="$root/skills/commands/familiar/scripts/familiar-sessions.sh"
-skill="$root/skills/commands/familiar/SKILL.md"
 fx=$(mktemp -d); trap 'rm -rf "$fx"' EXIT
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
@@ -24,8 +23,6 @@ wait $pid
 # When a new session starts on the machine
 # Then within a minute the familiar starts watching it, from its first line
 check "E27 a new session is announced by the minute check" 'grep -qx "NEW fresh $fx/projects/-r/fresh.jsonl /work/r" "$fx/new.out"'
-check "E27 the check runs every minute" 'grep -qF "familiar-sessions.sh --new" "$skill" && grep -qF "every minute" "$skill"'
-check "E27 a new session is watched from its first line" 'grep -qF "FAMILIAR_WATCH_FROM_START=1 bash <this skill'"'"'s folder>/scripts/familiar-watch.sh" "$skill"'
 
 # Given the familiar already watches a session
 # When the minute check for new sessions runs

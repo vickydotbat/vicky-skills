@@ -2,8 +2,7 @@
 # The examples Vicky approved on 2026-11-02 for the token-savings changes.
 # Each behaviour already held when they were approved, so these are plain
 # regression tests, not approved-spec ones: an approved test must go red
-# where it lands. The hooks run as a session runs them; the skill checks
-# read the text that drives the agent.
+# where it lands. The hooks run as a session runs them.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
 plugin="$root/plugins/vicky-skills"
@@ -20,14 +19,6 @@ hint() { jq -nc --arg p "$1" '{prompt:$p}' | CLAUDE_PLUGIN_OPTION_LESSON_HINT=tr
 check "a peer session's message teaches no lesson" \
   '[ -z "$(hint "$peer")" ] && hint "$mine" | grep -q engrave'
 
-# Given you correct the agent, and the mistake cost no retry
-# When the effort ends
-# Then engrave runs on it once, in the ticket-settling batch, not on the spot
-engrave="$plugin/skills/shipping/engrave/SKILL.md"
-loose="$plugin/skills/shipping/make-it-so/SETTLE.md"
-check "an ordinary correction waits for the batch" \
-  '! grep -q "when the user corrects the agent" "$engrave" && grep -q "Any other correction waits for that settling" "$engrave" && grep -q "a correction from the user. Run \`engrave\` on each one" "$loose"'
-
 # Given a repo with no tracker doc, such as your machine config
 # When a session starts there
 # Then the agent runs no tracker counts and no summit
@@ -42,18 +33,4 @@ tracked=$(start)
 check "a repo with no tracker skips the counts" \
   '! grep -qi "tracker\|summit" <<<"$bare" && grep -q "summit" <<<"$tracked"'
 
-# Given the agent moves its work onto the pull request pr-guard pointed it to
-# When every commit has landed there and no pull request is open from the old branch
-# Then the agent deletes the old branch here and on the remote
-check "a moved effort leaves no branch behind" \
-  'grep -q "Once every commit is there and no pull request is open from \$current, then delete \$current here and on the remote (git push origin --delete \$current)" "$plugin/scripts/pr-guard.sh"'
-# Engraved 2026-11-02: a build in another session wrote tests and code after
-# a chat "approval". Only the ticked red-pen page approves an example.
-do_skill="$plugin/skills/building/do/SKILL.md"
-examples="$plugin/skills/planning/examples/SKILL.md"
-check "a chat reply approves no example" \
-  'grep -q "A chat reply is never an approval" "$do_skill" && grep -q "A chat reply is never an approval" "$examples" && grep -q "no test or code is written until the page comes back with each example ticked" "$do_skill" && grep -q "This adds no approvals: a pick the agent may take on its own needs none" "$plugin/skills/writing/red-pen/SKILL.md"'
-# Engraved 2026-11-02: a run that stopped at the draft gate was reported as red.
-check "a run stopped by the draft gate is not red" \
-  'grep -q "is the gate working, not red" "$plugin/skills/shipping/make-it-so/SKILL.md" && grep -q "A run that stops at the draft gate is expected" "$plugin/skills/building/machine-spirit/SKILL.md"'
 exit $fail

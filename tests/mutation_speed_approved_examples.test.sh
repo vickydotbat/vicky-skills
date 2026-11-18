@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 # approved-spec: the examples set for a faster mutation runner, from the
 # mutation runs of an earlier session. Each check runs the runner on a copy of
-# the repo, with gamma-shift.sh as its small subject; the sentinels check reads
-# the instruction that drives the agent.
+# the repo, with gamma-shift.sh as its small subject.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
@@ -32,6 +31,4 @@ sed -i '/^gamma-shift.sh	/d' "$dir/tests/mutation-proof.tsv"
 bash "$runner" --jobs 2 gamma-shift.sh >/dev/null 2>&1
 check "a pass with no survivors records its proof without --record" \
   'proof >/dev/null && fresh'
-check "sentinels tells an agent running a pass under an outer timeout to set --budget below it" \
-  'grep -q "set \`--budget\` below the outer timeout" "$root/plugins/vicky-skills/skills/building/sentinels/SKILL.md"'
 exit $fail

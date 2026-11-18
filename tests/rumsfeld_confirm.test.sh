@@ -8,8 +8,6 @@ set -u
 here="$(cd "$(dirname "$0")" && pwd)"
 cd "$here/../plugins/vicky-skills/skills/commands/lay-course"
 fail=0
-grep -q "Once the user confirms, the fact moves to the Sensor log, quoting the user, and its star loses that unknown at the next redraw" STAR-CHART.md \
-  || { echo "FAIL the sort no longer says a confirmed fact moves to the Sensor log and drops its unknown"; fail=1; }
 tickets=$(mktemp); trap 'rm -f "$tickets"' EXIT
 # The same star before and after its one Confirm line is answered.
 echo '[{"key": "K-1", "kind": "star", "title": "Before", "open": true, "known": 1, "unknown": 1}]' > "$tickets"

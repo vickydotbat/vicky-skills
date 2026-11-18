@@ -19,8 +19,10 @@ check "record with four counts is refused" 'run record 1 2 3 >/dev/null; [ $? = 
 check "a count that is not a whole number is refused" 'run record 3 x >/dev/null; [ $? = 2 ] && grep -q "whole numbers, got .x." "$fx/err" && [ ! -e "$fx/data/summit" ]'
 check "a negative count is refused" 'run record -1 2 >/dev/null; [ $? = 2 ]'
 check "show before any count says so and fails" 'run show >/dev/null; [ $? = 1 ] && grep -q "nothing counted yet" "$fx/err"'
-check "today before any count fails quietly" '[ -z "$(run today)" ] && ! run today'
-check "with no data folder it refuses" '[ "$(CLAUDE_PLUGIN_DATA= bash "$summit" record 1 1 2>&1)" = "summit: no plugin data folder" ]'
+check "today before any count fails quietly, with nothing on stderr" '[ -z "$(run today)" ] && ! run today && [ ! -s "$fx/err" ]'
+check "with no data folder it refuses, exit 2" '[ "$(CLAUDE_PLUGIN_DATA= bash "$summit" record 1 1 2>&1)" = "summit: no plugin data folder" ] && { CLAUDE_PLUGIN_DATA= bash "$summit" record 1 1 2>/dev/null; [ $? = 2 ]; }'
+check "outside a repository it refuses, exit 2" 'CLAUDE_PROJECT_DIR="$fx/plain" bash "$summit" today 2>"$fx/err"; [ $? = 2 ] && grep -q "not in a repository" "$fx/err"'
+check "since exits 0" 'run since >/dev/null; [ $? = 0 ]'
 mkdir -p "$fx/plugins/cache/mkt/plug/1.0/scripts"; cp "$summit" "$(dirname "$summit")/plugin-data.sh" "$fx/plugins/cache/mkt/plug/1.0/scripts/"
 check "an installed copy with no data folder set finds its own" 'CLAUDE_PLUGIN_DATA= bash "$fx/plugins/cache/mkt/plug/1.0/scripts/summit.sh" record 2 1 >/dev/null && [ -n "$(ls "$fx/plugins/data/plug-mkt/summit")" ]'
 check "outside a repository it refuses" 'CLAUDE_PROJECT_DIR="$fx/plain" bash "$summit" show 2>&1 | grep -q "not in a repository"'

@@ -38,7 +38,15 @@ PATH="$shims:$PATH" run true "$started"
 check "nothing is sent off the machine, and the ledger sits in the plugin's own data folder" \
   '[ -s "$ledger" ] && [ ! -e "$shims/called" ] && [ "$(ls -A "$data")" = skill-ledger.tsv ]'
 
-bullet=$(grep -F '(`skill_ledger`' "$root/README.md")
-check "the README's skill ledger bullet says what one line records, where the file is, and how to delete it" \
-  'grep -q "time" <<<"$bullet" && grep -q "skill.s name" <<<"$bullet" && grep -q "skill-ledger.tsv" <<<"$bullet" && grep -qi "delete" <<<"$bullet"'
+# Tested unasked: the guards the mutation pass showed no test reached.
+out=$(env -u CLAUDE_PLUGIN_DATA CLAUDE_PLUGIN_OPTION_SKILL_LEDGER=true bash "$hook" <<<"$started"); code=$?
+check "with the setting on and no plugin data folder, it exits 0 and prints nothing" '[ $code = 0 ] && [ -z "$out" ]'
+rm -f "$ledger"; run true "$(typed slash_command /sup)"
+check "a typed name with a leading slash is recorded without it" '[ "$(cut -f2 "$ledger")" = sup ]'
+fresh="$data/new/folder"; CLAUDE_PLUGIN_OPTION_SKILL_LEDGER=true CLAUDE_PLUGIN_DATA="$fresh" bash "$hook" <<<"$started"
+check "a data folder that does not exist yet is made, and the line lands in it" '[ -s "$fresh/skill-ledger.tsv" ]'
+touch "$data/afile"; CLAUDE_PLUGIN_OPTION_SKILL_LEDGER=true CLAUDE_PLUGIN_DATA="$data/afile/sub" bash "$hook" <<<"$started"; code=$?
+check "a data folder that cannot be made leaves the skill unblocked: exit 0" '[ $code = 0 ]'
+mkdir -p "$data/blocked/skill-ledger.tsv"; err=$(CLAUDE_PLUGIN_OPTION_SKILL_LEDGER=true CLAUDE_PLUGIN_DATA="$data/blocked" bash "$hook" <<<"$started" 2>&1 >/dev/null); code=$?
+check "a ledger it cannot write leaves the skill unblocked: exit 0, and nothing on stderr" '[ $code = 0 ] && [ -z "$err" ]'
 exit $fail

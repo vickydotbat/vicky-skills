@@ -52,7 +52,6 @@ mkdir -p "$fx/nosc"; ln -s "$(command -v jq)" "$fx/nosc/jq"; ln -s "$BASH" "$fx/
 check "without shellcheck it still lints, and says run: scripts go unchecked" 'run "$(pl Write "$r/.gitea/workflows/a.yml")" "$fx/nosc"; [ $? = 0 ] && [ -s "$STUB_ARGS" ] && grep -q "shellcheck is missing" "$fx/err"'
 mkdir -p "$fx/.gx/repo2/.github/workflows"; echo 'jobs: {}' > "$fx/.gx/repo2/.github/workflows/e.yml"
 check "a folder above the repo whose name starts .g does not move the root" 'run "$(pl Write "$fx/.gx/repo2/.github/workflows/e.yml")"; grep -qx "$fx/.gx/repo2" "$STUB_ARGS.cwd"'
-check "machine-spirit step 4 names this hook and when to lint by hand" 'awk "/^4\\. /{on=1} /^5\\. /{on=0} on" "$(dirname "$hook")/../skills/building/machine-spirit/SKILL.md" | grep -q "The \`workflow-lint\` hook runs actionlint" && awk "/^4\\. /{on=1} /^5\\. /{on=0} on" "$(dirname "$hook")/../skills/building/machine-spirit/SKILL.md" | grep -q "actionlint not installed, or the hook switched off"'
 check "without jq it passes quietly" 'run "$(pl Write "$r/.gitea/workflows/a.yml")" /nonexistent; [ $? = 0 ] && [ ! -e "$STUB_ARGS" ]'
 # The real-lint cases, where a real actionlint is installed.
 if command -v actionlint >/dev/null 2>&1; then

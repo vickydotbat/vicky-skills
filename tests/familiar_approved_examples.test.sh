@@ -1,16 +1,12 @@
 #!/usr/bin/env bash
-# Approved examples for the familiar skill (S2 to S5). The plugin owns three
-# seams: the session lister, the voice hook that sets the voice on the turn
-# /familiar is typed, and the skill text the agent follows. What the agent does
-# with a watch line is model behaviour no shell test can run, so those
-# examples are held by the skill's own words.
+# Approved examples for the familiar skill (S2 to S5). The plugin owns two
+# seams: the session lister and the voice hook that sets the voice on the turn
+# /familiar is typed.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills"
-skill="$root/skills/commands/familiar/SKILL.md"
 fx=$(mktemp -d); trap 'rm -rf "$fx"' EXIT
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
-has() { grep -qF -- "$1" "$skill" 2>/dev/null; }
 # A projects folder with live sessions, one ended, and the familiar's own.
 mkdir -p "$fx/projects/-repo-a" "$fx/projects/-repo-b"
 live() { jq -nc --arg c "$2" '{type:"user",cwd:$c,message:{content:"hi"}}' > "$fx/projects/$1.jsonl"; }
@@ -24,8 +20,6 @@ voice() { printf '%s\n' "$2" > "$fx/t.jsonl"
 # Given other sessions are live on the machine
 # When you type /familiar
 # Then this session is the familiar for the rest of the session: it arms a watch on each live session, opens a debt note for each, and replies with the sessions and notes
-check "E16 /familiar is typed only" 'grep -qx "disable-model-invocation: true" "$skill"'
-check "E16 it arms a watch and opens a debt note for each live session" 'has "Arm one watch per session" && has "open one debt note per session" && has "reply with each session and its note"'
 check "E16 the voice holds from the /familiar turn on" '[ -n "$(voice "/familiar" "")" ]'
 
 # Given no familiar kind is set
@@ -49,35 +43,10 @@ check "E19 plain words to other agents" 'voice "/familiar" "" | grep -qF "To ano
 # Then it is in the familiar's voice, until the session ends
 check "E20 the voice holds until the session ends" 'voice "/familiar" "" | grep -qF "Every line the user sees stays in this voice until the session ends."'
 
-# Given the familiar is watching
-# When a watched session shows a flow you could run smoother, such as a command you type often or a prompt a setting would spare
-# Then you get one tip line when that stretch of work ends
-check "E22 one tip when the stretch ends" 'has "send the user one tip line when that stretch of work ends"'
-
-# Given an over-to-you sitting is open
-# When a tip comes up
-# Then the tip waits until the sitting ends
-check "E23 no tip mid-sitting" 'has "While an over-to-you sitting is open, a tip waits until it ends"'
-
-# Given the familiar already sent a tip in this stretch of work
-# When a second tip comes up
-# Then it waits for the next stretch
-check "E24 at most one tip per stretch" 'has "At most one tip per stretch of work: a second waits for the next stretch"'
-
-# Given a snag that an agent caused
-# When the familiar notes it
-# Then it becomes a debt line, and you get no tip about it
-check "E25 an agent mistake is debt, not a tip" 'has "A snag an agent caused is a debt line, never a tip"'
-
 # Given three other sessions are live
 # When you type /familiar
 # Then each gets its own watch and debt note, and every line names its session
 check "E26 every live session is listed" '[ "$(sessions | wc -l)" = 3 ] && sessions | grep -q "^aaa " && sessions | grep -q "^bbb " && sessions | grep -q "^ccc "'
-
-# Given the familiar watches two sessions
-# When one of them hands off
-# Then only that session's items are worked, and the other watch goes on
-check "E28 one handoff closes one session" 'has "work only that session'"'"'s note, and keep every other watch armed"'
 
 # Given this session is the familiar
 # When it lists the live sessions

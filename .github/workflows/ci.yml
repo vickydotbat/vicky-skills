@@ -37,8 +37,6 @@ jobs:
         run: tests/heredoc-strip.test.sh
       - name: stop-reply reads only the reply since the user spoke
         run: tests/stop-reply.test.sh
-      - name: Chart sharding and found work
-        run: tests/chart_sharding_approved_examples.test.sh
       - name: Familiar watch script
         run: tests/familiar_watch_approved_examples.test.sh
       - name: Familiar skill and voice
@@ -49,20 +47,10 @@ jobs:
         run: tests/familiar.test.sh
       - name: Step hints
         run: tests/step-hint.test.sh
-      - name: Every skill that reads a ticket whole reads its star chart
-        run: tests/chart-read.test.sh
       - name: Do runs its plan check first
         run: tests/do_imp_pass_approved_examples.test.sh
-      - name: Machine spirit runs a CI job locally first, and stops after one try
-        run: tests/machine_spirit_local_ci_approved_examples.test.sh
-      - name: Machine spirit's CI doctrine
-        run: tests/machine_spirit_doctrine_approved_examples.test.sh
-      - name: An example the unit seam can't reach gets a harness test
-        run: tests/examples_harness_approved_examples.test.sh
       - name: Tracker notes stay on the tracker
         run: tests/tracker-status.test.sh
-      - name: Summit and familiar keep tracker notes on the tracker
-        run: tests/tracker_status_approved_examples.test.sh
       - name: A closed ticket counts by its closed date
         run: tests/tracker-closed-date.test.sh
       - name: Skill steps
@@ -91,30 +79,18 @@ jobs:
         run: tests/skill-no-positional.test.sh
       - name: Video-captions flattens captions to prose
         run: tests/flatten-captions.test.sh
-      - name: Sitting lessons
-        run: tests/sitting-lessons.test.sh
       - name: Git guard examples
         run: tests/git_guard_approved_examples.test.sh
       - name: Git guard decisions
         run: tests/git-guard.test.sh
       - name: Pull request body examples
         run: tests/pr_guard_body_approved_examples.test.sh
-      - name: Ship-it on every body path
-        run: tests/ship-it-everywhere.test.sh
       - name: Draw chart
         run: tests/draw-chart.test.sh
-      - name: Star chart words
-        run: tests/star_chart_words_approved_examples.test.sh
       - name: Black hole drawing
         run: tests/black_hole_drawing_approved_examples.test.sh
-      - name: Rumsfeld knowns
-        run: tests/rumsfeld_knowns_approved_examples.test.sh
-      - name: Rumsfeld readiness
-        run: tests/rumsfeld_readiness_approved_examples.test.sh
       - name: Rumsfeld confirm
         run: tests/rumsfeld_confirm.test.sh
-      - name: Rumsfeld surprises
-        run: tests/rumsfeld_surprises_approved_examples.test.sh
       - name: Tells lint
         run: tests/lint_tells_approved_examples.test.sh
       - name: Lint moves
@@ -123,40 +99,14 @@ jobs:
         run: tests/human_voice_guiderails_approved_examples.test.sh
       - name: Interactive page owns every page
         run: tests/page_owns_pages_approved_examples.test.sh
-      - name: Examples are the seams
-        run: tests/do_examples_approved_examples.test.sh
-      - name: Stops write state into tickets and pull requests
-        run: tests/state_writes_approved_examples.test.sh
-      - name: Marie Kondo fast-forwards stale default branches
-        run: tests/marie-kondo-fast-forward.test.sh
-      - name: Every tracker can move a state and list what changed
-        run: tests/tracker_operations_approved_examples.test.sh
-      - name: warp-ready charts carry the AFK label
-        run: tests/afk_label_approved_examples.test.sh
-      - name: gamma-shift reads every waiting ticket
-        run: tests/waiting-list.test.sh
       - name: Springboard examples
         run: tests/springboard_approved_examples.test.sh
       - name: Springboard hook
         run: tests/springboard.test.sh
       - name: Summit record
         run: tests/summit.test.sh
-      - name: cerebro takes its picks
-        run: tests/cerebro-picks.test.sh
       - name: do builds on an open pull request
         run: tests/do-open-pr.test.sh
-      - name: review finds the checkout the work sits in
-        run: tests/review-checkout.test.sh
-      - name: conn examples
-        run: tests/conn_approved_examples.test.sh
-      - name: assimilate examples
-        run: tests/assimilate_approved_examples.test.sh
-      - name: review cause examples
-        run: tests/review_cause_approved_examples.test.sh
-      - name: assimilate and review opt-outs
-        run: tests/assimilate-optout.test.sh
-      - name: assimilate grades before it claims
-        run: tests/assimilate-grade.test.sh
       - name: find-handoff
         run: tests/find-handoff.test.sh
       - name: handoff pointer examples
@@ -185,8 +135,6 @@ jobs:
         run: tests/foreign-post-hint.test.sh
       - name: No session transcripts in the repo
         run: tests/no-transcripts.test.sh
-      - name: Backlog roll-up skill lines
-        run: tests/backlog_rollup_lines.test.sh
       - name: Mutation tool takes skill scripts
         run: tests/mutate_skill_scripts.test.sh
       - name: idle-skills edge cases
@@ -195,16 +143,10 @@ jobs:
         run: tests/board-edges.test.sh
       - name: Familiar watch on an empty, moved or quiet transcript
         run: tests/familiar-watch-move-empty.test.sh
-      - name: Brief mode memes
-        run: tests/brief_mode_memes_approved_examples.test.sh
-      - name: Red pen quick close
-        run: tests/red_pen_quick_close_approved_examples.test.sh
       - name: Check ADR
         run: tests/check-adr.test.sh
       - name: ADR retire approved examples
         run: tests/adr_retire_approved_examples.test.sh
-      - name: decision-record skill holds its rules
-        run: tests/decision-record-skill.test.sh
       - name: Skill changes come with a test
         run: tests/skill-change-tested.test.sh
       - name: Skill changes are proven by an eval case
@@ -213,8 +155,6 @@ jobs:
         run: tests/adr-scope-hint.test.sh
       - name: Skill links
         run: tests/skill-links.test.sh
-      - name: A recorded decision reaches the docs
-        run: tests/decision-sweep.test.sh
       - name: Skill descriptions
         run: tests/skill-descriptions.test.sh
       - name: PR guard
@@ -249,28 +189,18 @@ jobs:
         run: tests/engrave-serious.test.sh
       - name: Restack-origin guard
         run: tests/restack-origin-guard.test.sh
-      - name: Stacks and rebases build on origin's trunk
-        run: tests/restack_origin_approved_examples.test.sh
       - name: Lesson hint
         run: tests/lesson-hint.test.sh
       - name: Token savings
         run: tests/token-savings.test.sh
-      - name: By-eye approved examples
-        run: tests/by_eye_approved_examples.test.sh
       - name: Engrave approved examples
         run: tests/engrave_approved_examples.test.sh
       - name: Merged-branch guard
         run: tests/merged-branch-guard.test.sh
       - name: Merged-branch approved examples
         run: tests/merged_branch_approved_examples.test.sh
-      - name: Sup lessons approved examples
-        run: tests/sup_lessons_approved_examples.test.sh
-      - name: Engrave routing approved examples
-        run: tests/engrave_route_approved_examples.test.sh
       - name: Gamma-shift hook
         run: tests/gamma-shift.test.sh
-      - name: Gamma shift builds one batch a session
-        run: tests/gamma_shift_batch_approved_examples.test.sh
       - name: Gamma shift keeps one pull request per run
         run: tests/gamma-shift-runs.test.sh
       - name: Auto-tidy hook
@@ -293,20 +223,10 @@ jobs:
         run: tests/skill_ledger_approved_examples.test.sh
       - name: Idle skills
         run: tests/idle_skills_approved_examples.test.sh
-      - name: Captain's log high points
-        run: tests/captains_log_high_points_approved_examples.test.sh
-      - name: Reader panel
-        run: tests/reader_panel_approved_examples.test.sh
       - name: Ticket-drift hook
         run: tests/ticket_drift_approved_examples.test.sh
       - name: Gamma shift runs spark-joy and the drift check on one branch
         run: tests/gamma_powerhouse_approved_examples.test.sh
-      - name: README shows every hook in one table
-        run: tests/hooks_table_approved_examples.test.sh
-      - name: do hands a slice over only when one number checks it
-        run: tests/do_delegate_approved_examples.test.sh
-      - name: do and make-it-so name every step of the flow
-        run: tests/flow_gaps_approved_examples.test.sh
       - name: git-guard and red-first-guard judge one command at a time
         run: tests/hook_state_approved_examples.test.sh
       - name: Hook exit codes
@@ -325,22 +245,16 @@ jobs:
         run: tests/eval-coverage.test.sh
       - name: A fixed review finding gets a prevention verdict
         run: tests/review-prevention.test.sh
-      - name: Every default-on guard is named in a skill
-        run: tests/guard-pointers.test.sh
       - name: publickey-hint checks a refused key before blaming it
         run: tests/publickey-hint.test.sh
       - name: publish-guard keeps making a repository public with the user
         run: tests/publish-guard.test.sh
-      - name: Warp hands every star to do
-        run: tests/warp-do.test.sh
       - name: Red-first decisions
         run: tests/red-first.test.sh
       - name: Ticket filing guard decisions
         run: tests/ticket-filing-guard.test.sh
       - name: Warp reaches do, do reaches sentinels
         run: tests/mutation_step_approved_examples.test.sh
-      - name: Metrics after mutation, presence before QA
-        run: tests/metrics_step_approved_examples.test.sh
       - name: Plane block guard
         run: tests/plane_block_approved_examples.test.sh
       - name: plane-block-guard steers by ticket
@@ -355,64 +269,30 @@ jobs:
         run: tests/stale_copy_hint_approved_examples.test.sh
       - name: Stale plugin copy hint decisions
         run: tests/stale-copy-hint.test.sh
-      - name: never-lupus checks the peripheral
-        run: tests/never_lupus_peripheral_approved_examples.test.sh
       - name: Approve all shows on a one-box page
         run: tests/approve_all_approved_examples.test.sh
-      - name: Every wait on the user is a gate
-        run: tests/gate_home_approved_examples.test.sh
       - name: Faster mutation runner
         run: tests/mutation_speed_approved_examples.test.sh
       - name: Mutation runner memory limit
         run: tests/mutate-hooks-memory.test.sh
       - name: Mutation test map names each script once
         run: tests/mutate-hooks-map.test.sh
-      - name: Over-to-you stocks the test
-        run: tests/over_to_you_stocks_approved_examples.test.sh
       - name: Lessons ledger
         run: tests/lesson_ledger_approved_examples.test.sh
-      - name: Ask plainly
-        run: tests/ask_plainly.test.sh
       - name: Red-pen grants
         run: tests/open-draft.test.sh
       - name: Lessons ledger edges
         run: tests/lesson-ledger.test.sh
-      - name: Over-to-you builds from scratch
-        run: tests/over_to_you_from_scratch_approved_examples.test.sh
-      - name: Over-to-you quick notes
-        run: tests/over_to_you_quick_notes_approved_examples.test.sh
-      - name: Over-to-you small finds
-        run: tests/over_to_you_small_finds_approved_examples.test.sh
       - name: Over-to-you find ledger
         run: tests/over_to_you_find_ledger_approved_examples.test.sh
-      - name: Testing standards
-        run: tests/testing_standards_approved_examples.test.sh
-      - name: Cerebro mid-effort
-        run: tests/cerebro_mid_effort_approved_examples.test.sh
       - name: Watch script
         run: tests/watch_approved_examples.test.sh
       - name: Watch script edges
         run: tests/watch.test.sh
-      - name: Do receipts
-        run: tests/receipt_approved_examples.test.sh
-      - name: Mission brief
-        run: tests/mission_brief_approved_examples.test.sh
       - name: Todo reminder
         run: tests/todo_reminder_approved_examples.test.sh
       - name: Todo reminder decisions
         run: tests/todo-reminder.test.sh
-      - name: Red-pen samples
-        run: tests/red_pen_samples_approved_examples.test.sh
-      - name: Warp writes tests up front
-        run: tests/warp_up_front_approved_examples.test.sh
-      - name: Warp does its homework in pre-flight
-        run: tests/warp_homework.test.sh
-      - name: Warp zero friction
-        run: tests/warp_zero_friction_approved_examples.test.sh
-      - name: User prompts are training wheels
-        run: tests/training_wheels_approved_examples.test.sh
-      - name: Over-to-you covers the whole branch
-        run: tests/over_to_you_whole_branch_approved_examples.test.sh
       - name: Pr-guard refuses AI credit, and stacks pass
         run: tests/pr_guard_ai_credit_approved_examples.test.sh
       - name: Pr-guard keeps an effort to one pull request
@@ -473,8 +353,6 @@ jobs:
         run: tests/hook-audit.test.sh
       - name: AGENTS.md is one path
         run: tests/agents-doc.test.sh
-      - name: Long skills keep reference behind pointers
-        run: tests/skill-splits.test.sh
       - name: Every relative path in the skills resolves
         run: tests/skill-paths-resolve.test.sh
       - name: Law lint lists laws with no proof

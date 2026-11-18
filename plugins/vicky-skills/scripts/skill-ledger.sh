@@ -8,7 +8,6 @@
 set -u
 case "${CLAUDE_PLUGIN_OPTION_SKILL_LEDGER:-}" in true|1) ;; *) exit 0 ;; esac
 [ -n "${CLAUDE_PLUGIN_DATA:-}" ] || exit 0
-command -v jq >/dev/null || exit 0
 name=$(jq -r '
   if .hook_event_name == "UserPromptExpansion" then
     (if .expansion_type == "slash_command" then .command_name // "" else "" end)
@@ -17,5 +16,5 @@ name=${name#/}
 # A name is one word; anything else would break the ledger's columns.
 case "$name" in ''|*[!A-Za-z0-9:_.-]*) exit 0 ;; esac
 mkdir -p "$CLAUDE_PLUGIN_DATA" 2>/dev/null || exit 0
-printf '%s\t%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$name" >> "$CLAUDE_PLUGIN_DATA/skill-ledger.tsv" 2>/dev/null
-exit 0
+# stderr goes first, so a ledger it cannot open prints nothing either.
+printf '%s\t%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$name" 2>/dev/null >> "$CLAUDE_PLUGIN_DATA/skill-ledger.tsv" || true

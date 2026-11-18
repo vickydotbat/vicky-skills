@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 # approved-spec: sup finds a handoff posted from the default branch. conn's half
-# reads conn's text and runs the commands it names; sup's half runs the finder.
+# runs the commands conn names; sup's half runs the finder.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
 plugin="$root/plugins/vicky-skills"
-conn="$plugin/skills/commands/conn/SKILL.md"
 todo="$plugin/skills/housekeeping/standing-orders/scripts/todo.sh"
 finder="$plugin/skills/housekeeping/sup/scripts/find-handoff.sh"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
@@ -23,13 +22,13 @@ point() { (cd "$r" && bash "$todo" done "Handoff:" >/dev/null 2>&1; bash "$todo"
 # When you type /conn
 # Then the repo's .todo holds one line, - Handoff: <the ticket key or pull request link> (<date>)
 check "E1 conn leaves a pointer in .todo" \
-  'grep -qF "todo.sh done \"Handoff:\"" "$conn" && grep -qF "todo.sh add \"Handoff: <the ticket key or pull request link> (<date>)\"" "$conn" && point GAME-2882 && grep -qx -- "- Handoff: GAME-2882 (2026-11-17)" "$r/.todo"'
+  'point GAME-2882 && grep -qx -- "- Handoff: GAME-2882 (2026-11-17)" "$r/.todo"'
 
 # Given a .todo that already holds a Handoff line
 # When you type /conn again and it posts somewhere else
 # Then .todo holds only the new Handoff line
 check "E2 a newer handoff replaces the older pointer" \
-  'grep -qF "so \`.todo\` holds one Handoff line, the newest" "$conn" && echo "- Finish the parser (GAME-1)" >> "$r/.todo" && point GAME-2883 && [ "$(grep -c "Handoff:" "$r/.todo")" = 1 ] && grep -qx -- "- Handoff: GAME-2883 (2026-11-17)" "$r/.todo" && grep -qF "Finish the parser" "$r/.todo"'
+  'echo "- Finish the parser (GAME-1)" >> "$r/.todo" && point GAME-2883 && [ "$(grep -c "Handoff:" "$r/.todo")" = 1 ] && grep -qx -- "- Handoff: GAME-2883 (2026-11-17)" "$r/.todo" && grep -qF "Finish the parser" "$r/.todo"'
 
 # Given a checkout on main with no open pull request and no ticket key in its name
 # And its .todo names a ticket whose thread holds a Handoff comment

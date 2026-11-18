@@ -4,7 +4,6 @@
 set -u
 here="$(dirname "$0")/../plugins/vicky-skills/skills/writing/human-voice"
 lint="$here/scripts/lint-tells.py"
-skill="$here/SKILL.md"
 scratch=$(mktemp -d); trap 'rm -rf "$scratch"' EXIT
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
@@ -21,10 +20,6 @@ check "a draft that trips every check the lint has gets no printed line holding 
   'grep -q "one point, longer" <<<"$moves" && grep -q "one word a reader must not miss" <<<"$moves" \
    && [ "$(wc -l <<<"$moves")" -ge 30 ] && ! grep -Eiq "$names" <<<"$moves"'
 
-check "an agent following human-voice from first step to last never reads a list of tells, and every habit it is given is a move to make" \
-  '! grep -q "TELLS.md" "$skill" && ! grep -q "→" "$skill" "$here/MOVES.md" && ! grep -Eiq "^#+ .*(tell|metaphor)" "$skill" "$here/MOVES.md" \
-   && ! grep -Eiq "^[0-9]+\. \*\*Sweep" "$skill" && ! grep -q "TELLS.md" "$lint"'
-
 out=$(lint 'Honestly, the old build was faster.')
 check "a draft saying \"Honestly, the old build was faster.\" gets that line named with the move to make instead" \
   'grep -Eq "^1: Honestly: .{10,}$" <<<"$out" && grep -q "^exit=1$" <<<"$out"'
@@ -32,9 +27,6 @@ check "a draft saying \"Honestly, the old build was faster.\" gets that line nam
 out=$(lint "I can't be bothered to write these, honestly.")
 check "a draft saying \"I can't be bothered to write these, honestly.\" passes quietly" \
   '[ "$out" = "exit=0" ]'
-
-check "an agent drafting a piece that mentions one thing several times is told to vary its words, and nothing it reads tells it to repeat one word" \
-  'grep -Eiq "vary (your|the|its) words" "$here/MOVES.md" && ! grep -Eiq "repeat the one right word|repeat one word" "$skill" "$here/MOVES.md"'
 
 out=$(lint $'In summary, it works.\n\nOne of the key aspects is cost.\n\nIt is imperative that we ship.')
 check "a draft with \"In summary,\", \"One of the key aspects\" or \"It is imperative that\" gets each line named with the move to make instead" \

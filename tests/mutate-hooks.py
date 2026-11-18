@@ -122,7 +122,7 @@ TESTS = {
     # Skill scripts, by their path under the plugin.
     "skills/commands/captains-log/scripts/hook-audit.py": ["hook-audit"],
     "skills/commands/captains-log/scripts/idle-skills.py": ["idle_skills_approved_examples", "idle-skills"],
-    "skills/planning/decision-record/scripts/check-adr.sh": ["check-adr", "decision-record-skill", "adr_retire_approved_examples"],
+    "skills/planning/decision-record/scripts/check-adr.sh": ["check-adr", "adr_retire_approved_examples"],
     "skills/commands/lay-course/scripts/draw-chart.py": ["draw-chart", "black_hole_drawing_approved_examples"],
     "skills/planning/drawing-board/scripts/board.py": ["board-edges", "drawing-board", "drawing_board_approved_examples"],
     "skills/planning/drawing-board/scripts/fetch-drawio.sh": ["fetch-drawio"],
@@ -324,6 +324,8 @@ class Worker:
         self.root = tempfile.mkdtemp(prefix="mutant-")
         for part in ("plugins", "tests"):
             shutil.copytree(os.path.join(ROOT, part), os.path.join(self.root, part), symlinks=True)
+        # A checkout, as CI's is: some tests treat the repo root as one.
+        subprocess.run(["git", "init", "-q", self.root], check=True)
 
     def run(self, script, text, timeouts):
         path = os.path.join(self.root, os.path.relpath(path_of(script), ROOT))
@@ -349,17 +351,20 @@ class Worker:
                 replace(path, handle.read())
 
 
-def baseline(script):
-    """Each test's time on the real script, fastest first, with its per-mutant timeout."""
+def baseline(script, root):
+    """Each test's time on the real script, fastest first, with its per-mutant timeout. It runs in a
+    worker copy, as every mutant does: a test that fails there for any reason would count every
+    mutant as killed."""
     times = []
     for test in TESTS[script]:
         start = time.monotonic()
-        done = subprocess.run(capped(os.path.join(ROOT, "tests", test + ".test.sh")), stdin=subprocess.DEVNULL,
+        done = subprocess.run(capped(os.path.join(root, "tests", test + ".test.sh")), stdin=subprocess.DEVNULL,
                               env=dict(os.environ, MUTATE_HOOKS_INNER="1"), capture_output=True)
         took = time.monotonic() - start
         if done.returncode:
             failing = [line for line in done.stdout.decode(errors="replace").splitlines() if line.startswith("FAIL")]
-            sys.exit(f"mutate-hooks: {test} fails on the real {script}; fix it before a pass" + "".join("\n  " + line for line in failing[:5]))
+            sys.exit(f"mutate-hooks: {test} fails on the real {script} in a copy of plugins/ and tests/ alone, where mutants run; "
+                     "fix it before a pass, or it would count every mutant as killed" + "".join("\n  " + line for line in failing[:5]))
         # Stryker's rule: a mutant times out at the baseline times 1.5 plus a fixed margin.
         times.append((took, test, took * 1.5 + 5))
     return [(test, limit) for _, test, limit in sorted(times)], sum(t for t, _, _ in times)
@@ -404,6 +409,7 @@ def main(argv):
     if again:
         # Only the lines the last pass left alive: a quick check before the full pass.
         names = [n for n in names if n in previous]
+    probe = Worker()
     for name in names:
         code_hash, test_hash = hashes(name)
         old = proven.get(name)
@@ -414,7 +420,7 @@ def main(argv):
         with open(path_of(name)) as handle:
             original = handle.read()
         found = list(mutants(original, wanted, name.endswith(".awk"), name.endswith(".py")))
-        timeouts, total = baseline(name)
+        timeouts, total = baseline(name, probe.root)
         plan.append((name, original, found, timeouts, total, code_hash, test_hash, wanted is None))
     # Most mutants die in the first, fastest test, so the full time per mutant is the worst case.
     estimate = sum(len(found) * total for _, _, found, _, total, *_ in plan) / jobs
@@ -449,6 +455,7 @@ def main(argv):
             if not mine and None not in killed and not again:
                 count = f"{len(found)}/{len(found)}" if whole else proven.get(name, ["", "", "0/0"])[2]
                 proven[name] = [code_hash, test_hash, count]
+    shutil.rmtree(probe.root, ignore_errors=True)
     while not workers.empty():
         shutil.rmtree(workers.get().root, ignore_errors=True)
     with open(PROOF, "w") as handle:

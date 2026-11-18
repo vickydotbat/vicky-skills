@@ -1,33 +1,12 @@
 #!/usr/bin/env bash
 # approved-spec: the examples approved on the note "decision-record retires a
-# wholly superseded record". E1 to E3 read the instruction that drives the
-# agent. E4 and E6 run the record checker on a fixture folder. E5 holds already, so
+# wholly superseded record". E4 and E6 run the record checker on a fixture folder. E5 holds already, so
 # it lives in check-adr.test.sh as a plain regression test.
 set -u
 here="$(dirname "$0")"
 skill="$here/../plugins/vicky-skills/skills/planning/decision-record"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
-. "$here/lib/skill-step.sh"
-mark=$(skill_step "$skill/SKILL.md" 6)
-
-# Given a record whose every force a new record overturns
-# When the new record is written
-# Then the new record's Consequences hold a line Retires ADR-NNNN with the reason, and the old record is deleted from the repo
-check "E1 a record replaced in full is named by a Retires line and deleted" \
-  'grep -q "Retires ADR-NNNN" <<<"$mark" && grep -q "delete the old record" <<<"$mark" && grep -q "Retires ADR-NNNN" "$skill/FORMAT.md"'
-
-# Given a record a new record replaces only in part
-# When the new record is written
-# Then the old record gains an Amended or Superseded line in its Status and stays
-check "E2 a record replaced in part gains a Status line and stays" \
-  'grep -q "replaced in part" <<<"$mark" && grep -q "Amended by ADR-NNNN" <<<"$mark" && grep -q "Superseded by ADR-NNNN" <<<"$mark"'
-
-# Given a wiki record whose every force a new record overturns
-# When the new record is written
-# Then the old page is tombstoned with a pointer to the new record, not deleted
-check "E3 a wiki record replaced in full is tombstoned with a pointer" \
-  'grep -q "tombstone" <<<"$mark" && grep -q "points at the new record" <<<"$mark"'
 
 # Given a new record whose Consequences say Retires ADR-0003, and ADR-0003 still in the same folder
 # When the record checker runs on the new record

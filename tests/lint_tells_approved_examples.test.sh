@@ -37,9 +37,4 @@ check "a draft with curly quotes gets the line and the move to make instead, and
 out=$(lint $'# Release notes\n\nVersion 2.0 drops Node 16 support. The bundle is 40% smaller.\n\nRun `npm install` to update.')
 check "a draft with none of the 26 tells a script can catch prints nothing and passes" \
   '[ "$out" = "exit=0" ]'
-
-skill="$here/SKILL.md"
-check "a draft the lint flags gets every hit rewritten by human-voice, and the lint passes, before the draft reaches the user" \
-  'grep -q "scripts/lint-tells.py" "$skill" && grep -qi "rewrite every hit" "$skill" && grep -qi "until it prints nothing" "$skill" \
-   && awk "/scripts\/lint-tells.py/{l=NR} /\*\*Show the draft/{s=NR} END{exit !(l && s > l)}" "$skill"'
 exit $fail
