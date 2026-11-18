@@ -6,7 +6,7 @@
 # section, the wrong order, a mix of the two shapes, a category off the list,
 # a code name or a word past the limit fails it.
 set -u
-script="$(dirname "$0")/../plugins/vicky-skills/skills/engineering/decision-record/scripts/check-adr.sh"
+script="$(dirname "$0")/../plugins/vicky-skills/skills/planning/decision-record/scripts/check-adr.sh"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 what='# ADR-0007: Sound occlusion uses the physics raycasts'
 cat='Category: Architecture.'

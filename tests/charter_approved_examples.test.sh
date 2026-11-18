@@ -41,7 +41,7 @@ printf -- '---\nname: stray\n---\n# Stray\n\nCharter: C1, C99.\n' > "$fx/enginee
 check "E2 a skill naming C99, which the charter lacks, fails naming the skill and C99" \
   'charter_check "$fx" | grep -q "stray/SKILL.md names C99" && [ "$(charter_check "$fx" | wc -l)" -eq 1 ]'
 
-fam="$root/productivity/familiar/SKILL.md"
+fam="$root/commands/familiar/SKILL.md"
 # Given the familiar sees a snag in a watched session
 # When it logs the snag on that session's note
 # Then the line names the charter line the snag broke, or says no line fits
@@ -54,7 +54,7 @@ check "E3 the familiar's snag line names the charter line it broke, or says no l
 check "E4 closing a list with a snag no charter line fits drafts a new charter line for approval" \
   'step "$fam" 6 | grep -q "no line fits" && step "$fam" 6 | grep -q "draft a new charter line" && step "$fam" 6 | grep -q "red-pen"'
 
-ex="$root/engineering/examples/SKILL.md"
+ex="$root/planning/examples/SKILL.md"
 # Given drafts for a feature with a table of entries, such as one icon per condition
 # When the agent checks the drafts
 # Then it drafts one more example for each entry or rule whose change alone would turn no drafted example red
@@ -73,7 +73,7 @@ check "E6 drafts with more than six rules go to the page with a proposed split" 
 check "E7 examples under one rule that differ in reason become a hidden rule of their own" \
   'step "$ex" 2 | grep -q "for different reasons" && step "$ex" 2 | grep -q "a rule of its own"'
 
-do="$root/engineering/do/SKILL.md"
+do="$root/building/do/SKILL.md"
 receipts=$(awk '/^## Receipts/{on=1; next} /^## /{on=0} on' "$do")
 # Given do is about to run an example's test, red or green
 # When it runs the test

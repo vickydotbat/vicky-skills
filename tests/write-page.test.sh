@@ -4,7 +4,7 @@
 set -u
 export VISUAL=true EDITOR=true BROWSER=true
 root="$(cd "$(dirname "$0")/.." && pwd)"
-scripts="$root/plugins/vicky-skills/skills/productivity/interactive-page/scripts"
+scripts="$root/plugins/vicky-skills/skills/writing/interactive-page/scripts"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 # The writer opens nothing; a fake desktop still stands first on PATH, as for every page test.
 mkdir -p "$dir/desktop"; printf '#!/usr/bin/env bash\necho "BROWSER=true"\n' >"$dir/desktop/systemctl"; chmod +x "$dir/desktop/systemctl"

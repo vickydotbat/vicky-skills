@@ -3,7 +3,7 @@
 # subagent. It reads the do skill, since the agent follows its text.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
-skill="$root/plugins/vicky-skills/skills/engineering/do/SKILL.md"
+skill="$root/plugins/vicky-skills/skills/building/do/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 

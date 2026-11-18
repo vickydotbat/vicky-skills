@@ -3,7 +3,7 @@
 # A stand-in model (FAMILIAR_REPLAY_MODEL) answers in place of the familiar,
 # so the check runs no real model.
 set -u
-replay="$(dirname "$0")/../plugins/vicky-skills/skills/productivity/familiar/scripts/familiar-replay.sh"
+replay="$(dirname "$0")/../plugins/vicky-skills/skills/commands/familiar/scripts/familiar-replay.sh"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT

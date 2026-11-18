@@ -3,16 +3,16 @@
 # approved 2026-11-01. The behaviour is the agent's, so each check reads the
 # instruction that drives it.
 set -u
-skills="$(dirname "$0")/../plugins/vicky-skills/skills/engineering"
+skills="$(dirname "$0")/../plugins/vicky-skills/skills"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
-status_rule="$skills/ship-it/SKILL.md"
+status_rule="$skills/shipping/ship-it/SKILL.md"
 
 # Given a build with a draft pull request open
 # When do, make-it-so, gamma-shift or warp stops, for any reason
 # Then the pull request body has a Status section with a Done line, a Next line and a Waits on line, true at that moment
 check "a stop leaves the pull request saying where it stands" \
-  '(for s in do make-it-so gamma-shift warp; do grep -qF "Write the Status section at every stop" "$skills/$s/SKILL.md" || exit 1; done) && grep -q "^## Status" "$status_rule" && grep -q "\`Done:\`" "$status_rule" && grep -q "\`Next:\`" "$status_rule" && grep -q "\`Waits on:\`" "$status_rule"'
+  '(for s in do make-it-so gamma-shift warp; do grep -qF "Write the Status section at every stop" "$skills"/*/$s/SKILL.md || exit 1; done) && grep -q "^## Status" "$status_rule" && grep -q "\`Done:\`" "$status_rule" && grep -q "\`Next:\`" "$status_rule" && grep -q "\`Waits on:\`" "$status_rule"'
 
 # Given a stop where nothing waits on anyone
 # When the skill writes the Status section
@@ -24,17 +24,17 @@ check "a stop with nothing waiting says so" \
 # When do begins work on it
 # Then the ticket shows the started state, In Progress, before the first commit lands
 check "work beginning moves the ticket to started" \
-  'grep -q "Move the ticket to the started state (In Progress) before the first commit" "$skills/do/SKILL.md"'
+  'grep -q "Move the ticket to the started state (In Progress) before the first commit" "$skills/building/do/SKILL.md"'
 
 # Given a ticket in progress whose slice the build parks
 # When do, gamma-shift or warp parks it
 # Then the ticket is parked with the tracker's Park a ticket action, with a Waits on line naming what it waits on
 check "a parked slice moves its ticket back" \
-  '(for s in do gamma-shift warp; do grep -q "park its ticket with the tracker.s \"Park a ticket\" action, with a \`Waits on:\` line" "$skills/$s/SKILL.md" || exit 1; done)'
+  '(for s in do gamma-shift warp; do grep -q "park its ticket with the tracker.s \"Park a ticket\" action, with a \`Waits on:\` line" "$skills"/*/$s/SKILL.md || exit 1; done)'
 
 # Given a ticket the branch names that still shows not-started while its pull request is open
 # When make-it-so settles the tickets
 # Then the ticket shows In Progress, and the report names the move
 check "settling fixes a state that lags" \
-  'grep -q "A ticket whose state lags the work moves now" "$skills/make-it-so/SETTLE.md" && grep -q "the report names each move" "$skills/make-it-so/SETTLE.md"'
+  'grep -q "A ticket whose state lags the work moves now" "$skills/shipping/make-it-so/SETTLE.md" && grep -q "the report names each move" "$skills/shipping/make-it-so/SETTLE.md"'
 exit $fail

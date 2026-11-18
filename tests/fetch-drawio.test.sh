@@ -3,7 +3,7 @@
 # unpacks it once. A fixture archive, served from a file URL, stands in for
 # the real release, so the test needs no network.
 set -u
-fetch="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/productivity/drawing-board/scripts/fetch-drawio.sh"
+fetch="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/planning/drawing-board/scripts/fetch-drawio.sh"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 python3 -I -c 'import sys, zipfile
 with zipfile.ZipFile(sys.argv[1], "w") as z: z.writestr("index.html", "<title>draw.io</title>")' "$dir/app.war"

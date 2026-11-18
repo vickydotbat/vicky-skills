@@ -4,9 +4,9 @@
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
 plugin="$root/plugins/vicky-skills"
-conn="$plugin/skills/productivity/conn/SKILL.md"
-todo="$plugin/skills/productivity/standing-orders/scripts/todo.sh"
-finder="$plugin/skills/productivity/sup/scripts/find-handoff.sh"
+conn="$plugin/skills/commands/conn/SKILL.md"
+todo="$plugin/skills/housekeeping/standing-orders/scripts/todo.sh"
+finder="$plugin/skills/housekeeping/sup/scripts/find-handoff.sh"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }

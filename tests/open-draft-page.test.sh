@@ -6,7 +6,7 @@ set -u
 # No test may reach the user's own editor or browser.
 export VISUAL=true EDITOR=true BROWSER=true
 root="$(cd "$(dirname "$0")/.." && pwd)"
-open="$root/plugins/vicky-skills/skills/productivity/interactive-page/scripts/open-draft.sh"
+open="$root/plugins/vicky-skills/skills/writing/interactive-page/scripts/open-draft.sh"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 git init -q "$dir/repo"
 # page.py reads the desktop's environment through systemctl: this one names the fake browser.

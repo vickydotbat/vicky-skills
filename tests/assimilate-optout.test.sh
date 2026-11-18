@@ -11,8 +11,8 @@
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
 skills="$root/plugins/vicky-skills/skills"
-sk="$skills/engineering/assimilate/SKILL.md"
-review="$skills/engineering/review/SKILL.md"
+sk="$skills/shipping/assimilate/SKILL.md"
+review="$skills/shipping/review/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 has() { grep -qF -- "$2" "$1"; }
@@ -21,7 +21,7 @@ check "assimilate drops the Borg line under Claim voice: plain" \
   'grep -F -- "\`Claim voice: plain\`" "$sk" | grep -qF "leave this line out"'
 check "review drops the Cause section under Review cause: off" \
   'grep -F -- "\`Review cause: off\`" "$review" | grep -qF "skip it and leave the Cause section out of the report" && has "$review" "Under \`Review cause: off\`, the report holds neither"'
-for t in "$skills"/engineering/first-contact/issue-tracker-*.md "$root/docs/agents/issue-tracker.md"; do
+for t in "$skills"/commands/first-contact/issue-tracker-*.md "$root/docs/agents/issue-tracker.md"; do
   check "$(basename "$t") writes both opt-out lines" \
     'grep -qx "Claim voice: Borg" "$t" && grep -qx "Review cause: on" "$t"'
 done

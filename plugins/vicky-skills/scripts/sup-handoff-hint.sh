@@ -19,7 +19,7 @@ mark="${TMPDIR:-/tmp}/sup-handoff-$(jq -r '.session_id // "none"' <<<"$input")"
 touch "$mark"
 cwd=$(jq -r '.cwd // ""' <<<"$input")
 root=${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "$0")/.." && pwd)}
-out=$(cd "${cwd:-.}" 2>/dev/null && timeout "${SUP_HANDOFF_LIMIT:-50}" bash "$root/skills/productivity/sup/scripts/find-handoff.sh" 2>&1)
+out=$(cd "${cwd:-.}" 2>/dev/null && timeout "${SUP_HANDOFF_LIMIT:-50}" bash "$root/skills/housekeeping/sup/scripts/find-handoff.sh" 2>&1)
 [ $? = 124 ] && out+=$'\n'"not read: the rest, the finder hit its ${SUP_HANDOFF_LIMIT:-50}-second limit: run it by hand."
 [ -n "$out" ] || out="find-handoff.sh printed nothing: run it by hand."
 jq -nc --arg e "$event" --arg h "sup started, so find-handoff.sh ran (sup step 1). Its output:

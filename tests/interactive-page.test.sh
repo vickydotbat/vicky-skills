@@ -5,7 +5,7 @@
 set -u
 # No test may reach the user's own editor or browser.
 export VISUAL=true EDITOR=true BROWSER=true
-page="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/productivity/interactive-page/scripts/page.py"
+page="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/writing/interactive-page/scripts/page.py"
 scratch=$(mktemp -d)
 # page.py hands the browser the desktop session's environment, read through
 # systemctl. This desktop names the fake browser, so a mutant that drops

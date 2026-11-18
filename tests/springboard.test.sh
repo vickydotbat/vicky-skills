@@ -62,7 +62,7 @@ reset; check "bad input exits 0 and rebuilds nothing" 'echo "not json" | bash "$
 reset; pr 7 false SUCCESS "" | jq -s . > "$GH_PRS"; start >/dev/null; printf 'Rename the flag\n' >> "$fx/repo/.todo"
 out=$(echo '{}' | bash "$reminder")
 check "the todo reminder lists your lines and none of the block" 'grep -q "Rename the flag" <<<"$out" && ! grep -q "springboard\|N1" <<<"$out"'
-le="$root/plugins/vicky-skills/skills/engineering/make-it-so/SETTLE.md"
+le="$root/plugins/vicky-skills/skills/shipping/make-it-so/SETTLE.md"
 check "settling puts small waiting work in .todo through standing-orders" 'grep -q "goes in \`.todo\` with \`standing-orders\`" "$le" && grep -q "Work with real impact always gets a ticket or a star" "$le"'
 check "the reminder has the agent do each item whose wait is over, unasked" 'grep -q "whose wait is over now, without asking" <<<"$out"'
 L81=$(printf 'x%.0s' $(seq 81)); L80=$(printf 'y%.0s' $(seq 80))
@@ -85,9 +85,9 @@ for v in false 0; do
 done
 reset; check "standing_orders=true keeps the block" 'CLAUDE_PLUGIN_OPTION_STANDING_ORDERS=true start | grep -q "next: N1"'
 check "the setting is on by default" '[ "$(jq ".userConfig.standing_orders.default" "$root/plugins/vicky-skills/.claude-plugin/plugin.json")" = true ]'
-so="$root/plugins/vicky-skills/skills/productivity/standing-orders/SKILL.md"
+so="$root/plugins/vicky-skills/skills/housekeeping/standing-orders/SKILL.md"
 check "standing-orders keeps no lines when the setting is off" 'grep -q "standing orders are off, keep no \`.todo\` lines" "$so"'
-gs="$root/plugins/vicky-skills/skills/engineering/gamma-shift/SKILL.md"
+gs="$root/plugins/vicky-skills/skills/housekeeping/gamma-shift/SKILL.md"
 check "standing-orders caps a line at one sentence of 80 characters, pointing at its star" 'grep -q "one sentence of at most 80 characters, and it points at the star, chart or ticket" "$so" && grep -q "A line the user wrote may run longer" "$so"'
 check "standing-orders jots unasked on todo, for later, or a park" 'grep -q "\"todo\", \"add to todo\" or \"for later\", or you would report something as parked" "$so" && grep -q "Ask first only when it is truly unclear" "$so" && grep -q "Never write \"parked:\"" "$so"'
 check "a line grows into a star and goes when its work closes" 'grep -q "replace the line with one that points at it" "$so" && grep -q "Delete a line once its work is done or what it points at closes" "$so"'

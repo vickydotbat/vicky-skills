@@ -6,9 +6,9 @@
 set -u
 # No test may reach the user's own editor or browser.
 export VISUAL=true EDITOR=true BROWSER=true
-root="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/productivity"
-board="$root/drawing-board/scripts/board.py"
-pagepy="$root/interactive-page/scripts/page.py"
+root="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills"
+board="$root/planning/drawing-board/scripts/board.py"
+pagepy="$root/writing/interactive-page/scripts/page.py"
 dir=$(mktemp -d)
 # page.py reads the desktop's environment through systemctl: this one names the fake browser.
 mkdir -p "$dir/desktop"

@@ -2,8 +2,8 @@
 # Warp asks its questions in pre-flight and ships the whole course in one pull request.
 set -u
 root="$(dirname "$0")/../plugins/vicky-skills"
-warp="$root/skills/engineering/warp/SKILL.md"
-chart="$root/skills/engineering/lay-course/STAR-CHART.md"
+warp="$root/skills/building/warp/SKILL.md"
+chart="$root/skills/commands/lay-course/STAR-CHART.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 . "$(dirname "$0")/lib/skill-step.sh"; step() { skill_step "$warp" "$1"; }
@@ -17,9 +17,9 @@ check "pre-flight runs standards-reviewer on the red tests before committing the
 check "a warp files no follow-up ticket: no seam, and the asteroid belt's answers are built in the same pull request before the final review" \
   '! grep -q "Carve a seam" "$warp" && grep -q "files no follow-up ticket" "$warp" && section "Mid-flight questions" | grep -q "build each one on the same branch and pull request, with its approved tests red first, then go on to step 6"'
 check "inside a warp, do builds a slice parked on the user's decision in the pull request instead of filing a ticket" \
-  'grep -q "\*\*Inside a \`warp\`\*\*, a slice parked on the user.s decision" "$root/skills/engineering/do/SKILL.md"'
+  'grep -q "\*\*Inside a \`warp\`\*\*, a slice parked on the user.s decision" "$root/skills/building/do/SKILL.md"'
 check "settling a warp's effort leaves no ticket waiting on the user's decision" \
-  'grep -q "A \`warp\`.s effort has no Waits on the user.s decision" "$root/skills/engineering/make-it-so/SETTLE.md"'
+  'grep -q "A \`warp\`.s effort has no Waits on the user.s decision" "$root/skills/shipping/make-it-so/SETTLE.md"'
 check "an asteroid belt's answers are built in the same pull request" \
   'grep -E "^\| \*\*asteroid belt\*\* \|" "$chart" | grep -q "builds the answers in the same pull request"'
 check "every chart's Unknown unknowns box names fallout and examples that can't fail, in the rule and the template" \

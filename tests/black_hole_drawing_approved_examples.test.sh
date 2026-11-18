@@ -2,7 +2,7 @@
 # approved-spec: the examples approved on the star "The chart drawing shows
 # black holes". Each check is named after its example.
 set -u
-here="$(dirname "$0")/../plugins/vicky-skills/skills/engineering/lay-course"
+here="$(dirname "$0")/../plugins/vicky-skills/skills/commands/lay-course"
 script="$here/scripts/draw-chart.py"
 scratch=$(mktemp -d); trap 'rm -rf "$scratch"' EXIT
 fail=0

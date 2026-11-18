@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # over-to-you's checklist lint: an item a command could prove never reaches a person.
 set -u
-lint="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/productivity/over-to-you/scripts/lint-checklist.py"
+lint="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/building/over-to-you/scripts/lint-checklist.py"
 dir="$(mktemp -d)"; trap 'rm -rf "$dir"' EXIT
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }

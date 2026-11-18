@@ -6,7 +6,7 @@
 # carries the behaviour proof.
 set -u
 p="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills"
-s="$p/skills/engineering/examples/SKILL.md"
+s="$p/skills/planning/examples/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 step5() { awk '/^5\. /{on=1} /^6\. /{on=0} on' "$s"; }

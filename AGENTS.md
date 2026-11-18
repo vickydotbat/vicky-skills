@@ -6,7 +6,7 @@ Develop a skill or hook in this order: Add a skill or Change a skill (or Add or 
 
 ## Add a skill
 
-1. Create `plugins/vicky-skills/skills/<engineering|productivity>/<name>/SKILL.md`. Done when its `name:` equals the folder name.
+1. Create `plugins/vicky-skills/skills/<group>/<name>/SKILL.md`, where `<group>` is the README section the skill sits in: `commands`, `planning`, `building`, `shipping`, `writing` or `housekeeping`. Done when its `name:` equals the folder name.
 2. List `./skills/<group>/<name>` in `skills` in `plugins/vicky-skills/.claude-plugin/plugin.json`, and add a README table row that starts `**\`<name>\`**`. Done when `tests/plugin-layout.test.sh` passes.
 3. Write the skill with `robot-voice`. The description begins with the trigger and holds "Use when", "Use whenever" or "Use before". A skill only a person starts sets `disable-model-invocation: true`, and its README row says "When you type it". Done when `tests/skill-descriptions.test.sh` passes.
 4. Give the file a `# ` title, and end every numbered step under `## Steps` in "Done when". Done when `tests/skill-steps.test.sh` passes.

@@ -2,7 +2,7 @@
 # approved-spec: the example approved for warp during the Todo list warp:
 # every approval is taken up front. Reads the instruction that drives the agent.
 set -u
-warp="$(dirname "$0")/../plugins/vicky-skills/skills/engineering/warp/SKILL.md"
+warp="$(dirname "$0")/../plugins/vicky-skills/skills/building/warp/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 . "$(dirname "$0")/lib/skill-step.sh"; step() { skill_step "$warp" "$1"; }

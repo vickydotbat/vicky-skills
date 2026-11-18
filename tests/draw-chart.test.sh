@@ -6,7 +6,7 @@
 # counts show in its label, a missing count as 0, and an unknown keeps it off
 # the frontier.
 set -u
-script="$(dirname "$0")/../plugins/vicky-skills/skills/engineering/lay-course/scripts/draw-chart.py"
+script="$(dirname "$0")/../plugins/vicky-skills/skills/commands/lay-course/scripts/draw-chart.py"
 tickets=$(mktemp); trap 'rm -f "$tickets"' EXIT
 cat > "$tickets" <<'JSON'
 [{"key": "K-1", "kind": "anomaly", "title": "Ask \"why\" [now]", "open": true},

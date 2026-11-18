@@ -5,8 +5,8 @@
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
 plugin="$root/plugins/vicky-skills"
-sk="$plugin/skills/engineering/assimilate/SKILL.md"
-cause="$plugin/skills/engineering/review/CAUSE.md"
+sk="$plugin/skills/shipping/assimilate/SKILL.md"
+cause="$plugin/skills/shipping/review/CAUSE.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 has() { grep -qF -- "$2" "$1"; }
@@ -18,7 +18,7 @@ borg_first() { awk '/Open the verdict comment with/{o=NR} /Then a plain paragrap
 # Then a comment on that pull request answers four questions: do the changes hold, is the principle behind them met, do they fix a cause or a symptom, and is there a better way
 # And it lists what stays from the branch
 check "E1 the verdict answers four questions about any change, and lists what stays" \
-  'has "$sk" "name: assimilate" && grep -q "\"./skills/engineering/assimilate\"" "$plugin/.claude-plugin/plugin.json" && has "$sk" "any change: a fix, a feature or a refactor" && has "$sk" "**Do the changes hold?**" && has "$sk" "**List what stays**" && has "$sk" "Post the verdict" && has "$cause" "**Is the principle met?**" && has "$cause" "**Cause or symptom?**" && has "$cause" "**Is there a better way?**"'
+  'has "$sk" "name: assimilate" && grep -q "\"./skills/shipping/assimilate\"" "$plugin/.claude-plugin/plugin.json" && has "$sk" "any change: a fix, a feature or a refactor" && has "$sk" "**Do the changes hold?**" && has "$sk" "**List what stays**" && has "$sk" "Post the verdict" && has "$cause" "**Is the principle met?**" && has "$cause" "**Cause or symptom?**" && has "$cause" "**Is there a better way?**"'
 
 # Given a change that passes locally but breaks a CI job the diff never touches
 # When an agent assimilates it

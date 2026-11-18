@@ -5,7 +5,7 @@
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills"
 hint="$root/scripts/lesson-hint.sh"
-s="$root/skills/engineering/engrave/SKILL.md"
+s="$root/skills/shipping/engrave/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 say() { jq -nc --arg p "$2" '{hook_event_name:"UserPromptSubmit",prompt:$p}' | CLAUDE_PLUGIN_OPTION_LESSON_HINT=$1 "$hint" 2>/dev/null; }
@@ -32,11 +32,11 @@ check "given the agent works in a project's repo, I can push to the plugin's rep
 check "given the lesson is about the repo the agent works in, when it engraves the lesson, then the law lands in that repo, in a test, a standard or its agent docs, on the current effort's branch" \
   'grep -q "a test, a standard or its agent docs, on the current effort'"'"'s branch" "$s"'
 
-le="$root/skills/engineering/make-it-so/SETTLE.md"
+le="$root/skills/shipping/make-it-so/SETTLE.md"
 check "given an effort hit a snag: a red check, a crash, a retry, or a correction from me, when the agent calls the effort done, then its report names each snag with the law built for it, or says why it needs none" \
   'grep -q "a red check, a crash, a retry, or a correction from the user" "$le" && grep -q "names each snag with the law built for it, or says why it needs none" "$le" && grep -q "engrave" "$le"'
 
-cl="$root/skills/engineering/captains-log/SKILL.md"
+cl="$root/skills/commands/captains-log/SKILL.md"
 check "given a captains-log retro reported its findings, when it ends, then every finding is engraved, or names what it waits on" \
   'grep -q "every finding is engraved, or names what it waits on" "$cl"'
 exit $fail

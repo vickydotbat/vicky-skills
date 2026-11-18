@@ -3,7 +3,7 @@
 # session: an over-to-you checklist covers the whole branch, minus recorded
 # sign-offs. Reads the instruction that drives the agent.
 set -u
-s="$(dirname "$0")/../plugins/vicky-skills/skills/productivity/over-to-you/SKILL.md"
+s="$(dirname "$0")/../plugins/vicky-skills/skills/building/over-to-you/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 . "$(dirname "$0")/lib/skill-step.sh"; step() { skill_step "$s" "$1"; }

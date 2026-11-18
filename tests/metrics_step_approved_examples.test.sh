@@ -3,11 +3,11 @@
 # repo whose testing standards have a Metrics: line. Each check is named
 # after its example and reads the instructions that drive the agent.
 set -u
-p="$(dirname "$0")/../plugins/vicky-skills/skills/engineering"
+p="$(dirname "$0")/../plugins/vicky-skills/skills"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
-step4=$(grep '^4\. ' "$p/do/SKILL.md")
-q10=$(grep 'Q10' "$p/make-it-so/SKILL.md")
+step4=$(grep '^4\. ' "$p/building/do/SKILL.md")
+q10=$(grep 'Q10' "$p/shipping/make-it-so/SKILL.md")
 
 # Given a repo with a Metrics: line, When do has mutated the change,
 # Then it reports each rule's metrics, or lists them as owed, and never gates on them
@@ -22,5 +22,5 @@ check "make-it-so checks presence, not results" \
 # Given a repo without metrics, When first-contact writes its testing standards,
 # Then the Metrics: line says none, and neither skill asks for metrics
 check "a repo opts out with Metrics: none" \
-  'grep -q "^Metrics: none" "$p/first-contact/testing-standards.md" && grep -q "isn'"'"'t \`none\`" <<<"$step4" && grep -q "isn'"'"'t \`none\`" <<<"$q10"'
+  'grep -q "^Metrics: none" "$p/commands/first-contact/testing-standards.md" && grep -q "isn'"'"'t \`none\`" <<<"$step4" && grep -q "isn'"'"'t \`none\`" <<<"$q10"'
 exit $fail

@@ -6,9 +6,9 @@ set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
 hook="$root/plugins/vicky-skills/scripts/sup-handoff-hint.sh"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
-mkdir -p "$dir/plugin/scripts" "$dir/plugin/skills/productivity/sup/scripts" "$dir/work"
+mkdir -p "$dir/plugin/scripts" "$dir/plugin/skills/housekeeping/sup/scripts" "$dir/work"
 cp "$hook" "$dir/plugin/scripts/"
-printf '#!/usr/bin/env bash\necho "found: in $(pwd)"\n' > "$dir/plugin/skills/productivity/sup/scripts/find-handoff.sh"
+printf '#!/usr/bin/env bash\necho "found: in $(pwd)"\n' > "$dir/plugin/skills/housekeeping/sup/scripts/find-handoff.sh"
 fail=0
 run() { TMPDIR="$(mktemp -d -p "$dir")" CLAUDE_PLUGIN_ROOT="${proot-$dir/plugin}" CLAUDE_PLUGIN_OPTION_SUP_HANDOFF_HINT="${opt-}" bash "$dir/plugin/scripts/sup-handoff-hint.sh" <<<"$1" 2>&1; }
 has() { if grep -qF -- "$2" <<<"$3"; then echo "ok   $1"; else echo "FAIL $1: got '$3'"; fail=1; fi; }
@@ -38,11 +38,11 @@ has "another session still runs it" "found: in" "$(once "$(s sup | jq -c '.sessi
 touch -d '11 minutes ago' "$m/sup-handoff-a"
 has "a sup ten minutes later runs it again" "found: in" "$(once "$(s sup | jq -c '.session_id="a"')")"
 proot=""; has "with no plugin root it finds the finder beside itself" "found: in" "$(run "$(p '/sup')")"; unset proot
-printf '#!/usr/bin/env bash\necho partial; sleep 5\n' > "$dir/plugin/skills/productivity/sup/scripts/find-handoff.sh"
+printf '#!/usr/bin/env bash\necho partial; sleep 5\n' > "$dir/plugin/skills/housekeeping/sup/scripts/find-handoff.sh"
 out=$(SUP_HANDOFF_LIMIT=1 run "$(p '/sup')")
 has "a finder cut off at its limit keeps what it printed" "partial" "$out"
 has "a finder cut off at its limit says so" "not read: the rest, the finder hit its 1-second limit" "$out"
-printf '#!/usr/bin/env bash\n' > "$dir/plugin/skills/productivity/sup/scripts/find-handoff.sh"
+printf '#!/usr/bin/env bash\n' > "$dir/plugin/skills/housekeeping/sup/scripts/find-handoff.sh"
 has "a silent finder says to run it by hand" "printed nothing: run it by hand" "$(run "$(p '/sup')")"
 mkdir -p "$dir/nobin"; for t in bash cat sed grep mktemp; do ln -s "$(command -v "$t")" "$dir/nobin/$t"; done
 none "without jq it stays silent" "$(PATH="$dir/nobin" run "$(p '/sup')")"

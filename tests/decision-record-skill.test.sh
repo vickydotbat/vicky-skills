@@ -3,7 +3,7 @@
 # migration, to check a repo-template record with --template, and to point at
 # a record by number instead of copying its rule into another file.
 set -u
-d="$(dirname "$0")/../plugins/vicky-skills/skills/engineering/decision-record"
+d="$(dirname "$0")/../plugins/vicky-skills/skills/planning/decision-record"
 fail=0
 has() { grep -qF -- "$3" "$d/$2" || { echo "FAIL $1: $2 lacks: $3"; fail=1; }; }
 lacks() { grep -qF -- "$3" "$d/$2" && { echo "FAIL $1: $2 still holds: $3"; fail=1; }; }

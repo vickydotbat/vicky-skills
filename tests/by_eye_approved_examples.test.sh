@@ -4,7 +4,7 @@
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
 plugin="$root/plugins/vicky-skills"
-skill="$plugin/skills/engineering/by-eye/SKILL.md"
+skill="$plugin/skills/building/by-eye/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 has() { grep -qF -- "$2" "$1" 2>/dev/null; }
@@ -43,11 +43,11 @@ check "the dev site stops after" \
 # When a build reaches it
 # Then it comes to you as an over-to-you item, not as a by-eye check
 check "taste stays with you" \
-  'has "$skill" "it goes to the user as an \`over-to-you\` item" && has "$plugin/skills/productivity/over-to-you/SKILL.md" "\`by-eye\`"'
+  'has "$skill" "it goes to the user as an \`over-to-you\` item" && has "$plugin/skills/building/over-to-you/SKILL.md" "\`by-eye\`"'
 
 # Given a build whose approved examples include something you see on a page
 # When do turns that example green
 # Then the agent runs by-eye on it before the next example
 check "where builds use it" \
-  'has "$plugin/skills/engineering/do/SKILL.md" "run \`by-eye\` on it before the next example"'
+  'has "$plugin/skills/building/do/SKILL.md" "run \`by-eye\` on it before the next example"'
 exit $fail

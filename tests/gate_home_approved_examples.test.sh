@@ -12,7 +12,7 @@ check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 # When it asks
 # Then it asks in the one gate form, a first line of "🚪 Waiting on you: <the one thing>" with a watch behind it, written down in one place that the skill points to
 ok=1
-for s in engineering/do engineering/warp engineering/gamma-shift engineering/make-it-so productivity/red-pen; do
+for s in building/do building/warp housekeeping/gamma-shift shipping/make-it-so writing/red-pen; do
   grep -q '\.\./\.\./GATES\.md' "$root/skills/$s/SKILL.md" || { echo "     $s does not point at GATES.md"; ok=0; }
 done
 check "every wait on you is a gate" '[ $ok = 1 ] && grep -qF "🚪 Waiting on you: <the one thing>" "$gates" && grep -q "watch.sh" "$gates" && [ "$(grep -rlF "🚪 Waiting on you: <the one thing>" "$root/skills" | wc -l)" = 1 ]'

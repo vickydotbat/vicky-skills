@@ -5,7 +5,7 @@
 # it lives in check-adr.test.sh as a plain regression test.
 set -u
 here="$(dirname "$0")"
-skill="$here/../plugins/vicky-skills/skills/engineering/decision-record"
+skill="$here/../plugins/vicky-skills/skills/planning/decision-record"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 . "$here/lib/skill-step.sh"

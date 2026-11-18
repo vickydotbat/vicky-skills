@@ -4,8 +4,8 @@
 # checks hold the words the agent reads.
 set -u
 skills="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills"
-review="$skills/engineering/review/SKILL.md"
-familiar="$skills/productivity/familiar/SKILL.md"
+review="$skills/shipping/review/SKILL.md"
+familiar="$skills/commands/familiar/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 

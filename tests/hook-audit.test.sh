@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # hook-audit.py counts a hook's refusals and sorts what the agent did next.
 set -u
-audit="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/engineering/captains-log/scripts/hook-audit.py"
+audit="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/commands/captains-log/scripts/hook-audit.py"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 fail=0
 check() { if [ "$2" = "$3" ]; then echo "ok   $1"; else echo "FAIL $1: got '$3', want '$2'"; fail=1; fi; }

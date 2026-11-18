@@ -6,7 +6,7 @@
 # Then that checkout's main matches its remote, and a checkout with local
 # work stays as it was and is named in the report
 set -u
-f="$(dirname "$0")/../plugins/vicky-skills/skills/engineering/marie-kondo/SKILL.md"
+f="$(dirname "$0")/../plugins/vicky-skills/skills/housekeeping/marie-kondo/SKILL.md"
 step6=$(grep '^6\. \*\*Fast-forward the default branch' "$f")
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }

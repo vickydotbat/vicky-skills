@@ -4,7 +4,7 @@
 # the agent.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills"
-engrave="$root/engineering/engrave/SKILL.md"; sup="$root/productivity/sup/SKILL.md"
+engrave="$root/shipping/engrave/SKILL.md"; sup="$root/housekeeping/sup/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 check "given the agent builds the rule for a lesson, when it commits the rule, then the commit message ends with an Engraved line naming the snag" \

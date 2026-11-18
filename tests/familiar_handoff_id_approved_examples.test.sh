@@ -2,7 +2,7 @@
 # Approved examples for familiar fix 10, ticked 2026-11-06: a handoff names a
 # session by its id, and familiar-sessions.sh resolves the id.
 set -u
-sessions="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/productivity/familiar/scripts/familiar-sessions.sh"
+sessions="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/commands/familiar/scripts/familiar-sessions.sh"
 fx=$(mktemp -d); trap 'rm -rf "$fx"' EXIT
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }

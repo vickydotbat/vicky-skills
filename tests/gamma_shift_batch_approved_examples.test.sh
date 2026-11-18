@@ -4,7 +4,7 @@
 # is what the agent runs, so each check reads the step that sets the behaviour.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills"
-skill="$root/skills/engineering/gamma-shift/SKILL.md"
+skill="$root/skills/housekeeping/gamma-shift/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 . "$(dirname "$0")/lib/skill-step.sh"; step() { skill_step "$skill" "$1"; }

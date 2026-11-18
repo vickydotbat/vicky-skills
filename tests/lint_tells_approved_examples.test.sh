@@ -2,7 +2,7 @@
 # approved-spec: the examples approved on the star "Lint blocks mechanical
 # tells". Each check is named after its example.
 set -u
-here="$(dirname "$0")/../plugins/vicky-skills/skills/productivity/human-voice"
+here="$(dirname "$0")/../plugins/vicky-skills/skills/writing/human-voice"
 lint="$here/scripts/lint-tells.py"
 scratch=$(mktemp -d); trap 'rm -rf "$scratch"' EXIT
 fail=0

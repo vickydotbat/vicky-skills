@@ -5,7 +5,7 @@
 # eval case machine-spirit/no-local-runner carries the behaviour proof.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills"
-s="$root/skills/engineering/machine-spirit/SKILL.md"
+s="$root/skills/building/machine-spirit/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 step5() { awk '/^5\. /{on=1} /^6\. /{on=0} on' "$s"; }

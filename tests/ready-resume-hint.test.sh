@@ -53,7 +53,7 @@ unset opt
 mkdir -p "$dir/nobin"; for t in bash cat sed grep tail; do ln -s "$(command -v "$t")" "$dir/nobin/$t"; done
 none "without jq it stays silent" "$(PATH="$dir/nobin" run "$(p "$(b 'gh pr ready 1')")")"
 
-step=$(sed -n '/^5\. /,/^6\. /p' "$root/plugins/vicky-skills/skills/engineering/make-it-so/SKILL.md")
+step=$(sed -n '/^5\. /,/^6\. /p' "$root/plugins/vicky-skills/skills/shipping/make-it-so/SKILL.md")
 has "make-it-so step 5 watches for the user's ready mark" "isDraft" "$step"
 has "make-it-so step 5 names this hook" "ready-resume-hint" "$step"
 exit $fail

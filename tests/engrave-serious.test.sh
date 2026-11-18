@@ -3,7 +3,7 @@
 # happens, instead of waiting for the user or the settling batch.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
-f="$root/plugins/vicky-skills/skills/engineering/engrave/SKILL.md"
+f="$root/plugins/vicky-skills/skills/shipping/engrave/SKILL.md"
 fail=0
 has() { if grep -qE -- "$2" <<<"$3"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 desc=$(sed -n 's/^description: //p' "$f")

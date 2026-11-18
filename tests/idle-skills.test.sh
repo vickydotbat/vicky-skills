@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # idle-skills.py's edge cases, beside its approved examples.
 set -u
-script="$(dirname "$0")/../plugins/vicky-skills/skills/engineering/captains-log/scripts/idle-skills.py"
+script="$(dirname "$0")/../plugins/vicky-skills/skills/commands/captains-log/scripts/idle-skills.py"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 mkdir -p "$dir/skills/sup" "$dir/skills/warp"; touch "$dir/skills/sup/SKILL.md" "$dir/skills/warp/SKILL.md"
 fail=0

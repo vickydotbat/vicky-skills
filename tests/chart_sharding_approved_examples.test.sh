@@ -4,12 +4,12 @@
 # each check reads the plugin files that drive it.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
-skills="$root/plugins/vicky-skills/skills/engineering"
-brief="$skills/mission-brief/SKILL.md"
-chart="$skills/lay-course/STAR-CHART.md"
-warp="$skills/warp/SKILL.md"
-course="$skills/lay-course/SKILL.md"
-mis="$skills/make-it-so/SKILL.md"
+skills="$root/plugins/vicky-skills/skills"
+brief="$skills/planning/mission-brief/SKILL.md"
+chart="$skills/commands/lay-course/STAR-CHART.md"
+warp="$skills/building/warp/SKILL.md"
+course="$skills/commands/lay-course/SKILL.md"
+mis="$skills/shipping/make-it-so/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 # The Sharding section alone, so a phrase elsewhere in the file can't pass a check.

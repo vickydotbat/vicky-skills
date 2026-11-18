@@ -5,7 +5,7 @@
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
 hook="$root/plugins/vicky-skills/scripts/todo-reminder.sh"
-fc="$root/plugins/vicky-skills/skills/engineering/first-contact"
+fc="$root/plugins/vicky-skills/skills/commands/first-contact"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }

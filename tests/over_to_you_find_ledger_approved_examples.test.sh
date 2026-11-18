@@ -4,7 +4,7 @@
 # agent.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
-s="$root/plugins/vicky-skills/skills/productivity/over-to-you/SKILL.md"
+s="$root/plugins/vicky-skills/skills/building/over-to-you/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 ledger=$(sed -n '/^## Keep the ledger/,/^## /p' "$s")

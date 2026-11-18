@@ -3,7 +3,7 @@
 # Each check is named after its example. The behaviour is the agent's, so each
 # check reads the instruction that drives it.
 set -u
-skill="$(dirname "$0")/../plugins/vicky-skills/skills/productivity/red-pen/SKILL.md"
+skill="$(dirname "$0")/../plugins/vicky-skills/skills/writing/red-pen/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 . "$(dirname "$0")/lib/skill-step.sh"; step() { skill_step "$1" "$2"; }

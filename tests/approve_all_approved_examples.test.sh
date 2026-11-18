@@ -5,7 +5,7 @@
 set -u
 export VISUAL=true EDITOR=true BROWSER=true
 root="$(cd "$(dirname "$0")/.." && pwd)"
-open_page="$root/plugins/vicky-skills/skills/productivity/interactive-page/scripts/open-page.sh"
+open_page="$root/plugins/vicky-skills/skills/writing/interactive-page/scripts/open-page.sh"
 scratch=$(mktemp -d)
 mkdir -p "$scratch/desktop"
 printf '#!/usr/bin/env bash\necho "PATH=$PATH"\necho "BROWSER=${BROWSER:-true}"\n' >"$scratch/desktop/systemctl"

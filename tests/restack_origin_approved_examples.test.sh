@@ -6,8 +6,8 @@ set -u
 p="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
-sb="$p/skills/engineering/stacked-branches/SKILL.md"
-hm="$p/skills/engineering/history-monks/SKILL.md"
+sb="$p/skills/building/stacked-branches/SKILL.md"
+hm="$p/skills/shipping/history-monks/SKILL.md"
 step4() { awk '/^4\. /{on=1} /^5\. /{on=0} on' "$hm"; }
 check "given a Gitea stack whose parent merged, when the agent restacks, then it syncs trunk to origin first and the guard refuses a restack onto a stale local trunk" \
   'grep -q "restack-origin-guard" "$sb" && grep -qF "never \`gs branch onto <trunk>\` alone" "$sb"'

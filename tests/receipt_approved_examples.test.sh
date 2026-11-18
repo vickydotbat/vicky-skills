@@ -3,7 +3,7 @@
 # red, green and mutation". Each check is named after its example. The
 # behaviour is the agent's, so each check reads the instruction that drives it.
 set -u
-do="$(dirname "$0")/../plugins/vicky-skills/skills/engineering/do/SKILL.md"
+do="$(dirname "$0")/../plugins/vicky-skills/skills/building/do/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 r=$(grep -A8 '^## Receipts' "$do")

@@ -2,7 +2,7 @@
 # approved-spec: the examples approved on the star "Familiar visibility by
 # evidence". Each check runs the probe or the replay on synthetic sessions.
 set -u
-here="$(dirname "$0")/../plugins/vicky-skills/skills/productivity/familiar/scripts"
+here="$(dirname "$0")/../plugins/vicky-skills/skills/commands/familiar/scripts"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT

@@ -2,7 +2,7 @@
 # The lint's moves: each check gives its own move, and a matched sentence
 # with a colon still prints as three fields.
 set -u
-lint="$(dirname "$0")/../plugins/vicky-skills/skills/productivity/human-voice/scripts/lint-tells.py"
+lint="$(dirname "$0")/../plugins/vicky-skills/skills/writing/human-voice/scripts/lint-tells.py"
 scratch=$(mktemp -d); trap 'rm -rf "$scratch"' EXIT
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }

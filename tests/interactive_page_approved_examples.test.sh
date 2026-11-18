@@ -7,7 +7,7 @@ set -u
 # No test may reach the user's own editor or browser.
 export VISUAL=true EDITOR=true BROWSER=true
 root="$(cd "$(dirname "$0")/.." && pwd)"
-open_page="$root/plugins/vicky-skills/skills/productivity/interactive-page/scripts/open-page.sh"
+open_page="$root/plugins/vicky-skills/skills/writing/interactive-page/scripts/open-page.sh"
 scratch=$(mktemp -d)
 # page.py hands the browser the desktop session's environment, read through
 # systemctl. This desktop names the fake browser, so a mutant that drops
@@ -132,7 +132,7 @@ status=$?
 check "with no browser on the machine, the drafts open in my editor instead, and the agent waits for the close" \
   '[ "$status" = 0 ] && [ "$(cat "$scratch/edited" 2>/dev/null)" = "$scratch/d5.md" ]'
 
-red_pen="$root/plugins/vicky-skills/skills/productivity/red-pen/SKILL.md"
+red_pen="$root/plugins/vicky-skills/skills/writing/red-pen/SKILL.md"
 cp "$scratch/drafts.template" "$scratch/d6.md"
 start "$scratch/d6.md"
 done_with text.0="Hello there" text.1="Given a creature charmed by another" comment.0="Warmer, please" comment.1=
@@ -146,7 +146,7 @@ cat >"$scratch/question.md" <<'EOF'
 - ( ) gray
 - (x) the phase colour
 EOF
-interactive="$root/plugins/vicky-skills/skills/productivity/interactive-page/SKILL.md"
+interactive="$root/plugins/vicky-skills/skills/writing/interactive-page/SKILL.md"
 start "$scratch/question.md"
 html=$(page)
 done_with choice.0=gray

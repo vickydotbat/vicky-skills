@@ -5,7 +5,7 @@
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
 plugin="$root/plugins/vicky-skills"
-conn="$plugin/skills/productivity/conn/SKILL.md"
+conn="$plugin/skills/commands/conn/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 
@@ -13,7 +13,7 @@ check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 # When you type /conn
 # Then the handoff is a comment on that pull request or ticket, and its link is in the reply
 check "/conn comments the handoff on the pull request or ticket" \
-  'grep -q "^name: conn$" "$conn" && grep -q "disable-model-invocation: true" "$conn" && grep -q "\"./skills/productivity/conn\"" "$plugin/.claude-plugin/plugin.json" && grep -q "Post it as a comment on the effort'"'"'s open pull request or ticket" "$conn" && grep -q "the comment'"'"'s link is in your reply" "$conn" && ! grep -q "temp folder" "$conn"'
+  'grep -q "^name: conn$" "$conn" && grep -q "disable-model-invocation: true" "$conn" && grep -q "\"./skills/commands/conn\"" "$plugin/.claude-plugin/plugin.json" && grep -q "Post it as a comment on the effort'"'"'s open pull request or ticket" "$conn" && grep -q "the comment'"'"'s link is in your reply" "$conn" && ! grep -q "temp folder" "$conn"'
 
 # Given work on a project with no tracker, such as your machine config
 # When you type /conn
@@ -31,13 +31,13 @@ check "/conn posts only repo-relative paths, after loose-lips" \
 # When you ask sup in a fresh session
 # Then sup names the handoff and checks each of its lines before it reports one
 check "sup finds the handoff and checks it" \
-  'sup="$plugin/skills/productivity/sup/SKILL.md"; grep -q "\*\*Handoff\*\*" "$sup" && grep -qi "check each of its lines before you report one" "$sup" && grep -q "Open it with a \`\*\*Handoff\*\*\` line" "$conn"'
+  'sup="$plugin/skills/housekeeping/sup/SKILL.md"; grep -q "\*\*Handoff\*\*" "$sup" && grep -qi "check each of its lines before you report one" "$sup" && grep -q "Open it with a \`\*\*Handoff\*\*\` line" "$conn"'
 
 # Given the plugin after the rename
 # When you read any skill, hook, test or the README
 # Then each one says conn, and none says you-have-the-conn
 check "the old name is gone everywhere" \
-  '[ ! -e "$plugin/skills/productivity/you-have-the-conn" ] && ! grep -rq "you-have-the-conn" "$plugin" "$root/README.md" "$root/tests" --exclude=conn_approved_examples.test.sh && grep -q "^| \*\*\`conn\`\*\*" "$root/README.md" && grep -q "/conn\`" "$plugin/skills/productivity/council-of-elrond/SKILL.md"'
+  '[ ! -e "$plugin/skills/productivity/you-have-the-conn" ] && ! grep -rq "you-have-the-conn" "$plugin" "$root/README.md" "$root/tests" --exclude=conn_approved_examples.test.sh && grep -q "^| \*\*\`conn\`\*\*" "$root/README.md" && grep -q "/conn\`" "$plugin/skills/planning/council-of-elrond/SKILL.md"'
 
 # Given work with an open ticket and pull request
 # When you type /conn

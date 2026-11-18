@@ -25,8 +25,8 @@ check "with the Plane block guard off, as it is by default, plane block runs" \
   '[ $off = 0 ] && [ $unset_ = 0 ] && jq -e ".userConfig.guard_plane_block.default == false" "$root/.claude-plugin/plugin.json" >/dev/null'
 
 check "settling names a touched ticket whose blocker its body doesn't call a hard dependency, and asks me to remove the link in Plane" \
-  'grep -q "blocked by a ticket its body never names as a hard dependency" "$root/skills/engineering/make-it-so/SETTLE.md" && grep -q "ask the user to remove the link" "$root/skills/engineering/make-it-so/SETTLE.md"'
+  'grep -q "blocked by a ticket its body never names as a hard dependency" "$root/skills/shipping/make-it-so/SETTLE.md" && grep -q "ask the user to remove the link" "$root/skills/shipping/make-it-so/SETTLE.md"'
 
 check "an agent filing Plane tickets in an order writes a Waits on: line in the later ticket's body, and blocks only with a hard reason" \
-  'grep "Blocking" "$root/skills/engineering/first-contact/issue-tracker-plane.md" | grep -q "Write the order as a .Waits on: <KEY> (<why>). line" && grep "Blocking" "$root/skills/engineering/first-contact/issue-tracker-plane.md" | grep -q "# hard: "'
+  'grep "Blocking" "$root/skills/commands/first-contact/issue-tracker-plane.md" | grep -q "Write the order as a .Waits on: <KEY> (<why>). line" && grep "Blocking" "$root/skills/commands/first-contact/issue-tracker-plane.md" | grep -q "# hard: "'
 exit $fail

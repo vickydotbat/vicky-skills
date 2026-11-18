@@ -3,7 +3,7 @@
 # prompts are training wheels. Reads the instructions that drive the agent.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
-log="$root/plugins/vicky-skills/skills/engineering/captains-log/SKILL.md"
+log="$root/plugins/vicky-skills/skills/commands/captains-log/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 . "$(dirname "$0")/lib/skill-step.sh"; step() { skill_step "$log" "$1"; }

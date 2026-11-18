@@ -8,7 +8,7 @@ root="$(cd "$(dirname "$0")/.." && pwd)"
 hook="$root/plugins/vicky-skills/scripts/spark-joy.sh"
 drift="$root/plugins/vicky-skills/scripts/ticket-drift.sh"
 plugin="$root/plugins/vicky-skills/.claude-plugin/plugin.json"
-skill="$root/plugins/vicky-skills/skills/engineering/gamma-shift/SKILL.md"
+skill="$root/plugins/vicky-skills/skills/housekeeping/gamma-shift/SKILL.md"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 git init -q "$dir/repo"; git -C "$dir/repo" remote add origin https://example.invalid/r.git
 mkdir -p "$dir/repo/docs/agents"; : > "$dir/repo/docs/agents/issue-tracker.md"

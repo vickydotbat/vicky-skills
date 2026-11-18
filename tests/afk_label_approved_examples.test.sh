@@ -3,9 +3,9 @@
 # that sets, keeps off, drops or lists the label.
 set -u
 root="$(dirname "$0")/.."
-skills="$root/plugins/vicky-skills/skills/engineering"
-chart="$skills/lay-course/STAR-CHART.md"
-templates=("$skills"/first-contact/issue-tracker-*.md "$root/docs/agents/issue-tracker.md")
+skills="$root/plugins/vicky-skills/skills"
+chart="$skills/commands/lay-course/STAR-CHART.md"
+templates=("$skills"/commands/first-contact/issue-tracker-*.md "$root/docs/agents/issue-tracker.md")
 fail=0
 check() { if (eval "$2"); then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 ready() { awk '/^## Ready to warp/{f=1;next} /^## /{f=0} f' "$chart"; }
@@ -14,7 +14,7 @@ ready() { awk '/^## Ready to warp/{f=1;next} /^## /{f=0} f' "$chart"; }
 # When an agent records the answer that made it so
 # Then the chart carries the label starchart:afk
 check "A1 a chart nobody needs to answer gets the label" \
-  'r=$(ready); grep -q "starchart:afk" <<<"$r" && grep -q "Add" <<<"$r" && grep -q "Ready to warp" "$skills/lay-course/SKILL.md" && grep -q "Ready to warp" "$skills/warp/SKILL.md"'
+  'r=$(ready); grep -q "starchart:afk" <<<"$r" && grep -q "Add" <<<"$r" && grep -q "Ready to warp" "$skills/commands/lay-course/SKILL.md" && grep -q "Ready to warp" "$skills/building/warp/SKILL.md"'
 
 # Given the same chart with one anomaly still open
 # When an agent records any other answer
@@ -26,7 +26,7 @@ check "A2 one open question keeps it off" \
 # When an agent files an anomaly, a probe, a Confirm line or a star without approved examples on it
 # Then the chart loses the starchart:afk label
 check "A3 new work for you takes it off" \
-  'r=$(ready); grep -q "Remove" <<<"$r" && grep -q "Ready to warp" "$skills/mission-brief/SKILL.md" && awk "/^## Filing a star/{f=1;next} /^## /{f=0} f" "$chart" | grep -q "Ready to warp"'
+  'r=$(ready); grep -q "Remove" <<<"$r" && grep -q "Ready to warp" "$skills/planning/mission-brief/SKILL.md" && awk "/^## Filing a star/{f=1;next} /^## /{f=0} f" "$chart" | grep -q "Ready to warp"'
 
 # Given a repo set up by first-contact with any of its trackers, this repo's Obsidian tracker included
 # When an agent lists the charts ready to warp

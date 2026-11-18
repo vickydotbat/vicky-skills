@@ -4,7 +4,7 @@
 # example. write-page.py writes the page, or refuses and writes nothing.
 set -u
 export VISUAL=true EDITOR=true BROWSER=true
-writer="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/productivity/interactive-page/scripts/write-page.py"
+writer="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/writing/interactive-page/scripts/write-page.py"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 # The writer opens nothing; a fake desktop still stands first on PATH, as for every page test.
 mkdir -p "$dir/desktop"; printf '#!/usr/bin/env bash\necho "BROWSER=true"\n' >"$dir/desktop/systemctl"; chmod +x "$dir/desktop/systemctl"

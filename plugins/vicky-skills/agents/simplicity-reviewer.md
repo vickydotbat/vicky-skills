@@ -10,7 +10,7 @@ The caller gives you a **scope**: a **diff** (`git diff <fixed-point>...HEAD`, j
 
 When the caller names a **law file**, read it whole first: it holds the repo's rules kept outside the repo, which win over PRINCIPLES.md as the repo's own rules do. When that file is missing or empty, report only `LAW MISSING: <path>` and stop.
 
-Read the repo's standards files first (`AGENTS.md` names them) and `${CLAUDE_PLUGIN_ROOT}/skills/engineering/review/PRINCIPLES.md`. A finding that fights a pattern the repo asks for is a bad finding. Where the repo says which parts may be sophisticated (a core engine, a scheduler) and which must stay simple (add-ons, features), weigh each finding by the side it sits on.
+Read the repo's standards files first (`AGENTS.md` names them) and `${CLAUDE_PLUGIN_ROOT}/skills/shipping/review/PRINCIPLES.md`. A finding that fights a pattern the repo asks for is a bad finding. Where the repo says which parts may be sophisticated (a core engine, a scheduler) and which must stay simple (add-ons, features), weigh each finding by the side it sits on.
 
 ## The hunt
 

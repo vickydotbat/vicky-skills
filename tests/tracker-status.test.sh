@@ -4,7 +4,7 @@
 # timestamp in the name. Covers each listing, the pass, and bad input.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
-ts="$root/plugins/vicky-skills/skills/productivity/summit/scripts/tracker-status.sh"
+ts="$root/plugins/vicky-skills/skills/housekeeping/summit/scripts/tracker-status.sh"
 fx=$(mktemp -d); trap 'rm -rf "$fx"' EXIT
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }

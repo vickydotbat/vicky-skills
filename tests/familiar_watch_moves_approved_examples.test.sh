@@ -2,7 +2,7 @@
 # Approved examples for familiar fix 8, ticked 2026-11-06: the watch follows a
 # session transcript that moves to a new folder when the session enters a worktree.
 set -u
-watch="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/productivity/familiar/scripts/familiar-watch.sh"
+watch="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/commands/familiar/scripts/familiar-watch.sh"
 fx=$(mktemp -d); trap 'rm -rf "$fx"' EXIT
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }

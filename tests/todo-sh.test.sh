@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # todo.sh: a long line is still written, with a warning; done on missing text fails.
 set -u
-todo="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/productivity/standing-orders/scripts/todo.sh"
+todo="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/housekeeping/standing-orders/scripts/todo.sh"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }

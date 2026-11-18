@@ -2,7 +2,7 @@
 # The visibility probe's window and edge cases, and the watch's read-once
 # mode: regression tests beside the probe's approved examples.
 set -u
-here="$(dirname "$0")/../plugins/vicky-skills/skills/productivity/familiar/scripts"
+here="$(dirname "$0")/../plugins/vicky-skills/skills/commands/familiar/scripts"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT

@@ -2,7 +2,7 @@
 # The replay's minute window, its precision count and its bad input:
 # regression tests beside the replay's approved examples.
 set -u
-replay="$(dirname "$0")/../plugins/vicky-skills/skills/productivity/familiar/scripts/familiar-replay.sh"
+replay="$(dirname "$0")/../plugins/vicky-skills/skills/commands/familiar/scripts/familiar-replay.sh"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT

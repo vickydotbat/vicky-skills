@@ -5,8 +5,8 @@
 # one watch.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills"
-lister="$root/skills/productivity/familiar/scripts/familiar-sessions.sh"
-skill="$root/skills/productivity/familiar/SKILL.md"
+lister="$root/skills/commands/familiar/scripts/familiar-sessions.sh"
+skill="$root/skills/commands/familiar/SKILL.md"
 fx=$(mktemp -d); trap 'rm -rf "$fx"' EXIT
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }

@@ -33,5 +33,5 @@ bash "$runner" --jobs 2 gamma-shift.sh >/dev/null 2>&1
 check "a pass with no survivors records its proof without --record" \
   'proof >/dev/null && fresh'
 check "sentinels tells an agent running a pass under an outer timeout to set --budget below it" \
-  'grep -q "set \`--budget\` below the outer timeout" "$root/plugins/vicky-skills/skills/engineering/sentinels/SKILL.md"'
+  'grep -q "set \`--budget\` below the outer timeout" "$root/plugins/vicky-skills/skills/building/sentinels/SKILL.md"'
 exit $fail

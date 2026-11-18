@@ -2,14 +2,14 @@
 # approved-spec: the examples approved on the star "Surprises feed back into
 # the next sort". Each check is named after its example.
 set -u
-cd "$(dirname "$0")/../plugins/vicky-skills/skills/engineering"
-chart=lay-course/STAR-CHART.md
+cd "$(dirname "$0")/../plugins/vicky-skills/skills"
+chart=commands/lay-course/STAR-CHART.md
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 body() { awk '/^## The chart/{on=1} /^## Tickets/{on=0} on' "$chart"; }
 box() { body | awk -v h="### $1" '$0 == h {on=1; next} /^##/ {on=0} on'; }
 # The settling step that logs the surprises.
-step() { grep -E "^[0-9]+\. \*\*Log the surprises" make-it-so/SETTLE.md; }
+step() { grep -E "^[0-9]+\. \*\*Log the surprises" shipping/make-it-so/SETTLE.md; }
 
 # Given an asteroid belt found during a build, an unknown unknown that surfaced
 # When make-it-so's settling closes the effort

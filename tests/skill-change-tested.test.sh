@@ -20,11 +20,11 @@ judge() {
 fail=0
 case_() { printf '%b' "$3" | judge >/dev/null; [ $? -eq "$2" ] || { echo "FAIL $1"; fail=1; }; }
 case_ "no change passes" 0 ""
-case_ "a skill change with a test passes" 0 'plugins/vicky-skills/skills/engineering/do/SKILL.md\ntests/do.test.sh\n'
-case_ "a skill change alone fails" 1 'plugins/vicky-skills/skills/engineering/do/SKILL.md\n'
-case_ "a skill's side file alone fails" 1 'plugins/vicky-skills/skills/engineering/decision-record/FORMAT.md\n'
+case_ "a skill change with a test passes" 0 'plugins/vicky-skills/skills/building/do/SKILL.md\ntests/do.test.sh\n'
+case_ "a skill change alone fails" 1 'plugins/vicky-skills/skills/building/do/SKILL.md\n'
+case_ "a skill's side file alone fails" 1 'plugins/vicky-skills/skills/planning/decision-record/FORMAT.md\n'
 case_ "a README change alone passes" 0 'README.md\n'
-case_ "a skill script change alone passes (its own test rules hold it)" 0 'plugins/vicky-skills/skills/engineering/decision-record/scripts/check-adr.sh\n'
+case_ "a skill script change alone passes (its own test rules hold it)" 0 'plugins/vicky-skills/skills/planning/decision-record/scripts/check-adr.sh\n'
 [ $fail -eq 0 ] || exit 1
 base=$(git merge-base HEAD origin/main 2>/dev/null) || { echo "skill-change-tested: no origin/main to compare with: run git fetch origin"; exit 1; }
 git diff --name-only "$base" HEAD | judge || exit 1

@@ -4,7 +4,7 @@
 # behaviour already held when they were approved, so they carry no approved mark.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
-sk="$root/plugins/vicky-skills/skills/engineering/assimilate/SKILL.md"
+sk="$root/plugins/vicky-skills/skills/shipping/assimilate/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 has() { grep -qF -- "$2" "$1"; }

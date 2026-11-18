@@ -3,7 +3,7 @@
 # .todo changes go through one script.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
-todo="$root/plugins/vicky-skills/skills/productivity/standing-orders/scripts/todo.sh"
+todo="$root/plugins/vicky-skills/skills/housekeeping/standing-orders/scripts/todo.sh"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }

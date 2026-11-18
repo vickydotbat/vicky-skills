@@ -2,7 +2,7 @@
 # cerebro builds the proposals it would pick, unasked, and asks only about
 # one a wrong guess would make expensive to undo.
 set -u
-cer="$(dirname "$0")/../plugins/vicky-skills/skills/productivity/cerebro/SKILL.md"
+cer="$(dirname "$0")/../plugins/vicky-skills/skills/housekeeping/cerebro/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 six=$(awk '/^6\. /{on=1} /^7\. /{on=0} on' "$cer")

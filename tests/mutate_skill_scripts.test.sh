@@ -11,7 +11,7 @@ check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 [ -n "${MUTATE_HOOKS_INNER:-}" ] && { echo "ok   skipped inside a mutation pass"; exit 0; }
 
 copy="$dir/copy"; mkdir "$copy"; cp -r "$root/plugins" "$root/tests" "$copy/"
-name=skills/productivity/video-captions/scripts/flatten-captions.sh
+name=skills/building/video-captions/scripts/flatten-captions.sh
 # Start with no proof for it, so the pass has to run and record one.
 grep -v "^$name	" "$root/tests/mutation-proof.tsv" > "$copy/tests/mutation-proof.tsv"
 out=$(timeout 300 python3 "$copy/tests/mutate-hooks.py" --jobs 2 "$name" 2>&1)

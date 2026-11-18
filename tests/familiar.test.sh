@@ -5,7 +5,7 @@
 # regression test: a session that never typed /familiar gets no voice.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/scripts"
-tools="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/productivity/familiar/scripts"
+tools="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/commands/familiar/scripts"
 fx=$(mktemp -d); trap 'rm -rf "$fx"' EXIT
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
@@ -115,7 +115,7 @@ check "another tool call prints nothing" '! grep -q "10:00:07" <<<"$out"'
 
 # S2's approved examples, held by the skill's words. They are plain regression
 # tests: the skill text was written before these tests, so they could not go red first.
-skill="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/productivity/familiar/SKILL.md"
+skill="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/commands/familiar/SKILL.md"
 has() { grep -qF -- "$1" "$skill"; }
 # Given the watch is armed / When an event shows a misread, a gate left unopened, a check the user did by hand, or a missing tool / Then the note gains one coded line: the time, what happened, the fix, and where the fix lands
 check "S2 a snag is one coded line" 'has "adds one coded line to that session'"'"'s note: the time, what happened, the fix, and where the fix lands"'

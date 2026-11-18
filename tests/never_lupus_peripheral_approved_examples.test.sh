@@ -2,7 +2,7 @@
 # approved-spec: the never-lupus peripheral examples, approved 2026-11-07 on a
 # drafts page. Each check reads the instruction that drives the agent.
 set -u
-skill="$(dirname "$0")/../plugins/vicky-skills/skills/engineering/never-lupus/SKILL.md"
+skill="$(dirname "$0")/../plugins/vicky-skills/skills/building/never-lupus/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 steps() { awk '/^## Steps/{f=1;next}/^## /{f=0}f' "$skill" | grep -E '^[0-9]+\. '; }

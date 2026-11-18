@@ -3,7 +3,7 @@
 # then moved: each line prints once. Each step waits on the watch's output,
 # not on a fixed sleep, with a hard cap.
 set -u
-watch="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/productivity/familiar/scripts/familiar-watch.sh"
+watch="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/commands/familiar/scripts/familiar-watch.sh"
 fx=$(mktemp -d); pid=; trap '[ -n "$pid" ] && kill "$pid" 2>/dev/null; rm -rf "$fx"' EXIT
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }

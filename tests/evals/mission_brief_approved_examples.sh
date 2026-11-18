@@ -23,7 +23,7 @@ if run "$plugin" with; then echo "ok   S1-1 the case passes with the skill"; els
 # When I run the eval again
 # Then it fails, so the case can go red
 cp -r "$plugin" "$dir/cut"
-skill="$dir/cut/skills/engineering/mission-brief/SKILL.md"
+skill="$dir/cut/skills/planning/mission-brief/SKILL.md"
 awk '/^## Check first/{skip=1; next} /^## /{skip=0} !skip' "$skill" > "$skill.tmp" && mv "$skill.tmp" "$skill"
 if grep -q '^## Check first' "$skill" || [ ! -d "$dir/cut/evals/mission-brief/check-first" ]; then
   echo "FAIL S1-2 the case goes red without Check first: no case to run, or the section is still there"; fail=1

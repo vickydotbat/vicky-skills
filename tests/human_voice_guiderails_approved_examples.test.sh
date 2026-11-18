@@ -2,7 +2,7 @@
 # approved-spec: the examples approved on the star "human-voice steers with
 # guiderails, never a tell list". Each check is named after its example.
 set -u
-here="$(dirname "$0")/../plugins/vicky-skills/skills/productivity/human-voice"
+here="$(dirname "$0")/../plugins/vicky-skills/skills/writing/human-voice"
 lint="$here/scripts/lint-tells.py"
 skill="$here/SKILL.md"
 scratch=$(mktemp -d); trap 'rm -rf "$scratch"' EXIT

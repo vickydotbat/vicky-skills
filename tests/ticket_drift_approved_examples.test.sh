@@ -56,7 +56,7 @@ check "a ticket whose body and comments agree, and that no merged PR names, gets
 # When a drift check is due
 # Then nothing runs
 mkdir -p "$dir/repo/docs/agents"; printf 'Ticket drift: off\n' > "$dir/repo/docs/agents/issue-tracker.md"; rm -f "$stamp"; out=$(run 7)
-templates=$(grep -lx 'Ticket drift: on' "$root"/plugins/vicky-skills/skills/engineering/first-contact/issue-tracker-*.md | wc -l)
+templates=$(grep -lx 'Ticket drift: on' "$root"/plugins/vicky-skills/skills/commands/first-contact/issue-tracker-*.md | wc -l)
 check "in a repo whose docs/agents/issue-tracker.md says \"Ticket drift: off\", nothing runs when a check is due" \
   '[ -z "$out" ] && [ ! -e "$stamp" ] && [ "$templates" = 6 ] && grep -q "Ticket drift: off" "$agent"'
 exit $fail

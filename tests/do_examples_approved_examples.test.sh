@@ -3,8 +3,8 @@
 # the examples are the seams" and the three the spec review found missing. These are agent behaviours, so each check reads
 # the skill text that makes the agent do it.
 set -u
-s="$(dirname "$0")/../plugins/vicky-skills/skills/engineering"
-do="$s/do/SKILL.md"; ex="$s/examples/SKILL.md"; mu="$s/sentinels/SKILL.md"
+s="$(dirname "$0")/../plugins/vicky-skills/skills"
+do="$s/building/do/SKILL.md"; ex="$s/planning/examples/SKILL.md"; mu="$s/building/sentinels/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 . "$(dirname "$0")/lib/skill-step.sh"; step() { skill_step "$1" "$2"; }
@@ -26,5 +26,5 @@ check "a test that only fails on a refactor, a content edit or a library upgrade
 check "a behaviour no approved example names, met mid-build, waits as a draft and the rest still lands" \
   'step "$do" 3 | grep -q "park that slice, and build the rest"'
 check "a refactor with no approved examples gets guard tests that pass on main first, listed in the pull request" \
-  'step "$s/spark-joy/SKILL.md" 3 | grep -q "pass on .main. before you change anything" && grep -q "guard tests" "$s/spark-joy/SKILL.md"'
+  'step "$s/building/spark-joy/SKILL.md" 3 | grep -q "pass on .main. before you change anything" && grep -q "guard tests" "$s/building/spark-joy/SKILL.md"'
 exit $fail

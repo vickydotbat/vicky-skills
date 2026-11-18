@@ -5,7 +5,7 @@
 # stubs on PATH, so no test reaches a real tracker.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
-finder="$root/plugins/vicky-skills/skills/productivity/sup/scripts/find-handoff.sh"
+finder="$root/plugins/vicky-skills/skills/housekeeping/sup/scripts/find-handoff.sh"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 fail=0
 check() { if grep -qF -- "$2" <<<"$3"; then echo "ok   $1"; else echo "FAIL $1: want '$2' in: $3"; fail=1; fi; }
@@ -137,12 +137,12 @@ bare=$(repo bare git@forge.example:o/s.git)
 mkdir -p "$dir/nobin"; for t in bash git jq sed grep awk sort dirname basename timeout ls cat; do ln -s "$(command -v "$t")" "$dir/nobin/$t"; done
 out=$(cd "$bare" && PATH="$dir/nobin" FIND_HANDOFF_PROJECTS_DIR="$dir/projects" bash "$finder" 2>&1)
 check "with neither gh nor tea it names the pull request as not read" "not read: pull request, neither gh nor tea is installed" "$out"
-skill=$(cat "$root/plugins/vicky-skills/skills/productivity/sup/SKILL.md")
+skill=$(cat "$root/plugins/vicky-skills/skills/housekeeping/sup/SKILL.md")
 check "sup step 1 runs the finder" "scripts/find-handoff.sh" "$skill"
 check "sup step 1 names the .todo pointer among the places" "the \`.todo\` Handoff line and the tickets \`.todo\` names when the branch names neither" "$skill"
 check "sup quotes where it looked when no handoff is found" "quotes the script's \`none found in:\` and \`not read:\` lines" "$skill"
-conn=$(cat "$root/plugins/vicky-skills/skills/productivity/conn/SKILL.md")
+conn=$(cat "$root/plugins/vicky-skills/skills/commands/conn/SKILL.md")
 check "conn points from .todo only after a post to a ticket or pull request" "After a post to a ticket or pull request, point at it from \`.todo\`" "$conn"
 check "conn leaves no pointer when standing orders are off" "Skip this when standing orders are off." "$conn"
-check "conn names /sup as the one resume command" "Name \`/sup\` as the only command that resumes the work" "$(cat "$root/plugins/vicky-skills/skills/productivity/conn/SKILL.md")"
+check "conn names /sup as the one resume command" "Name \`/sup\` as the only command that resumes the work" "$(cat "$root/plugins/vicky-skills/skills/commands/conn/SKILL.md")"
 exit $fail

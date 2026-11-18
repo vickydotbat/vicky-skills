@@ -4,7 +4,7 @@
 # is the agent's, so each check reads the instruction that drives it.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
-s="$root/plugins/vicky-skills/skills/engineering/mission-brief/SKILL.md"
+s="$root/plugins/vicky-skills/skills/planning/mission-brief/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 . "$(dirname "$0")/lib/skill-step.sh"; step() { skill_step "$s" "$1"; }
@@ -15,7 +15,7 @@ check "once I close the spec, mission-brief files it as a star chart in the repo
 check "a slice whose examples I cut in the editor is filed with \"Examples: not written yet\", never with examples I didn't see" \
   'grep -q "Examples: not written yet" "$s" && grep -q "never with examples the user did not see" "$s"'
 check "an agent that decides a conversation needs tickets, or is asked to convert tickets from another tool, runs mission-brief itself, and nothing is filed before I read it" \
-  'grep -q "run \`mission-brief\`" "$root/plugins/vicky-skills/skills/engineering/do/SKILL.md" && grep -q "convert or import tickets made by another tool" "$s" && grep -q "re-slice them, never copy them across" "$s"'
+  'grep -q "run \`mission-brief\`" "$root/plugins/vicky-skills/skills/building/do/SKILL.md" && grep -q "convert or import tickets made by another tool" "$s" && grep -q "re-slice them, never copy them across" "$s"'
 check "the README thanks Matt Pocock's to-spec and to-tickets for the idea" \
   'grep -q "to-spec" "$root/README.md" && grep -q "to-tickets" "$root/README.md" && grep "to-tickets" "$root/README.md" | grep -q "mission-brief"'
 exit $fail

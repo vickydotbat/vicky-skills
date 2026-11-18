@@ -4,8 +4,8 @@
 # named after its example. The behaviour is the agent's, so each check reads
 # the instruction that drives it.
 set -u
-s="$(dirname "$0")/../plugins/vicky-skills/skills/productivity/over-to-you/SKILL.md"
-ref="$(dirname "$0")/../plugins/vicky-skills/skills/productivity/over-to-you/REFERENCE.md"
+s="$(dirname "$0")/../plugins/vicky-skills/skills/building/over-to-you/SKILL.md"
+ref="$(dirname "$0")/../plugins/vicky-skills/skills/building/over-to-you/REFERENCE.md"
 . "$(dirname "$0")/lib/skill-step.sh"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }

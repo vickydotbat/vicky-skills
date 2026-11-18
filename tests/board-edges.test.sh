@@ -3,7 +3,7 @@
 # refusal and its words, the draw.io frame cells, and what report and save do
 # with boxes, properties, rules and folders the main tests don't reach.
 set -u
-board="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/productivity/drawing-board/scripts/board.py"
+board="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/planning/drawing-board/scripts/board.py"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }

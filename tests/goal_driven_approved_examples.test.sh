@@ -3,7 +3,7 @@
 # after its example. Agent behaviours read the skill text; hooks run.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
-p="$root/plugins/vicky-skills"; do="$p/skills/engineering/do/SKILL.md"
+p="$root/plugins/vicky-skills"; do="$p/skills/building/do/SKILL.md"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }

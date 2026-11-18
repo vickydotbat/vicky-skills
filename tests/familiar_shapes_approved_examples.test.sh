@@ -2,7 +2,7 @@
 # approved-spec: the examples approved on the star "Familiar shape counter".
 # Each check runs the counter on synthetic transcripts.
 set -u
-counter="$(dirname "$0")/../plugins/vicky-skills/skills/productivity/familiar/scripts/familiar-shapes.sh"
+counter="$(dirname "$0")/../plugins/vicky-skills/skills/commands/familiar/scripts/familiar-shapes.sh"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT

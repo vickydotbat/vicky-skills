@@ -3,8 +3,8 @@
 # 2026-11-13. It reads the skills, since the agent follows their text.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
-do="$root/plugins/vicky-skills/skills/engineering/do/SKILL.md"
-mis="$root/plugins/vicky-skills/skills/engineering/make-it-so/SKILL.md"
+do="$root/plugins/vicky-skills/skills/building/do/SKILL.md"
+mis="$root/plugins/vicky-skills/skills/shipping/make-it-so/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 

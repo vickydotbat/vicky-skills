@@ -31,7 +31,7 @@ check "a check whose output changes once in five rounds prints a line for the fi
 check "a watch with no --every or --rounds checks every 30 seconds, at most 60 times" \
   'bash "$watch" --help | grep -q "every 30 seconds" && bash "$watch" --help | grep -q "at most 60 times"'
 ok=0
-for f in engineering/warp engineering/make-it-so productivity/red-pen productivity/codex-image-gen engineering/gamma-shift; do
+for f in building/warp shipping/make-it-so writing/red-pen building/codex-image-gen housekeeping/gamma-shift; do
   s="$skills/$f/SKILL.md"
   grep -q "watch.sh" "$s" && ! grep -qE "every 30 seconds|at most 60 times|60 polls|60th poll" "$s" && ok=$((ok + 1)) || echo "     $f"
 done

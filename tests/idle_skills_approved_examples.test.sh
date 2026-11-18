@@ -2,7 +2,7 @@
 # approved-spec: the examples approved on the star "captains-log flags skills
 # nobody starts". Each check is named after its example.
 set -u
-here="$(dirname "$0")/../plugins/vicky-skills/skills/engineering/captains-log"
+here="$(dirname "$0")/../plugins/vicky-skills/skills/commands/captains-log"
 script="$here/scripts/idle-skills.py"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 mkdir -p "$dir/skills/sup" "$dir/skills/warp" "$dir/skills/do"

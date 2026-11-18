@@ -2,7 +2,7 @@
 # The session lister's new-session check with sessions in a repo that turned
 # the familiar off: each one prints once, by its own id.
 set -u
-lister="$(dirname "$0")/../plugins/vicky-skills/skills/productivity/familiar/scripts/familiar-sessions.sh"
+lister="$(dirname "$0")/../plugins/vicky-skills/skills/commands/familiar/scripts/familiar-sessions.sh"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT

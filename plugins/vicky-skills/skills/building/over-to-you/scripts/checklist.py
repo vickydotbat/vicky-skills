@@ -24,7 +24,7 @@ import os
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path[:0] = [HERE, os.path.join(HERE, "..", "..", "interactive-page", "scripts")]
+sys.path[:0] = [HERE, os.path.join(HERE, "..", "..", "..", "writing", "interactive-page", "scripts")]
 from importlib import import_module
 
 loose_page = import_module("scratch").loose_page

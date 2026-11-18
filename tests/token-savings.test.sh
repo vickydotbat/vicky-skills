@@ -23,8 +23,8 @@ check "a peer session's message teaches no lesson" \
 # Given you correct the agent, and the mistake cost no retry
 # When the effort ends
 # Then engrave runs on it once, in the ticket-settling batch, not on the spot
-engrave="$plugin/skills/engineering/engrave/SKILL.md"
-loose="$plugin/skills/engineering/make-it-so/SETTLE.md"
+engrave="$plugin/skills/shipping/engrave/SKILL.md"
+loose="$plugin/skills/shipping/make-it-so/SETTLE.md"
 check "an ordinary correction waits for the batch" \
   '! grep -q "when the user corrects the agent" "$engrave" && grep -q "Any other correction waits for that settling" "$engrave" && grep -q "a correction from the user. Run \`engrave\` on each one" "$loose"'
 
@@ -49,11 +49,11 @@ check "a moved effort leaves no branch behind" \
   'grep -q "Once every commit is there and no pull request is open from \$current, then delete \$current here and on the remote (git push origin --delete \$current)" "$plugin/scripts/pr-guard.sh"'
 # Engraved 2026-11-02: a build in another session wrote tests and code after
 # a chat "approval". Only the ticked red-pen page approves an example.
-do_skill="$plugin/skills/engineering/do/SKILL.md"
-examples="$plugin/skills/engineering/examples/SKILL.md"
+do_skill="$plugin/skills/building/do/SKILL.md"
+examples="$plugin/skills/planning/examples/SKILL.md"
 check "a chat reply approves no example" \
-  'grep -q "A chat reply is never an approval" "$do_skill" && grep -q "A chat reply is never an approval" "$examples" && grep -q "no test or code is written until the page comes back with each example ticked" "$do_skill" && grep -q "This adds no approvals: a pick the agent may take on its own needs none" "$plugin/skills/productivity/red-pen/SKILL.md"'
+  'grep -q "A chat reply is never an approval" "$do_skill" && grep -q "A chat reply is never an approval" "$examples" && grep -q "no test or code is written until the page comes back with each example ticked" "$do_skill" && grep -q "This adds no approvals: a pick the agent may take on its own needs none" "$plugin/skills/writing/red-pen/SKILL.md"'
 # Engraved 2026-11-02: a run that stopped at the draft gate was reported as red.
 check "a run stopped by the draft gate is not red" \
-  'grep -q "is the gate working, not red" "$plugin/skills/engineering/make-it-so/SKILL.md" && grep -q "A run that stops at the draft gate is expected" "$plugin/skills/engineering/machine-spirit/SKILL.md"'
+  'grep -q "is the gate working, not red" "$plugin/skills/shipping/make-it-so/SKILL.md" && grep -q "A run that stops at the draft gate is expected" "$plugin/skills/building/machine-spirit/SKILL.md"'
 exit $fail

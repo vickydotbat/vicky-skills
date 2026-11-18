@@ -15,6 +15,6 @@ check "warp starts with the hint" '[ "$(wc -l <<<"$out")" = 1 ] && grep -q "do. 
 # Given a pull request whose How tested section has no mutation counts
 # When make-it-so checks Q10
 # Then it passes only on a line that says unrun, because, followed by the log line or reason
-q10=$(grep 'Q10' "$root/skills/engineering/make-it-so/SKILL.md")
+q10=$(grep 'Q10' "$root/skills/shipping/make-it-so/SKILL.md")
 check "make-it-so takes no silent excuse" 'grep -q "unrun, because" <<<"$q10" && ! grep -q "or why there are none" <<<"$q10"'
 exit $fail

@@ -4,7 +4,7 @@
 # Every reviewer runs in the checkout it is given.
 set -u
 p="$(dirname "$0")/../plugins/vicky-skills"
-rev="$p/skills/engineering/review/SKILL.md"
+rev="$p/skills/shipping/review/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 one=$(grep '^1\. ' "$rev")

@@ -4,7 +4,7 @@
 # instruction that drives the agent.
 set -u
 root="$(dirname "$0")/../plugins/vicky-skills"
-fam="$root/skills/productivity/familiar/SKILL.md"
+fam="$root/skills/commands/familiar/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 . "$(dirname "$0")/lib/skill-step.sh"; step() { skill_step "$1" "$2"; }
@@ -26,7 +26,7 @@ check "E25 an ask answered partly is a C1 snag naming what the work left out" \
 # When it writes the repo's tracker doc
 # Then the doc holds the line Familiar: on, and says that off stops the familiar watching sessions there
 ok=1
-for t in "$root"/skills/engineering/first-contact/issue-tracker-*.md; do
+for t in "$root"/skills/commands/first-contact/issue-tracker-*.md; do
   grep -qx 'Familiar: on' "$t" && grep -q 'to `off` to stop `familiar` watching sessions in this repo' "$t" || ok=0
 done
 check "E26 every tracker doc first-contact writes holds Familiar: on and how to turn it off" '[ $ok = 1 ]'
@@ -39,7 +39,7 @@ mkdir -p "$dir/projects/-a" "$dir/projects/-b" "$dir/sessions" "$dir/quiet/docs/
 printf 'Familiar: off\n' > "$dir/quiet/docs/agents/issue-tracker.md"
 printf '{"type":"user","cwd":"%s","message":{"content":"hi"}}\n' "$dir/quiet" > "$dir/projects/-a/1111aaaa.jsonl"
 printf '{"type":"user","cwd":"%s","message":{"content":"hi"}}\n' "$dir/busy" > "$dir/projects/-b/2222bbbb.jsonl"
-out=$(FAMILIAR_PROJECTS_DIR="$dir/projects" FAMILIAR_SESSIONS_DIR="$dir/sessions" CLAUDE_CODE_SESSION_ID=self bash "$root/skills/productivity/familiar/scripts/familiar-sessions.sh")
+out=$(FAMILIAR_PROJECTS_DIR="$dir/projects" FAMILIAR_SESSIONS_DIR="$dir/sessions" CLAUDE_CODE_SESSION_ID=self bash "$root/skills/commands/familiar/scripts/familiar-sessions.sh")
 check "E27 a session in a repo with Familiar: off is not watched, and the familiar's reply names it" \
   'grep -q "^2222bbbb " <<<"$out" && ! grep -q "^1111aaaa " <<<"$out" && grep -q "^OFF 1111aaaa " <<<"$out" && step "$fam" 1 | grep -q "OFF"'
 

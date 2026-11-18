@@ -5,7 +5,7 @@
 # check reads the instruction that drives it.
 set -u
 here="$(cd "$(dirname "$0")" && pwd)"
-s="$here/../plugins/vicky-skills/skills/productivity/over-to-you/SKILL.md"
+s="$here/../plugins/vicky-skills/skills/building/over-to-you/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 sized=$(sed -n '/^## Size the finds/,/^## Keep the ledger/p' "$s")

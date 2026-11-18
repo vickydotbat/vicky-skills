@@ -3,7 +3,7 @@
 # operations), approved 2026-11-01. first-contact copies a template into a
 # repo's docs/agents/issue-tracker.md, so each check reads every template.
 set -u
-dir="$(dirname "$0")/../plugins/vicky-skills/skills/engineering/first-contact"
+dir="$(dirname "$0")/../plugins/vicky-skills/skills/commands/first-contact"
 templates=("$dir"/issue-tracker-*.md)
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }

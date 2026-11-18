@@ -2,7 +2,7 @@
 # The video-captions flatten script turns a .vtt caption file into prose:
 # no header, no timings, no tags, and each repeated caption line once.
 set -u
-script="$(dirname "$0")/../plugins/vicky-skills/skills/productivity/video-captions/scripts/flatten-captions.sh"
+script="$(dirname "$0")/../plugins/vicky-skills/skills/building/video-captions/scripts/flatten-captions.sh"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 cat > "$dir/in.vtt" <<'VTT'
 WEBVTT

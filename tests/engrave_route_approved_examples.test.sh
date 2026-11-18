@@ -4,7 +4,7 @@
 # instructions that drive the agent.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills"
-s="$root/skills/engineering/engrave/SKILL.md"
+s="$root/skills/shipping/engrave/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 step3() { awk '/^3\. /{on=1} /^4\. /{on=0} on' "$s"; }

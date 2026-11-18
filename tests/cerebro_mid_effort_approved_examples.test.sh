@@ -4,7 +4,7 @@
 # behaviour is the agent's, so each check reads the instruction that drives it.
 set -u
 skills="$(dirname "$0")/../plugins/vicky-skills/skills"
-cerebro="$skills/productivity/cerebro/SKILL.md"
+cerebro="$skills/housekeeping/cerebro/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 . "$(dirname "$0")/lib/skill-step.sh"; step() { skill_step "$1" "$2"; }
@@ -15,7 +15,7 @@ check "cerebro lists, under each proposal, the questions I'd ask about it, and f
 check "a proposal that raises no question I'd ask stands alone, with no empty question list" \
   'grep -q "no empty question list" <<<"$ask"'
 check "review runs cerebro as a forecast on what it found, once its report ends mid-effort" \
-  'step "$skills/engineering/review/SKILL.md" 6 | grep -q "run \`cerebro\` as a forecast on the findings"'
+  'step "$skills/shipping/review/SKILL.md" 6 | grep -q "run \`cerebro\` as a forecast on the findings"'
 check "a design decision recorded mid-effort, an anomaly answered or a council ended, runs cerebro as a forecast on what it makes due" \
-  'step "$skills/engineering/lay-course/SKILL.md" 4 | grep -q "run \`cerebro\` as a forecast on what the decision makes due" && step "$skills/productivity/council-of-elrond/SKILL.md" 5 | grep -q "run \`cerebro\` as a forecast on what the decision makes due"'
+  'step "$skills/commands/lay-course/SKILL.md" 4 | grep -q "run \`cerebro\` as a forecast on what the decision makes due" && step "$skills/planning/council-of-elrond/SKILL.md" 5 | grep -q "run \`cerebro\` as a forecast on what the decision makes due"'
 exit $fail

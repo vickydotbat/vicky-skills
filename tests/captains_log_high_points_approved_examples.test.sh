@@ -4,7 +4,7 @@
 # agent's, so each check reads the instruction that drives it.
 set -u
 skills="$(dirname "$0")/../plugins/vicky-skills/skills"
-log="$skills/engineering/captains-log/SKILL.md"
+log="$skills/commands/captains-log/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 . "$(dirname "$0")/lib/skill-step.sh"; step() { skill_step "$log" "$1"; }
@@ -17,7 +17,7 @@ check "a session where nothing went better than usual gets \"no high point found
 check "a line in AGENTS.md named as a high point's cause gets a kept mark beside it, with the date and the reason" \
   'grep -qF "add \` <!-- kept YYYY-MM-DD: <why> -->\` at its end" <<<"$high"'
 check "a later captains-log or robot-voice pass looking for lines that change nothing leaves a kept line alone" \
-  'step 3 | grep "change nothing" | grep -qF "<!-- kept" && grep "Delete each one" "$skills/productivity/robot-voice/SKILL.md" | grep -qF "<!-- kept"'
+  'step 3 | grep "change nothing" | grep -qF "<!-- kept" && grep "Delete each one" "$skills/writing/robot-voice/SKILL.md" | grep -qF "<!-- kept"'
 check "once captains-log finds a high point, cerebro gets it and proposes how to get more of it" \
   'step 7 | grep -q "cerebro" && step 7 | grep -q "high points from step 4" && step 7 | grep -q "get more of each high point"'
 exit $fail

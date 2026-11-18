@@ -4,7 +4,7 @@
 # agent's, so each check reads the instruction that drives it.
 set -u
 root="$(dirname "$0")/.."
-voice="$root/plugins/vicky-skills/skills/productivity/human-voice/SKILL.md"
+voice="$root/plugins/vicky-skills/skills/writing/human-voice/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 panel=$(awk '/^7\. \*\*Seat a reader panel/{on=1} /^8\. /{on=0} on' "$voice")

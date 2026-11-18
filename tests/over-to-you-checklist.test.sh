@@ -3,8 +3,8 @@
 # page reads, and refuses a spec it can't write without breaking that form.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
-skill="$root/plugins/vicky-skills/skills/productivity/over-to-you/scripts"
-page="$root/plugins/vicky-skills/skills/productivity/interactive-page/scripts"
+skill="$root/plugins/vicky-skills/skills/building/over-to-you/scripts"
+page="$root/plugins/vicky-skills/skills/writing/interactive-page/scripts"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }

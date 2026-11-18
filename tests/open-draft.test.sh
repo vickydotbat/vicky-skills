@@ -5,7 +5,7 @@ set -u
 # No test may reach the user's own editor.
 export VISUAL=true EDITOR=true BROWSER=true
 root="$(cd "$(dirname "$0")/.." && pwd)"
-open="$root/plugins/vicky-skills/skills/productivity/interactive-page/scripts/open-draft.sh"
+open="$root/plugins/vicky-skills/skills/writing/interactive-page/scripts/open-draft.sh"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 # A fake desktop, so no run can reach the user's session through systemctl.
 mkdir -p "$dir/desktop"; printf '#!/usr/bin/env bash\necho "BROWSER=true"\n' >"$dir/desktop/systemctl"; chmod +x "$dir/desktop/systemctl"

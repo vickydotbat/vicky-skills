@@ -2,8 +2,8 @@
 # approved-spec: the examples approved on the star "Star chart sorts its
 # knowns into four boxes". Each check is named after its example.
 set -u
-cd "$(dirname "$0")/../plugins/vicky-skills/skills/engineering"
-chart=lay-course/STAR-CHART.md
+cd "$(dirname "$0")/../plugins/vicky-skills/skills"
+chart=commands/lay-course/STAR-CHART.md
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 # The chart body template: the lines between "## The chart" and "## Tickets".
@@ -17,8 +17,8 @@ box() { body | awk -v h="### $1" '$0 == h {on=1; next} /^##/ {on=0} on'; }
 check "a spec that mission-brief or lay-course writes is filed with a Knowns section holding the four boxes" \
   'body | awk "/^## Sensor log/{s=NR} /^## Knowns/{k=NR} END{exit !(s && k > s)}" \
    && [ "$(body | grep -cE "^### (Known knowns|Known unknowns|Unknown knowns|Unknown unknowns)$")" = 4 ] \
-   && grep -q "Knowns" lay-course/SKILL.md && grep -q "Knowns" mission-brief/SKILL.md \
-   && grep -qi "four Rumsfeld boxes" mission-brief/SKILL.md'
+   && grep -q "Knowns" commands/lay-course/SKILL.md && grep -q "Knowns" planning/mission-brief/SKILL.md \
+   && grep -qi "four Rumsfeld boxes" planning/mission-brief/SKILL.md'
 # Given a known known in the spec
 # When the chart is filed
 # Then it sits in the sensor log with its source quoted

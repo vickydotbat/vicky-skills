@@ -2,7 +2,7 @@
 # approved-spec: the examples approved on the star "Familiar visibility probe".
 # Each check runs the probe on synthetic debt notes and transcripts.
 set -u
-probe="$(dirname "$0")/../plugins/vicky-skills/skills/productivity/familiar/scripts/familiar-visibility.py"
+probe="$(dirname "$0")/../plugins/vicky-skills/skills/commands/familiar/scripts/familiar-visibility.py"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
