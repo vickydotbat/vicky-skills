@@ -38,7 +38,8 @@ Before you write a test a pass will run, and whenever a pass runs slow or hangs,
    - Neither: the manual pass below.
 
    Done when you can name the tool, or "manual".
-2. **Narrow the target**: the changed lines of the production files with decision logic (rules, limits, parsers), with the tool's diff mode or line spans. Done when you have a list of files, each with its line span.
+2. **Narrow the target**: the changed lines of the production files with decision logic (rules, limits, parsers), with the tool's diff mode or line spans. Then put the laws' proofs first: run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/law-lint.sh reach <base>`, with the merge-base as `<base>`. It lists each law the diff reaches and its `Proven by:` check. Put the changed files those checks run or read at the top of the list, and mutate them first, so a cut budget leaves only code no law covers unrun. A law whose proof greps skill text gets a manual mutant: delete the phrase its grep matches, and run the proof. Done when you have a list of files, each with its line span.
+   Proven by: tests/sentinels_proofs_approved_examples.test.sh
 3. **Estimate before you run**: the mutants in the span x the time of the tests that reach them / the workers. Over 50 minutes, narrow the span or speed up the tests first: a test that sleeps, starts a container or a server per case, or touches the network is the usual cause, and a shared fixture or a fake fixes it. Done when the estimate is under 50 minutes.
 4. **Run it under a timeout**, logging to your scratch folder:
    ```bash
@@ -64,7 +65,14 @@ Before you write a test a pass will run, and whenever a pass runs slow or hangs,
    - `<file>`: killed <n>, survived <n> (each answered), no coverage <n>, by <tool or "hand">
    - `<file>`: unrun, because <the quoted log line>
    ```
+   Then one line per law from step 2, by whether its proof killed a mutant in the code under it:
+   ```markdown
+   - law <file:line>: proof <check> cannot fail (killed 0)
+   - law <file:line>: proof <check>: proof can fail (killed <n>)
+   ```
+   A proof that cannot fail is a survivor of its own: answer it as step 6 says.
    Done when every file from step 2 has its line.
+   Proven by: tests/sentinels_proofs_approved_examples.test.sh
 
 ## The manual pass
 
