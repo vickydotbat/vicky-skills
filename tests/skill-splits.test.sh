@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# The long productivity skills keep their steps in SKILL.md and their
+# The long skills keep their steps in SKILL.md and their
 # branch-only reference in a sibling file behind a pointer. Each pointer
 # resolves, and each moved section sits in its new home and not the old one.
 set -u
