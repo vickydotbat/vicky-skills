@@ -24,10 +24,13 @@ copy() {
   for c in "${cuts[@]}"; do d=$(dirname "$c"); rel=${d#"$evals_plugin/evals/"}; mkdir -p "$1/evals/$(dirname "$rel")"; cp -r "$d" "$1/evals/$rel"; done
 }
 copy "$evals_out/now-plugin"; copy "$evals_out/cut-plugin"
+declare -A done_cut # a skill's section is cut once, however many of its cases name it
 for c in "${cuts[@]}"; do
   rel=${c#"$evals_plugin/evals/"}; skill=${rel%%/*}
   file=$(ls "$evals_out/cut-plugin"/skills/*/"$skill"/SKILL.md)
   heading=$(head -1 "$c")
+  [ -n "${done_cut["$skill:$heading"]:-}" ] && continue
+  done_cut["$skill:$heading"]=1
   grep -qxF -- "$heading" "$file" || { echo "every-case: $rel: $skill has no line \"$heading\""; exit 1; }
   level=${heading%%[^#]*}
   awk -v h="$heading" -v lv="${#level}" '
