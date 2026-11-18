@@ -81,6 +81,7 @@ TESTS = {
     "skill-started.sh": ["draft-guard", "ticket-filing-guard"],
     "pr-guard.sh": ["pr-guard", "pr_guard_ai_credit_approved_examples", "pr_guard_one_pr_approved_examples", "pr_guard_create_approved_examples"],
     "push-behind-guard.sh": ["push-behind-guard"],
+    "rebase-guard.sh": ["rebase-guard"],
     "patch-tell-hint.sh": ["patch-tell-hint"],
     "workflow-lint.sh": ["workflow-lint"],
     "ready-resume-hint.sh": ["ready-resume-hint"],

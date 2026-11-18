@@ -123,6 +123,12 @@
       "description": "Repos that take every change on main, as owner/repo, separated by commas, for a repo that can't hold a \"Trunk: on\" line in its AGENTS.md, CLAUDE.md or docs/agents.",
       "default": ""
     },
+    "guard_rebase": {
+      "type": "boolean",
+      "title": "Rebase onto main through history-monks",
+      "description": "Refuse a rebase onto a moved origin default branch until the history-monks skill has started in the session.",
+      "default": true
+    },
     "guard_push_behind": {
       "type": "boolean",
       "title": "No push from behind main",

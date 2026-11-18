@@ -171,6 +171,8 @@ jobs:
         run: tests/local-path-guard.test.sh
       - name: Push-behind guard
         run: tests/push-behind-guard.test.sh
+      - name: Rebase guard
+        run: tests/rebase-guard.test.sh
       - name: Patch-tell hint
         run: tests/patch-tell-hint.test.sh
       - name: Workflow lint
