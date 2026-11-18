@@ -18,7 +18,7 @@ for f in "$@"; do
   fi
   while IFS= read -r line; do
     [[ "$line" =~ ^-\ Foreseen\ [0-9]{4}-[0-9]{2}-[0-9]{2}:\ . ]] || { echo "$f: a Foreseen line has no date: $line"; fail=1; continue; }
-    [[ "$line" =~ ,\ (guarded\ by\ .|accepted|ticketed) ]] || { echo "$f: a foreseen failure has no disposition (guarded by, accepted or ticketed): ${line#*: }"; fail=1; }
+    [[ "$line" =~ ,\ (guarded\ by|accepted:|ticketed:)\ . ]] || { echo "$f: a foreseen failure has no disposition (guarded by <guard>, accepted: <why> or ticketed: <link>): ${line#*: }"; fail=1; }
   done <<<"$foreseen"
 done
 exit $fail

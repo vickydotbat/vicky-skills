@@ -5,6 +5,7 @@
 set -u
 [ $# -gt 0 ] || { echo "usage: check-post-mortem.sh <post-mortem>..." >&2; exit 2; }
 date='[0-9]{4}-[0-9]{2}-[0-9]{2}'
+# shortcut: any KEY-123 counts as a ticket key, so UTF-8 passes too; tighten when a repo names its ticket prefixes.
 link='[A-Z][A-Z0-9]*-[0-9]+|#[0-9]+|\[\[[^]]+\]\]|\[[^]]+\]\([^)]+\)|https?://'
 fail=0
 for f in "$@"; do
@@ -17,12 +18,12 @@ for f in "$@"; do
   done
   while IFS= read -r line; do
     [[ "$line" =~ ^-\ $date ]] || { echo "$f: a Timeline line has no date: $line"; fail=1; }
-  done < <(section Timeline | grep '^- ')
+  done < <(section Timeline | grep .)
   if section 'Earlier incidents' | grep -q 'None found' && ! section 'Earlier incidents' | grep -qE 'None found: .*search'; then
     echo "$f: Earlier incidents says None found but names no search: write None found: searched <where> for <words>."; fail=1
   fi
   while IFS= read -r line; do
     [[ "$line" =~ $link ]] || { echo "$f: a follow-up links nothing: $line"; fail=1; }
-  done < <(section Follow-ups | grep '^- ')
+  done < <(section Follow-ups | grep .)
 done
 exit $fail

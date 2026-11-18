@@ -9,6 +9,7 @@ tpl=0; [ "${1:-}" = "--template" ] && { tpl=1; shift; }
 categories='Architecture|Data|Interface|Infrastructure|Security|Dependencies|Tooling|Process|Other'
 ref='([a-z0-9][a-z0-9-]* )?ADR-[0-9]{4}'
 date='[0-9]{4}-[0-9]{2}-[0-9]{2}'
+# Records accepted before the date rule landed keep their undated forces, as FORMAT.md's Context rule says.
 dated_since=2026-11-19
 fail=0
 for f in "$@"; do
