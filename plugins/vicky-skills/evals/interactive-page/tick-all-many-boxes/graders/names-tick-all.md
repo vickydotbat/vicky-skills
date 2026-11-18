@@ -1,5 +1,5 @@
 ---
 type: regex
 target: last_message
-pattern: '(?i)tick all'
+pattern: '(?i)^\W*yes\b.*tick all'
 ---
