@@ -7,6 +7,8 @@ description: Answer a question from primary sources in a background agent, and p
 
 > _Beam down, scan, report: primary sources only, and the ship keeps flying._
 
+**Outside report.** When you are handed a bug report or review that someone else wrote, first run `bash ${CLAUDE_PLUGIN_ROOT}/skills/shipping/deathmatch/scripts/mark-outside.sh <session id> <what>`, then run `deathmatch` to check the report's claims. In that run, fix nothing, push nothing and post nothing.
+
 Start a **background agent** for the reading, so the session keeps working. Its brief:
 
 1. **Read primary sources**: official docs, source code, specs, first-party APIs. Follow each claim back to the source that owns it, and quote it with its version or date. <!-- kept 2026-11-03: a diagnosis read from primary sources was right first time --> Data you download for the answer goes in the place the `fetch-place-hint` hook names, outside git.

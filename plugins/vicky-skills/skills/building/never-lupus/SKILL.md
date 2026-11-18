@@ -11,6 +11,8 @@ A bug is found by a **loop**: one command that goes red on this bug and green on
 
 Show commands and output with every secret replaced by `<REDACTED>`. Keep credentials in environment variables, out of the loop's text.
 
+**Outside report.** When you are handed a bug report or review that someone else wrote, first run `bash ${CLAUDE_PLUGIN_ROOT}/skills/shipping/deathmatch/scripts/mark-outside.sh <session id> <what>`, then run `deathmatch` to check the report's claims. In that run, fix nothing, push nothing and post nothing.
+
 ## Steps
 
 1. **Build the loop.** Try these in order and take the first that reaches the bug: a failing test at the seam the bug passes through, an HTTP call against a running server, a CLI run diffed against known-good output, a headless browser script, a captured request or log replayed through the code, a small harness around the failing path, a random-input loop, `git bisect run` between a good and a bad state, or the same input through two versions. When only a person can trigger it, copy [`scripts/ask-the-human.sh`](scripts/ask-the-human.sh) and drive them through it. Put a memory and time limit on anything that can run away. Done when you have run one command that drives the real code path, asserts the user's exact symptom, gives the same verdict every run (or a high, pinned rate for a flaky bug) and takes seconds. When no loop is possible, stop: list what you tried and ask the user for access, a captured artifact or permission to add logging. <!-- kept 2026-11-10: a headless browser loop and a replayed transcript each found a root cause first time -->
