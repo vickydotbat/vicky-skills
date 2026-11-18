@@ -2,7 +2,7 @@
 # law-lint.sh beyond its approved examples: a user's diff settings never
 # change which laws count as added, and a bad call says what it needs.
 set -u
-lint="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/scripts/law-lint.sh"
+lint="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/shipping/engrave/scripts/law-lint.sh"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 t=$(mktemp -d); trap 'rm -rf "$t"' EXIT

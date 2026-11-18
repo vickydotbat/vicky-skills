@@ -14,7 +14,6 @@ git-guard.sh	77dedc9bf5718121	d09d965a61a737d2	51/51
 git-hook-lib.sh	5b23f2ed23f960ca	7028317eb43a587b	51/51
 heredoc-strip.awk	f4f00a43ef2fd634	5622f720b45d6356	6/6
 keep-awake.sh	feff08832e938e61	413a5f283466e99b	27/27
-law-lint.sh	73a206a01f7fe091	e6187d4bae10abb5	160/160
 lesson-hint.sh	7a82ca13330f28fd	53c1dbd246d11bc3	11/11
 lesson-ledger.sh	4c88dc2d0aebcfe6	4119823c54b0164c	18/18
 local-path-guard.sh	6250febeeda4bb1c	0ce0e2b566b06217	29/29
@@ -58,6 +57,7 @@ skills/housekeeping/sup/scripts/find-handoff.sh	425f97e5829c194b	a42c1312db02034
 skills/planning/decision-record/scripts/check-adr.sh	effe0e9e46b6073d	e7eb97e9994cf906	80/80
 skills/planning/drawing-board/scripts/board.py	511cd6695d270424	6fd635ca7c3ae576	140/140
 skills/planning/drawing-board/scripts/fetch-drawio.sh	e69344201d3866d9	24c3bdd937c83529	24/24
+skills/shipping/engrave/scripts/law-lint.sh	73a206a01f7fe091	9b923a9cd7128a43	160/160
 skills/writing/human-voice/scripts/lint-tells.py	d51373996ad8ae9c	2d2bca2295dfce73	47/47
 skills/writing/interactive-page/scripts/open-draft.sh	09ebb597b65041c8	df92af7062cf9322	50/50
 skills/writing/interactive-page/scripts/open-page.sh	9da7be591b0eb684	b530de4731c6be76	9/9

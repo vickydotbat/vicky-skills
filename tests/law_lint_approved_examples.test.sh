@@ -2,7 +2,7 @@
 # approved-spec: the examples approved for "A lint lists laws with no proof".
 # Each check is named after its example and runs the lint on a scratch repo.
 set -u
-lint="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/scripts/law-lint.sh"
+lint="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/shipping/engrave/scripts/law-lint.sh"
 fc="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/commands/first-contact/domain.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }

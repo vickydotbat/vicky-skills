@@ -4,7 +4,7 @@
 # and make-it-so do with its output is proven by their eval cases.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills"
-lint="$root/scripts/law-lint.sh"
+lint="$root/skills/shipping/engrave/scripts/law-lint.sh"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 t=$(mktemp -d); trap 'rm -rf "$t"' EXIT
