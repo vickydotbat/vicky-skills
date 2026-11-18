@@ -26,6 +26,7 @@ Read the repo's testing standards first, where the `Testing standards:` line in 
    - **Green**: done.
    - **Stopped at the draft gate**: a run that ended at the repo's draft or `WIP:` gate, because it started before the pull request was ready, is the gate working, not red. Never report it as a failure: wait for the run the ready event starts, or close and reopen the pull request as step 5 says.
    - **Red**: read the failing job's log (`tea actions runs logs <id>`, or the check's link), then read the latest run on the base branch (`gh run list --branch <base> --limit 1`, or `tea actions runs list`). Tell the user at once, in one line: the failing check, its cause, and whether the base branch fails the same way. Fix the cause on the branch, even when the base branch carries it, without asking first: a choice between fixes that each make the check pass honestly is yours, so name your pick in the one line and build it. Ask first only when every fix breaks the spec: an approved example, the ticket, or a decision on record. Fix it with `machine-spirit` when CI itself broke, and with `never-lupus` when the code did. A test that fails only some runs is red: rerun it locally until it fails, and fix it. Rerun the checks the fix reaches, push once, and watch again.
+   - **Killed by the runner**: the log shows the runner ended the step, not the code: a cancel or kill line, a lost runner, or exit -1 with no assertion, error or test output before it. A step that failed by itself is red, however odd. Run the job's steps locally on the head commit; when they pass, rerun only the failed jobs, once (on Gitea `tea api -X POST repos/<owner>/<repo>/actions/runs/<id>/rerun-failed-jobs </dev/null`, on GitHub `gh run rerun <id> --failed`), and name the kill line and the local pass in the body. A second red on the rerun is red.
    - **Stuck or never reports**: run `machine-spirit`.
 
    A merge or approval only someone else can give is a gate: handle it as `warp`'s "Punch through" says, in a warp or not. Stop after three red rounds, or when the cause sits outside the repository, and report what you found. Done when Q11 passes.
@@ -58,6 +59,6 @@ Measured by one read:
 
 Measured after the push:
 
-- **Q11 Green.** Every required check on the head commit is final and successful. No red check was rerun without a new commit.
+- **Q11 Green.** Every required check on the head commit is final and successful. No red check was rerun without a new commit, except one rerun of a job the runner killed, as step 6 says.
 
 Charter: C2, C4 ([CHARTER.md](../../CHARTER.md)).
