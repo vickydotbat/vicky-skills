@@ -39,4 +39,69 @@ setup; branch feat; merge feat; on_main
 out=$(PATH="$dir/nojq" CLAUDE_PROJECT_DIR="$dir/repo" "$dir/nojq/bash" "$hook" <<<'{"hook_event_name": "SessionStart"}')
 check "without jq a landed branch still goes, and the agent hears nothing" '! has_local feat && agent_silent "$out"'
 
+# Exit status 0 on every quiet path, so Claude Code never reports a hook error.
+st() { "$@" >/dev/null; echo $?; }
+merged_repo
+check "switched off, the hook exits 0" '[ "$(OPT=false st run)" = 0 ]'
+check "after a command that merged nothing, the hook exits 0" '[ "$(st run "$dir/repo" "$(after "git status")")" = 0 ]'
+check "with nothing to tidy, the hook exits 0" '[ "$(st run)" = 0 ] && [ "$(st run)" = 0 ]'
+
+# Only the forge knows: main moved before a two-commit squash, so no tree or patch matches.
+for forge in gh tea; do
+  FORGE=$forge; setup; branch feat; second feat; main_moves; merge feat keep; on_main
+  out=$(run)
+  check "with $forge, a branch only the forge knows merged goes, and you see it named" '! has_local feat && ! has_remote feat && seen "$out" | grep -q "Gone: feat, origin/feat"'
+  setup; branch feat; second feat; main_moves; merge feat; on_main
+  run >/dev/null
+  check "with $forge, a branch only the forge knows merged goes after the forge deleted its remote" '! has_local feat'
+  setup; branch feat; echo "feat OPEN $(git -C "$dir/repo" rev-parse feat)" > "$dir/prs"
+  git clone -q "$dir/origin.git" "$dir/other" 2>/dev/null; git -C "$dir/other" cherry-pick -x origin/feat >/dev/null; git -C "$dir/other" push -q origin main 2>/dev/null; rm -rf "$dir/other"; on_main
+  run >/dev/null
+  check "with $forge, an open pull request's branch stays, even when main holds its work" 'has_local feat'
+done
+FORGE=gh
+
+# With no forge, a squash whose upstream is gone still counts once main holds its last tree.
+setup; branch feat; second feat; merge feat; rm -f "$dir/prs"; on_main
+run >/dev/null
+check "without a forge, a landed two-commit squash goes" '! has_local feat'
+setup; branch feat; second feat; merge feat keep; rm -f "$dir/prs"; on_main; git -C "$dir/repo" branch -q -D feat
+out=$(run)
+check "without a pull request, your landed remote branch goes" '! has_remote feat && seen "$out" | grep -q "origin/feat"'
+
+setup; branch feat; rm -f "$dir/prs"; on_main; git -C "$dir/repo" branch -q -D feat
+run >/dev/null
+check "without a pull request, your remote branch whose work never landed stays" 'has_remote feat'
+
+setup; branch feat; merge feat keep; git -C "$dir/repo" switch -q feat; echo late > "$dir/repo/late.txt"; git -C "$dir/repo" add late.txt; git -C "$dir/repo" commit -q -m late
+git -C "$dir/repo" push -q origin feat 2>/dev/null; on_main; git -C "$dir/repo" branch -q -D feat
+run >/dev/null
+check "a remote branch pushed to after its merge stays" 'has_remote feat'
+
+setup; branch feat; merge feat; git -C "$dir/repo" switch -q feat; echo more > "$dir/repo/more.txt"; git -C "$dir/repo" add more.txt; git -C "$dir/repo" commit -q -m more; on_main
+out=$(run)
+check "a merged branch with later commits is named as kept" 'has_local feat && seen "$out" | grep -q "feat (commits made after the merge)"'
+
+setup; branch feat; worktree feat; merge feat; on_main; git -C "$dir/repo" worktree lock "$dir/wt-feat"
+out=$(run)
+check "a locked worktree stays, and you see why" '[ -d "$dir/wt-feat" ] && seen "$out" | grep -q "locked worktree"'
+
+setup; branch feat; worktree feat; merge feat; on_main
+mkdir -p "$dir/repo/docs/agents" "$dir/repo/scripts"; printf 'Drop worktree: scripts/drop.sh\n' > "$dir/repo/docs/agents/testing.md"
+printf '#!/usr/bin/env bash\nexit 1\n' > "$dir/repo/scripts/drop.sh"; chmod +x "$dir/repo/scripts/drop.sh"
+out=$(run)
+check "a worktree the removal script leaves keeps its branch" '[ -d "$dir/wt-feat" ] && has_local feat && seen "$out" | grep -q "would not come off"'
+
+setup; git -C "$dir/repo" worktree add -q -b side "$dir/wt-side" origin/main 2>/dev/null; main_moves; on_main; git -C "$dir/repo" fetch -q origin; before=$(git -C "$dir/wt-side" rev-parse HEAD)
+run >/dev/null
+check "a worktree on another branch is never fast-forwarded" '[ "$(git -C "$dir/wt-side" rev-parse HEAD)" = "$before" ]'
+
+setup; on_main; main_moves
+out=$(run)
+check "a caught-up main is named" 'seen "$out" | grep -q "caught up with origin/main"'
+
+setup; branch feat; merge feat; git -C "$dir/repo" fetch -q origin; git -C "$dir/repo" branch -q -f main origin/main~1; git -C "$dir/repo" switch -q feat
+run >/dev/null
+check "a clone handed back to a stale local main stands on origin's main" '[ "$(git -C "$dir/repo" symbolic-ref --short HEAD)" = main ] && [ "$(git -C "$dir/repo" rev-parse main)" = "$(git -C "$dir/repo" rev-parse origin/main)" ]'
+
 exit $fail

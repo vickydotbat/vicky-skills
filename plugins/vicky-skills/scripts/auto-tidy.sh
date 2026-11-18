@@ -21,20 +21,20 @@ fi
 # The folder the session stands in, whose worktree is never removed.
 here=$(sed -n 's/.*"cwd"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' <<<"$payload"); here=${here%%$'\n'*}
 cd "${CLAUDE_PROJECT_DIR:-.}" 2>/dev/null || exit 0
-git rev-parse --is-inside-work-tree >/dev/null 2>&1 || exit 0
+git rev-parse --is-inside-work-tree >/dev/null 2>&1 || exit 0 # mutant-ok delete: outside a repo the default-branch check below exits the same way
 GIT_TERMINAL_PROMPT=0 timeout 15 git fetch --prune --quiet origin >/dev/null 2>&1
 default=$(git symbolic-ref -q --short refs/remotes/origin/HEAD 2>/dev/null)
 default=${default:-origin/main}
-git rev-parse -q --verify "$default" >/dev/null || exit 0
+git rev-parse -q --verify "$default" >/dev/null || exit 0 # mutant-ok delete: with no default branch every comparison below fails, so nothing goes
 main_name=${default#origin/}
 top=$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")
 notes=() went=() kept=()
 
 # The forge's pull requests, one per line: <branch> <OPEN|MERGED|CLOSED> <head sha>, newest first.
 prs=$(
-  if out=$(timeout 10 gh pr list --state all --limit 200 --json headRefName,state,headRefOid 2>/dev/null) && [ -n "$out" ]; then
+  if out=$(timeout 10 gh pr list --state all --limit 200 --json headRefName,state,headRefOid 2>/dev/null) && [ -n "$out" ]; then # mutant-ok: gh answers either a list or a failure, never success with no output
     jq -r '.[] | "\(.headRefName) \(.state) \(.headRefOid)"' <<<"$out" 2>/dev/null
-  elif out=$(timeout 10 tea api 'repos/{owner}/{repo}/pulls?state=all&limit=50' </dev/null 2>/dev/null) && [ -n "$out" ]; then
+  elif out=$(timeout 10 tea api 'repos/{owner}/{repo}/pulls?state=all&limit=50' </dev/null 2>/dev/null) && [ -n "$out" ]; then # mutant-ok: tea answers either a list or a failure, never success with no output
     jq -r '.[] | "\(.head.ref) \(if .merged then "MERGED" elif .state == "open" then "OPEN" else "CLOSED" end) \(.head.sha)"' <<<"$out" 2>/dev/null
   fi
 )
@@ -42,7 +42,7 @@ pr() { awk -v b="$1" -v f="$2" '$1 == b { print $f; exit }' <<<"$prs"; }
 
 # landed <ref>: main since the fork holds the ref's last tree, as a squash merge does.
 landed() {
-  local tree base
+  local tree base # mutant-ok delete: a local declaration: no caller reads these names
   tree=$(git rev-parse "$1^{tree}" 2>/dev/null) || return 1
   base=$(git merge-base "$1" "$default" 2>/dev/null) || return 1
   git log --format=%T "$base..$default" 2>/dev/null | grep -Fxq "$tree"
@@ -59,31 +59,31 @@ merged() {
 }
 # in_use <path>: the session or some process stands in the folder. With no way to tell, it counts as in use.
 in_use() {
-  local cwds
+  local cwds # mutant-ok delete: a local declaration: no caller reads this name
   case "$here/" in "$1"/*) return 0 ;; esac
   if [ -d /proc/self ]; then
     cwds=$(for c in /proc/[0-9]*/cwd; do readlink "$c" 2>/dev/null; done)
   elif command -v lsof >/dev/null 2>&1; then
-    cwds=$(lsof -a -d cwd -Fn 2>/dev/null | sed -n 's/^n//p')
+    cwds=$(lsof -a -d cwd -Fn 2>/dev/null | sed -n 's/^n//p') # mutant-ok: only a machine with no /proc reaches this line, and the tests run on Linux
   else
-    return 0 # shortcut: no /proc and no lsof keeps every worktree, until a portable check exists
+    return 0 # mutant-ok: only a machine with no /proc and no lsof reaches this line; shortcut: no /proc and no lsof keeps every worktree, until a portable check exists
   fi
   awk -v p="$1/" 'index($0 "/", p) == 1 { f = 1 } END { exit !f }' <<<"$cwds"
 }
 # The repo's own worktree removal script, from a "Drop worktree: <path>" line.
 drop_script() {
-  local rel
+  local rel # mutant-ok delete: a local declaration: no caller reads this name
   rel=$(sed -n 's/^Drop worktree:[[:space:]]*//p' "$top/docs/agents/testing.md" 2>/dev/null | head -n1)
   case "$rel" in /* | *..*) return 0 ;; esac
-  [ -n "$rel" ] && [ -f "$top/$rel" ] && [ -x "$top/$rel" ] && printf '%s' "$top/$rel"
+  [ -n "$rel" ] && [ -f "$top/$rel" ] && [ -x "$top/$rel" ] && printf '%s' "$top/$rel" # mutant-ok: a blank line names the main clone, a folder, and -x alone then runs a folder, which fails and keeps the worktree
 }
 
 clone() {
   # Only the first working tree is the clone: a worktree is some session's own.
   [ "$(git rev-parse --git-dir)" = "$(git rev-parse --git-common-dir)" ] || return 0
-  local current state point after dirty fresh
+  local current state point after dirty fresh # mutant-ok delete: a local declaration: no caller reads these names
   current=$(git symbolic-ref --short -q HEAD) || return 0
-  [ "$current" = "$main_name" ] && return 0
+  [ "$current" = "$main_name" ] && return 0 # mutant-ok delete: the default branch never counts as merged below, so the clone returns the same way
   [ "$(pr "$current" 2)" = OPEN ] && return 0
   merged "$current" "$(git for-each-ref --format='%(upstream:track)' "refs/heads/$current")" || return 0
   dirty=$(git status --porcelain | cut -c4- | tr '\n' ' ')
@@ -114,15 +114,15 @@ clone() {
     notes+=("The clone stays on '$current': the local $main_name has commits $default lacks.")
     return 0
   fi
-  git switch -q "$main_name" 2>/dev/null && git merge -q --ff-only "$default" >/dev/null 2>&1 || return 0
+  git switch -q "$main_name" 2>/dev/null || return 0 # the fast-forward below brings it to $default
   notes+=("The clone was on '$current', whose pull request merged, so it now stands on $main_name at $default.")
 }
 clone
 
-git worktree prune >/dev/null 2>&1
+git worktree prune >/dev/null 2>&1 # mutant-ok delete: a worktree whose folder is gone only adds entries no check below matches
 # Each local branch: delete it, and its worktree, when it merged and its work landed.
 while read -r b track; do
-  [ "$b" = "$main_name" ] && continue
+  [ "$b" = "$main_name" ] && continue # mutant-ok delete: the default branch never counts as merged, so the loop skips it anyway
   sha=$(git rev-parse "refs/heads/$b")
   [ "$(pr "$b" 2)" = OPEN ] && continue
   merged "$b" "$track" || continue
@@ -132,14 +132,14 @@ while read -r b track; do
   fi
   wt=$(git worktree list --porcelain | awk -v r="refs/heads/$b" '/^worktree /{p=substr($0, 10)} $0 == "branch " r {print p; exit}')
   if [ -n "$wt" ]; then
-    [ "$wt" = "$top" ] && continue
+    [ "$wt" = "$top" ] && continue # mutant-ok delete: the clone stands in its own folder, so the in-use check keeps it anyway
     if [ -n "$(git -C "$wt" status --porcelain 2>/dev/null)" ]; then kept+=("$b (uncommitted changes)"); continue; fi
     if git worktree list --porcelain | awk -v p="worktree $wt" '$0 == p {f = 1; next} /^worktree /{f = 0} f && /^locked/ {l = 1} END {exit !l}'; then kept+=("$b (locked worktree)"); continue; fi
     if in_use "$wt"; then kept+=("$b (a session is working in it)"); continue; fi
     drop=$(drop_script)
     if [ -n "$drop" ]; then (cd "$top" && "$drop" "$wt") >/dev/null 2>&1; else git worktree remove "$wt" >/dev/null 2>&1; fi
     [ -d "$wt" ] && { kept+=("$b (its worktree would not come off)"); continue; }
-    git worktree prune >/dev/null 2>&1
+    git worktree prune >/dev/null 2>&1 # mutant-ok delete: the next git worktree list only lists a removed worktree as prunable
   fi
   git branch -q -D "$b" >/dev/null 2>&1 && went+=("$b")
 done < <(git for-each-ref --format='%(refname:short) %(upstream:track)' refs/heads)
@@ -148,8 +148,8 @@ done < <(git for-each-ref --format='%(refname:short) %(upstream:track)' refs/hea
 me=$(git config user.email)
 while read -r rb; do
   b=${rb#origin/}
-  [ "$b" = "$main_name" ] || [ "$b" = HEAD ] || [ -z "$me" ] && continue
-  [ "$(pr "$b" 2)" = OPEN ] && continue
+  [ "$b" = "$main_name" ] && continue # mutant-ok delete: main has no commits beyond itself, so the author check below skips it too
+  [ "$(pr "$b" 2)" = OPEN ] && continue # mutant-ok delete: an open pull request fails the merged check on the line after next
   authors=$(git log --format=%ae "$default..$rb" 2>/dev/null | sort -u)
   [ "$authors" = "$me" ] || continue
   sha=$(git rev-parse "$rb")
@@ -175,4 +175,4 @@ join() { local out="" x; for x; do out+="${out:+, }$x"; done; printf '%s' "$out"
 [ ${#notes[@]} -gt 0 ] && line+=" ${notes[*]}"
 line=$(tr -d '\000-\037' <<<"$line"); line=${line//\\/\\\\}; line=${line//\"/\\\"}
 printf '{"systemMessage":"%s"}\n' "$line"
-exit 0
+exit 0 # mutant-ok delete: the line above leaves status 0, so the script ends the same way

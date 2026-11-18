@@ -69,6 +69,17 @@ merge() {
   echo "$1 MERGED $sha" >> "$dir/prs"
   [ "${2:-}" = keep ] || git -C "$dir/origin.git" branch -q -D "$1"
 }
+# main_moves: someone else lands a commit on origin's main.
+main_moves() {
+  git clone -q "$dir/origin.git" "$dir/other" 2>/dev/null
+  echo x >> "$dir/other/elsewhere.txt"; git -C "$dir/other" add elsewhere.txt; git -C "$dir/other" commit -q -m elsewhere
+  git -C "$dir/other" push -q origin main 2>/dev/null; rm -rf "$dir/other"
+}
+# second <branch>: one more pushed commit on the branch, so a squash of it matches no single commit.
+second() {
+  git -C "$dir/repo" switch -q "$1"; echo two >> "$dir/repo/$1.txt"; git -C "$dir/repo" commit -q -am "$1 two"
+  git -C "$dir/repo" push -q origin "$1" 2>/dev/null; git -C "$dir/repo" switch -q --detach origin/main
+}
 # worktree <branch>: check the branch out in its own worktree.
 worktree() { git -C "$dir/repo" worktree add -q "$dir/wt-$1" "$1" 2>/dev/null; }
 # busy <path>: another session stands in that folder until the test ends.

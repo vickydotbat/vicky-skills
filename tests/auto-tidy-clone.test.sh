@@ -15,7 +15,7 @@ for f in "$dir"/pr-*; do [ -f "\$f" ] && printf '%s %s\\n' "\${f##*/pr-}" "\$(ca
 EOF
 chmod +x "$dir/bin/gh"
 # A PATH with git and the shell tools but no gh.
-for t in git bash timeout grep awk cut tr sed cat dirname; do ln -s "$(command -v "$t")" "$dir/nogh/$t"; done
+for t in git bash timeout grep awk cut tr sed cat dirname sort; do ln -s "$(command -v "$t")" "$dir/nogh/$t"; done
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 run() { PATH="${BIN:-$dir/bin:$PATH}" CLAUDE_PLUGIN_OPTION_AUTO_TIDY="${OPT-true}" CLAUDE_PROJECT_DIR="${2:-$dir/repo}" bash "$hook" </dev/null; }
