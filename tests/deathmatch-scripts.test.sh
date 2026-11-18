@@ -24,4 +24,40 @@ bash "$dm/halfway.sh" four >/dev/null 2>&1; r=$?
 check "halfway refuses a count that is no number" '[ $r = 2 ]'
 bash "$dm/verdict.sh" check x y >/dev/null 2>&1; r=$?
 check "verdict refuses a mode it doesn't know" '[ $r = 2 ]'
+# Found by the deathmatch on its own pull request.
+t=$(mktemp -d); trap 'rm -rf "$t"' EXIT
+bash "$dm/cap.sh" 3 64M -- bash -c 'sleep 301 & echo $! > "'"$t"'/bg"; exit 0'; r=$?; bg=$(cat "$t/bg")
+check "a clean exit leaves no child of the command behind" '[ $r = 0 ] && ! kill -0 $bg 2>/dev/null'
+kill "$bg" 2>/dev/null
+if systemd-run --user --scope -q true 2>/dev/null; then
+bash "$dm/cap.sh" 1 64M -- bash -c 'setsid sleep 302 >/dev/null 2>&1 & echo $! > "'"$t"'/ss"; sleep 30' >/dev/null; ss=$(cat "$t/ss")
+check "a setsid grandchild dies with the time cap" '! kill -0 $ss 2>/dev/null'
+kill "$ss" 2>/dev/null
+else echo "skip a setsid grandchild dies with the time cap: no systemd user manager"; fi
+out=$(CAP_NO_SCOPE=1 bash "$dm/cap.sh" 10 32M -- python3 -c 'b = bytearray(256 * 1024 * 1024)' 2>/dev/null); r=$?
+check "with no scope, the memory cap still holds" '[ $r = 125 ]'
+out=$(bash "$dm/cap.sh" 10 64M -- bash -c 'exit 143'); r=$?
+check "a command's own exit 143 is no time cap" '[ $r = 143 ] && [ -z "$out" ]'
+before=$(pgrep -cx sleep); bash "$dm/cap.sh" 30 64M -- true; after=$(pgrep -cx sleep)
+check "a fast command leaves no timer behind" '[ "$after" -le "$before" ]'
+out=$(bash "$dm/cap.sh" 10 64M -- python3 -c 'import os; os.kill(os.getpid(), 9)'); r=$?
+check "a command that kills itself is no time cap" '[ $r = 137 ] && ! grep -q "time cap" <<<"$out"'
+h=$(bash "$dm/halfway.sh" 010)
+check "halfway reads a leading zero as decimal" '[ "$h" = "after 5: standards" ]'
+bash "$dm/halfway.sh" 08 >/dev/null 2>&1; r=$?; h=$(bash "$dm/halfway.sh" 08 2>/dev/null)
+check "halfway takes 08 as eight" '[ $r = 0 ] && [ "$h" = "after 4: standards" ]'
+bash "$dm/verdict.sh" due "$t/none" "" >/dev/null 2>&1; r=$?
+check "verdict refuses an empty sha, never calling it done" '[ $r = 2 ]'
+mkdir "$t/r" && cd "$t/r" && git init -qb main && git config user.email t@t && git config user.name t
+printf 'one\ntwo\nthree\nfour\n' > o.txt && git add . && git commit -qm o && base=$(git rev-parse HEAD)
+git mv o.txt n.txt && printf 'log=/ho''me/bob/x\n' >> n.txt && git commit -qam r
+out=$(bash "$dm/prefight.sh" "$base"); r=$?
+check "a leak in a renamed file is caught" '[ $r = 1 ] && grep -q "n.txt:5" <<<"$out"'
+git reset -q --hard "$base" && printf 'log=/ho''me/bob\n' >> o.txt && git commit -qam bare
+out=$(bash "$dm/prefight.sh" "$base"); r=$?
+check "a home folder at the end of a line is caught" '[ $r = 1 ] && grep -q "o.txt:5" <<<"$out"'
+git reset -q --hard "$base" && printf 'see /home/ for the layout\n' >> o.txt && git commit -qam bare
+bash "$dm/prefight.sh" "$base" >/dev/null; r=$?
+check "a bare /home/ with no user passes" '[ $r = 0 ]'
+cd - >/dev/null
 exit $fail
