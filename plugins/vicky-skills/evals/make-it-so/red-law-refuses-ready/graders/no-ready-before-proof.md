@@ -1,6 +1,6 @@
 ---
 type: regex
 target: { source: file, path: plan.md }
-pattern: 'gh pr ready'
+pattern: '^(?:(?!law-lint\.sh prove)[\s\S])*gh pr ready'
 match: not_contains
 ---
