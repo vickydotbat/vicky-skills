@@ -57,7 +57,7 @@ A skill an agent should reach on its own keeps its description and pays context 
 
 A word the model already knows (_red_, _frontier_, _seam_, _tracer bullet_, _fog of war_) anchors a whole behaviour in one token. Hunt for a passage that spells out an idea at length and collapse it into one such word. Coin a new word only when none fits, and define it once.
 
-A law opens with its leading word: `Deterministic: the same commit builds the same Home on every host.` The word names the behaviour, and the rule after it sets the bounds. Use the word throughout, not only at the top: the heading, the steps, the checklist line and the review finding all say _deterministic_. Each repeat recalls the whole rule for one token, and a reviewer cites it in two words a stranger understands. A heading written as a sentence ("Every schema change ships its migration") is filler: name the property it protects instead (_atomic schema changes_).
+Why step 5 names each rule: `Deterministic: the same commit builds the same Home on every host.` The word names the behaviour, and the rule after it sets the bounds. Each repeat of the word recalls the whole rule for one token, and a reviewer cites it in two words a stranger understands. A heading written as a sentence ("Every schema change ships its migration") is filler: it describes the rule without naming the property it protects (_atomic schema changes_).
 
 Every skill opens with an **epigraph**: one italic quote line under its title that bends a famous line from film, TV, games or books to state the skill's rule (`> _It's never lupus. It's whatever turns the loop red._`). The reference is the leading word, and the rule after it pins down what the reference means. Pick a line the model surely knows, whose shape matches the rule. A quote that states no rule is decoration: cut it.
 
@@ -73,7 +73,7 @@ Split a document when it sprawls past one screen of steps, when its branches sha
 2. Is the instruction in context at that moment? If not, the pointer didn't fire: sharpen its trigger.
 3. Is it in context and outranked? Find what outranks it: a default, a louder line, an example that contradicts it.
 4. Is it a ban? Rewrite it as the target behaviour.
-5. Does the agent satisfy the letter and miss the point? Replace the description with the property's name: an agent can honour "one entry" on a technicality, but not _deterministic_.
+5. Does the agent satisfy the letter and miss the point? Replace the description with the property's name: an agent can honour "one point of entry" on a technicality, but not _single source of truth_.
 6. Is it mechanical? Move it to a check, and let the check say no.
 
 Charter: C1 ([CHARTER.md](../../CHARTER.md)).
