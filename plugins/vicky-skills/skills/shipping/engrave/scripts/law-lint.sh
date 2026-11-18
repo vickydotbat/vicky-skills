@@ -6,6 +6,8 @@
 #   law-lint.sh reach <base>    list the laws the diff since <base> reaches, with their proofs
 #   law-lint.sh prove <base>    run the reached proofs, print one Laws line; exit 1 on a red
 #                               proof or an unproven law the branch added
+#   law-lint.sh stale <model>   list each law whose eval case last passed on another model,
+#                               or holds no passed record: the laws to run again
 #
 # A law is a top-level "- " bullet or "1. " step in AGENTS.md, CLAUDE.md,
 # docs/agents/*.md or a SKILL.md. Lines in code fences, under an Examples,
@@ -152,6 +154,29 @@ def reach(base):
     return 0
 
 
+def short(law):
+    return law["text"] if len(law["text"]) <= 60 else law["text"][:57].rstrip() + "..."
+
+
+def last_pass(case):
+    """'<model> <date>' from an eval case's passed file, which tests/evals/lib.sh writes."""
+    path = os.path.join(case, "passed")
+    return open(path, errors="replace").read().strip() if os.path.isfile(path) else None
+
+
+def stale(model):
+    for law in all_laws():
+        proof = law["proof"]
+        if not proof or not os.path.isdir(proof):
+            continue
+        passed = last_pass(proof)
+        if passed and passed.split()[0] == model:
+            continue
+        note = f"passed on {passed}" if passed else "never recorded"
+        print(f"{law['file']}:{law['line']} {short(law)} ({proof}: {note})")
+    return 0
+
+
 def prove(base):
     parts, red = [], False
     for law in reached(base):
@@ -165,10 +190,12 @@ def prove(base):
                 ok = False
             result = "passed" if ok else "failed"
             red |= not ok
+        elif os.path.isdir(proof):  # an eval case: a run costs money, so show its last pass
+            passed = last_pass(proof)
+            result = f"not run, passed on {passed}" if passed else "not run, never recorded"
         else:
-            result = "not run"  # an eval case costs money, and a plain file is no command
-        short = law["text"] if len(law["text"]) <= 60 else law["text"][:57].rstrip() + "..."
-        parts.append(f"{law['file']}:{law['line']} {short} ({proof}: {result})")
+            result = "not run"  # a plain file is no command
+        parts.append(f"{law['file']}:{law['line']} {short(law)} ({proof}: {result})")
     print("Laws: " + ("; ".join(parts) if parts else "none touched"))
     new, backlog = sort_problems(base)
     report(new, backlog)
@@ -184,6 +211,10 @@ def main(args):
         if len(args) < 2:
             sys.exit(f"law-lint: {args[0]} needs a base ref")
         return (reach if args[0] == "reach" else prove)(args[1])
+    if args[:1] == ["stale"]:
+        if len(args) < 2:
+            sys.exit("law-lint: stale needs a model, such as claude-opus-5-5")
+        return stale(args[1])
     return lint(args)
 
 

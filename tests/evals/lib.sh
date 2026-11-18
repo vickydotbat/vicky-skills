@@ -9,6 +9,11 @@
   echo "evals: every run here is a paid Claude session on your own credential. Read this runner's header for what it runs, then start it again with EVAL_SPEND=yes." >&2
   exit 2
 }
+# The model each run uses, pinned so a pass can record what it passed on.
+[ -n "${EVAL_MODEL:-}" ] || {
+  echo "evals: set EVAL_MODEL to the model under test, such as EVAL_MODEL=claude-opus-5-5. Each passing case records it with the date in its passed file." >&2
+  exit 2
+}
 evals_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 evals_plugin="$evals_root/plugins/vicky-skills"
 evals_out=$(mktemp -d) # kept after the run, so each result can be read back
@@ -17,7 +22,15 @@ eval_case() {
   local plugin=$1 name=$2 out=$3; shift 3
   timeout 900 \
     claude plugin eval "$plugin" --case "$name" --scaffold --trust-plugin --ablation none \
-    --runs 1 --max-cost-usd 3 --allow-tools Write Edit "$@" --no-publish --json "$evals_out/$out.json" >"$evals_out/$out.out" 2>&1
+    --runs 1 --max-cost-usd 3 --model "$EVAL_MODEL" --allow-tools Write Edit "$@" --no-publish --json "$evals_out/$out.json" >"$evals_out/$out.out" 2>&1 || return
+  record_pass "$plugin" "$name"
+}
+# record_pass <plugin dir> <case>: write "<model> <date>" to the case's passed
+# file, which law-lint.sh reads to show what an eval proof passed on.
+record_pass() {
+  local dir
+  for dir in "$1"/evals/*/"$2"; do [ -d "$dir" ] && echo "$EVAL_MODEL $(date +%F)" > "$dir/passed"; done
+  return 0
 }
 plugin_before() {
   mkdir -p "$2"

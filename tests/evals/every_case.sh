@@ -38,7 +38,7 @@ done
 run_all() { # run_all <plugin dir> <out name>
   timeout 3600 \
     claude plugin eval "$1" --scaffold --trust-plugin --keep-temp --ablation none -j "$jobs" \
-    --runs 1 --max-cost-usd 40 --allow-tools Write Edit Bash --no-publish --json "$evals_out/$2.json" >"$evals_out/$2.out" 2>&1
+    --runs 1 --max-cost-usd 40 --model "$EVAL_MODEL" --allow-tools Write Edit Bash --no-publish --json "$evals_out/$2.json" >"$evals_out/$2.out" 2>&1
 }
 run_all "$evals_out/now-plugin" now
 run_all "$evals_out/cut-plugin" cut
@@ -50,7 +50,7 @@ for c in "${cuts[@]}"; do
   now=$(score now "$name"); cut=$(score cut "$name")
   graded=$(jq -r --arg n "$name" '[.cases[] | select(.name == $n) | .arms.with[]?.graders[]?] | length' "$evals_out/cut.json" 2>/dev/null)
   if [ "$now" = 1 ] && [ "${graded:-0}" -gt 0 ] && [ "$cut" != 1 ] && [ -n "$cut" ] && [ "$cut" != none ]; then
-    echo "ok   $name: 1 now, $cut with its section cut"
+    echo "ok   $name: 1 now, $cut with its section cut"; record_pass "$evals_plugin" "$name"
   else
     echo "FAIL $name: ${now:-none} now (failed: $(failed now "$name")), ${cut:-none} with its section cut"; fail=1
     echo "     traces: $(jq -r --arg n "$name" '[.cases[] | select(.name == $n) | .arms.with[]?.tracePath] | join(" ")' "$evals_out/now.json" "$evals_out/cut.json" 2>/dev/null | tr '\n' ' ')"

@@ -23,6 +23,6 @@ for r in "$root"/tests/evals/*.sh; do
 done
 out=$(EVAL_SPEND=no bash -c '. "$1/tests/evals/lib.sh"' _ "$root" 2>&1); code=$?
 [ "$code" = 2 ] && ok "any other value refuses" || bad "any other value refuses: exit $code"
-out=$(EVAL_SPEND=yes bash -c '. "$1/tests/evals/lib.sh"; echo loaded' _ "$root" 2>/dev/null); code=$?
+out=$(EVAL_SPEND=yes EVAL_MODEL=m bash -c '. "$1/tests/evals/lib.sh"; echo loaded' _ "$root" 2>/dev/null); code=$?
 [ "$code" = 0 ] && grep -qx loaded <<<"$out" && ok "EVAL_SPEND=yes lets the runner load" || bad "EVAL_SPEND=yes lets the runner load: exit $code"
 exit $fail
