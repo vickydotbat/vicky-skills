@@ -164,6 +164,10 @@ def last_pass(case):
     return open(path, errors="replace").read().strip() if os.path.isfile(path) else None
 
 
+def pass_note(passed):
+    return f"passed on {passed}" if passed else "never recorded"
+
+
 def stale(model):
     for law in all_laws():
         proof = law["proof"]
@@ -172,8 +176,7 @@ def stale(model):
         passed = last_pass(proof)
         if passed and passed.split()[0] == model:
             continue
-        note = f"passed on {passed}" if passed else "never recorded"
-        print(f"{law['file']}:{law['line']} {short(law)} ({proof}: {note})")
+        print(f"{law['file']}:{law['line']} {short(law)} ({proof}: {pass_note(passed)})")
     return 0
 
 
@@ -191,8 +194,7 @@ def prove(base):
             result = "passed" if ok else "failed"
             red |= not ok
         elif os.path.isdir(proof):  # an eval case: a run costs money, so show its last pass
-            passed = last_pass(proof)
-            result = f"not run, passed on {passed}" if passed else "not run, never recorded"
+            result = "not run, " + pass_note(last_pass(proof))
         else:
             result = "not run"  # a plain file is no command
         parts.append(f"{law['file']}:{law['line']} {short(law)} ({proof}: {result})")

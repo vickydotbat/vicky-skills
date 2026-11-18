@@ -26,10 +26,13 @@ eval_case() {
   record_pass "$plugin" "$name"
 }
 # record_pass <plugin dir> <case>: write "<model> <date>" to the case's passed
-# file, which law-lint.sh reads to show what an eval proof passed on.
+# file, which law-lint.sh reads to show what an eval proof passed on. Only the
+# real plugin's case counts: a copy is thrown away, and a name two skills share
+# names no one case.
 record_pass() {
-  local dir
-  for dir in "$1"/evals/*/"$2"; do [ -d "$dir" ] && echo "$EVAL_MODEL $(date +%F)" > "$dir/passed"; done
+  [ "$1" = "$evals_plugin" ] || return 0
+  local dirs=("$1"/evals/*/"$2")
+  [ ${#dirs[@]} = 1 ] && [ -d "${dirs[0]}" ] && echo "$EVAL_MODEL $(date +%F)" > "${dirs[0]}/passed"
   return 0
 }
 plugin_before() {

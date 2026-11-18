@@ -50,6 +50,7 @@ A test stops only the processes it started, by the id it saved: `pkill -f <patte
 Run an eval for each skill whose steps changed and that has a folder under `plugins/vicky-skills/evals/`. Each run starts a real Claude session on your credential, so CI never runs them.
 
 1. `EVAL_SPEND=yes EVAL_MODEL=<model> tests/evals/every_case.sh <skill>`. A passing case writes the model and date to its `passed` file: commit it. After a model change, `law-lint.sh stale <model>` lists the laws to run again. Done when every case passes.
+   Proven by: tests/eval-proof-record.test.sh
 2. A skill with no case: `tests/eval-coverage.sh plugins/vicky-skills` lists it. Done when you have added a case or accepted the gap in the pull request body.
 
 ## Pull request

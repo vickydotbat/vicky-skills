@@ -6,7 +6,7 @@
 # section runs to the next heading of the same or a higher level.
 # Each run is a full Claude session on your own credential, so CI never runs
 # this file: run it by hand.
-# Usage: EVAL_SPEND=yes every_case.sh [skill ...]   (no skill: every case with a cut.txt)
+# Usage: EVAL_SPEND=yes EVAL_MODEL=<model> every_case.sh [skill ...]   (no skill: every case with a cut.txt)
 # EVAL_JOBS sets how many runs go at once, 4 by default.
 set -u
 # shellcheck source=lib.sh
