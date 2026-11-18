@@ -14,5 +14,6 @@ A test earns its run time only through its **red**: the change to production beh
 - **Number in the name**: a test named after a value that a sketch, a table or a constant sets (`ThePackIs10By6`). The test reads that value from where the code keeps it, so a tweak keeps it green and the name then lies. Name the relation the value serves (`ThePackFillsOnePage`) and read the value where it is kept.
 - **Measuring check**: a check written only to measure while building, such as a window's size or a row's width. It is a measurement, so it is not a test. Put its result in the pull request's Proof section and delete the check before the commit.
 - **Source scan**: a test that greps source text. It belongs in the build: a banned-symbol list, a linter or an analyzer.
+- **Prose pin**: a test that passes when a doc, a skill, a decision record, a comment or a message holds a phrase. Prose is never proven. Test the behaviour the text describes, through the system that obeys it. A skill's behaviour is what an agent does with it: prove it with an eval case.
 
 Mutation testing catches read-backs and other tests that can never fail. It misses content pins, structure pins, re-proofs and slow tests, because no mutant touches what they assert. Use both.

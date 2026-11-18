@@ -10,11 +10,11 @@ The reference `lay-course` and `warp` both read: the words, the chart body, the 
 | **mission** | What exists when the chart closes, in three sentences at most. |
 | **prime directive** | The rules that bind every ticket on the chart. |
 | **sensor log** | The facts the work rests on, each with its source: what the code, the engine or the spec does today. |
-| **star** | A ticket that delivers behaviour, specified by its approved examples. |
+| **star** | A ticket that delivers behaviour, something the running system does, specified by its approved examples. |
 | **anomaly** | A ticket that asks one question before the stars behind it can go on. A council or an interrogation answers it, picked when the user sits down to it. |
 | **away team** | A fact a decision waits on, found by the `away-team` skill. |
 | **probe** | A cheap, rough artifact (an outline, a stub, a sketch) for the human to react to. |
-| **task** | Work that has to happen before a decision can, such as getting access to a service. |
+| **task** | Work that has to happen before a decision can, such as getting access to a service, or work whose whole change is prose (a doc, a skill's guidance, a decision record). It ends at a `Done when` line and gets no examples. |
 | **nebula** | A question too loose to ticket yet. It may hold several tickets or none. |
 | **black hole** | A part of the work that eats effort without end, which the course steers around. Unlike a nebula, it is plain to see. It is never a ticket: the chart names it under Black holes, with its way around, such as a timebox or a path that skips it. |
 | **asteroid belt** | A question found during a build that the target can't ship without. `warp` builds around it, asks once at the end of the course, and builds the answers in the same pull request. |
@@ -156,7 +156,7 @@ Every new star, and every anomaly, probe or task that holds build work, is filed
 
 Found work, such as a bug a test caught or a gap a review named, is filed this way too, as "Sharding" step 4 says.
 
-1. **Slice.** Each star is a vertical slice: a thin path through every layer, shown working on its own, sized to one session, and landing green on the base the repo's rules name. A change that can't land green in one step goes expand–contract: build the new form beside the old, move the callers, then delete the old. A plan that takes something away and puts it back later ("reset to stock, then re-add") is no slice: re-cut it. An integration branch is a last resort, for a wide refactor only. Where any star lands follows `lay-course`'s "Where work lands". Done when every star stands on its own.
+1. **Slice.** A ticket whose whole change is prose is filed as a task with a `Done when` line, never as a star. Each star is a vertical slice: a thin path through every layer, shown working on its own, sized to one session, and landing green on the base the repo's rules name. A change that can't land green in one step goes expand–contract: build the new form beside the old, move the callers, then delete the old. A plan that takes something away and puts it back later ("reset to stock, then re-add") is no slice: re-cut it. An integration branch is a last resort, for a wide refactor only. Where any star lands follows `lay-course`'s "Where work lands". Done when every star stands on its own.
 2. **Draft** each star's Given / When / Then examples with `examples`, steps 1 and 2. Done when every star has its examples, or "Examples: not written yet".
 3. **Approve the examples before filing.** Put every star's examples in the effort's one `red-pen` draft file, a section per star with an approve box. The star bodies stay out of it. The user approves, edits or cuts there. A star waits on the close, and is filed with the examples the user left. A star whose examples the user cut is filed with "Examples: not written yet". Done when each star filed holds the user's examples.
 4. **Check the label.** Apply "Ready to warp" to the chart. Done when the chart's `starchart:afk` label matches it.

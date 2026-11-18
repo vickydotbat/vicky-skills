@@ -12,14 +12,14 @@ Develop a skill or hook in this order: Add a skill or Change a skill (or Add or 
 4. Give the file a `# ` title, and end every numbered step under `## Steps` in "Done when". Done when `tests/skill-steps.test.sh` passes.
 5. A skill the agent can start asks the user to type a typed-only skill and never starts it itself. Done when `tests/skill-links.test.sh` passes.
 6. End the skill with a `Charter:` line naming the lines of `plugins/vicky-skills/skills/CHARTER.md` it serves. Done when `tests/charter_approved_examples.test.sh` passes.
-7. Add the test of step "Change a skill" below. Done when it fails on a checkout without the skill and passes with it.
+7. Add the eval case of step "Change a skill" below. Done when it fails on a checkout without the skill and passes with it.
 
 ## Change a skill
 
-1. Change the text, then add or change a `tests/*.test.sh` assertion that fails on the text from before and passes after (a new pointer, a heading, a removed duplicate). Done when you have seen that assertion fail on the old text.
+1. Change the text, then add or change an eval case under `plugins/vicky-skills/evals/<skill>/` that recreates the situation and grades what the agent does: a file it writes, a tool it calls, its reply. Never prove a skill by grepping its text: a phrase in a skill is prose, and only the agent's behaviour is proof. Done when you have seen the case fail on the old text and pass on the new. Keep runs cheap: `--runs 1 --ablation none --max-cost-usd <cap>`, and regex graders over judge graders.
 2. Keep each meaning in one home and point at it from elsewhere. Keep a line marked `<!-- kept`. Done when `grep -rn` for a phrase you moved finds it in one skill file.
 
-`tests/skill-change-tested.test.sh` fails a branch that changes skill text and no test. Whether the test proves the intent is the review's call.
+`tests/skill-change-tested.test.sh` fails a branch that changes skill text and no eval case. Whether the case proves the intent is the review's call.
 
 ## Add or change a hook
 

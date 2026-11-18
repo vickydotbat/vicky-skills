@@ -20,6 +20,7 @@ When the caller names a **law file**, read it whole first: it holds the repo's r
    - A new Markdown file that is a plan, spec, handoff or tracker.
    - A literal repeated where a named constant belongs.
    - A test that greps source text, where a banned-symbol list or analyzer belongs.
+   - A test that passes when a doc, a skill, a decision record or a message holds a phrase: a prose pin, which proves no behaviour.
    - A test that can go red with no behaviour change: a bound sized to one machine, the real clock, unseeded randomness, real network, a shared fixture, an order dependency.
    - A bound widened, a sleep added or a retry wrapped around a test that was red, with no code change that explains it.
    - A test slower than a second with no comment naming the result that needs the time.

@@ -60,6 +60,7 @@ SURVIVORS = os.path.join(ROOT, "tests", ".mutation-survivors")
 MUTANT_MEMORY = 2**30
 GIT_GUARDS = ["git-guard", "git_guard_approved_examples", "push-behind-guard", "merged-branch-guard", "local-path-guard", "red_first_approved_examples"]
 TESTS = {
+    "skill-change-proven.sh": ["skill_change_proven_approved_examples", "skill-change-tested"],
     "familiar-voice.sh": ["familiar_approved_examples", "familiar"],
     "auto-tidy.sh": ["auto-tidy", "auto-tidy-clone", "clone_takeover_approved_examples"],
     "stale-copy-hint.sh": ["stale_copy_hint_approved_examples", "stale-copy-hint", "hint_once_approved_examples"],
