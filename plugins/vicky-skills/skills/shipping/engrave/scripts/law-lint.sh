@@ -16,7 +16,7 @@ set -u
 root=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
 cd "$root" || exit 2 # mutant-ok: the folder git or pwd just printed exists
 exec python3 - "$@" <<'PY'
-import os, re, subprocess, sys
+import glob, os, re, subprocess, sys
 
 SKIP_DIRS = {".git", "node_modules", "vendor"}
 SKIP_HEADINGS = {"examples", "pointers", "comments", "notes"}
@@ -38,12 +38,8 @@ def agent_files():
 
 
 def switched_off():
-    d = os.path.join("docs", "agents")
-    for f in sorted(os.listdir(d)) if os.path.isdir(d) else []:
-        p = os.path.join(d, f)
-        if f.endswith(".md") and any(l.strip() == "Law proofs: off" for l in open(p, errors="replace")):
-            return p
-    return None
+    return next((p for p in sorted(glob.glob("docs/agents/*.md"))
+                 if any(l.strip() == "Law proofs: off" for l in open(p, errors="replace"))), None)
 
 
 def laws(path):
@@ -86,6 +82,13 @@ def problem(law):
 def say(kind, law):
     tail = f" (proof {law['proof']} is missing)" if kind == "broken" else ""
     print(f"{kind} {law['file']}:{law['line']}: {law['text']}{tail}")
+
+
+def report(new, backlog):
+    for kind, law in new:
+        say(kind, law)
+    for _, law in backlog:
+        say("backlog", law)
 
 
 def git(*args):
@@ -139,10 +142,7 @@ def lint(args):
             sys.exit("law-lint: --since needs a base ref")
         base = args[1]
     new, backlog = sort_problems(base)
-    for kind, law in new:
-        say(kind, law)
-    for _, law in backlog:
-        say("backlog", law)
+    report(new, backlog)
     return 1 if new else 0
 
 
@@ -170,10 +170,7 @@ def prove(base):
         parts.append(f"{law['text']} ({proof}: {result})")
     print("Laws: " + ("; ".join(parts) if parts else "none touched"))
     new, backlog = sort_problems(base)
-    for kind, law in new:
-        say(kind, law)
-    for _, law in backlog:
-        say("backlog", law)
+    report(new, backlog)
     return 1 if red or new else 0
 
 

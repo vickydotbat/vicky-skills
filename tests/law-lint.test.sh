@@ -31,6 +31,7 @@ check "a Proven by line after a heading or a plain line belongs to no law above 
   'grep -q "^unproven AGENTS.md:1: After a heading" <<<"$out" && grep -q "^unproven AGENTS.md:4: After a note" <<<"$out"'
 
 git config user.email t@t && git config user.name t
+# The proof hangs for 30 s; LAW_LINT_TIMEOUT=1 below kills it after one second.
 mkdir -p tests; printf '#!/usr/bin/env bash\nsleep 30\n' > tests/slow.test.sh; chmod +x tests/slow.test.sh
 printf -- '- Slow.\n  Proven by: tests/slow.test.sh\n' > AGENTS.md; git add -A; git commit -qm base; base=$(git rev-parse HEAD)
 echo "# x" >> tests/slow.test.sh; git commit -qam touch

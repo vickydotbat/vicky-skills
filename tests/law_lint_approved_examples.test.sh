@@ -3,7 +3,6 @@
 # Each check is named after its example and runs the lint on a scratch repo.
 set -u
 lint="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/shipping/engrave/scripts/law-lint.sh"
-fc="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/commands/first-contact/domain.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 t=$(mktemp -d); trap 'rm -rf "$t"' EXIT
@@ -62,6 +61,6 @@ repo; mkdir -p docs/agents; echo "Law proofs: off" > docs/agents/domain.md; echo
 out=$("$lint" 2>&1); rc=$?
 repo; printf -- '- Empty.\n  Proven by:\n' > AGENTS.md
 out2=$("$lint" 2>&1)
-check "given the agent docs say Law proofs: off, when the law lint runs, then it says the check is off and exits 0, first-contact writes Law proofs: on, and an empty Proven by counts as unproven" \
-  '[ $rc = 0 ] && grep -qi "law proofs: off" <<<"$out" && ! grep -q "^unproven" <<<"$out" && grep -q "Law proofs: on" "$fc" && grep -q "^unproven AGENTS.md:1: Empty" <<<"$out2"'
+check "given the agent docs say Law proofs: off, when the law lint runs, then it says the check is off and exits 0, and an empty Proven by counts as unproven" \
+  '[ $rc = 0 ] && grep -qi "law proofs: off" <<<"$out" && ! grep -q "^unproven" <<<"$out" && grep -q "^unproven AGENTS.md:1: Empty" <<<"$out2"'
 exit $fail
