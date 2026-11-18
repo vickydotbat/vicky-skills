@@ -46,4 +46,32 @@ echo "# x" >> tests/a.test.sh; git commit -qam touch
 out=$("$lint" prove "$base" 2>&1)
 check "a Laws line names each law by its file and line and a short start, never its whole text" \
   'line=$(grep "^Laws:" <<<"$out") && grep -q "AGENTS.md:1 " <<<"$line" && [ ${#line} -lt 160 ] && grep -q "tests/a.test.sh: passed" <<<"$line"'
+
+# approved-spec: the examples the user ticked on 2026-11-18 for "Date each proof".
+cd "$t" && rm -rf r && mkdir r && cd r && git init -q && git config user.email t@t && git config user.name t
+mkdir -p evals/s/old evals/s/new evals/s/bare evals/s/other
+echo "model-a 2026-10-01" > evals/s/old/passed
+echo "model-b 2026-11-18" > evals/s/new/passed
+echo "model-a 2026-10-02" > evals/s/other/passed
+printf -- '- Old law.\n  Proven by: evals/s/old\n- New law.\n  Proven by: evals/s/new\n- Bare law.\n  Proven by: evals/s/bare\n- Other law.\n  Proven by: evals/s/other\n- Test law.\n  Proven by: AGENTS.md\n' > AGENTS.md
+git add -A; git commit -qm base; base=$(git rev-parse HEAD)
+touch evals/s/old/prompt.md evals/s/bare/prompt.md; git add -A; git commit -qm touch
+
+# Given a law whose proof is an eval case folder
+# When law-lint prove reaches it
+# Then the Laws line reads not run, passed on <model> <date> when the folder holds a passed file
+# And reads not run, never recorded when it holds none
+out=$("$lint" prove "$base" 2>&1)
+check "T1-3 the Laws line shows the model and date an eval proof passed on, or that none was recorded" \
+  'line=$(grep "^Laws:" <<<"$out") && grep -qF "(evals/s/old: not run, passed on model-a 2026-10-01)" <<<"$line" && grep -qF "(evals/s/bare: not run, never recorded)" <<<"$line"'
+
+# Given laws proven by eval cases, some passed on model A, one passed on model B and one never recorded
+# When law-lint stale B runs
+# Then it lists each law whose case passed on another model or was never recorded, with the model and date it has
+# And lists none that passed on B
+out=$("$lint" stale model-b 2>&1); rc=$?
+check "T1-4 stale lists each law whose case passed on another model or was never recorded, and none on that model" \
+  '[ $rc = 0 ] && grep -qF "AGENTS.md:1 Old law. (evals/s/old: passed on model-a 2026-10-01)" <<<"$out" && grep -qF "AGENTS.md:7 Other law. (evals/s/other: passed on model-a 2026-10-02)" <<<"$out" && grep -qF "AGENTS.md:5 Bare law. (evals/s/bare: never recorded)" <<<"$out" && ! grep -qF "New law" <<<"$out" && ! grep -qF "Test law" <<<"$out"'
+out=$("$lint" stale 2>&1); rc=$?
+check "stale with no model says it needs one and fails" '[ $rc -ne 0 ] && grep -q "needs a model" <<<"$out"'
 exit $fail
