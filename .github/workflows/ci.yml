@@ -149,6 +149,8 @@ jobs:
         run: tests/dated_forces_approved_examples.test.sh
       - name: Post-mortem and pre-mortem checks (approved examples)
         run: tests/post_mortem_check_approved_examples.test.sh
+      - name: Post-mortem and Foreseen check edges
+        run: tests/mortem-checks.test.sh
       - name: Skill changes come with a test
         run: tests/skill-change-tested.test.sh
       - name: Skill changes are proven by an eval case

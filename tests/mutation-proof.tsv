@@ -52,6 +52,7 @@ skills/commands/familiar/scripts/familiar-sessions.sh	a6d057056cae9b4b	26c33ba98
 skills/commands/familiar/scripts/familiar-shapes.sh	5c68c101c08e4a1f	5fab397e8876d8d3	32/32
 skills/commands/familiar/scripts/familiar-visibility.py	38fc0f4a6d3fa052	a37831789be39684	35/35
 skills/commands/familiar/scripts/familiar-watch.sh	11dc76c55896e285	5efc3566d7bfef5a	57/57
+skills/commands/lay-course/scripts/check-foreseen.sh	1d97a6ab29c07562	3fedbc73e4db05dd	23/23
 skills/commands/lay-course/scripts/draw-chart.py	0c5de7696438df4a	c963455b75e41e38	80/80
 skills/housekeeping/standing-orders/scripts/todo.sh	8b469102d3f5fa91	f6fdfdfd9ab0076e	32/32
 skills/housekeeping/summit/scripts/tracker-status.sh	6a332a8355300f2b	d075af041ac67551	25/25
@@ -59,6 +60,7 @@ skills/housekeeping/sup/scripts/find-handoff.sh	425f97e5829c194b	ccfb164cf1816e5
 skills/planning/decision-record/scripts/check-adr.sh	5ddccd417aba9c2d	13883e643234ea19	94/94
 skills/planning/drawing-board/scripts/board.py	511cd6695d270424	6fd635ca7c3ae576	140/140
 skills/planning/drawing-board/scripts/fetch-drawio.sh	e69344201d3866d9	24c3bdd937c83529	24/24
+skills/planning/post-mortem/scripts/check-post-mortem.sh	02ba8a5593b29961	3fedbc73e4db05dd	26/26
 skills/shipping/engrave/scripts/law-lint.sh	c868c7dea4edca82	6c6199abec9e22cc	181/181
 skills/writing/human-voice/scripts/lint-tells.py	d51373996ad8ae9c	a188c25f71567933	47/47
 skills/writing/interactive-page/scripts/open-draft.sh	09ebb597b65041c8	df92af7062cf9322	50/50

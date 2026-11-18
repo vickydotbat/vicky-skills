@@ -12,6 +12,7 @@
     "./skills/building/by-eye",
     "./skills/commands/captains-log",
     "./skills/planning/decision-record",
+    "./skills/planning/post-mortem",
     "./skills/building/do",
     "./skills/shipping/engrave",
     "./skills/planning/examples",

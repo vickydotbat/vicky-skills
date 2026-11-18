@@ -124,6 +124,8 @@ TESTS = {
     # Skill scripts, by their path under the plugin.
     "skills/commands/captains-log/scripts/hook-audit.py": ["hook-audit"],
     "skills/commands/captains-log/scripts/idle-skills.py": ["idle_skills_approved_examples", "idle-skills"],
+    "skills/planning/post-mortem/scripts/check-post-mortem.sh": ["post_mortem_check_approved_examples", "mortem-checks"],
+    "skills/commands/lay-course/scripts/check-foreseen.sh": ["post_mortem_check_approved_examples", "mortem-checks"],
     "skills/planning/decision-record/scripts/check-adr.sh": ["check-adr", "adr_retire_approved_examples", "dated_forces_approved_examples"],
     "skills/commands/lay-course/scripts/draw-chart.py": ["draw-chart", "black_hole_drawing_approved_examples"],
     "skills/planning/drawing-board/scripts/board.py": ["board-edges", "drawing-board", "drawing_board_approved_examples"],

@@ -23,6 +23,14 @@ Law proofs: on
 
 Write `Law proofs: off` to stop `law-lint.sh` listing rule lines that name no `Proven by:` check, and to stop review and make-it-so running a Laws line.
 
+Post-mortems: docs/post-mortems/
+
+Write where this repo keeps post-mortems (a folder or a wiki namespace), or `Post-mortems: off` to stop `post-mortem` writing them and its check.
+
+Pre-mortems: on
+
+Write `Pre-mortems: off` to stop the Foreseen check before a star chart is filed.
+
 Checklist lint: full
 
 Write `Checklist lint: basic` to keep only the person, kit and proof checks on over-to-you pages.

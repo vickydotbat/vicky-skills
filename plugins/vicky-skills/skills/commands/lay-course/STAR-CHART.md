@@ -69,6 +69,7 @@ The Sensor log above.
 ### Unknown unknowns
 
 - Riskiest star: [<star title>](<link>), covered by <a timebox or a probe>
+- Foreseen YYYY-MM-DD: <a way the effort could fail>, <guarded by <record, test or star> | accepted: <why> | ticketed: <link>>
 - Seen before: fallout on content no star names, checked by `warp`'s fallout sweep
 - Seen before: an approved example whose test can't fail, checked by `warp`'s pre-flight review of the tests
 - Seen before: <a kind of surprise an earlier chart logged>, checked by <how>
@@ -111,6 +112,8 @@ Every chart sorts what its stars rest on into the four boxes of the Rumsfeld mat
 - **Known unknowns**: open questions you can state. Each is an anomaly or an away team ticket that blocks the stars behind it. A question too loose to ticket stays under Nebulae until it sharpens.
 - **Unknown knowns**: facts that likely sit in a record or in the user's head but were never written down, such as a rule the user always applies or how the work crosses an existing feature. Each gets an away team to find the record, or a `Confirm:` line the user answers in one word, before any star rests on it. Take the `Confirm:` line when no record is likely. Once the user confirms, the fact moves to the Sensor log, quoting the user, and its star loses that unknown at the next redraw.
 - **Unknown unknowns**: these can't be listed. Name the riskiest star and the timebox or probe that covers it. Then search the tracker's earlier charts for their `Surfaced:` lines, and name each kind of surprise seen before on a `Seen before:` line, with the check that covers it here. Every chart names two on its own: fallout on content no star names, checked by `warp`'s fallout sweep, and an approved example whose test can't fail, checked by `warp`'s pre-flight review of the tests. `make-it-so`'s SETTLE.md adds a `Surfaced:` line for each asteroid belt a build hit.
+
+  **Pre-mortem**: before the chart is filed, assume the effort shipped and failed, and list why. Each reason becomes one `Foreseen YYYY-MM-DD:` line with one disposition: `guarded by` the record, test or star that stops it, `accepted:` with why, or `ticketed:` with its link. A plan with no foreseen failure holds one `- None foreseen: <reason>` line. Run `bash <this skill's folder>/scripts/check-foreseen.sh <chart>` before filing, and file only when it exits 0. A repo whose agent docs read `Pre-mortems: off` skips it. A foreseen failure that becomes a decision record's force is tagged `(foreseen)` there.
 
 A box is never left empty without saying why: a box with nothing in it holds one line with the reason, such as "None: the spec answers every question."
 
