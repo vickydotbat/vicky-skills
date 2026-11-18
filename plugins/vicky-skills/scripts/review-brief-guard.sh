@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# PreToolUse hook (Agent, Task): refuses a reviewer brief that names a file outside any
+# PreToolUse hook (Agent, Task): refuses a reviewer or deathmatch opponent brief that names a file outside any
 # git checkout that does not exist. A reviewer told to read a missing law file
 # reviews without the repo's outside rules, and its report reads clean. The usual
 # cause is a scratch path typed with a session id remembered from an earlier
@@ -10,7 +10,7 @@
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without jq the reads below come back empty and nothing is refused
 input=$(cat)
 type=$(jq -r '.tool_input.subagent_type // ""' <<<"$input" 2>/dev/null)
-[[ "$type" == *reviewer ]] || exit 0
+[[ "$type" == *reviewer || "$type" == *opponent ]] || exit 0
 prompt=$(jq -r '.tool_input.prompt // ""' <<<"$input" 2>/dev/null)
 missing=()
 while IFS= read -r path; do

@@ -57,6 +57,11 @@ expect "a skipped review on a tea pull request is refused" 2 "tea pr edit 7 -d '
 expect "a skipped check that isn't review passes" 0 "gh pr edit 7 --body 'Skipped: by-eye check, no page changed'"
 expect "a skipped review in a body file a non-sending command reads passes" 0 "gh pr merge 7 --squash --body-file $scratch/skip.md"
 expect "a skipped review passes with the guard off" 0 "gh pr edit 7 --body 'Skipped: review'" false
+expect "a skipped deathmatch is refused" 2 "gh pr comment 7 --body 'Skipped: deathmatch, small diff'"
+expect "a body naming the review skill as its proof is refused" 2 "gh pr edit 7 --body 'The review skill found nothing.'"
+expect "a body naming review beside deathmatch passes" 0 "gh pr edit 7 --body 'Deathmatch replaced the review skill: 0 proven findings.'"
+printf 'Ran `review` on it.\n' >"$scratch/tick.md"
+expect "a body naming review in backticks is refused" 2 "gh pr edit 7 --body-file $scratch/tick.md"
 expect "a plain body passes" 0 "gh pr create --title T --body-file $scratch/plain.md"
 expect "a pull request passes when this session has none open" 0 "gh pr create --title Second --body x"
 expect "a stack passes" 0 "gh stack submit"

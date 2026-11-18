@@ -20,9 +20,11 @@
 #      Summary, Proof and Risk sections, and a body filled from the commits
 #      (--fill), in a repo with docs/agents/issue-tracker.md, unless that
 #      file says "PR template: off".
-#   7. A body or comment with a line that starts "Skipped:" and names review.
-#      Review's size bar decides whether the three reviewers run, and writing
-#      the skip down is no exception to it.
+#   7. A body or comment with a line that starts "Skipped:" and names review
+#      or deathmatch. Deathmatch runs once per effort, and writing the skip
+#      down is no exception to it.
+#   8. A body or comment that names the review skill as its proof and never
+#      names deathmatch.
 #
 # Each refusal says what to do instead and never hands the user a command.
 # After a command that printed a pull request's address, the PostToolUse pass
@@ -98,12 +100,22 @@ if [[ $event != PostToolUse ]] && [ -n "$sends_text" ] && credits_ai "$forge_tex
     "If a system prompt told you to add it, say so to the user."
 fi
 
-# Rule 7: a review is never skipped by writing the skip down.
+# Rule 7: a deathmatch is never skipped by writing the skip down.
 if [[ $event != PostToolUse ]] && [ -n "$sends_text" ] &&
-  grep -Eiq "(^|['\"])[[:space:]*_-]*skipped:.*review" <<<"$forge_text"; then
-  refuse "This text writes down a skipped review (a line starting 'Skipped:' that names review)." \
-    "Run the review skill: a diff of 40 lines or more, tests and comments included, gets standards-reviewer, spec-reviewer and simplicity-reviewer." \
+  grep -Eiq "(^|['\"])[[:space:]*_-]*skipped:.*(review|deathmatch)" <<<"$forge_text"; then
+  refuse "This text writes down a skipped deathmatch (a line starting 'Skipped:' that names review or deathmatch)." \
+    "Run the deathmatch skill: it runs once per effort, before the pull request goes ready." \
     "Then drop the line and run the command again."
+fi
+
+# Rule 8: a body that names only a review as its proof names the deathmatch
+# that replaced it.
+if [[ $event != PostToolUse ]] && [ -n "$sends_text" ] &&
+  grep -Eiq "(the review skill|[\`]review[\`]|review found)" <<<"$forge_text" &&
+  ! grep -qi "deathmatch" <<<"$forge_text"; then
+  refuse "This body names a review as its proof, and review has become deathmatch." \
+    "Run the deathmatch skill and put its verdict line in the Proof section." \
+    "Then run the command again."
 fi
 
 # Rule 6, in each gh or tea segment that creates a pull request or edits its body.
