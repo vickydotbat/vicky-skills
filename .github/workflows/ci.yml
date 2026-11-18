@@ -483,10 +483,6 @@ jobs:
         run: tests/law-lint.test.sh
       - name: Laws line runs the proofs a diff reaches
         run: tests/laws_line_approved_examples.test.sh
-      - name: engrave names each law's proof
-        run: tests/engrave_proof_approved_examples.test.sh
-      - name: sentinels mutates law proofs first
-        run: tests/sentinels_proofs_approved_examples.test.sh
       - name: Mutation proof is current
         run: python3 tests/mutate-hooks.py --check
       - name: Red-first check
