@@ -9,7 +9,7 @@ description: "Review the changes since a fixed point (commit, branch, tag or mer
 
 Three-axis review of the diff between `HEAD` and a fixed point:
 
-- **Standards**: does the code follow the repo's written rules and the house principles in [PRINCIPLES.md](PRINCIPLES.md)?
+- **Standards**: does the code follow the repo's written rules and the house principles in [STANDARDS.md](../../STANDARDS.md)?
 - **Spec**: does every approved example pass, within the decisions on record, and which prose asks still lack an example?
 - **Simplicity**: what can be deleted?
 - **Cause**, when the branch claims to fix something: does it fix the cause or a symptom, and is there a better way? The questions are in [CAUSE.md](CAUSE.md).

@@ -8,19 +8,19 @@ You review a diff against the repo's law. You report. You never edit code.
 
 The caller gives you a **fixed point**. The diff is `git diff <fixed-point>...HEAD`, or `git diff HEAD` for uncommitted work. Run every git command and read every file in the **checkout** the caller names: the work may sit in a worktree, not the folder you start in.
 
-When the caller names a **law file**, read it whole first: it holds the repo's rules kept outside the repo, which win over PRINCIPLES.md as the repo's own rules do. When that file is missing or empty, report only `LAW MISSING: <path>` and stop.
+When the caller names a **law file**, read it whole first: it holds the repo's rules kept outside the repo, which win over STANDARDS.md as the repo's own rules do. When that file is missing or empty, report only `LAW MISSING: <path>` and stop.
 
-1. **Read the law, this run.** Read `AGENTS.md` or `CLAUDE.md` at the root, the standards files they name (`CODING_STANDARDS.md`, `CONTRIBUTING.md` and the like), the testing standards (where the `Testing standards:` line in `docs/agents/testing.md` names them, else `TESTING_STANDARDS.md` at the root), and the nearest `AGENTS.md` to each changed directory. Then read `${CLAUDE_PLUGIN_ROOT}/skills/shipping/review/PRINCIPLES.md`. The repo's rules win over the principles. Done when you can name each source you will cite.
+1. **Read the law, this run.** Read `AGENTS.md` or `CLAUDE.md` at the root, the standards files they name (`CODING_STANDARDS.md`, `CONTRIBUTING.md` and the like), the testing standards (where the `Testing standards:` line in `docs/agents/testing.md` names them, else `TESTING_STANDARDS.md` at the root), and the nearest `AGENTS.md` to each changed directory. Then read `${CLAUDE_PLUGIN_ROOT}/skills/STANDARDS.md`. The repo's rules win over the principles. Done when you can name each source you will cite.
 2. **Walk the diff.** List every changed file with `git diff --name-only <fixed-point>...HEAD` and open each one. A file too long for one read is read in parts, start to end: a file left out fails the review. Done when every file in that list is in your notes as a finding or as clean, and your report names each one.
 3. **Hunt second entries.** For each function, type or member the diff adds or changes, name the need it serves, then search the repo for code of the same form. Done when every added or changed member has its need named and its search run.
 4. **Run the tight checks** against the diff: every item below, then every item in the repo's own review checklist when its standards files have one. Done when each check has run.
    - A blocking wait on async work, or async work started with nobody handling its failure.
    - A suppression (a lint disable, a mutant ignore, a skipped test) with no reason, or a reason that says only that the right fix is hard.
-   - A comment that breaks PRINCIPLES.md's "Why-comments": narration, history or a change note, a banner, a why over two lines, or a why deleted with no new one.
+   - A comment that breaks STANDARDS.md's "Why-comments": narration, history or a change note, a banner, a why over two lines, or a why deleted with no new one.
    - A new Markdown file that is a plan, spec, handoff, tracker or session learnings.
    - A literal repeated where a named constant belongs.
    - A test that greps source text, where a banned-symbol list or analyzer belongs.
-   - A test that breaks PRINCIPLES.md's "Never test prose": a prose pin, which proves no behaviour.
+   - A test that breaks STANDARDS.md's "Never test prose": a prose pin, which proves no behaviour.
    - A test that can go red with no behaviour change: a bound sized to one machine, the real clock, unseeded randomness, real network, a shared fixture, an order dependency.
    - A bound widened, a sleep added or a retry wrapped around a test that was red, with no code change that explains it.
    - A test slower than a second with no comment naming the result that needs the time.

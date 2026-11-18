@@ -1,6 +1,6 @@
-# Review principles
+# Standards
 
-The baseline every review holds a diff to, in any repo. The repo's own standards win where they speak: a documented repo rule that endorses something below suppresses the finding.
+The baseline every deathmatch opponent and reviewer holds a diff to, in any repo. It lives in the plugin so no repo has to repeat it: a repo's agent files point here and keep only what is theirs alone. The repo's own standards win where they speak: a documented repo rule that endorses something below suppresses the finding.
 
 ## Rules
 
@@ -25,6 +25,20 @@ A broken rule is a **hard** finding. Each rule opens with its leading word; cite
 - **Lint gates.** A check worth having fails the build: warnings get ignored. A ban-list entry's message names the replacement. A suppression names one rule on one line, and an unused suppression is reported. Legacy code adopts a rule by reporting only issues new since a base revision.
 - **No live citations.** Point at another text by its role, its link or a rule's leading word, never by copying its wording as if it still holds. A quote is a post-mortem only: past tense, dated, its source assumed dead ("the page said X at revision Y").
 
+- **Claims.** A pull request's Proof says what ran, what was skipped and why, and what no one checked. A claim no run backs (a suite that never ran, a number never measured) is a defect.
+- **Check ladder.** An agent never hands a person a check it could run: a unit test first, then a harness that drives the system, then a real client. An item handed over names the rung that stops short of it.
+- **Proof by run.** A refactor proves the old behaviour still works with a green run, never by reading the diff. A clean compile proves nothing about what a change draws or does.
+- **Guilty until proven innocent.** A change to what a person sees carries before and after captures of everything it touches. A missing pair is a rejection.
+- **Blast radius.** A change writes only to what it owns. It never touches the user's own data folders, a shared checkout, another session's work, a live host or a public server, and it preserves unrelated changes.
+- **Artifacts.** Generated output is changed through its generator, never by hand. Build output, binaries and game data stay out of git.
+- **Scope.** A diff holds what the effort asked for and the fixes it found on the way. Unrelated cleanup goes to a ticket.
+- **Survives restart.** State a user can notice survives a restart, a reboot and a fresh host. Memory is a cache, never the only copy. Nothing lasting lives in a temporary folder.
+- **Public text.** Text that leaves the machine credits no AI, carries no agent-tool markers, and holds no local path, host or secret. Text a player or customer reads is approved by a person before it ships.
+- **Truthful names.** A name, folder or namespace says what the thing does now. A change that makes a name stale renames or moves it in the same diff.
+- **Take-over test.** Someone new can take over the code without private knowledge of the whole system.
+- **Reuse the safety net.** Before adding a local guard, look for the one the system already has (a readiness flow, a scheduler, a migration step) and use it.
+- **Quoted headings.** A heading another page quotes changes only in the same edit as every quote of it.
+
 ## Design moves
 
 How to build so the rules hold. A missed move is a **judgement** finding named by its leading word.
@@ -36,6 +50,9 @@ How to build so the rules hold. A missed move is a **judgement** finding named b
 - **Events, not polling.** Code that waits for a change subscribes to the event raised where the work ends, adding one when none exists. Poll only where none of your code runs, with a comment naming why, and bound the poll.
 - **One-way doors.** A save format, a stored variable, a database column, a wire protocol, a public API or command name, a file other tools read: changing one later means changing every copy and peer. Name it in the pull request, shape it as final, and give it a version or migration path. **Atomic schema changes**: the migration ships in the same diff, forward-only, never edited once applied, safe to run twice. Expand, then contract: a release only adds, and a drop waits until no build a rollback reaches reads the old shape, deleting its readers in the same diff.
 - **Black-box tests.** A test asserts what its subject promises its caller (the forecast shown, the item in the pack, the line sent), never how it gets there (fetch counts, which helper ran, call order). Would a correct rewrite break the assertion? Then assert the outcome.
+
+- **Hot paths.** Code on a path that runs constantly (a tick, an event per player, a request) costs next to nothing, never blocks on I/O, and scans only a bounded set. Lag for everyone is a bug even when the feature works. An exception never escapes a callback, hook or background task.
+- **Persistent state.** A restore puts back what was saved and never refills, resets or clamps it. Time that passed while away is applied once, on return. A change that adds state ships a test that saves it, restores it fresh and finds it unchanged.
 
 ## Smells
 
