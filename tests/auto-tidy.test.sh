@@ -1,36 +1,36 @@
 #!/usr/bin/env bash
-# The auto-tidy hook names the local branches whose upstream is gone and asks
-# for marie-kondo. It says nothing when the option is off, when no upstream is
-# gone, and outside a git repo.
+# auto-tidy's switches and triggers: which settings turn it off, which tool
+# calls start it, and that it stays silent where it has nothing to do.
 set -u
-hook="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/scripts/auto-tidy.sh"
-dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
-# No global config, so the default branch is main everywhere and only the
-# hook's own --prune drops a deleted branch.
-export GIT_CONFIG_GLOBAL=/dev/null
-g() { git -c user.name=t -c user.email=t@example.invalid "$@"; }
-g init -q --bare -b main "$dir/origin.git"
-g clone -q "$dir/origin.git" "$dir/repo" 2>/dev/null
-g -C "$dir/repo" commit -q --allow-empty -m base
-g -C "$dir/repo" push -q origin HEAD:main 2>/dev/null
-for b in merged kept; do
-  g -C "$dir/repo" switch -q -c "$b"
-  g -C "$dir/repo" push -q -u origin "$b" 2>/dev/null
+. "$(dirname "$0")/lib/auto-tidy-fixture.sh"
+merged_repo() { setup; branch feat; merge feat; on_main; }
+after() { jq -nc --arg c "$1" --arg d "$dir/repo" '{hook_event_name: "PostToolUse", tool_name: "Bash", tool_input: {command: $c}, cwd: $d}'; }
+
+for v in false 0; do
+  merged_repo; out=$(OPT=$v run)
+  check "auto_tidy=$v leaves the branch and says nothing" 'has_local feat && [ -z "$out" ]'
 done
-g -C "$dir/repo" switch -q -c local-only
-fail=0
-run() { CLAUDE_PLUGIN_OPTION_AUTO_TIDY="$1" CLAUDE_PROJECT_DIR="$2" bash "$hook" </dev/null; }
-silent() { out=$(run "$1" "$2"); [ -z "$out" ] || { echo "FAIL $3 printed: $out"; fail=1; }; }
-silent true "$dir/repo" "no upstream gone"
-g -C "$dir/origin.git" branch -q -D merged
-out=$(run true "$dir/repo")
-grep -q 'marie-kondo' <<<"$out" || { echo "FAIL no marie-kondo ask: $out"; fail=1; }
-grep -qw 'merged' <<<"$out" || { echo "FAIL gone branch not named: $out"; fail=1; }
-grep -qw 'kept' <<<"$out" && { echo "FAIL a branch with its upstream named: $out"; fail=1; }
-grep -qw 'local-only' <<<"$out" && { echo "FAIL a branch with no upstream named: $out"; fail=1; }
-out=$(run 1 "$dir/repo"); grep -q 'marie-kondo' <<<"$out" || { echo "FAIL 1 does not turn it on"; fail=1; }
-silent false "$dir/repo" "option false"
-silent "" "$dir/repo" "option unset"
-silent true "$dir" "outside a repo"
-[ $fail -eq 0 ] && echo "ok   auto-tidy asks for marie-kondo only when it's on and an upstream is gone"
+for v in true 1 ""; do
+  merged_repo; OPT=$v run >/dev/null
+  check "auto_tidy='$v' tidies" '! has_local feat'
+done
+
+for c in 'gh pr merge 1 --squash' 'cd sub && tea pr merge 2' 'tea pulls merge 3'; do
+  merged_repo; run "$dir/repo" "$(after "$c")" >/dev/null
+  check "after '$c' it tidies" '! has_local feat'
+done
+for c in 'git status' 'gh pr view 1' 'echo gh pr merged' 'ghx pr merge 1'; do
+  merged_repo; out=$(run "$dir/repo" "$(after "$c")")
+  check "after '$c' it does nothing" 'has_local feat && [ -z "$out" ]'
+done
+
+mkdir -p "$dir/plain"
+out=$(run "$dir/plain"); check "outside a repo it says nothing" '[ -z "$out" ]'
+out=$(run "$dir/gone"); check "in a folder that is gone it says nothing" '[ -z "$out" ]'
+
+# A report that holds a quote or a backslash still reaches you as JSON.
+setup; branch 'q"b'; merge 'q"b'; on_main; echo x > "$dir/repo/back\\slash.txt"
+git -C "$dir/repo" switch -q -c sticky origin/main; echo "sticky MERGED $(git -C "$dir/repo" rev-parse sticky)" >> "$dir/prs"
+out=$(run); check "a quote and a backslash in the report stay valid JSON" 'jq -e . <<<"$out" >/dev/null && seen "$out" | grep -qF "q\"b" && seen "$out" | grep -qF "slash.txt"'
+
 exit $fail

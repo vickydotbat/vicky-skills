@@ -161,9 +161,9 @@
     },
     "auto_tidy": {
       "type": "boolean",
-      "title": "Tidy merged branches at session start",
-      "description": "When a local branch's upstream is gone, ask the agent to run marie-kondo before its first reply. When the clone stands on a merged branch, hand it back to main.",
-      "default": false
+      "title": "Tidy merged branches and worktrees",
+      "description": "At session start and after a pull request merges, delete merged branches and worktrees that hold no unpushed work, and hand the clone back to main. You see one line about it, and the agent sees nothing.",
+      "default": true
     },
     "familiar_plugin_repo": {
       "type": "string",

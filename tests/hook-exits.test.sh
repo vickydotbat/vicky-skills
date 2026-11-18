@@ -72,7 +72,8 @@ quiet "a project folder that is gone" auto-tidy.sh '{}' CLAUDE_PLUGIN_OPTION_AUT
 quiet "a repo with nothing gone" auto-tidy.sh '{}' CLAUDE_PLUGIN_OPTION_AUTO_TIDY=true CLAUDE_PROJECT_DIR="$dir/repo"
 git init -q --bare "$dir/remote.git"; git clone -q "$dir/remote.git" "$dir/clone" 2>/dev/null
 git -C "$dir/clone" -c user.name=t -c user.email=t@example.invalid commit -q --allow-empty -m one
-git -C "$dir/clone" push -q -u origin HEAD:merged 2>/dev/null; git -C "$dir/clone" branch -q --set-upstream-to=origin/merged
+git -C "$dir/clone" push -q origin HEAD:main 2>/dev/null; git -C "$dir/clone" switch -q -c merged
+git -C "$dir/clone" push -q -u origin merged 2>/dev/null
 git -C "$dir/remote.git" branch -q -D merged
 speaks "a branch whose upstream is gone" auto-tidy.sh '{}' CLAUDE_PLUGIN_OPTION_AUTO_TIDY=true CLAUDE_PROJECT_DIR="$dir/clone"
 

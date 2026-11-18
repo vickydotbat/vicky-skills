@@ -9,9 +9,9 @@ export GIT_AUTHOR_NAME=t GIT_AUTHOR_EMAIL=t@example.invalid GIT_COMMITTER_NAME=t
 mkdir "$dir/bin" "$dir/nogh"
 cat > "$dir/bin/gh" <<EOF
 #!/usr/bin/env bash
-f="$dir/pr-\$3"
-[ -f "\$f" ] || exit 1
-cat "\$f"
+[ "\$1 \$2" = "pr list" ] || exit 1
+for f in "$dir"/pr-*; do [ -f "\$f" ] && printf '%s %s\\n' "\${f##*/pr-}" "\$(cat "\$f")"; done \\
+  | jq -Rn '[inputs | split(" ") | {headRefName: .[0], state: .[1], headRefOid: ""}]'
 EOF
 chmod +x "$dir/bin/gh"
 # A PATH with git and the shell tools but no gh.
