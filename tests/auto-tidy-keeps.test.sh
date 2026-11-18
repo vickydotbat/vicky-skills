@@ -73,4 +73,17 @@ out=$(OPT=false run)
 check "T16 switched off, nothing moves" 'has_local feat && [ -z "$out" ]'
 
 
+# Found while building: a pull request closed without merging, whose remote
+# branch is gone, leaves the local branch as the only copy of its work.
+setup; branch feat; on_main; echo "feat CLOSED $(git -C "$dir/repo" rev-parse feat)" > "$dir/prs"; git -C "$dir/origin.git" branch -q -D feat
+run >/dev/null
+check "a closed, unmerged pull request's branch stays" 'has_local feat'
+
+# Found while building: after a merge, the worktree the session stands in
+# stays, even when no process of the session sits in that folder.
+setup; branch feat; worktree feat; on_main; merge feat keep
+payload=$(jq -nc --arg d "$dir/wt-feat" '{hook_event_name: "PostToolUse", tool_name: "Bash", tool_input: {command: "gh pr merge 1"}, cwd: $d}')
+run "$dir/repo" "$payload" >/dev/null
+check "the merged worktree the session stands in stays" '[ -d "$dir/wt-feat" ]'
+
 exit $fail

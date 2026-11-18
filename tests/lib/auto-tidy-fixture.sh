@@ -19,7 +19,6 @@ cat > "$dir/gh/gh" <<EOF
 [ -f "$dir/prs" ] || exit 1
 case "\$1 \$2" in
   "pr list") jq -Rn '[inputs | split(" ") | {headRefName: .[0], state: .[1], headRefOid: .[2]}]' "$dir/prs" ;;
-  "pr view") awk -v b="\$3" '\$1 == b { print \$2; f = 1 } END { exit !f }' "$dir/prs" ;;
   *) exit 1 ;;
 esac
 EOF
@@ -73,6 +72,10 @@ merge() {
 # worktree <branch>: check the branch out in its own worktree.
 worktree() { git -C "$dir/repo" worktree add -q "$dir/wt-$1" "$1" 2>/dev/null; }
 # busy <path>: another session stands in that folder until the test ends.
-busy() { (cd "$1" && exec sleep 300) & pids+=($!); sleep 0.2; }
+busy() {
+  local i
+  (cd "$1" && exec sleep 300) & pids+=($!)
+  for i in $(seq 50); do [ "$(readlink "/proc/$!/cwd" 2>/dev/null)" = "$1" ] && return; sleep 0.1; done
+}
 on_main() { git -C "$dir/repo" switch -q main 2>/dev/null || git -C "$dir/repo" switch -q -c main origin/main; }
 

@@ -1,23 +1,13 @@
 #!/usr/bin/env bash
 # SessionStart hook (startup), and PostToolUse hook (Bash) after `gh pr merge`
-# or `tea pr merge`: tidies the repo's branches and worktrees, so no agent ever
-# runs a cleanup or reads about one. On unless the plugin option auto_tidy is
-# false or 0.
-#
-# A branch or worktree holds work while it has commits on no remote or
-# uncommitted changes, and that work is never deleted. The tidy:
-# - hands a clone left on a merged branch back to main, moving commits made
-#   after the merge to a fresh branch;
-# - deletes each merged local branch whose work landed, and its worktree when
-#   the worktree is clean, unlocked and no process stands in it;
-# - deletes the user's own remote branches whose pull request merged at their
-#   last commit;
-# - fast-forwards each clean checkout standing on the default branch.
-# Merged means the forge says so (one gh or tea call), the upstream is gone,
-# or main already holds every change.
+# or `tea pr merge`: deletes merged branches and worktrees, your own merged
+# remote branches, and fast-forwards clean checkouts on main, so no agent runs
+# a cleanup. Work on no remote and uncommitted changes always stay. On unless
+# the plugin option auto_tidy is false or 0: the user chose on by default.
 #
 # It writes nothing the agent reads. Its one-line report goes to the user as
-# systemMessage, and a run with nothing done prints nothing.
+# systemMessage. It runs in the foreground, since an async hook's
+# systemMessage goes to the agent instead.
 set -u
 # shellcheck source=merge-point.sh
 . "$(dirname "$0")/merge-point.sh"
@@ -28,6 +18,8 @@ payload=$(cat 2>/dev/null)
 if grep -Eq '"hook_event_name"[[:space:]]*:[[:space:]]*"PostToolUse"' <<<"$payload"; then
   grep -Eq '"command"[[:space:]]*:[[:space:]]*"(([^"\\]|\\.)*[;&|( ])?(gh|tea) +(pr|pulls) +merge([ "\\]|$)' <<<"$payload" || exit 0
 fi
+# The folder the session stands in, whose worktree is never removed.
+here=$(sed -n 's/.*"cwd"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' <<<"$payload"); here=${here%%$'\n'*}
 cd "${CLAUDE_PROJECT_DIR:-.}" 2>/dev/null || exit 0
 git rev-parse --is-inside-work-tree >/dev/null 2>&1 || exit 0
 GIT_TERMINAL_PROMPT=0 timeout 15 git fetch --prune --quiet origin >/dev/null 2>&1
@@ -59,9 +51,16 @@ landed() {
 all_picked() {
   [ -n "$(git rev-list -1 "$default..$1" 2>/dev/null)" ] && ! git cherry "$default" "$1" 2>/dev/null | grep -q '^+'
 }
-# in_use <path>: some process stands in the folder. With no way to tell, it counts as in use.
+# merged <branch> <upstream track>: the forge says merged, the upstream went
+# with no closed pull request, or main holds a copy of every commit.
+merged() {
+  local state; state=$(pr "$1" 2)
+  [ "$state" = MERGED ] || { [ "$2" = "[gone]" ] && [ "$state" != CLOSED ]; } || all_picked "$1"
+}
+# in_use <path>: the session or some process stands in the folder. With no way to tell, it counts as in use.
 in_use() {
   local cwds
+  case "$here/" in "$1"/*) return 0 ;; esac
   if [ -d /proc/self ]; then
     cwds=$(for c in /proc/[0-9]*/cwd; do readlink "$c" 2>/dev/null; done)
   elif command -v lsof >/dev/null 2>&1; then
@@ -85,9 +84,8 @@ clone() {
   local current state point after dirty fresh
   current=$(git symbolic-ref --short -q HEAD) || return 0
   [ "$current" = "$main_name" ] && return 0
-  state=$(pr "$current" 2)
-  [ "$state" = OPEN ] && return 0
-  [ "$state" = MERGED ] || [ "$(git for-each-ref --format='%(upstream:track)' "refs/heads/$current")" = "[gone]" ] || return 0
+  [ "$(pr "$current" 2)" = OPEN ] && return 0
+  merged "$current" "$(git for-each-ref --format='%(upstream:track)' "refs/heads/$current")" || return 0
   dirty=$(git status --porcelain | cut -c4- | tr '\n' ' ')
   if [ -n "$dirty" ]; then
     notes+=("The clone stays on '$current', which merged, because it holds uncommitted changes: ${dirty% }.")
@@ -126,10 +124,9 @@ git worktree prune >/dev/null 2>&1
 while read -r b track; do
   [ "$b" = "$main_name" ] && continue
   sha=$(git rev-parse "refs/heads/$b")
-  state=$(pr "$b" 2)
-  [ "$state" = OPEN ] && continue
-  { [ "$state" = MERGED ] || [ "$track" = "[gone]" ] || all_picked "$b"; } || continue
-  if ! { [ "$sha" = "$(pr "$b" 3)" ] || [ -n "$(git branch -r --contains "$sha" 2>/dev/null)" ] || landed "$b" || all_picked "$b"; }; then
+  [ "$(pr "$b" 2)" = OPEN ] && continue
+  merged "$b" "$track" || continue
+  if ! { { [ "$(pr "$b" 2)" = MERGED ] && [ "$sha" = "$(pr "$b" 3)" ]; } || [ -n "$(git branch -r --contains "$sha" 2>/dev/null)" ] || landed "$b" || all_picked "$b"; }; then
     kept+=("$b (commits made after the merge)")
     continue
   fi
@@ -162,17 +159,13 @@ while read -r rb; do
   GIT_TERMINAL_PROMPT=0 timeout 15 git push -q origin --delete "$b" >/dev/null 2>&1 && went+=("origin/$b")
 done < <(git for-each-ref --format='%(refname:short)' refs/remotes/origin)
 
-# Fast-forward each clean checkout on the default branch, worktrees and nested repos.
-for p in $(git worktree list --porcelain | sed -n 's/^worktree //p') "$top"/*/.git "$top"/*/*/.git; do
-  p=${p%/.git}
-  [ -e "$p/.git" ] || continue
-  d=$(git -C "$p" symbolic-ref -q --short refs/remotes/origin/HEAD 2>/dev/null); d=${d:-origin/main}
-  [ "$(git -C "$p" symbolic-ref --short -q HEAD)" = "${d#origin/}" ] || continue
+# Fast-forward each clean checkout, the clone or a worktree, that stands on the default branch.
+while read -r p; do
+  [ "$(git -C "$p" symbolic-ref --short -q HEAD)" = "$main_name" ] || continue
   [ -z "$(git -C "$p" status --porcelain 2>/dev/null)" ] || continue
-  [ "$(git -C "$p" rev-parse --git-common-dir 2>/dev/null)" = "$(git rev-parse --git-common-dir)" ] || GIT_TERMINAL_PROMPT=0 timeout 15 git -C "$p" fetch -q origin >/dev/null 2>&1
-  [ "$(git -C "$p" rev-parse HEAD)" = "$(git -C "$p" rev-parse "$d" 2>/dev/null)" ] && continue
-  git -C "$p" merge -q --ff-only "$d" >/dev/null 2>&1 && notes+=("$(basename "$p") caught up with $d.")
-done
+  [ "$(git -C "$p" rev-parse HEAD)" = "$(git rev-parse "$default")" ] && continue
+  git -C "$p" merge -q --ff-only "$default" >/dev/null 2>&1 && notes+=("${p##*/} caught up with $default.")
+done < <(git worktree list --porcelain | sed -n 's/^worktree //p')
 
 [ ${#went[@]} -gt 0 ] || [ ${#kept[@]} -gt 0 ] || [ ${#notes[@]} -gt 0 ] || exit 0
 line="✨ Tidied: ${#went[@]} branches."

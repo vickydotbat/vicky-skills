@@ -33,7 +33,10 @@ setup; branch 'q"b'; merge 'q"b'; on_main; echo x > "$dir/repo/back\\slash.txt"
 git -C "$dir/repo" switch -q -c sticky origin/main; echo "sticky MERGED $(git -C "$dir/repo" rev-parse sticky)" >> "$dir/prs"
 out=$(run); check "a quote and a backslash in the report stay valid JSON" 'jq -e . <<<"$out" >/dev/null && seen "$out" | grep -qF "q\"b" && seen "$out" | grep -qF "slash.txt"'
 
-# The tidy needs no agent, so no skill, hook or eval sends one to a cleanup skill.
-check "no skill, hook or eval names marie-kondo" '! grep -rq marie-kondo "$root/plugins/vicky-skills/skills" "$root/plugins/vicky-skills/scripts" "$root/plugins/vicky-skills/evals" "$root/README.md"'
+# Without jq the forge goes unread, and a gone upstream whose work landed still counts.
+mkdir -p "$dir/nojq"; for t in git bash timeout grep awk sed cut tr cat dirname sort readlink mktemp sleep; do ln -sf "$(command -v "$t")" "$dir/nojq/$t"; done
+setup; branch feat; merge feat; on_main
+out=$(PATH="$dir/nojq" CLAUDE_PROJECT_DIR="$dir/repo" "$dir/nojq/bash" "$hook" <<<'{"hook_event_name": "SessionStart"}')
+check "without jq a landed branch still goes, and the agent hears nothing" '! has_local feat && agent_silent "$out"'
 
 exit $fail
