@@ -7,7 +7,7 @@ description: Carry a change of direction into every place that still holds the o
 
 > _The twist is canon now. Rewrite every page that says otherwise._
 
-A **pivot** is the new truth. Left only in the chat, it dies with the session, while every ticket and doc that holds the old decision keeps steering the next agent wrong. So the pivot lands everywhere in the same turn.
+A **pivot** is the new truth. A pivot left in chat dies with the session, and every ticket and doc that holds the old decision keeps steering the next agent wrong: land it everywhere in the same turn.
 
 When you can't tell whether a message is a pivot, ask in one line: "Going with Y instead of X, correct?"
 

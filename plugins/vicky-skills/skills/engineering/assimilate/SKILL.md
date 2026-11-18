@@ -6,7 +6,7 @@ argument-hint: "Which pull request?"
 
 # Assimilate
 
-> _Your distinctiveness will be added to our own, once we know what it is worth._
+> _Your distinctiveness will be added to our own, once we know it holds._
 
 An **assimilation** judges a pull request, any change: a fix, a feature or a refactor. It posts a **verdict** on the pull request: four answers, then what stays from the branch. When someone else opened the pull request and the verdict finds work to do, the same comment claims it.
 

@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 > _Captain's log, supplemental. The ship gets the fix, never the crew's excuses._
 
-A **retro** improves the agent's environment, never the agent's excuses. It looks backwards, and `cerebro` looks forwards from what it finds. Implementation has the most context pressure and review the least, so a rule belongs to review, and a rule a machine can check belongs to a machine.
+A **retro** improves the agent's environment, never the agent's excuses. Implementation has the most context pressure and review the least, so a rule belongs to review, and a rule a machine can check belongs to a machine.
 
 ## Steps
 

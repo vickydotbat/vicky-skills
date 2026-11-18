@@ -18,5 +18,5 @@ check "in a repo with no testing standards, first-contact writes them from what 
 check "on a pull request, the standards reviewer holds its tests and test kits to the testing standards the Testing standards: line names" \
   'grep -q "the testing standards the \`Testing standards:\` line names" "$p/agents/standards-reviewer.md" && grep -q "tests and test kits" "$p/agents/standards-reviewer.md"'
 check "in a repo whose testing standards say test cruft may be committed, and where, over-to-you may commit a kit there and only there" \
-  'grep -q "commit it there and only there" "$p/skills/productivity/over-to-you/SKILL.md"'
+  'grep -q "commit it there and only there" "$p/skills/productivity/over-to-you/REFERENCE.md"'
 exit $fail

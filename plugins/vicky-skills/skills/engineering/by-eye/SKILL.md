@@ -7,7 +7,7 @@ description: A by-eye check of a page in a windowless browser, in light, dark, n
 
 > _Seeing is believing. Leave the pictures where the user can see them too._
 
-A **by-eye check** is the agent looking at a page it changed, the way the user would, in a browser with no window: the headless Playwright MCP server, whose tools are `mcp__playwright-headless__*`. The agent grades the page on what it sees and goes on without waiting for the user. The user can look at the same screenshots afterwards. A look only a person can judge, such as whether a page feels right, is no by-eye check: it goes to the user as an `over-to-you` item.
+A **by-eye check** is the agent looking at a page it changed, the way the user would, in a browser with no window: the headless Playwright MCP server, whose tools are `mcp__playwright-headless__*`. The agent grades the page on what it sees and goes on without waiting for the user. A look only a person can judge, such as whether a page feels right, is no by-eye check: it goes to the user as an `over-to-you` item.
 
 ## Steps
 

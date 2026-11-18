@@ -7,9 +7,9 @@ description: Generate or edit an image by driving the Codex CLI's built-in image
 
 > _It's not dead, it's resting. Prove a quiet Codex is alive from its own files before you call it a hang._
 
-`codex exec` is slow and quiet. One image takes about three minutes, and
-stdout stays still for most of it. A still stdout is not a hang. Prove
-liveness from Codex's own files before you wait, retry or report.
+`codex exec` is slow and quiet: one image takes about three minutes, with
+stdout still for most of it. A still stdout is no hang. Prove liveness from
+Codex's own files before you wait, retry or report.
 
 ## Run
 

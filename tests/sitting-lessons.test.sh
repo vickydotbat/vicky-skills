@@ -10,7 +10,7 @@ fail=0
 # in that step's line (or anywhere in the file with "-").
 has() {
   local text
-  if [ "$3" = - ]; then text=$(cat "$skills/$2"); else text=$(grep -F -- "$3" "$skills/$2"); fi
+  if [ "$3" = - ]; then text=$(cat "$skills/$2"); else text=$(awk -v p="$3" 'index($0,p)==1{on=1;print;next} /^[0-9]+\. |^## |^- /{on=0} on' "$skills/$2"); fi
   if grep -qiF -- "$4" <<<"$text"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi
 }
 oty=productivity/over-to-you/SKILL.md

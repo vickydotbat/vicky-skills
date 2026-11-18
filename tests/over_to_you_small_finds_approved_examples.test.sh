@@ -9,7 +9,8 @@ s="$here/../plugins/vicky-skills/skills/productivity/over-to-you/SKILL.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 sized=$(sed -n '/^## Size the finds/,/^## Keep the ledger/p' "$s")
-step5=$(grep '^5\. \*\*Read it back' "$s")
+. "$here/lib/skill-step.sh"
+step5=$(skill_step "$s" 5)
 step6=$(grep '^6\. \*\*End the session' "$s")
 
 # Given a failed item whose fix touches one file and needs one test

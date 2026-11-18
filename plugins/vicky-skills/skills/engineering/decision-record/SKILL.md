@@ -9,7 +9,7 @@ description: Write, supersede or amend an architecture decision record (ADR) so 
 
 A kept record is never edited, so it must be written to stay true whatever happens later. The format, the forces and the status lines are in [FORMAT.md](FORMAT.md). Read it before the first step.
 
-The `adr-scope-hint` hook repeats the scope and the append-only rule when a record is edited. `docs/agents/domain.md` names the record folder and the format. When its `ADR format:` line names a repo template, write in that template and run step 5 with `--template`, which checks only the rules that hold in any shape. Every other value (`decision-record`, or the older `ADR-FORMAT.md` and `true-names`), or no line, means [FORMAT.md](FORMAT.md).
+The `adr-scope-hint` hook repeats the scope when a record is edited. `docs/agents/domain.md` names the record folder and the format. When its `ADR format:` line names a repo template, write in that template and run step 5 with `--template`, which checks only the rules that hold in any shape. Every other value (`decision-record`, or the older `ADR-FORMAT.md` and `true-names`), or no line, means [FORMAT.md](FORMAT.md).
 
 ## Steps
 
@@ -22,6 +22,6 @@ The `adr-scope-hint` hook repeats the scope and the append-only rule when a reco
    - **A record replaced in full**, with nothing it states still true, is retired. The new record's Consequences hold `Retires ADR-NNNN: <why>.`, so a search for the number still finds the reason, and you delete the old record from the repo in the same commit. On a wiki, tombstone the old page instead: replace its body with one line that points at the new record.
    - **A record replaced in part** stays and gains one appended Status line, `Superseded by ADR-NNNN on YYYY-MM-DD: F<n> no longer holds.` when its rule is replaced but a fact in it still holds, or `Amended by ADR-NNNN on YYYY-MM-DD.` when the new record adds to it. A kept older-shape record takes `Superseded by ADR-NNNN.` as its last line instead. Change nothing else in a kept record.
 
-   Restate no record's rule in an agent file, README or doc: a copy drifts from the record. Point at the record by number instead ("Money rules: ADR-0002."). No hook backs this yet: telling a restatement from a pointer needs judgement. Then run `plot-twist` with the old rule, so tickets, docs and agent files stop citing it, unless `plot-twist` started this run. Done when each retired record is deleted (or its page tombstoned) and named by a Retires line that step 5's check passes, `git diff` on each kept record shows one added line and nothing removed, and every other file this effort touched names the rule only by record number.
+   Restate no record's rule in an agent file, README or doc: a copy drifts from the record. Point at the record by number instead ("Money rules: ADR-0002."). Then run `plot-twist` with the old rule, so tickets, docs and agent files stop citing it, unless `plot-twist` started this run. Done when each retired record is deleted (or its page tombstoned) and named by a Retires line that step 5's check passes, `git diff` on each kept record shows one added line and nothing removed, and every other file this effort touched names the rule only by record number.
 
 Charter: C3, C4, C8 ([CHARTER.md](../../CHARTER.md)).

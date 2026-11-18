@@ -19,7 +19,7 @@ check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 run() { CLAUDE_PLUGIN_OPTION_GAMMA_SHIFT="${GS:-engage}" CLAUDE_PLUGIN_OPTION_DEEPEN_EVERY_DAYS="$1" CLAUDE_PROJECT_DIR="$dir/repo" bash "$hook" </dev/null; }
 ago() { echo $(( $(date +%s) - $1 * day )) > "$stamp"; }
 opt() { jq -r --arg k "$1" ".userConfig[\$k].$2" "$plugin"; }
-brief=$(awk '/^## Subagent brief/{on=1} /^## Report/{on=0} on' "$skill")
+brief=$(cat "$(dirname "$skill")/BRIEF.md")
 report=$(awk '/^## Report/{on=1} on' "$skill")
 
 # Given gamma_shift at engage and deepen_every_days at 7

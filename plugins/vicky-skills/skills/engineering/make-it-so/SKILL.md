@@ -34,7 +34,7 @@ Read the repo's testing standards first, where the `Testing standards:` line in 
 
 ## QA checklist
 
-Each item passes or fails on a command's output or one read of named text. `<base>` is the pull request's base branch, after `git fetch origin`. A failing item is fixed, never only reported. An item you can't fix, such as a change too big to split this turn or a ticket that waits on someone else, goes in the body with its reason, and the report names it.
+`<base>` is the pull request's base branch, after `git fetch origin`. A failing item is fixed, never only reported. An item you can't fix, such as a change too big to split this turn or a ticket that waits on someone else, goes in the body with its reason, and the report names it.
 
 Measured by a command:
 

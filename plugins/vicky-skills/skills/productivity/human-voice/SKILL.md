@@ -7,7 +7,7 @@ description: Prose a person will read: docs, READMEs, runbooks, wiki and dev jou
 
 > _I'm a real boy: plain words, one idea a sentence, and every move a person would make._
 
-Write as the user. The draft uses their words, their sentence shapes and their sense of what the reader needs. A draft that is true and lint-clean but that they would not have written is unfinished.
+Ghostwrite: the draft uses the user's words, sentence shapes and sense of what the reader needs. A draft that is true and lint-clean but that they would not have written is unfinished.
 
 ## Registers
 
@@ -35,10 +35,10 @@ Use the reader's words, never code names. A second outcome gets a second example
 
 1. **Pick the register** from the table. Ask the user only when the audience is unclear. Read the samples for that register: the user's own samples in `${CLAUDE_PLUGIN_DATA}/voice-samples.md`, kept by `red-pen`, when that file exists, and [SAMPLES.md](SAMPLES.md) when `git config user.name` is `vickydotbat`, whose writing it holds. Read whole any writing of theirs in the repo in that register. Done when you can name the register and the table row that picked it.
 2. **Gather the substance**: names, numbers, commands and the real reason, from the record (the ADR, the ticket thread, the commit, the code). Done when you could source every claim in your notes.
-3. **Draft** in the register's voice, making the moves under Moves. Done when every fact in your notes is in the draft or cut on purpose.
+3. **Draft** in the register's voice, making the moves in [MOVES.md](MOVES.md). Done when every fact in your notes is in the draft or cut on purpose.
 4. **Cut.** Walk the draft one sentence at a time against the cut rules. Done when every sentence adds a fact or an action no other sentence gives, and no sentence joins two independent facts.
 5. **Lint.** Write the draft to a scratch file and run `python3 <this skill's folder>/scripts/lint-tells.py <file>`. It prints `<line>: <matched words>: <move to make>` per hit. Rewrite every hit by making its move. Put a hit the text is about, such as an emoji a doc explains, in a code span. Run it again until it prints nothing. Done when it exits 0 on the draft.
-6. **Walk the moves.** Read the draft against each move below, one at a time. Done when every paragraph makes each move that applies to it.
+6. **Walk the moves.** Read the draft against each move in [MOVES.md](MOVES.md), one at a time. Done when every paragraph makes each move that applies to it.
 7. **Seat a reader panel** when the draft runs over about 400 words (`wc -w`). A shorter draft skips this step.
    Pick three to five seats from its audience, the readers who will act on it. A runbook or doc gets a seat that does a dry run, following each step as written.
    Lore gets a canon keeper, who checks it against the setting's other pages. Each seat reads the draft as that reader and lists the questions it is left with.
@@ -50,9 +50,9 @@ Use the reader's words, never code names. A second outcome gets a second example
 
 ## Cut rules
 
-Most of a writer's edits to an agent draft are cuts. These rules predict them.
+Most of a writer's edits to an agent draft are cuts.
 
-**Each fact once.** The sentence after a full stop adds a new fact or an action. Delete a sentence that restates the one before it, as its consequence, a "which means" or an example under a rule that was already clear. Or turn it into the instruction the reader needs ("Push every change before you ask for a review"). A sentence that turns an unfamiliar term into what it means for the reader adds a fact, and stays.
+**Each fact once.** The sentence after a full stop adds a new fact or an action. Delete a sentence that restates the one before it (its consequence, a "which means", an example under a clear rule), or turn it into the instruction the reader needs ("Push every change before you ask for a review"). A sentence that turns an unfamiliar term into what it means for the reader adds a fact, and stays.
 
 **One fact per sentence.** A sentence holds one fact, plus at most its own reason or consequence. Two short facts about one event may share an "and". Split a sentence with a third clause, a qualifier on each of two facts, or facts about two events. Split a sentence the reader must reread to parse. Turn a list strung through a sentence with semicolons into bullets, or a pointer to where the list lives.
 
@@ -69,47 +69,6 @@ Keep one reason when it motivates the reader's action, in its own short sentence
 **A player page describes what the player sees**: the window, the button, the result, what to expect when they act. Machinery the player doesn't act on goes in the technical docs. "Both sets keep their weapons when you log out" says what a player meets. Where the server keeps the other set does not.
 
 **Instructions are imperatives.** "Check it against the ticket."
-
-## Moves
-
-Make each move while you draft. Step 6 walks the draft against every one.
-
-**Words**
-
-- Name the mechanism or the number. "A column rename fails the build" beats "types that follow your schema". If the sentence could sit unchanged in another project's docs, rewrite it about this one or cut it.
-- Write the literal word: *is*, *has*, *uses*, *helps*, *keeps*, *returns*, *changed*, *shows*, *depends on*, *base*, *way*, *add*. Keep a figure of speech only when it came from the user's writing, or a person says it out loud ("rabbit hole", "dirt cheap").
-- Give the verb the work. Where an adverb props up a verb, pick a stronger verb or give the number.
-- Name the source of a claim, or state the claim as yours. A crowd ("experts", "reports") is no source.
-- Vary your words the way a person would: a pronoun, a shorter name, a fresh verb. Keep a name fixed where a change would make the reader wonder whether it is a different thing.
-- Point a pronoun at the noun just before it. Write the noun when the reader could ask "...that what?"
-- Write the view the author holds, in their words, at the confidence they hold it. One qualifier is enough.
-- Group things in the number they come in. A list of three holds three distinct things. One measured fact replaces three vague qualities.
-- Name the thing plainly and say what it is, with no contrast against what it isn't and no hint the reader must decode.
-
-**Sentences**
-
-- Write whole sentences, with their articles and verbs. Spell out arrows, symbols and abbreviations the reader would decode.
-- Name the actor: "the loader parses the file". Use the passive only when the actor is unknown or doesn't matter.
-- Join clauses with a full stop or a comma. Keep a colon for the list or example it introduces.
-- Start sentences on different words, and build them in different ways: a question, a clause first, a short line on its own.
-- In Showcase, end a sentence where the reader didn't expect it to go, at least once a paragraph, and let the flow break where the writer's thinking does: an aside, a second thought, a short line left alone. Plain stays free of asides and fragments.
-
-**The piece**
-
-- Put in the detail the writer knows from being there: a name, a place, a number, a thing that went wrong.
-- Keep events in the order they happened, false starts included.
-- Let the part the author cares about run long, and the rest stay short.
-- Save the punchline or image for the one place it lands.
-
-**Format**
-
-- Follow the surrounding document's heading case. Ask when there is none.
-- Write a paragraph where ideas connect. Keep bullets for what a reader scans or returns to: rules, flags, options, steps. A bullet's bold lead-in names its item and the text after it adds new detail.
-- Number only a real sequence.
-- Tables hold data with real columns.
-- Bold only the word a reader must not miss.
-- Use straight quotes, and emoji only where the house style does.
-- Match the target format: Markdown, wiki HTML, plain text or code comment.
 
 ## Three rules above the moves
 

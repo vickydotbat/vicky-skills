@@ -473,6 +473,10 @@ jobs:
         run: tests/agents-doc.test.sh
       - name: State at every stop has one home
         run: tests/state-at-every-stop.test.sh
+      - name: Productivity skills keep reference behind pointers
+        run: tests/productivity-split.test.sh
+      - name: Engineering skills keep reference behind pointers
+        run: tests/engineering-fat-cuts.test.sh
       - name: Mutation proof is current
         run: python3 tests/mutate-hooks.py --check
       - name: Red-first check

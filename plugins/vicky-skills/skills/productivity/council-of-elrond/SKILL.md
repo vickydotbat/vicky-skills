@@ -7,7 +7,7 @@ description: Council or pow-wow on a proposal, argued with the user until Frodo 
 
 > _You have come and you are met, by chance as it may seem. The seats speak until Frodo takes the road, and no one leaves before._
 
-A **council** is a design table about one proposal. The seats argue with the proposal and with each other. The user owns the proposal, sits at the table and riffs with it. The council **concludes** when Frodo chooses the road, and only then: the road is a star (a ticket), a build, or a star chart.
+A **council** is a design table about one proposal: the seats argue with it and with each other, and the user owns it and riffs with it. The council **concludes** when Frodo chooses the road, and only then: the road is a star (a ticket), a build, or a star chart.
 
 ## The table holds
 
@@ -16,21 +16,11 @@ These laws hold from the first round until Frodo chooses the road:
 - **The seats speak every turn.** Every line the user sees opens with a seat's name: each chat message and each `SendUserMessage`, an ack, a checkpoint or a summary of the round included. Nothing reaches the user in plain prose while the table sits. The seats stay in their voices, wholly in character if they like.
 - **The seats rise when Frodo speaks.** After Frodo's line no seat speaks again: acks, checkpoints, build reports and next moves are plain prose. `step-hint` repeats both rules when the council starts.
 - **The table stays in chat.** Open no page during the council: no `red-pen` draft, no `interactive-page` answer page, no `over-to-you` list. Each of those skills names this exception. A draft, an example or a ticket body waits until step 6.
-- **The council never turns into an interrogation.** Every question to the user comes from a seat, with its pick. A turn of bare questions is `interrogation`, and the two skills never cross. When the user asks to be grilled mid-council, Elrond notes it, and `interrogation` may start after the road is chosen.
+- **The council never becomes an interrogation.** Every question to the user comes from a seat, with its pick. A turn of bare questions is `interrogation`, and the two skills never cross. When the user asks to be grilled mid-council, Elrond notes it, and `interrogation` may start after the road is chosen.
 
 ## The seats
 
-| Seat | Angle |
-| --- | --- |
-| **Elrond** | Chairs. States the proposal, calls the seats, keeps the open and parked lists, sums up. |
-| **Boromir** | The skeptic: "One does not simply..." How it breaks or gets abused, and what it costs to build. |
-| **Gimli** | The axe: is it worth building at all? He swings at every part, and what survives the swing is the core. |
-| **Legolas** | The far sight: how it fits the rest of the system, and how it holds at scale or six months on. He and Gimli rarely agree. |
-| **Aragorn** | The ranger among the people: he walks through it step by step as the person using it, in the moment they use it. |
-| **Gandalf** | The old rules: the source the domain answers to (a rulebook, a spec, a standard, the lore), both editions when they differ, and the decisions already recorded. |
-| **Sam** | The enthusiast: what the people who use it will love, what it opens up for them, how to get more of it. |
-| **Merry and Pippin** | The idea nobody planned on: a twist, a reference from elsewhere, a sidebar. |
-| **Frodo** | Chooses the road. He speaks once, and his line concludes the council. |
+Each seat holds an angle: [SEATS.md](SEATS.md) lists them (Elrond chairs, Boromir the skeptic, Gimli the axe, Legolas the far sight, Aragorn the ranger, Gandalf the old rules, Sam the enthusiast, Merry and Pippin the wild card, Frodo the chooser).
 
 Five seats speak in a round. Elrond restates and Gandalf clarifies, every round. The other three rotate: a seat that sat out the last round speaks first, then the sharpest point, so every seat speaks at least every other round. A seat reads its angle in the proposal's own domain: for a game rule, the players and the rulebook; for code, its users and the repo's standards.
 
@@ -65,20 +55,7 @@ Every other line a turn needs belongs to a seat:
    - **One build for a later session**: a star, written by `examples` through its Record step.
    - **Fits this session**: a star, then a build, by `warp` to it.
 
-   A star blocked by an open ticket takes the later-session road, and his line names the blocker. Then the council has concluded: record the settled points with `human-voice`, where the repo's agent docs say decisions go. On a star chart, each settled point gets its line under the chart's Decisions, and each child ticket it changes is narrowed or closed. File the parked ones where the repo's tracker says, each star through [STAR-CHART.md](../../engineering/lay-course/STAR-CHART.md)'s "Filing a star", and carry a reversal with `plot-twist`. A settled point that changes a ticket another live session has claimed (`ListAgents`) gets a comment on that ticket, its new behaviour as a draft Given / When / Then marked `unapproved`, and that session gets one `SendMessage` line pointing at it. Then run `cerebro` as a forecast on what the decision makes due. Send it in this form:
-
-   ```markdown
-   **Elrond:**
-   Settled: <D1: the point, one line each>
-   Open: <what stays open, or "none">
-   Parked: <the idea → where it was filed>
-   Written: <each note, ticket, comment and message, by path or reference>
-   Cerebro: <what the decision makes due, or "nothing">
-   Notes: <side matters, one line each, or drop the line>
-   **Frodo:** I will take it. <the road>.
-
-   Next: <the next moves, each with its pick, in plain prose>
-   ```
+   A star blocked by an open ticket takes the later-session road, and his line names the blocker. Then the council has concluded: record the settled points with `human-voice`, where the repo's agent docs say decisions go. On a star chart, each settled point gets its line under the chart's Decisions, and each child ticket it changes is narrowed or closed. File the parked ones where the repo's tracker says, each star through [STAR-CHART.md](../../engineering/lay-course/STAR-CHART.md)'s "Filing a star", and carry a reversal with `plot-twist`. A settled point that changes a ticket another live session has claimed (`ListAgents`) gets a comment on that ticket, its new behaviour as a draft Given / When / Then marked `unapproved`, and that session gets one `SendMessage` line pointing at it. Then run `cerebro` as a forecast on what the decision makes due. Send it in the form of [CLOSE.md](CLOSE.md).
 
    Done when the user's message confirmed or named the road before Frodo's line, Frodo's line names that road, every settled and parked item is written down, and cerebro has proposed or found nothing.
 6. **Decide the next moves.** Only now may a page open, and only for the next moves: the road's first step, a parked idea's home, an unapproved example to approve. With three or more next moves, open them as an answer page with `interactive-page`, one question per move with its pick. Otherwise ask in chat, and stop: no next move starts, `mission-brief` included, before the user answers. Take the road the user confirms, or the one they name instead. When the user is tired, ask them to type `/conn` for a handoff. Done when the user has taken the road or named another.
