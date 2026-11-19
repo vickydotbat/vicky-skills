@@ -70,11 +70,11 @@ skills/shipping/deathmatch/scripts/prefight.sh	64866a7207e5cfd5	2f11e4908ee63618
 skills/shipping/deathmatch/scripts/triggers.sh	842b516c4c958ef3	2f11e4908ee63618	26/26
 skills/shipping/deathmatch/scripts/verdict.sh	e0a033ff1846ad05	2f11e4908ee63618	14/14
 skills/shipping/engrave/scripts/law-lint.sh	c868c7dea4edca82	6c6199abec9e22cc	181/181
-skills/shipping/security/scripts/advisory.sh	937be168af245fee	b4904e415246cdda	152/152
-skills/shipping/security/scripts/kit.sh	1b0fc13204c4abd6	d70badbff85f6513	11/11
-skills/shipping/security/scripts/levels.sh	ef85c88bb4a180e6	7d49efdc69ed8e64	86/86
-skills/shipping/security/scripts/lines.sh	c603602e3c5c5887	9ba1e3e745735947	8/8
-skills/shipping/security/scripts/review.sh	a23c13b21aca1642	7d49efdc69ed8e64	10/10
+skills/shipping/security/scripts/advisory.sh	6e69fa028a48b55b	cf9a08e211eba59e	155/155
+skills/shipping/security/scripts/kit.sh	0c943fdf55e13a9a	3a55359704e54de2	11/11
+skills/shipping/security/scripts/levels.sh	ef85c88bb4a180e6	d8d4a14423e5cf26	86/86
+skills/shipping/security/scripts/lines.sh	c603602e3c5c5887	e749e62f985f882b	8/8
+skills/shipping/security/scripts/review.sh	a23c13b21aca1642	d8d4a14423e5cf26	10/10
 skills/writing/case-file/scripts/build.py	49dcc6fae0b2dc85	65d8a5b19e0f0a9d	36/36
 skills/writing/case-file/scripts/bundle.py	b73306dd4202fa29	65d8a5b19e0f0a9d	16/16
 skills/writing/case-file/scripts/check.py	b3fe010a06790883	65d8a5b19e0f0a9d	33/33
