@@ -32,6 +32,9 @@ jobs:
       # The runner image has no JSON Schema validator, and this job has no declared shell to hold one.
       - name: Install check-jsonschema, the security kit's OSV file check
         run: pipx install check-jsonschema==0.38.0
+      # The case-file build shrinks screenshots with ImageMagick, which the runner image may lack.
+      - name: Install ImageMagick, the case-file build's image shrinker
+        run: command -v convert >/dev/null || { sudo apt-get update -q && sudo apt-get install -y -q imagemagick; }
       - name: tools-declared finds a runtime a script calls but tests/tools leaves out
         run: tests/tools-declared.test.sh
       - name: Plugin layout
@@ -42,6 +45,10 @@ jobs:
         run: tests/security_levels_approved_examples.test.sh
       - name: A CVE request and a publish wait on the user's own word (SEC-2)
         run: tests/advisory_guard_approved_examples.test.sh
+      - name: A case file builds, checks and bundles as its examples say (CF-1 to CF-3)
+        run: tests/case_file_approved_examples.test.sh
+      - name: The case-file check's user, home, host and image-data rules
+        run: tests/case-file.test.sh
       - name: The security kit's edges, bad input and the GitHub route
         run: tests/security-kit.test.sh
       - name: advisory-guard opens each gate only on the user's own word

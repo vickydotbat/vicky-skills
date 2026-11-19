@@ -9,3 +9,5 @@ jq
 node
 python3
 sed
+convert
+identify
