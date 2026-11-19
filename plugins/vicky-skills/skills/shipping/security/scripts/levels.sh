@@ -77,12 +77,28 @@ scorecard_check() {
 }
 
 baseline() {
-  scorecard_check baseline Security-Policy || return 0
-  local score; score=$(jq -r '.checks[0].score' "$tmp/score.json")
-  case $score in
-    10) echo "baseline: scorecard's Security-Policy check found a security policy (run: scorecard --checks Security-Policy)." ;;
-    -1|null|"") echo "baseline: scorecard's Security-Policy check could not decide: $(jq -r '.checks[0].reason' "$tmp/score.json")." ;;
-    *) finding baseline "$(jq -r '.checks[0].reason' "$tmp/score.json")" scorecard "scorecard --checks Security-Policy" ;;
+  if scorecard_check baseline Security-Policy; then
+    local score; score=$(jq -r '.checks[0].score' "$tmp/score.json")
+    case $score in
+      10) echo "baseline: scorecard's Security-Policy check found a security policy (run: scorecard --checks Security-Policy)." ;;
+      -1|null|"") echo "baseline: scorecard's Security-Policy check could not decide: $(jq -r '.checks[0].reason' "$tmp/score.json")." ;;
+      *) finding baseline "$(jq -r '.checks[0].reason' "$tmp/score.json")" scorecard "scorecard --checks Security-Policy" ;;
+    esac
+  fi
+  reporting
+}
+
+# reporting: on GitHub, whether private vulnerability reporting is on, since a
+# policy that points at the Security tab has no way in while it is off.
+reporting() {
+  [ -n "$slug" ] || return 0
+  need baseline gh https://cli.github.com || return 0
+  local run="gh api repos/$slug/private-vulnerability-reporting" on
+  on=$(gh api "repos/$slug/private-vulnerability-reporting" --jq .enabled 2>/dev/null)
+  case $on in
+    true) echo "baseline: private vulnerability reporting is on (run: $run)." ;;
+    false) finding baseline "private vulnerability reporting is off, so the Security tab has no Report a vulnerability button" scorecard "$run" ;;
+    *) echo "baseline: could not read the private vulnerability reporting setting, so this part has no result." ;;
   esac
 }
 

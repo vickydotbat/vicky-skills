@@ -121,6 +121,19 @@ check "an undecided scorecard check is no finding" 'grep -q "could not decide: i
 echo 1 > "$fx/answers/scorecard.exit"; out=$(levels "$all4" baseline)
 check "a failed scorecard run is no finding" 'grep -q "scorecard failed on Security-Policy" <<<"$out" && ! grep -q "finding" <<<"$out"'
 rm "$fx/answers/scorecard" "$fx/answers/scorecard.exit"
+cp "$fx/answers/gh.sh" "$fx/gh.sh.kept"
+pvr="private-vulnerability-reporting"
+echo "case \"\$*\" in *$pvr*) echo true ;; esac" > "$fx/answers/gh.sh"; : > "$fx/calls.log"; out=$(levels "$all4" baseline)
+check "baseline reads the private reporting setting on GitHub" 'grep -q "^gh api repos/acme/all4/$pvr" "$fx/calls.log" && grep -q "^baseline: private vulnerability reporting is on" <<<"$out" && ! grep -q "finding" <<<"$out"'
+echo "case \"\$*\" in *$pvr*) echo false ;; esac" > "$fx/answers/gh.sh"; out=$(levels "$all4" baseline)
+check "private reporting off is a finding under Security policy" 'grep -q "^baseline: finding: private vulnerability reporting is off.*rule: Security policy; run: gh api repos/acme/all4/$pvr" <<<"$out"'
+echo "case \"\$*\" in *$pvr*) exit 1 ;; esac" > "$fx/answers/gh.sh"; out=$(levels "$all4" baseline)
+check "an unread private reporting setting is no finding" 'grep -q "could not read the private vulnerability reporting setting" <<<"$out" && ! grep -q "finding" <<<"$out"'
+mv "$fx/bin/gh" "$fx/gh.off"; out=$(levels "$all4" baseline); mv "$fx/gh.off" "$fx/bin/gh"
+check "missing gh is named, and scorecard still runs" 'grep -q "gh is missing. Get it from https://" <<<"$out" && grep -q "Security-Policy" <<<"$out"'
+glp=$(repo glp https://gitlab.com/acme/glp.git); line "$glp" "Security levels: baseline"; : > "$fx/calls.log"; levels "$glp" baseline >/dev/null
+check "a GitLab repo never asks GitHub for the setting" '! grep -q "$pvr" "$fx/calls.log"'
+mv "$fx/gh.sh.kept" "$fx/answers/gh.sh"
 echo 3 > "$fx/answers/gitleaks.exit"; out=$(levels "$all4" secrets)
 check "a failed gitleaks run is no finding and no all-clear" 'grep -q "gitleaks failed with exit 3" <<<"$out" && ! grep -qE "finding|found nothing" <<<"$out"'
 rm "$fx/answers/gitleaks.exit"
