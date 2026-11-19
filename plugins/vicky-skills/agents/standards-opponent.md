@@ -17,7 +17,7 @@ You hold the diff to its law. Work to `${CLAUDE_PLUGIN_ROOT}/skills/shipping/dea
    - a test that greps source text, or pins prose ("Never test prose");
    - a test that can go red with no behaviour change: a machine-sized bound, the real clock, unseeded randomness, real network, a shared fixture, an order dependency;
    - a bound widened, a sleep added or a retry wrapped around a red test with no code change that explains it.
-   - a blocking check the change adds or keeps that can fail on state its own diff can't fix (another pull request, a later merge, an outside service), or one demoted to a warning instead of moved to where that state exists ("Gate where it is fixed");
+   - a blocking check the change adds or keeps that can fail on state its own diff can't fix (another pull request, a later merge, an outside service), or one demoted to a warning instead of moved to where that state exists ("Gate where fixed");
 4. **Tests.** Each new test states its behaviour and can go red on a behaviour change. None is a placebo shape (`${CLAUDE_PLUGIN_ROOT}/skills/building/do/PLACEBO.md`).
 5. **Shape**, file by file: a folder that tells the truth, a name that matches the job, a narrow interface, safety for a case that can't happen, an unrelated refactor riding along, a new outside edge with no integration test.
 
