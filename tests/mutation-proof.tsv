@@ -75,17 +75,6 @@ skills/shipping/security/scripts/kit.sh	1b0fc13204c4abd6	d70badbff85f6513	11/11
 skills/shipping/security/scripts/levels.sh	ef85c88bb4a180e6	7d49efdc69ed8e64	86/86
 skills/shipping/security/scripts/lines.sh	c603602e3c5c5887	9ba1e3e745735947	8/8
 skills/shipping/security/scripts/review.sh	a23c13b21aca1642	7d49efdc69ed8e64	10/10
-||||||| parent of ca37e71 (case-file build, check and bundle scripts turn CF-E1 to CF-E10 green)
-skills/shipping/security/scripts/advisory.sh	937be168af245fee	7c92c2c55b08de33	152/152
-skills/shipping/security/scripts/kit.sh	1b0fc13204c4abd6	830f0518e606a82e	11/11
-skills/shipping/security/scripts/levels.sh	6bf29860355948e4	e2fb2bbddeb85121	70/70
-skills/shipping/security/scripts/lines.sh	c603602e3c5c5887	57890fa0679cdecb	8/8
-skills/shipping/security/scripts/review.sh	a23c13b21aca1642	e2fb2bbddeb85121	10/10
-skills/shipping/security/scripts/advisory.sh	937be168af245fee	7c92c2c55b08de33	152/152
-skills/shipping/security/scripts/kit.sh	1b0fc13204c4abd6	830f0518e606a82e	11/11
-skills/shipping/security/scripts/levels.sh	6bf29860355948e4	e2fb2bbddeb85121	70/70
-skills/shipping/security/scripts/lines.sh	c603602e3c5c5887	57890fa0679cdecb	8/8
-skills/shipping/security/scripts/review.sh	a23c13b21aca1642	e2fb2bbddeb85121	10/10
 skills/writing/case-file/scripts/build.py	49dcc6fae0b2dc85	65d8a5b19e0f0a9d	36/36
 skills/writing/case-file/scripts/bundle.py	b73306dd4202fa29	65d8a5b19e0f0a9d	16/16
 skills/writing/case-file/scripts/check.py	b3fe010a06790883	65d8a5b19e0f0a9d	33/33
