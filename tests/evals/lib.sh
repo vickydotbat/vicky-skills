@@ -24,11 +24,13 @@ mkdir -p "$evals_tmp" || { echo "evals: cannot make $evals_tmp, and a run under 
 export TMPDIR="$evals_tmp"
 evals_out=$(mktemp -d) # kept after the run, so each result can be read back
 echo "eval results: $evals_out" >&2
+# Every run grants Write, Edit and Bash, as every_case.sh does; a case that
+# lists no Bash in its allowed_tools still gets none.
 eval_case() {
   local plugin=$1 name=$2 out=$3; shift 3
   timeout 900 \
     claude plugin eval "$plugin" --case "$name" --scaffold --trust-plugin --keep-temp --ablation none \
-    --runs 1 --max-cost-usd 3 --model "$EVAL_MODEL" --allow-tools Write Edit "$@" --no-publish --json "$evals_out/$out.json" >"$evals_out/$out.out" 2>&1 || return
+    --runs 1 --max-cost-usd 3 --model "$EVAL_MODEL" --allow-tools Write Edit Bash "$@" --no-publish --json "$evals_out/$out.json" >"$evals_out/$out.out" 2>&1 || return
   record_pass "$plugin" "$name"
 }
 # record_pass <plugin dir> <case>: write "<model> <date>" to the case's passed

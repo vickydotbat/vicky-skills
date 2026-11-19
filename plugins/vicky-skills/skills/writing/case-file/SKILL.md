@@ -31,7 +31,7 @@ Each case file has one **kind**, picked by what the reader does after reading:
 
 1. **Open the case folder**: `.case-files/<name>/` at the effort repo's root, where `<name>` is the effort's short name. When it exists, reopen it and build on every file in it: never open a second folder for the same effort. Add one `.case-files/` line to `.gitignore` when no line lists it. The folder holds `sections/`, `files/`, `quotes.md` and `out/`, and lasts across sessions: `build.py` refuses a case file in a scratch folder. When the shell can't write there, make each file with the file tool. Done when the folder exists, `.gitignore` lists `.case-files/` once, and `git status` does not list the folder.
    Proven by: plugins/vicky-skills/evals/case-file/reopen
-2. **Pick the kind** from the table. An effort of two kinds gets two case folders, `<name>-<kind>` each, one kind each. Done when each case folder has one kind.
+2. **Pick the kind** from the table. An ask whose reader should both do one kind's thing and another's, such as "show them it works, and ask them to adopt it" (demonstration and pitch), is two kinds: it gets two case folders, `<name>-<kind>` each, one kind each, even though one page could carry both. Done when each case folder has one kind.
    Proven by: plugins/vicky-skills/evals/case-file/two-kinds
 3. **Read every source whole**: each ticket, body and comments, and each file, log and screenshot the effort names. Done when you hold every source the case file will cite.
    Proven by: plugins/vicky-skills/evals/case-file/marks-evidence

@@ -16,6 +16,7 @@ out=$(cd "$root" && PATH="$work/bin:$PATH" TMPDIR=/tmp XDG_RUNTIME_DIR="$work/ru
   . tests/evals/lib.sh 2>/dev/null; eval_case "$evals_plugin" none r; echo "$evals_out"; cat "$TMPDIR/args"' )
 dir=$(echo "$out" | head -1)
 case "$dir" in "$work/run/"?*) ;; *) no "lib.sh puts eval results under a sandbox-denied folder: $dir; set TMPDIR outside /tmp in tests/evals/lib.sh";; esac
+echo "$out" | grep -qx -- Bash || no "eval_case grants no Bash, so a case that lists it runs with no shell: add Bash to --allow-tools in tests/evals/lib.sh"
 echo "$out" | grep -qx -- --keep-temp || no "eval_case drops each run's trace: pass --keep-temp in tests/evals/lib.sh"
 # A runtime dir that can't be made stops the runner, never a quiet /tmp fallback.
 (cd "$root" && TMPDIR=/tmp XDG_RUNTIME_DIR=/proc/nope EVAL_SPEND=yes EVAL_MODEL=test bash -c '. tests/evals/lib.sh' >/dev/null 2>&1); code=$?
