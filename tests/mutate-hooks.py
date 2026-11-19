@@ -95,6 +95,8 @@ TESTS = {
     "skills/shipping/deathmatch/scripts/batch.sh": ["deathmatch_approved_examples", "deathmatch-scripts"],
     "skills/shipping/deathmatch/scripts/verdict.sh": ["deathmatch_approved_examples", "deathmatch-scripts"],
     "skills/shipping/deathmatch/scripts/mark-outside.sh": ["deathmatch_approved_examples", "deathmatch-scripts"],
+    "skills/shipping/security/scripts/advisory.sh": ["security_advisory_approved_examples", "security-kit"],
+    "skills/shipping/security/scripts/lines.sh": ["security_advisory_approved_examples", "security-kit"],
     "skills/shipping/engrave/scripts/law-lint.sh": ["law-lint", "law_lint_approved_examples", "laws_line_approved_examples"],
     "red-first-guard.sh": ["red-first", "red-first-paths", "red_first_approved_examples"],
     "skill-ledger.sh": ["skill_ledger_approved_examples"],

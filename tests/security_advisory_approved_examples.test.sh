@@ -146,7 +146,7 @@ check "SEC-E18 an unproven claim gets no draft" '[ "$before" = "$(drafts)" ] && 
 # Then the OSV file's id starts with the repo's own prefix, and names no CVE id
 report "$fx/e52.json" '.summary="A flaw for the OSV id"'
 adv=$(draft "$file_repo" "$fx/e52.json" | sed -n 's/^draft: //p' | head -1)
-check "SEC-E52 the OSV id uses the repo's prefix" 'jq -e "(.id | startswith(\"GADGET-\")) and ((.aliases // []) | map(select(startswith(\"CVE-\"))) | length == 0) and (.id | test(\"CVE\") | not)" "$adv/osv.json" >/dev/null'
+check "SEC-E52 the OSV id uses the repo's prefix" 'jq -e "(.id | startswith(\"x_GADGET-\")) and ((.aliases // []) | map(select(startswith(\"CVE-\"))) | length == 0) and (.id | test(\"CVE\") | not)" "$adv/osv.json" >/dev/null'
 
 # Given a reproduced report
 # When the kit drafts the advisory

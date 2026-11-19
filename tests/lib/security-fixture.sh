@@ -33,7 +33,7 @@ for t in gh tea gitleaks zizmor scorecard vulnix nix pip pipx cargo brew nix-env
 # The kit sees the stand-ins and a fixed set of real tools, never the host's own
 # copy of a tool a test has taken away.
 mkdir -p "$fx/sys"
-for t in bash sh env git jq sed awk grep date cat ls mkdir rm mv cp ln find sort head tail tr cut wc sha256sum mktemp xargs basename dirname printf test tee touch timeout python3 check-jsonschema realpath readlink stat uname id chmod sleep seq comm uniq diff; do
+for t in bash sh env git jq sed awk grep date cat ls mkdir rm mv cp ln find sort head tail tr cut wc sha256sum mktemp xargs basename dirname printf test tee touch timeout python3 check-jsonschema realpath readlink stat uname id chmod sleep seq comm uniq diff numfmt setsid kill ps pgrep pkill nproc; do
   p=$(command -v "$t") && [ -x "$p" ] && ln -sf "$p" "$fx/sys/$t"
 done
 export PATH="$fx/bin:$fx/sys"
