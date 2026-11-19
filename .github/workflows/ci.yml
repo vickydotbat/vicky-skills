@@ -42,6 +42,12 @@ jobs:
         run: tests/security_levels_approved_examples.test.sh
       - name: A CVE request and a publish wait on the user's own word (SEC-2)
         run: tests/advisory_guard_approved_examples.test.sh
+      - name: The security kit's edges, bad input and the GitHub route
+        run: tests/security-kit.test.sh
+      - name: advisory-guard opens each gate only on the user's own word
+        run: tests/advisory-guard.test.sh
+      - name: advisory-deadline names a reporter's deadline before it passes
+        run: tests/advisory-deadline.test.sh
       - name: approved-spec decides what holds approved examples
         run: tests/approved-spec.test.sh
       - name: heredoc-strip keeps only shell-fed bodies in code mode

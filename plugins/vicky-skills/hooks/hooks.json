@@ -146,6 +146,11 @@
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/publish-guard.sh\"",
             "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/advisory-guard.sh\"",
+            "timeout": 5
           }
         ]
       },
@@ -284,6 +289,11 @@
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/springboard.sh\"",
             "timeout": 15
+          },
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/advisory-deadline.sh\"",
+            "timeout": 5
           }
         ]
       }

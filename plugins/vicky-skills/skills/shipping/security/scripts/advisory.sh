@@ -16,10 +16,6 @@ die() { say "$*"; exit 1; }
 [ -n "${CLAUDE_PLUGIN_DATA:-}" ] || die "advisory: no data folder: run this from the installed plugin, or set CLAUDE_PLUGIN_DATA."
 # shellcheck source=kit.sh
 . "$here/kit.sh"
-slug=$(forge_slug 'github\.com')
-name=$(basename "${remote:-$top}" .git)
-key=$(tr '[:upper:]' '[:lower:]' <<<"${slug:-$name}" | tr -c 'a-z0-9\n' '-')
-store="$CLAUDE_PLUGIN_DATA/advisories/$key"
 
 route() {
   local r; r=$(line Advisories)
@@ -105,7 +101,7 @@ draft() {
   else
     if [ -z "$dir" ]; then
       local prefix n; prefix=$(tr '[:lower:]' '[:upper:]' <<<"$name" | tr -c 'A-Z0-9\n' '-')
-      n=$(find "$store" -mindepth 1 -maxdepth 1 -type d | wc -l)
+      n=$(find "$store" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
       # OSV 1.9.2 takes a prefix no database registers only after "x_".
       id="x_$prefix-$(date +%Y)-$((n + 1))"; dir="$store/$id"; mkdir -p "$dir"
     fi
@@ -120,10 +116,10 @@ draft() {
   fi
   echo "$rkey" > "$dir/report-key"
   write_text "$report" "$vector" "$dir/advisory.md"
-  jq -n --arg id "$id" --arg route "$r" --arg slug "$slug" --arg deadline "$deadline" --slurpfile rep "$report" \
+  jq -n --arg id "$id" --arg route "$r" --arg slug "${slug:-$name}" --arg deadline "$deadline" --slurpfile rep "$report" \
     --arg old "$(cat "$dir/state.json" 2>/dev/null || echo '{}')" '
     ($old | fromjson) + {id: $id, route: $route, repo: $slug, deadline: $deadline, state: "draft",
-     summary: $rep[0].summary, fixed: ($rep[0].fixed // ""), fix_branch: ($rep[0].fix_branch // "")}' > "$dir/state.json.new" &&
+     summary: $rep[0].summary, cwe: $rep[0].cwe, fixed: ($rep[0].fixed // ""), fix_branch: ($rep[0].fix_branch // "")}' > "$dir/state.json.new" &&
     mv "$dir/state.json.new" "$dir/state.json"
   say "draft: $dir"
   say "draft id: $id"
@@ -149,7 +145,56 @@ draft() {
   [ -n "$(jq -r '.fixed // ""' "$report")" ] || say "the draft waits on the fix: no fixed version yet."
 }
 
+# open_draft <id>: the draft's folder, its state and route, or an error naming the id.
+open_draft() {
+  dir="$store/$1"; state="$dir/state.json"
+  [ -f "$state" ] || die "advisory: this repo has no draft advisory $1."
+  route=$(jq -r .route "$state")
+}
+set_state() { jq "$1" "$state" > "$state.new" && mv "$state.new" "$state"; }
+
+cve() {
+  open_draft "$1"
+  if [ "$route" = file ]; then
+    say "advisory: the file route has no forge to ask, so the CVE request goes through MITRE's CVE ID request form, which takes no API: https://mitre.github.io/mitre-cve-roles/cve-id-request/"
+    say "Paste these into the form. The kit sends nothing itself."
+    jq -r '"Vulnerability type: \(.cwe // "see the advisory")\nVendor and product: \(.repo // "")\nAffected versions: see the advisory\nFixed version: \(if .fixed == "" then "not yet" else .fixed end)\nDescription: \(.summary)"' "$state"
+    sed -n '/^Weakness:/p; /^Affected versions:/p; /^Credit:/p; /^Fix:/p' "$dir/advisory.md"
+    return 0
+  fi
+  [ "$(gh repo view "$slug" --json visibility --jq .visibility 2>/dev/null)" = PUBLIC ] ||
+    die "advisory: GitHub requests CVEs only for public repos, and $slug is not public, so nothing was sent."
+  local out # mutant-ok delete: no other function reads out
+  out=$(gh api -X POST "repos/$slug/security-advisories/$1/cve" 2>&1) || die "advisory: GitHub refused the CVE request: $out"
+  say "advisory: CVE requested for $1. GitHub usually reviews a request within 72 hours, and the advisory stays a draft."
+}
+
+publish() {
+  open_draft "$1"
+  local fixed deadline warned out # mutant-ok delete: no other function reads these
+  fixed=$(jq -r '.fixed // ""' "$state"); deadline=$(jq -r '.deadline // ""' "$state"); warned=$(jq -r '.warned_at // ""' "$state")
+  # D6: publish once the fix ships, or at the reporter's deadline. Before both, the user's second publish.
+  if [ -z "$fixed" ] && [ -z "$warned" ] && [ "$(date +%F)" \< "$deadline" ]; then
+    set_state ".warned_at = $(date +%s)"
+    die "advisory: the fix for $1 has not shipped, and the reporter's deadline is $deadline. Nothing was published. It publishes only after a second message from the user that says publish."
+  fi
+  if [ "$route" = github ]; then
+    out=$(gh api -X PATCH "repos/$slug/security-advisories/$1" -f state=published 2>&1) || die "advisory: GitHub refused to publish $1: $out"
+    set_state '.state = "published"'
+    say "advisory: $1 is published on the repo's public Security tab."
+  else
+    local title; title="Security advisory $1: $(jq -r .summary "$state")"
+    if [ -n "$slug" ]; then out=$(gh release create "$1" --title "$title" --notes-file "$dir/advisory.md" 2>&1)
+    else out=$(tea releases create --tag "$1" --title "$title" --note-file "$dir/advisory.md" 2>&1); fi ||
+      die "advisory: the forge refused the release note for $1: $out"
+    set_state '.state = "published"'
+    say "advisory: $1 is published as the release note \"$title\"."
+  fi
+}
+
 case "${1:-}" in
   draft) [ $# -eq 2 ] || die "usage: advisory.sh draft <report.json>"; draft "$2" ;;
+  cve) [ $# -eq 2 ] || die "usage: advisory.sh cve <id>"; cve "$2" ;;
+  publish) [ $# -eq 2 ] || die "usage: advisory.sh publish <id>"; publish "$2" ;;
   *) die "usage: advisory.sh draft <report.json> | cve <id> | publish <id>" ;;
 esac

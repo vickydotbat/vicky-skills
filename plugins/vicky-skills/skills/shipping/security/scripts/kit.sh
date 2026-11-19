@@ -8,3 +8,7 @@ fp_installed() { jq -e '.plugins | keys | any(startswith("fp-check@"))' "${CLAUD
 remote=$(git -C "$top" config remote.origin.url 2>/dev/null || true)
 # forge_slug <host>: owner/repo when origin is on <host>, else nothing.
 forge_slug() { local s; s=$(sed -nE "s#^(https://|git@|ssh://git@)$1[:/]([^/]+/[^/]+)/?\$#\\2#p" <<<"$remote"); echo "${s%.git}"; }
+slug=$(forge_slug 'github\.com')
+name=$(basename "${remote:-$top}" .git)
+# store: this repo's draft advisories, one folder each, in the plugin's data folder.
+store="${CLAUDE_PLUGIN_DATA:-}/advisories/$(tr '[:upper:]' '[:lower:]' <<<"${slug:-$name}" | tr -c 'a-z0-9\n' '-')"

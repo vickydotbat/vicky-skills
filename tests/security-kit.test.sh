@@ -148,4 +148,39 @@ git -C "$all4" symbolic-ref --delete refs/remotes/origin/HEAD; : > "$fx/calls.lo
 check "a review with no origin default starts from main" 'grep -q "^gitleaks git --log-opts=main..HEAD" "$fx/calls.log"'
 installed fp-check; (cd "$all4" && bash "$kit/review.sh" >/dev/null 2>&1); code=$?
 check "a review handed to fp-check exits 0" '[ "$code" = 0 ]'
+
+# cve and publish: an unknown id, forge refusals, the file route on a GitHub remote, and the state after.
+kit_run() { (cd "$1" && shift && bash "$kit/advisory.sh" "$@" 2>&1); }
+out=$(kit_run "$gh_repo" publish GHSA-none); code=$?
+check "an unknown draft id is named" '[ "$code" != 0 ] && grep -q "no draft advisory GHSA-none" <<<"$out"'
+out=$(kit_run "$gh_repo" cve); code=$?
+check "cve with no id shows its usage" '[ "$code" != 0 ] && grep -q "usage: advisory.sh cve <id>" <<<"$out"'
+out=$(kit_run "$gh_repo" publish); code=$?
+check "publish with no id shows its usage" '[ "$code" != 0 ] && grep -q "usage: advisory.sh publish <id>" <<<"$out"'
+cat > "$fx/answers/gh.sh" <<EOF
+case "\$*" in
+  *visibility*) echo PUBLIC; exit 0 ;;
+  *"/cve"*|*state=published*|"release create"*) echo "HTTP 403: refused for the test" >&2; exit 1 ;;
+esac
+EOF
+out=$(kit_run "$gh_repo" cve GHSA-1111-2222-3333); code=$?
+check "a refused CVE request says so" '[ "$code" != 0 ] && grep -q "GitHub refused the CVE request: HTTP 403" <<<"$out"'
+out=$(kit_run "$gh_repo" publish GHSA-1111-2222-3333); code=$?
+st=$(find "$CLAUDE_PLUGIN_DATA" -path "*GHSA-1111-2222-3333/state.json" | head -1)
+check "a refused publish keeps the draft a draft" '[ "$code" != 0 ] && grep -q "GitHub refused to publish" <<<"$out" && [ "$(jq -r .state "$st")" = draft ]'
+echo '{"version":2,"plugins":{}}' > "$fx/config/plugins/installed_plugins.json"
+fg=$(repo fg https://github.com/acme/fg.git); line "$fg" "Advisories: file"
+fid=$(draft "$fg" "$fx/r.json" | sed -n 's/^draft id: //p')
+out=$(kit_run "$fg" publish "$fid"); code=$?
+check "a refused release note keeps the draft a draft" '[ "$code" != 0 ] && grep -q "refused the release note" <<<"$out"'
+echo 'case "$*" in *visibility*) echo PUBLIC ;; esac' > "$fx/answers/gh.sh"; : > "$fx/calls.log"
+out=$(kit_run "$fg" publish "$fid"); fst=$(find "$CLAUDE_PLUGIN_DATA" -path "*$fid/state.json" | head -1)
+check "the file route on a GitHub remote publishes a GitHub release" 'grep -q "^gh release create $fid --title Security advisory $fid" "$fx/calls.log" && ! grep -q "^tea" "$fx/calls.log" && [ "$(jq -r .state "$fst")" = published ]'
+out=$(kit_run "$gh_repo" publish GHSA-1111-2222-3333)
+check "a published draft is marked published" '[ "$(jq -r .state "$st")" = published ] && grep -q "public Security tab" <<<"$out"'
+check "a published release note says so" 'grep -q "published as the release note" <<<"$(kit_run "$fg" publish "$fid")"'
+out=$(kit_run "$fg" cve "$fid")
+check "the MITRE form text names the weakness and the fix, and sends nothing" 'grep -q "^Fixed version: 2.4.1$" <<<"$out" && grep -q "^Vendor and product: acme/fg$" <<<"$out" && grep -q "^Vulnerability type: CWE-22$" <<<"$out" && grep -q "^Weakness: CWE-22" <<<"$out" && grep -q "^Fix: https://example.invalid" <<<"$out" && grep -q "sends nothing" <<<"$out"'
+echo 'case "$*" in *visibility*) echo PUBLIC ;; *) echo "{}" ;; esac' > "$fx/answers/gh.sh"
+check "a sent CVE request says the advisory stays a draft" 'grep -q "CVE requested for GHSA-1111-2222-3333.*stays a draft" <<<"$(kit_run "$gh_repo" cve GHSA-1111-2222-3333)"'
 exit $fail
