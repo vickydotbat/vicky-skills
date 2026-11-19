@@ -22,14 +22,24 @@ Each claim carries one **label**, the strongest its evidence holds:
 ## Steps
 
 1. **Read every source whole**: each ticket, body and comments, and each file, log and screenshot the effort names. Done when you hold every source the case file will cite.
+   Proven by: plugins/vicky-skills/evals/case-file/marks-evidence
 2. **List the claims.** Write each claim on one line with the ticket line or run that backs it and its label from the table. A check that never ran goes under a `Not proven` heading, by its own name. A result seen only on a modified client carries `test client only`, whatever the ticket's wording. Done when every claim has a source and a label, and the `Not proven` list holds every check with no run behind it.
+   Proven by: plugins/vicky-skills/evals/case-file/marks-evidence
 3. **Pick the user's words.** A quote from a session transcript goes in only once the user approves it. Put each quote you mean to use in one `red-pen` draft file, one section per quote with its own approve box, written with `interactive-page`'s `write-page.py`. Open it when the user is at the machine, and otherwise leave it for their return and build on without the quotes. Done when every quote on the page is one the user ticked, and the rest are out.
+   Proven by: plugins/vicky-skills/evals/case-file/quotes-approved
 4. **Gather the evidence.** View every image before it goes in, and cut one that shows nothing the text needs. Compile each code sample where a compiler is to hand, and label one you could not compile `not tested`. Done when every image is one you looked at and every code sample has a result.
+   Proven by: plugins/vicky-skills/evals/case-file/marks-evidence
 5. **Write the template**: the page body as HTML, written with `human-voice`, in the effort's words, for the audience the user named. Put each file in with a marker on its own line, the path relative to the template: `<!-- IMG <path> | <caption> -->` for an image, `<!-- FILE <path> -->` for a text file, `<!-- BIN <path> -->` for a binary. Give each claim its label beside it, and end with the `Not proven` section and the steps that reproduce the effort from the start. Done when every claim from step 2 is on the page with its label.
+   Proven by: plugins/vicky-skills/evals/case-file/marks-evidence
 6. **Build it**: `python3 scripts/build.py <template.html> <page.html>`. It shrinks each image to 720 pixels wide, inlines every file with a download link, and stops naming the marker of a missing file, a file outside the template's folder, a file over 20 MB, or an image ImageMagick can't shrink within its limits. Done when it prints `built:`.
+   Proven by: tests/case_file_approved_examples.test.sh
 7. **Check it**: `python3 scripts/check.py <page.html>`, which refuses a home folder, scratch path, a path from `~` or climbing out with `..`, the user name or the host name, in the text or inside any download, and a download that won't decode. Rename each hit by its role, as `loose-lips` says, and build again. Done when it prints `case-file check: clean`.
+   Proven by: tests/case-file.test.sh
 8. **Look at it** with `by-eye`, served over a loopback server, since the headless browser refuses `file:` pages. Done when you have seen every section and image render.
+   Proven by: plugins/vicky-skills/evals/case-file/marks-evidence
 9. **Bundle it**: `python3 scripts/bundle.py <page.html> <files folder> <out folder> --readme <README.md>`, with a README that says what the case file is and how to open it. Save it in a folder that lasts past the session. The script writes a new zip beside any earlier one and deletes nothing. Done when it prints `bundled:`.
+   Proven by: tests/case_file_approved_examples.test.sh
 10. **Hand it over.** Attach the zip, not the bare page, to the effort's ticket, since a tracker may refuse an `.html` upload, and give the user the zip's path. Done when the zip is on the ticket and the user has its path.
+    Proven by: plugins/vicky-skills/evals/case-file/marks-evidence
 
 Charter: C2, C3, C7, C8 ([CHARTER.md](../../CHARTER.md)).
