@@ -29,7 +29,7 @@ EOF
   chmod +x "$fx/bin/$1"
 }
 # The bare tool names the kit looks for. A test deletes one to make it missing.
-for t in gh tea gitleaks zizmor scorecard vulnix nix pip pipx cargo brew nix-env apt apt-get; do stub "$t"; done
+for t in gh tea gitleaks zizmor scorecard vulnix nix nix-build pip pipx cargo brew nix-env apt apt-get; do stub "$t"; done
 # The kit sees the stand-ins and a fixed set of real tools, never the host's own
 # copy of a tool a test has taken away.
 mkdir -p "$fx/sys"

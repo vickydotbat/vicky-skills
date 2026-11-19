@@ -77,7 +77,75 @@ check "no fix branch makes no fork" 'grep -q "^draft: " <<<"$out" && ! grep -q "
 
 # lines.sh outside a repo, and in a repo with no docs/agents folder yet.
 out=$(cd "$fx" && bash "$kit/lines.sh" 2>&1); code=$?
-check "lines outside a repo writes nothing" '[ "$code" != 0 ] && grep -qi "inside a repo" <<<"$out"'
+check "lines outside a repo writes nothing" '[ "$code" != 0 ] && grep -qi "inside the repo" <<<"$out"'
 plain=$(repo plain https://github.com/acme/plain.git); rm -rf "$plain/docs"; (cd "$plain" && bash "$kit/lines.sh" >/dev/null 2>&1)
 check "lines makes docs/agents when it is missing" 'grep -qx "Advisories: github" "$plain/docs/agents/security.md"'
+# The levels' edges: the opt-out line, names, missing tools, clean runs and failed runs.
+levels() { (cd "$1" && shift && bash "$kit/levels.sh" "$@" 2>&1); }
+lv=$(repo lv https://github.com/acme/lv.git)
+out=$(levels "$lv"); code=$?
+check "no Security levels line runs nothing and asks for first-contact" '[ "$code" != 0 ] && grep -q "/first-contact" <<<"$out" && ! grep -qE "^(gitleaks|zizmor|scorecard|vulnix)" "$fx/calls.log"'
+line "$lv" "Advisories: off"; line "$lv" "Security levels: secrets, cii"
+: > "$fx/calls.log"; out=$(levels "$lv")
+check "an unknown level is named and the known ones still run" 'grep -q "\"cii\" is no level" <<<"$out" && grep -q "^gitleaks" "$fx/calls.log" && grep -q "found nothing" <<<"$out"'
+check "Advisories off leaves the levels on" 'grep -q "^secrets: gitleaks found nothing" <<<"$out"'
+out=$(levels "$lv" baseline)
+check "a level the line leaves out says it is switched off" 'grep -q "^baseline: switched off" <<<"$out" && ! grep -q "^scorecard" "$fx/calls.log"'
+(cd "$lv" && bash "$kit/lines.sh" >/dev/null 2>&1)
+check "first-contact keeps an existing Security levels line" '[ "$(grep -h "^Security levels:" "$lv"/docs/agents/*.md)" = "Security levels: secrets, cii" ]'
+all4=$(repo all4 https://github.com/acme/all4.git); line "$all4" "Security levels: baseline, secrets, ci, dependencies"
+mkdir -p "$all4/.gitea/workflows"; echo 'on: push' > "$all4/.gitea/workflows/a.yml"; echo '{ }' > "$all4/default.nix"
+for t in gitleaks scorecard vulnix; do
+  mv "$fx/bin/$t" "$fx/$t.off"; : > "$fx/calls.log"; out=$(levels "$all4")
+  check "missing $t is named, never installed, and the other levels run" 'grep -q "$t is missing. Get it from https://" <<<"$out" && [ "$(grep -c "is missing" <<<"$out")" = 1 ] && ! grep -q "found nothing" <<<"$(grep "$t" <<<"$out")" && ! grep -qE "^(pip|pipx|cargo|brew|nix-env|apt|apt-get) " "$fx/calls.log"'
+  mv "$fx/$t.off" "$fx/bin/$t"
+done
+: > "$fx/calls.log"; out=$(levels "$all4" ci dependencies)
+check "a Gitea workflow folder is checked" 'grep -q "^zizmor --format json .gitea/workflows" "$fx/calls.log"'
+check "a default.nix build is read with nix-build" 'grep -q "^nix-build --no-out-link" "$fx/calls.log"'
+echo '{"checks":[{"name":"Security-Policy","score":10,"reason":"security policy file detected","details":[]}]}' > "$fx/answers/scorecard"
+out=$(levels "$all4" baseline)
+check "a repo with a policy passes baseline" 'grep -q "found a security policy" <<<"$out" && ! grep -q "finding" <<<"$out"'
+echo '{"checks":[{"name":"Security-Policy","score":-1,"reason":"internal error: API rate limit","details":[]}]}' > "$fx/answers/scorecard"
+out=$(levels "$all4" baseline)
+check "an undecided scorecard check is no finding" 'grep -q "could not decide: internal error: API rate limit" <<<"$out" && ! grep -q "finding" <<<"$out"'
+echo 1 > "$fx/answers/scorecard.exit"; out=$(levels "$all4" baseline)
+check "a failed scorecard run is no finding" 'grep -q "scorecard failed on Security-Policy" <<<"$out" && ! grep -q "finding" <<<"$out"'
+rm "$fx/answers/scorecard" "$fx/answers/scorecard.exit"
+echo 3 > "$fx/answers/gitleaks.exit"; out=$(levels "$all4" secrets)
+check "a failed gitleaks run is no finding and no all-clear" 'grep -q "gitleaks failed with exit 3" <<<"$out" && ! grep -qE "finding|found nothing" <<<"$out"'
+rm "$fx/answers/gitleaks.exit"
+echo '[]' > "$fx/answers/zizmor"; out=$(levels "$all4" ci)
+check "a clean zizmor run says so" 'grep -q "^ci: zizmor found nothing" <<<"$out"'
+echo 1 > "$fx/answers/zizmor.exit"; out=$(levels "$all4" ci)
+check "a failed zizmor run is no finding and no all-clear" 'grep -q "zizmor failed with exit 1" <<<"$out" && ! grep -qE "finding|found nothing" <<<"$out"'
+rm "$fx/answers/zizmor" "$fx/answers/zizmor.exit"
+echo "$fx/store/x" > "$fx/answers/nix-build"; out=$(levels "$all4" dependencies)
+check "a clean vulnix run says so" 'grep -q "^dependencies: vulnix found nothing" <<<"$out"'
+echo 1 > "$fx/answers/vulnix.exit"; out=$(levels "$all4" dependencies)
+check "a failed vulnix run is no finding and no all-clear" 'grep -q "vulnix failed with exit 1" <<<"$out" && ! grep -qE "finding|found nothing" <<<"$out"'
+rm "$fx/answers/vulnix.exit" "$fx/answers/nix-build"; rm "$all4/default.nix"; echo '{ }' > "$all4/flake.nix"
+out=$(levels "$all4" dependencies)
+check "a failed Nix build is no finding and no all-clear" 'grep -q "Nix build failed" <<<"$out" && ! grep -qE "finding|found nothing" <<<"$out"'
+rm "$all4/flake.nix"
+echo '{"checks":[{"name":"Vulnerabilities","score":10,"reason":"0 existing vulnerabilities detected","details":[]}]}' > "$fx/answers/scorecard"
+out=$(levels "$all4" dependencies)
+check "a clean Vulnerabilities check says so" 'grep -q "Vulnerabilities check found nothing" <<<"$out"'
+rm "$fx/answers/scorecard"
+gl=$(repo gl https://gitlab.com/acme/gl.git); line "$gl" "Security levels: baseline"; : > "$fx/calls.log"; levels "$gl" baseline >/dev/null
+check "scorecard reads a GitLab repo" 'grep -q "^scorecard --repo gitlab.com/acme/gl " "$fx/calls.log"'
+: > "$fx/calls.log"; (cd "$all4" && bash "$kit/review.sh" v1.0 >/dev/null 2>&1)
+check "a review scans only the branch's commits" 'grep -q "^gitleaks git --log-opts=v1.0..HEAD" "$fx/calls.log"'
+offl=$(repo offl https://github.com/acme/offl.git); line "$offl" "Security levels: off"; levels "$offl" >/dev/null; code=$?
+check "levels switched off exits 0, a choice and no error" '[ "$code" = 0 ]'
+nixr=$(repo nixr https://github.com/acme/nixr.git); line "$nixr" "Security levels: dependencies"; echo '{ }' > "$nixr/flake.nix"
+echo "$fx/store/y" > "$fx/answers/nix"; : > "$fx/calls.log"; levels "$nixr" dependencies >/dev/null; rm "$fx/answers/nix"
+check "a Nix repo's dependency watch runs vulnix alone" 'grep -q "^vulnix" "$fx/calls.log" && ! grep -q "^scorecard" "$fx/calls.log"'
+git -C "$all4" update-ref refs/remotes/origin/trunk HEAD; git -C "$all4" symbolic-ref refs/remotes/origin/HEAD refs/remotes/origin/trunk
+: > "$fx/calls.log"; out=$( (cd "$all4" && bash "$kit/review.sh" 2>&1) )
+check "a review with no base starts from origin's default branch" 'grep -q "^gitleaks git --log-opts=origin/trunk..HEAD" "$fx/calls.log" && grep -q "fp-check is not installed" <<<"$out"'
+git -C "$all4" symbolic-ref --delete refs/remotes/origin/HEAD; : > "$fx/calls.log"; (cd "$all4" && bash "$kit/review.sh" >/dev/null 2>&1)
+check "a review with no origin default starts from main" 'grep -q "^gitleaks git --log-opts=main..HEAD" "$fx/calls.log"'
+installed fp-check; (cd "$all4" && bash "$kit/review.sh" >/dev/null 2>&1); code=$?
+check "a review handed to fp-check exits 0" '[ "$code" = 0 ]'
 exit $fail

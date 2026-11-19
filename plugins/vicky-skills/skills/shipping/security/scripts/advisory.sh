@@ -14,12 +14,9 @@ here=$(cd "$(dirname "$0")" && pwd)
 say() { printf '%s\n' "$*"; }
 die() { say "$*"; exit 1; }
 [ -n "${CLAUDE_PLUGIN_DATA:-}" ] || die "advisory: no data folder: run this from the installed plugin, or set CLAUDE_PLUGIN_DATA."
-top=$(git rev-parse --show-toplevel 2>/dev/null) || die "advisory: run this inside the repo the report is about."
-
-# line <name>: the value of the repo's first "<name>:" line in docs/agents/.
-line() { sed -nE "s/^(- )?$1:[[:space:]]*(.*[^[:space:]])[[:space:]]*$/\2/p" "$top"/docs/agents/*.md 2>/dev/null | head -n1; }
-remote=$(git -C "$top" config remote.origin.url 2>/dev/null || true)
-slug=$(sed -nE 's#^(https://|git@|ssh://git@)github\.com[:/]([^/]+/[^/]+)/?$#\2#p' <<<"$remote"); slug=${slug%.git}
+# shellcheck source=kit.sh
+. "$here/kit.sh"
+slug=$(forge_slug 'github\.com')
 name=$(basename "${remote:-$top}" .git)
 key=$(tr '[:upper:]' '[:lower:]' <<<"${slug:-$name}" | tr -c 'a-z0-9\n' '-')
 store="$CLAUDE_PLUGIN_DATA/advisories/$key"
@@ -35,9 +32,6 @@ route() {
     *) die "advisory: the Advisories line says \"$r\"; it takes github, file or off." ;;
   esac
 }
-
-# fp_installed: whether Claude Code has the fp-check plugin installed.
-fp_installed() { jq -e '.plugins | keys | any(startswith("fp-check@"))' "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/plugins/installed_plugins.json" >/dev/null 2>&1; }
 
 # The advisory text is public from its first word (loose-lips): it takes only
 # these fields of the report, never its steps or payload.

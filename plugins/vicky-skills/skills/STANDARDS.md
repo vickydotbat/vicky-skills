@@ -39,6 +39,15 @@ A broken rule is a **hard** finding. Each rule opens with its leading word; cite
 - **Reuse the safety net.** Before adding a local guard, look for the one the system already has (a readiness flow, a scheduler, a migration step) and use it.
 - **Quoted headings.** A heading another page quotes changes only in the same edit as every quote of it.
 
+## Security
+
+A broken rule here is a **hard** finding only when its proving run shows the break: cite the rule by its leading word and quote the run's output line. A finding whose run shows nothing is unproven and never blocks. The `security` skill runs each one as a level, and a rule joins this list only with a run that proves it.
+
+- **Committed secrets.** No key, token or password sits in any commit of the history, old ones included. Rotating it is the fix. Deleting it from the latest commit is not. Proving run: `gitleaks git`.
+- **Workflow injection.** A CI step never expands outside text (a pull request's title, body or branch name, an issue's text) inside its script. It passes the text through an environment variable. Proving run: `zizmor`.
+- **Security policy.** The repo says how to report a weakness privately, in a `SECURITY.md`. Proving run: `scorecard --checks Security-Policy`.
+- **Known vulnerabilities.** No dependency the build ships has a published CVE unless a fixed version is taken or the pull request says why not. Proving run: `vulnix` on a Nix build, else `scorecard --checks Vulnerabilities`.
+
 ## Design moves
 
 How to build so the rules hold. A missed move is a **judgement** finding named by its leading word.
