@@ -4,7 +4,7 @@
 # so words in a pull request title or commit message never read as a call.
 # It reads quotes as the shell does, and strips only in a command that carries
 # prose (git commit or tag, gh pr or issue create, edit, comment or review, and
-# tea's), so a flag inside another quoted string or another tool's -t is left.
+# tea's), and the search text of git log --grep and gh pr or issue list --search, so a flag inside another quoted string or another tool's -t is left.
 # A value holding $( or a backtick runs, so it stays. With unbalanced quotes,
 # or any $'..' quoting, the command prints unchanged.
 prose_strip() {
@@ -14,20 +14,30 @@ prose_strip() {
     if (a == "git" && (b == "commit" || b == "tag")) return 1
     if (a == "gh" && (b == "pr" || b == "issue") && c ~ /^(create|edit|comment|review)$/) return 1
     if (a == "tea" && b ~ /^(pr|pulls|issues?|i)$/ && c ~ /^(create|edit|comment|c|e)$/) return 1
+    if (a == "git" && b ~ /^(log|shortlog|rev-list)$/) return 2
+    if (a == "gh" && (b == "pr" || b == "issue") && c == "list") return 3
     return 0
   }
-  function flag(v) { return v ~ /^(-m|--message|-t|--title|-b|--body)$/ }
+  function flag(v,  k) {
+    k = carrier()
+    if (k == 1) return v ~ /^(-m|--message|-t|--title|-b|--body)$/
+    if (k == 2) return v == "--grep"
+    return k == 3 && (v == "-S" || v == "--search")
+  }
   function done_tok(  out) {
     if (raw == "") return
     out = raw
     if (pend && !sub_) out = "\"\""
-    else if (val ~ /^(--message|--title|--body)=/ && carrier() && !sub_) { sub(/=.*/, "=\"\"", out) }
+    else if (!sub_ && ((val ~ /^(--message|--title|--body)=/ && carrier() == 1) || (val ~ /^--grep=/ && carrier() == 2) || (val ~ /^--search=/ && carrier() == 3))) { sub(/=.*/, "=\"\"", out) }
     pend = 0
-    if (nw < 3) w[++nw] = val
-    if (carrier() && flag(val)) pend = 1
+    # git -C <dir> and -c <key=value> come before the subcommand.
+    if (skip) skip = 0
+    else if (nw == 1 && w[1] == "git" && (val == "-C" || val == "-c")) skip = 1
+    else if (nw < 3) w[++nw] = val
+    if (flag(val)) pend = 1
     res = res out; raw = ""; val = ""; sub_ = 0
   }
-  function seg_end() { done_tok(); nw = 0; pend = 0 }
+  function seg_end() { done_tok(); nw = 0; pend = 0; skip = 0 }
   {
     s = $0; n = length(s)
     # $'..' quoting escapes quotes in a way this reader does not follow: leave it all.

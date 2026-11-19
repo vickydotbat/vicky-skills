@@ -38,4 +38,18 @@ same "unbalanced quotes print the command unchanged" 'git commit -m "open'
 same "a flag inside another quoted string is not read" "echo 'foo -m \"' ; gh pr merge 5 ; echo '\"'"
 same "ssh's -t is no message" "ssh host -t 'gh pr merge 5'"
 same "ANSI-C quoting prints the command unchanged" "git commit -m \$'x\\'' ; gh pr merge 1"
+is "a log's search text is emptied" 'git log --grep "a b" -n 3' 'git log --grep "" -n 3'
+is "a log's search text with = is emptied" 'git log --grep="a b"' 'git log --grep=""'
+same "a log's other flags stay" 'git log -m "x"'
+is "a commit after git -C is a carrier" 'git -C dir commit -m "x"' 'git -C dir commit -m ""'
+is "a commit after git -c is a carrier" 'git -c a=b commit -m "x"' 'git -c a=b commit -m ""'
+same "git -C names the folder, not the subcommand" 'git -C commit status -m "x"'
+is "a list's search text is emptied" 'gh pr list --search "x y" -L 5' 'gh pr list --search "" -L 5'
+is "a list's short search flag is emptied" 'gh issue list -S x' 'gh issue list -S ""'
+is "a list's search text with = is emptied" 'gh pr list --search="x"' 'gh pr list --search=""'
+same "a list's title flag is no search" 'gh pr list -t "x"'
+same "a pull request's search flag is no prose" 'gh pr create --search "x"'
+same "another tool's log is no search" 'foo log --grep "x"'
+same "git's other commands are no search" 'git status --grep "x"'
+same "another tool's list is no search" 'foo pr list --search "x"'
 exit $fail
