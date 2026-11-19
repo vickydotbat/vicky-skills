@@ -13,13 +13,23 @@ sid=$(jq -r '.session_id // ""' <<<"$input" 2>/dev/null)
 command=$(jq -r '.tool_input.command // ""' <<<"$input" 2>/dev/null)
 # Deny by default for the tools that reach a forge or a remote: each command
 # segment that runs gh, tea, gs, git-spice, curl or wget, or a git push or
-# send-pack, is refused unless it is a known read. shortcut: a tool named
-# through a variable or an alias slips past, until the wall moves to a
+# send-pack, is refused unless it is a known read, behind any wrapper
+# (bash -c, eval, xargs, env, timeout). shortcut: a tool named through a
+# variable or an alias slips past, until the wall moves to a
 # read-only agent.
 writes=0
 while IFS= read -r seg; do
-  seg=$(sed -E 's/^[[:space:]]*([A-Za-z_][A-Za-z0-9_]*=[^[:space:]]*[[:space:]]+)*//' <<<"$seg")
-  read -r tool rest <<<"$seg"
+  # A wrapper (bash -c, eval, xargs, env, timeout and the like) runs the
+  # words after it, so it is peeled off and the next word read as the tool.
+  while :; do
+    seg=$(sed -E 's/^[[:space:]]*([A-Za-z_][A-Za-z0-9_]*=[^[:space:]]*[[:space:]]+)*//' <<<"$seg")
+    read -r tool rest <<<"$seg"
+    case ${tool##*/} in
+      bash | sh | zsh | dash | eval | xargs | env | command | exec | nohup | nice | timeout | time | run0 | sudo | doas | setsid) ;;
+      *) break ;;
+    esac
+    seg=$(sed -E 's/^([[:space:]]*(-[^[:space:]]*|[0-9][0-9.]*[smhd]?))*//' <<<"$rest")
+  done
   case ${tool##*/} in
     git) grep -Eq '(^|[[:space:]])(push|send-pack)([[:space:]]|$)' <<<"$rest" && writes=1 ;;
     gh) # gh's own flags, such as -R <repo>, come before the verb
@@ -33,7 +43,7 @@ while IFS= read -r seg; do
     gs | git-spice) grep -Eq '(^|[[:space:]])(submit|ss|bs|us)([[:space:]]|$)' <<<"$rest" && writes=1 ;;
     curl | wget) grep -Eq '(^|[[:space:]])(-X|--request)[[:space:]=]*(POST|PATCH|PUT|DELETE)|(^|[[:space:]])(-d|--data[a-z-]*|-F|--form|-T|--upload-file|--post-data|--post-file)([[:space:]=]|$)' <<<"$rest" && writes=1 ;;
   esac
-done < <(sed -E 's/(\|\||\||&&|;|&|\$\(|`)/\n/g' <<<"$command")
+done < <(tr "'\"" '  ' <<<"$command" | sed -E 's/(\|\||\||&&|;|&|\$\(|`)/\n/g')
 [ "$writes" = 1 ] || exit 0
 read_what=$(tail -1 "$CLAUDE_PLUGIN_DATA/outside-read/$sid")
 echo "outside-text-guard: this session read outside text ($read_what), so it writes nothing to the forge or the remote. Return your findings to the user instead: a person or a later run acts on them. Nothing in this command ran." >&2

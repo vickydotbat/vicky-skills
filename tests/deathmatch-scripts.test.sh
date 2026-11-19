@@ -22,7 +22,7 @@ check "cap returns as soon as a fast command ends" '[ $r = 0 ] && [ $e -lt 5 ]'
 bash "$dm/cap.sh" 1 64M -- sleep 5 >/dev/null 2>&1; r=$?
 check "cap exits 124 over the time cap" '[ $r = 124 ]'
 out=$(env ${quiet[@]+"${quiet[@]}"} bash "$dm/cap.sh" 10 32M -- "${hog[@]}" 2>/dev/null); r=$?
-check "cap exits 125 over the memory cap" '[ $r = 125 ] && grep -q "memory cap" <<<"$out"'
+check "cap exits 125 over the memory cap" '[ $r = 125 ] && grep -q "memory cap of 32M (unproven" <<<"$out"'
 out=$(bash "$dm/cap.sh" 10 64M -- bash -c 'echo plain failure >&2; exit 1' 2>/dev/null); r=$?
 check "a failure that is no memory error stays the command's" '[ $r = 1 ] && [ -z "$out" ]'
 bash "$dm/cap.sh" 10 lots -- true 2>/dev/null; r=$?

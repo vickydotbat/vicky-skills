@@ -6,13 +6,11 @@
 # the command left running. Over a cap under 1G, the memory finding is marked
 # unproven: the limit is the machine's, not the branch's.
 #
-# With a systemd user manager the command runs in a scope of its own: the
-# memory cap counts memory used, not address space (a runtime such as .NET
-# reserves far more than it uses), and stopping the scope reaches every
-# process in it, a setsid grandchild included. Without one (a CI runner),
-# it falls back to a process group and ulimit -v. shortcut: the fallback
-# misses a grandchild that leaves the group, and needs the command to print
-# its memory error.
+# A systemd user scope caps memory used, not address space, and its stop
+# reaches every process in it. Without a user manager (a CI runner) it falls
+# back to a process group and ulimit -v. shortcut: the fallback misses a
+# grandchild that leaves the group, and needs the command to print its
+# memory error, until CI runners have a user manager.
 set -u
 secs=${1:?usage: cap.sh <seconds> <memory> -- <command...>}
 mem=${2:?usage: cap.sh <seconds> <memory> -- <command...>}
@@ -36,16 +34,16 @@ timed_out=0
 kill -0 "$pid" 2>/dev/null && timed_out=1
 stop() {
   if [ -n "$unit" ]; then
-    systemctl --user kill --signal=KILL "$unit.scope" 2>/dev/null
+    systemctl --user kill --signal="$1" "$unit.scope" 2>/dev/null
   else
-    kill -KILL -- -"$pid" 2>/dev/null
+    kill -"$1" -- -"$pid" 2>/dev/null
   fi
 }
 if [ "$timed_out" = 1 ]; then
-  if [ -n "$unit" ]; then systemctl --user kill --signal=TERM "$unit.scope" 2>/dev/null; else kill -TERM -- -"$pid" 2>/dev/null; fi
+  stop TERM
   sleep 1
 fi
-stop
+stop KILL
 kill "$timer" 2>/dev/null
 wait "$pid" 2>/dev/null
 rc=$?

@@ -13,13 +13,13 @@ steer=$(jq -nc --arg p "Law: $tmp/gone/law.md" '{tool_input:{subagent_type:"stan
 check "the refusal names the missing file and the command that proves a path" yes "$(grep -qF "$tmp/gone/law.md" <<<"$steer" && grep -qF 'test -s <file> && realpath <file>' <<<"$steer" && echo yes || echo no)"
 check "a missing file in an existing scratch folder is refused" 2 "$(code intent-opponent "Law: $tmp/other.md.")"
 check "a reviewer brief naming a file that exists passes" 0 "$(code vicky-skills:simplicity-opponent "Law file: $tmp/law.md")"
-check "a missing file inside a checkout passes, since the diff may delete it" 0 "$(code standards-reviewer "Checkout $root, see $root/no-such-file.md")"
+check "a missing file inside a checkout passes, since the diff may delete it" 0 "$(code standards-opponent "Checkout $root, see $root/no-such-file.md")"
 check "a missing file in a brief to another agent passes" 0 "$(code general-purpose "Write your notes to $tmp/gone/out.md")"
-check "a brief with no path passes" 0 "$(code standards-reviewer "Review since origin/main.")"
-check "a relative path passes" 0 "$(code standards-reviewer "Read docs/missing.md")"
-check "a URL path passes" 0 "$(code standards-reviewer "See https://example.com/a/b.html")"
+check "a brief with no path passes" 0 "$(code standards-opponent "Review since origin/main.")"
+check "a relative path passes" 0 "$(code standards-opponent "Read docs/missing.md")"
+check "a URL path passes" 0 "$(code standards-opponent "See https://example.com/a/b.html")"
 check "bad input passes" 0 "$(echo nope | bash "$guard" >/dev/null 2>&1; echo $?)"
-if [ "$(code standards-reviewer "Read $tmp/x/a.md")" = 2 ]; then
+if [ "$(code standards-opponent "Read $tmp/x/a.md")" = 2 ]; then
   msg=$(jq -nc --arg p "Read $tmp/x/a.md" '{tool_input:{subagent_type:"standards-opponent",prompt:$p}}' | bash "$guard" 2>&1 >/dev/null)
   case $msg in *"$tmp/x/a.md"*realpath*) echo "ok   the refusal names the path and the realpath steer";; *) echo "FAIL refusal text: $msg"; fail=1;; esac
 fi
