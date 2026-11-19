@@ -79,6 +79,11 @@ draft() {
   [ -f "${dir:-/nonexistent}/advisory.md" ] &&
     vector=$(sed -nE 's/^Severity: CVSS-B (CVSS:4\.0\/[^ ]+).*/\1/p' "$dir/advisory.md" | head -n1)
   deadline=$(jq -r '.deadline // empty' "$report")
+  # Every reader compares deadlines as text, so the draft keeps only YYYY-MM-DD.
+  if [ -n "$deadline" ]; then
+    deadline=$(date -d "$deadline" +%F 2>/dev/null) ||
+      die "advisory: the report's deadline \"$(jq -r .deadline "$report")\" is no date. Write it as YYYY-MM-DD."
+  fi
   [ -n "$deadline" ] || deadline=$(date -d "$(jq -r '.received' "$report") +90 days" +%F 2>/dev/null) ||
     die "advisory: the report has no deadline and no received date to count 90 days from."
   if [ "$r" = github ]; then

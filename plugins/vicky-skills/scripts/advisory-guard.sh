@@ -12,15 +12,22 @@
 case "${CLAUDE_PLUGIN_OPTION_GUARD_PUBLISH:-true}" in false|0) exit 0 ;; esac
 payload=$(cat)
 cmd=$(jq -r '.tool_input.command // ""' <<<"$payload" 2>/dev/null | sed -e ':a' -e '/\\$/{N;s/\\\n//;ba' -e '}')
-adv='security-advisories/[A-Za-z0-9_-]+'
-cve=0; pub=0
-grep -qE "advisory\.sh[[:space:]]+cve([[:space:]]|$)|$adv/cve" <<<"$cmd" && cve=1
-grep -qE "advisory\.sh[[:space:]]+publish([[:space:]]|\$)|$adv[^;&|]*state=published|state=published[^;&|]*$adv|(gh|tea)[[:space:]]+releases?[[:space:]]+(create|c)[[:space:]][^;&|]*[Aa]dvisor" <<<"$cmd" && pub=1
-# A body the guard cannot read may publish: --input, or curl's data, sent to an advisory.
-# Making a draft names no advisory id, so it never matches.
-unread=0 # mutant-ok delete: an unset flag reads the same as 0 below
-if grep -qE "gh[[:space:]]+api[^;&|]*$adv[^;&|]*--input|gh[[:space:]]+api[^;&|]*--input[^;&|]*$adv|curl[^;&|]*$adv" <<<"$cmd" &&
-  ! grep -qE "$adv/cve" <<<"$cmd"; then unread=1; pub=1; fi
+# Quotes and backslashes go before matching, so state="published" or cv""e reads as written.
+plain=$(tr -d "\"'\\\\" <<<"$cmd")
+# A named advisory: an id, a variable or a substitution after the collection.
+adv='security-advisories/[^[:space:]/;&|]+'
+cve=0; pub=0; raw=0
+# Each command segment is judged on its own, so one segment's gate never covers another's.
+while IFS= read -r seg; do
+  if grep -qiE "advisory\.sh[[:space:]]+cve([[:space:]]|$)|$adv/cve" <<<"$seg"; then cve=1; continue; fi
+  grep -qiE "advisory\.sh[[:space:]]+publish([[:space:]]|$)|(gh|tea)[[:space:]]+releases?[[:space:]]+(create|c)[[:space:]].*(advisor|security)" <<<"$seg" && pub=1
+  # Whitelist: a raw call that writes to a named advisory may set any field, the
+  # state included, in a form no pattern reads (a file, a variable, a body).
+  # Only a plain read passes; edits go through advisory.sh draft.
+  grep -qiE "(gh[[:space:]]+api|curl)[[:space:]].*$adv" <<<"$seg" &&
+    grep -qiE "(-X|--method|--request)[[:space:]=]*(POST|PATCH|PUT|DELETE)|[[:space:]](-f|-F|--field|--raw-field|--input|-d|--data[a-z-]*|--json|-T)([[:space:]=]|$)" <<<"$seg" &&
+    { pub=1; raw=1; }
+done < <(tr ';&|' '\n\n\n' <<<"$plain")
 [ "$cve$pub" = 00 ] && exit 0
 here=$(dirname "$0")
 # shellcheck source=since-user.sh
@@ -36,9 +43,9 @@ grep -qiE "\b(not|never|no)\b|n't" <<<"$asked" && deny "The user's last message 
   deny "A CVE request cannot be taken back, so only the user decides it, with the word CVE in their own last message. Ask the user in one line whether to request the CVE, wait for their answer, and run this again once their message says CVE."
 if [ "$pub" = 1 ]; then
   grep -qiw 'publish' <<<"$asked" ||
-    deny "Publishing an advisory cannot be taken back, so only the user decides it, with the word publish in their own last message. Ask the user in one line whether to publish it, wait for their answer, and run this again once their message says publish.$([ "$unread" = 1 ] && echo " This call's body is out of the guard's sight: pass the fields with -f so it can read them.")"
+    deny "Publishing an advisory cannot be taken back, so only the user decides it, with the word publish in their own last message. Ask the user in one line whether to publish it, wait for their answer, and run this again once their message says publish.$([ "$raw" = 1 ] && echo " A raw write to an advisory can set its state in a form the guard cannot read: edit a draft with the security kit's advisory.sh draft, and publish with advisory.sh publish.")"
   # The kit warned that the fix has not shipped: only a publish sent after that warning opens it.
-  id=$(grep -oE "advisory\.sh[[:space:]]+publish[[:space:]]+[^[:space:];&|]+" <<<"$cmd" | awk '{print $3}')
+  id=$(grep -oE "advisory\.sh[[:space:]]+publish[[:space:]]+[^[:space:];&|]+" <<<"$plain" | awk '{print $3}')
   state=$(ls "${CLAUDE_PLUGIN_DATA:-/nonexistent}"/advisories/*/"${id:-/}"/state.json 2>/dev/null | head -n1)
   warned=$([ -n "$state" ] && jq -r '.warned_at // empty' "$state" 2>/dev/null)
   if [ -n "$warned" ]; then

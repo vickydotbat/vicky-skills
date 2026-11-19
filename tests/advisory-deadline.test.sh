@@ -25,4 +25,5 @@ check "no data folder is silent" '[ -z "$(echo "{}" | env -u CLAUDE_PLUGIN_DATA 
 mkdir -p "$fx/data/advisories/acme-widget/ZZZ"; echo 'not json' > "$fx/data/advisories/acme-widget/ZZZ/state.json"
 out=$(start); echo '{}' | CLAUDE_PROJECT_DIR="$r" bash "$hook" >/dev/null 2>&1; code=$?
 check "a broken draft file is skipped and the rest still show" 'grep -q "TODAY" <<<"$out" && grep -q "SEVEN" <<<"$out" && [ "$code" = 0 ]'
+check "the reminder runs on every session start: new, resumed, cleared and compacted" 'jq -e "[.hooks.SessionStart[] | select((.matcher // \"\") == \"\") | .hooks[].command | select(test(\"advisory-deadline\"))] | length == 1" "$plugin/hooks/hooks.json" >/dev/null'
 exit $fail

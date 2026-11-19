@@ -11,4 +11,6 @@ forge_slug() { local s; s=$(sed -nE "s#^(https://|git@|ssh://git@)$1[:/]([^/]+/[
 slug=$(forge_slug 'github\.com')
 name=$(basename "${remote:-$top}" .git)
 # store: this repo's draft advisories, one folder each, in the plugin's data folder.
-store="${CLAUDE_PLUGIN_DATA:-}/advisories/$(tr '[:upper:]' '[:lower:]' <<<"${slug:-$name}" | tr -c 'a-z0-9\n' '-')"
+# Off GitHub the whole remote names it, so two repos of one name on two forges keep apart.
+where=${slug:-$(sed -E 's#^[a-z+]+://##; s#^[^@/]*@##; s#\.git/?$##' <<<"$remote")}
+store="${CLAUDE_PLUGIN_DATA:-}/advisories/$(tr '[:upper:]' '[:lower:]' <<<"${where:-$name}" | tr -c 'a-z0-9\n' '-')"

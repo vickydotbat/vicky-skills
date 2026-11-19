@@ -25,6 +25,11 @@ out=$(draft "$file_repo" "$fx/missing.json"); code=$?
 check "a missing report file is refused" '[ "$code" != 0 ] && grep -qi "no report file" <<<"$out"'
 jq 'del(.run)' "$fx/r.json" > "$fx/norun.json"; out=$(draft "$file_repo" "$fx/norun.json"); code=$?
 check "a report with no proving run is unproven" '[ "$code" != 0 ] && grep -qi "unproven" <<<"$out" && [ "$before" = "$(drafts)" ]'
+jq '.deadline="2026-9-1"' "$fx/r.json" > "$fx/loose.json"; out=$(draft "$file_repo" "$fx/loose.json")
+check "a loose deadline is written as YYYY-MM-DD" 'grep -q "^deadline: 2026-09-01$" <<<"$out"'
+jq '.deadline="next tuesday-ish"' "$fx/r.json" > "$fx/baddl.json"; out=$(draft "$file_repo" "$fx/baddl.json"); code=$?
+check "a deadline that is no date is refused" '[ "$code" != 0 ] && grep -qi "no date" <<<"$out"'
+before=$(drafts)
 jq 'del(.received) | del(.deadline)' "$fx/r.json" > "$fx/nodate.json"; out=$(draft "$file_repo" "$fx/nodate.json"); code=$?
 check "no deadline and no received date is refused" '[ "$code" != 0 ] && grep -qi "90 days" <<<"$out" && [ "$before" = "$(drafts)" ]'
 off=$(repo off https://github.com/acme/off.git); line "$off" "Advisories: off"; out=$(draft "$off" "$fx/r.json"); code=$?
@@ -44,6 +49,10 @@ check "an unchanged re-draft keeps the OSV file" '[ "$a" = "$(sha256sum < "$d/os
 jq '.summary="A flaw whose weakness changed" | .cwe="CWE-79"' "$fx/r.json" > "$fx/cwe.json"; d2=$(draft "$file_repo" "$fx/cwe.json" | sed -n 's/^draft: //p')
 jq '.summary="A flaw whose weakness changed" | .cwe="CWE-89"' "$fx/r.json" > "$fx/cwe.json"; draft "$file_repo" "$fx/cwe.json" >/dev/null
 check "a changed re-draft rewrites the OSV file" 'jq -e ".database_specific.cwe_ids == [\"CWE-89\"]" "$d2/osv.json" >/dev/null'
+
+twin=$(repo twin https://code.example.invalid/other-team/gadget.git); line "$twin" "Advisories: file"
+d1=$(draft "$file_repo" "$fx/r.json" | sed -n 's/^draft: //p'); d2=$(draft "$twin" "$fx/r.json" | sed -n 's/^draft: //p')
+check "two same-named repos on other forges keep apart" '[ -n "$d1" ] && [ -n "$d2" ] && [ "$(dirname "$d1")" != "$(dirname "$d2")" ]'
 
 # The GitHub route: what it sends, what it keeps, and the fork made once.
 git init -q --bare "$fx/fork.git"

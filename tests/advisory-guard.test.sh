@@ -30,11 +30,24 @@ for c in "$pub" "gh api -X PATCH repos/o/r/security-advisories/GHSA-aaaa-bbbb-cc
   is "a publish without the word is refused: $c" "$c" deny
 done
 run "gh api -X PATCH repos/o/r/security-advisories/GHSA-a --input body.json" >/dev/null
-check "an unreadable body is told to use -f" 'jq -r .hookSpecificOutput.permissionDecisionReason "$fx/out" | grep -q "pass the fields with -f"'
+check "a raw write is steered to the kit" 'jq -r .hookSpecificOutput.permissionDecisionReason "$fx/out" | grep -q "advisory.sh draft"'
 run "$pub" >/dev/null
 check "a refused publish says it cannot be taken back" 'jq -r .hookSpecificOutput.permissionDecisionReason "$fx/out" | grep -q "cannot be taken back"'
 is "drafting through gh api passes" "gh api -X POST repos/o/r/security-advisories --input -" ""
-is "editing a draft's fields passes" "gh api -X PATCH repos/o/r/security-advisories/GHSA-a -f summary=x" ""
+is "a raw edit of a named advisory is gated, since its fields may publish" "gh api -X PATCH repos/o/r/security-advisories/GHSA-a -f summary=x" deny
+is "reading an advisory passes" "gh api repos/o/r/security-advisories/GHSA-a" ""
+for c in 'gh api -X PATCH repos/o/r/security-advisories/GHSA-a -f state="published"' 'gh api -X PATCH repos/o/r/security-advisories/GHSA-a -F state=Published' \
+  'gh api -X PATCH repos/o/r/security-advisories/GHSA-a -f state=publ""ished' 'gh api -X PATCH repos/o/r/security-advisories/GHSA-a -F state=@s.txt' \
+  'gh api -X PATCH repos/o/r/security-advisories/GHSA-a -f state=$S' 'ID=GHSA-a; gh api -X PATCH repos/o/r/security-advisories/$ID -f state=published' \
+  'gh api -X PATCH "repos/o/r/security-advisories/$(cat id)" -f state=published' 'gh release create v1 --notes-file SECURITY-ADVISORY.md' \
+  'tea releases create --tag v1 --note-file notes/Security.md' 'curl -X PATCH https://api.github.com/repos/o/r/security-advisories/$ID --data @b.json'; do
+  is "a publish dressed up past the word is refused: $c" "$c" deny
+done
+for c in 'gh api -X POST repos/o/r/security-advisories/GHSA-a/cv""e' 'gh api -X POST repos/o/r/security-advisories/$ID/cve' 'gh api -X POST repos/o/r/security-advisories/GHSA-a/CVE'; do
+  is "a CVE request dressed up past the word is refused: $c" "$c" deny
+done
+run "gh api -X POST repos/o/r/security-advisories/\$ID/cve" >/dev/null
+check "a hidden CVE request needs the CVE word, not publish" 'jq -r .hookSpecificOutput.permissionDecisionReason "$fx/out" | grep -q "word CVE"'
 is "a release with no advisory passes" "tea releases create --tag v2 --title 'Version 2'" ""
 is "an unrelated command passes" "git commit -m done" ""
 is "drafting through the kit passes" "bash advisory.sh draft report.json" ""
@@ -48,6 +61,7 @@ is "both words open the CVE gate" "$cve" ""
 is "both words open the publish gate" "$pub" ""
 is "both words open a call that does both" "gh api -X POST repos/o/r/security-advisories/GHSA-a/cve && $pub" ""
 said "request the CVE"
+is "a raw state write beside a CVE request needs the publish word" "gh api -X POST repos/o/r/security-advisories/GHSA-a/cve; gh api -X PATCH repos/o/r/security-advisories/GHSA-a -f state=published" deny
 is "a call that does both needs both words" "gh api -X POST repos/o/r/security-advisories/GHSA-a/cve && $pub" deny
 said "the published notes look good"
 is "publish inside a longer word opens nothing" "$pub" deny
