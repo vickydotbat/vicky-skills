@@ -5,8 +5,8 @@
 # It reads quotes as the shell does, and strips only in a command that carries
 # prose (git commit or tag, gh pr or issue create, edit, comment or review, and
 # tea's), so a flag inside another quoted string or another tool's -t is left.
-# A value holding $( or a backtick runs, so it stays. With unbalanced quotes
-# the command prints unchanged.
+# A value holding $( or a backtick runs, so it stays. With unbalanced quotes,
+# or any $'..' quoting, the command prints unchanged.
 prose_strip() {
   awk -v RS='\001' '
   function carrier(  a, b, c) {
@@ -27,9 +27,11 @@ prose_strip() {
     if (carrier() && flag(val)) pend = 1
     res = res out; raw = ""; val = ""; sub_ = 0
   }
-  function seg_end() { done_tok(); nw = 0; delete w; pend = 0 }
+  function seg_end() { done_tok(); nw = 0; pend = 0 }
   {
-    s = $0; n = length(s); q = ""; res = ""; raw = ""; val = ""; sub_ = 0; nw = 0; pend = 0
+    s = $0; n = length(s)
+    # $'..' quoting escapes quotes in a way this reader does not follow: leave it all.
+    if (index(s, "$\x27")) { printf "%s", s; exit }
     for (i = 1; i <= n; i++) {
       ch = substr(s, i, 1)
       if (q == "\x27") { raw = raw ch; if (ch == "\x27") q = ""; else val = val ch; continue }

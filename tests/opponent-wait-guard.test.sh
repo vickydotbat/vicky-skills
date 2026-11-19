@@ -36,6 +36,7 @@ for c in 'sudo gh pr merge 5' 'env X=1 gh pr merge 5' 'FOO=1 gh pr merge 5' 'tim
   'gh -R o/r pr merge 5' 'bash -c "gh pr merge 5"' "sh -c 'gh pr merge 5'" 'gh api -X PUT repos/o/r/pulls/5/merge' 'gh pr edit 5 --ready' \
   'tea pr m 5' 'tea pulls m 5' 'tea  pr  m 5' 'gh pr merge 5; gh pr ready 6 --undo' '/usr/bin/gh pr merge 5' '(gh pr ready 5)' \
   "echo 'foo -m \"' ; gh pr merge 5 ; echo '\"'" "echo \"x -t '\" ; gh pr merge 5 ; echo \"'\"" "ssh host -t 'gh pr merge 5'" \
+  "git commit -m \$'x\\'' ; gh pr merge 1 ; echo \\'a" "gh pr \$'merge' 5" '$(command -v gh) pr merge 5' '"$(which gh)" pr merge 5' \
   "$(printf 'gh pr \\\n merge 5')" 'tea pull merge 5' 'gh pr -R o/r merge 5' "gh api graphql -f query='mutation{mergePullRequest(input:{}){clientMutationId}}'" \
   'git commit -m "$(gh pr merge 5)"'; do
   check "a merge in another shape is refused: $c" 2 "$(code "$c")"
@@ -55,6 +56,8 @@ launch tu3 C1 vicky-skills:holds-opponent
 check "a ready mark taken back passes" 0 "$(code 'gh pr ready 5 --undo')"
 check "another command passes" 0 "$(code 'gh pr view 5')"
 check "words that name a pr merge without gh pass" 0 "$(code 'echo next: pr merge 5')"
+check "another tool whose name ends in gh passes" 0 "$(code 'xgh pr merge 5')"
+check "a call to the merge commit API passes" 0 "$(code 'gh api repos/o/r/pulls/5/merge_commit')"
 check "a title that names a merge passes" 0 "$(code 'git commit -m "gh pr merge waits now"')"
 check "a pull request comment that names a merge passes" 0 "$(code 'gh pr comment 5 -b "gh pr merge 5 is next"')"
 check "a merge after a commit whose message names one is still refused" 2 "$(code 'git commit --message="gh pr merge" && gh pr merge 5')"

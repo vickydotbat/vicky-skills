@@ -37,4 +37,5 @@ is "an unquoted bracket ends the segment" 'git commit -m a(b)' 'git commit -m ""
 same "unbalanced quotes print the command unchanged" 'git commit -m "open'
 same "a flag inside another quoted string is not read" "echo 'foo -m \"' ; gh pr merge 5 ; echo '\"'"
 same "ssh's -t is no message" "ssh host -t 'gh pr merge 5'"
+same "ANSI-C quoting prints the command unchanged" "git commit -m \$'x\\'' ; gh pr merge 1"
 exit $fail

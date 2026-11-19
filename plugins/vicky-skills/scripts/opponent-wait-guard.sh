@@ -14,12 +14,12 @@ cmd=$(jq -r '.tool_input.command // ""' <<<"$input" 2>/dev/null | sed -e ':a' -e
 # Each segment is read on its own, anywhere in it, so a wrapper, a subshell or
 # flags before the subcommand still count. A title's or message's words don't.
 while IFS= read -r seg; do
-  grep -qE '(^|[^[:alnum:]_-])gh([[:space:]]|$)' <<<"$seg" &&
+  grep -qE '(^|[^[:alnum:]_-])gh([^[:alnum:]_-]|$)' <<<"$seg" &&
     grep -qE '[[:space:]]pr[[:space:]](.*[[:space:]])?(merge|ready)([[:space:]]|$)|[[:space:]]pr[[:space:]]+edit[[:space:]].*--ready' <<<"$seg" &&
     ! grep -qE '[[:space:]]pr[[:space:]]+ready[[:space:]].*--undo' <<<"$seg" && gated=1
   grep -qE '(^|[^[:alnum:]_-])tea[[:space:]]+(.*[[:space:]])?(pr|pulls?)[[:space:]]+(merge|m)([[:space:]]|$)' <<<"$seg" && gated=1
-  grep -qE 'pulls/[^/[:space:]]+/merge|mergePullRequest|markPullRequestReadyForReview|enablePullRequestAutoMerge' <<<"$seg" && gated=1
-done < <(prose_strip "$cmd" | tr -d "\"'\\\\" | tr ';&|\n' '\n\n\n\n')
+  grep -qE 'pulls/[^/[:space:]]+/merge([^[:alnum:]_]|$)|mergePullRequest|markPullRequestReadyForReview|enablePullRequestAutoMerge' <<<"$seg" && gated=1
+done < <(prose_strip "$cmd" | sed "s/\\$'/'/g" | tr -d "\"'\\\\" | tr ';&|\n' '\n\n\n\n')
 [ "$gated" = 1 ] || exit 0
 transcript=$(jq -r '.transcript_path // empty' <<<"$input" 2>/dev/null)
 # Each opponent launched in this session whose last task notification is
@@ -31,7 +31,7 @@ waiting=$(jq -Rrn '
                and ((.input.subagent_type // "") | endswith("opponent"))) | .id] as $ids
   | [$r[] | select((.toolUseResult | type) == "object" and .toolUseResult.agentId != null)
       | select((.message.content[0].tool_use_id // "") as $u | $ids | index($u)) | .toolUseResult.agentId] as $agents
-  | [range(0; $r | length) as $i | $r[$i] | [.content, .message.content, .attachment.prompt]
+  | [range(0; $r | length) as $i | $r[$i] | [.content, .message.content]
       | map(select(type == "string")) | .[] | select(contains("<task-notification>")) | {i: $i, t: .}] as $notes
   | [range(0; $r | length) as $i | $r[$i] | select(.type == "assistant") | .message.content[]? | objects
       | select(.type == "tool_use" and .name == "SendMessage") | {i: $i, to: (.input.to // "")}] as $sends
