@@ -44,7 +44,6 @@ KINDS = ("research", "demonstration", "pitch")
 DATED_LINE = re.compile(r"^[ \t]*<!--\s*(CLAIM|EVENT|QUOTE|STEP)\s+(.*?)\s*-->[ \t]*$", re.M)
 ASK_LINE = re.compile(r"^[ \t]*<!--\s*(END )?ASK\s*-->[ \t]*$", re.M)
 TIMELINE_LINE = re.compile(r"^[ \t]*<!--\s*TIMELINE\s*-->[ \t]*$", re.M)
-LABELS = check.LABELS
 # A reboot or a crash wipes these, and a case file grows across sessions.
 VOLATILE = ("/tmp", "/var/tmp", "/dev/shm", "/run/user")
 STYLE = """body{font:16px/1.5 system-ui,sans-serif;max-width:52rem;margin:2rem auto;padding:0 1rem;color:#1b1b1b;background:#fff}
@@ -157,12 +156,12 @@ def dated(text, events):
         body = " | ".join(parts[need - 1:])
         if kind == "CLAIM":
             label, stamp, src = parts[:3]
-            if label not in LABELS:
-                fail(f"claim {body}: its label {label or 'none'} is not one of {', '.join(LABELS)}")  # mutant-ok: the words of a message, no behaviour
+            if label not in check.LABELS:
+                fail(f"claim {body}: its label {label or 'none'} is not one of {', '.join(check.LABELS)}")  # mutant-ok: the words of a message, no behaviour
             t, shown = when(stamp, f"claim {body}")
             events.append((t, shown, body))
             return (f'<p class="claim" data-evidence="{label}" data-when="{t.isoformat()}" data-source="{e(src)}">'
-                    f'<time datetime="{t.isoformat()}">{shown}</time> {e(body)} <span class="label">{LABELS[label]}</span>'
+                    f'<time datetime="{t.isoformat()}">{shown}</time> {e(body)} <span class="label">{check.LABELS[label]}</span>'
                     f' <small class="source">Source: {e(src)}</small></p>')
         if kind == "EVENT":
             t, shown = when(parts[0], f"event {body}")
@@ -299,7 +298,7 @@ def main():
     for what, text in (("the page", built), ("the Markdown", md)):
         hits = check.scan(text)
         if hits:
-            fail(f"{what} names this machine. Name each by its role:\n" + "\n".join("  " + h for h in hits))
+            fail(f"{what} fails the check. Fix each of these:\n" + "\n".join("  " + h for h in hits))
     outputs = {"html": built.encode(), "md": md.encode()}
     if run:
         outputs["pdf"] = pdf(built, run)  # printed from the checked page, before any file is written
