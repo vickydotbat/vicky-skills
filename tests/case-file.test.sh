@@ -23,6 +23,8 @@ page "Kept in /srv/box/notes."
 check "a home folder not named for the user counts" '! HOME=/srv/box USER=rin python3 "$check_py" "$fx/p.html" >/dev/null 2>&1'
 page "Built on $(hostname | cut -d. -f1)."
 check "this host's name counts" '! as_rin'
+printf '<a href="data:text/plain,a%%20glow" download="p.txt">a</a>\n' > "$fx/p.html"
+check "a clean percent-encoded download passes" 'as_rin'
 printf '<img src="data:image/png;base64,AAA+/tmp/abcAAAA" alt="">\n' > "$fx/p.html"
 check "an inlined image whose data spells /tmp/ passes" 'as_rin'
 printf '<p>x</p>\n' > "$fx/p.html"; printf '# R\n' > "$fx/R.md"; mkdir -p "$fx/files"
@@ -43,6 +45,10 @@ page "Kept in ~/Projects/glow."
 check "a path from the home folder written with a tilde counts" '! as_rin'
 page "Copied from ../sibling/glow."
 check "a path that climbs out of the folder counts" '! as_rin'
+printf '<a href="data:text/plain,%%2Fsrv%%2Fbox%%2Fx" download="p.txt">a</a>\n' > "$fx/p.html"
+check "a percent-encoded download is decoded and scanned" '! HOME=/srv/box USER=rin python3 "$check_py" "$fx/p.html" >/dev/null 2>&1'
+printf '<img src="data:image/png;base64,%s" alt="">\n' "$(printf 'PNG /tmp/x' | base64 -w0)" > "$fx/p.html"
+check "an inlined image's bytes are never scanned as text" 'as_rin'
 mkdir -p "$fx/t"; echo outside > "$fx/outside.txt"; printf '<!-- FILE ../outside.txt -->\n' > "$fx/t/t.html"
 out=$(python3 "$root/plugins/vicky-skills/skills/writing/case-file/scripts/build.py" "$fx/t/t.html" "$fx/t/o.html" 2>&1); status=$?
 check "a marker naming a file outside the template's folder stops the build" '[ "$status" -ne 0 ] && grep -q "outside.txt" <<<"$out" && [ ! -e "$fx/t/o.html" ]'

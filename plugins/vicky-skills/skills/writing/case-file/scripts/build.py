@@ -43,6 +43,8 @@ def render(kind, arg, base):
     path_text, _, caption = arg.partition("|")
     rel = path_text.strip()
     path = os.path.join(base, rel)
+    if os.path.commonpath([os.path.realpath(path), os.path.realpath(base)]) != os.path.realpath(base):
+        fail(f"marker {kind} {rel}: outside the template's folder")
     if not os.path.isfile(path):
         fail(f"marker {kind} {rel}: no such file")  # mutant-ok delete: open() below then stops the build naming the same path
     name = os.path.basename(rel)

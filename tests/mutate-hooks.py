@@ -161,7 +161,7 @@ TESTS = {
     "skills/building/over-to-you/scripts/lint-checklist.py": ["over_to_you_lint_checklist"],
     "skills/housekeeping/standing-orders/scripts/todo.sh": ["todo-sh", "todo_script_approved_examples"],
     "skills/building/video-captions/scripts/flatten-captions.sh": ["flatten-captions"],
-    "skills/writing/case-file/scripts/build.py": ["case_file_approved_examples"],
+    "skills/writing/case-file/scripts/build.py": ["case_file_approved_examples", "case-file"],
     "skills/writing/case-file/scripts/check.py": ["case_file_approved_examples", "case-file"],
     "skills/writing/case-file/scripts/bundle.py": ["case_file_approved_examples", "case-file"],
 }
