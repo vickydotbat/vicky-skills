@@ -141,6 +141,7 @@ out=$(run "$todo_repo")
 check "a branch with its own pull request still reads the Handoff line" "found: .todo Handoff line: pull request 12 (!12 (2026-11-19))" "$out"
 check "a !n Handoff line reads that pull request's comments" "issues/12/comments" "$(cat "$dir/tea-calls")"
 check "a !n Handoff line links the handoff comment" "found: pull request 12 comment: https://forge.example/o/t/pulls/12#c4" "$out"
+check "the Handoff line is named as searched" "; .todo Handoff line" "$out"
 echo '[]' > "$dir/tea-comments"
 check "a !n pull request with no handoff comment is named as not read" "not read: pull request 12, read its comments by hand" "$(run "$todo_repo")"
 printf -- '- Handoff: https://forge.example/o/t/pulls/12#c4 (2026-11-19)\n' > "$todo_repo/.todo"
@@ -151,9 +152,18 @@ out=$(run "$todo_repo")
 check "a keyed branch still reads the Handoff line's ticket" "found: ticket TODO-3" "$out"
 check "the branch's own ticket is still read beside it" "ticket ABC-7" "$out"
 rm "$dir/ticket-TODO-3"
+printf -- '- Handoff: ABC-7 (2026-11-19)\n' > "$todo_repo/.todo"
+check "a key both the branch and the Handoff line name is read once" 1 "$(run "$todo_repo" | grep -o 'ticket ABC-7' | wc -l)"
+gh_todo=$(repo ghtodo https://github.com/o/g.git)
+printf -- '- Handoff: !3 (2026-11-19)\n' > "$gh_todo/.todo"
+echo '{"state":"OPEN","url":"https://github.com/o/g/pull/3","title":"t","body":"","comments":[{"body":"**Handoff** gh side","url":"g7"}]}' > "$dir/gh-pr"
+check "gh: a !n Handoff line links that pull request's handoff comment" "found: pull request 3 comment: g7" "$(run "$gh_todo")"
 
 bare=$(repo bare git@forge.example:o/s.git)
-mkdir -p "$dir/nobin"; for t in bash git jq sed grep awk sort dirname basename timeout ls cat; do ln -s "$(command -v "$t")" "$dir/nobin/$t"; done
+mkdir -p "$dir/nobin"; for t in bash git jq sed grep awk sort dirname basename timeout ls cat tail head tr; do ln -s "$(command -v "$t")" "$dir/nobin/$t"; done
 out=$(cd "$bare" && PATH="$dir/nobin" FIND_HANDOFF_PROJECTS_DIR="$dir/projects" bash "$finder" 2>&1)
 check "with neither gh nor tea it names the pull request as not read" "not read: pull request, neither gh nor tea is installed" "$out"
+printf -- '- Handoff: !12 (2026-11-19)\n' > "$bare/.todo"
+out=$(cd "$bare" && PATH="$dir/nobin" FIND_HANDOFF_PROJECTS_DIR="$dir/projects" bash "$finder" 2>&1)
+check "with neither gh nor tea a !n Handoff line is named as not read" "not read: pull request 12, read its comments by hand" "$out"
 exit $fail
