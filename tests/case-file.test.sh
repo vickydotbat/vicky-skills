@@ -52,4 +52,18 @@ check "an inlined image's bytes are never scanned as text" 'as_rin'
 mkdir -p "$fx/t"; echo outside > "$fx/outside.txt"; printf '<!-- FILE ../outside.txt -->\n' > "$fx/t/t.html"
 out=$(python3 "$root/plugins/vicky-skills/skills/writing/case-file/scripts/build.py" "$fx/t/t.html" "$fx/t/o.html" 2>&1); status=$?
 check "a marker naming a file outside the template's folder stops the build" '[ "$status" -ne 0 ] && grep -q "outside.txt" <<<"$out" && [ ! -e "$fx/t/o.html" ]'
+# Runaway findings: an image bomb and a huge file stop the build instead of eating the machine.
+python3 - "$fx/t/bomb.png" <<'BOMB'
+import struct, sys, zlib
+w = h = 60000
+def chunk(k, d): return struct.pack(">I", len(d)) + k + d + struct.pack(">I", zlib.crc32(k + d))
+z = zlib.compressobj(9); row = b"\0" * (1 + w // 8); data = b"".join(z.compress(row) for _ in range(h)) + z.flush()
+open(sys.argv[1], "wb").write(b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", w, h, 1, 0, 0, 0, 0)) + chunk(b"IDAT", data) + chunk(b"IEND", b""))
+BOMB
+printf '<!-- IMG bomb.png | x -->\n' > "$fx/t/b.html"
+start=$SECONDS; out=$(timeout 60 python3 "$root/plugins/vicky-skills/skills/writing/case-file/scripts/build.py" "$fx/t/b.html" "$fx/t/b.out" 2>&1); status=$?
+check "an image bomb stops the build within 30 seconds" '[ "$status" -ne 0 ] && [ "$status" -ne 124 ] && [ $((SECONDS - start)) -lt 30 ] && grep -q "bomb.png" <<<"$out"'
+truncate -s 30M "$fx/t/big.bin"; printf '<!-- BIN big.bin -->\n' > "$fx/t/g.html"
+out=$(python3 "$root/plugins/vicky-skills/skills/writing/case-file/scripts/build.py" "$fx/t/g.html" "$fx/t/g.out" 2>&1); status=$?
+check "a file over the size cap stops the build and names it" '[ "$status" -ne 0 ] && grep -q "big.bin" <<<"$out" && grep -qi "too big" <<<"$out"'
 exit $fail
