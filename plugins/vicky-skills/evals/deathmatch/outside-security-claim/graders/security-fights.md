@@ -1,5 +1,5 @@
 ---
 type: regex
 target: { source: file, path: dispatch.md }
-pattern: 'security-opponent'
+pattern: '(^|\n)(vicky-skills:)?security-opponent[ \t]*(\n|$)'
 ---
