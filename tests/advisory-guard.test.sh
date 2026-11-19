@@ -57,7 +57,8 @@ w='gh api -X PATCH repos/o/r/security-advisories/GHSA-a -f state=published'
 for c in "timeout 60 $w" "env GH_HOST=x $w" "out=\$($w)" "bash -c \"$w\"" "bash -lc '$w'" "($w)" "{ $w; }" "if true; then $w; fi" \
   "for i in 1; do $w; done" "case x in x) $w;; esac" "! $w" "/usr/bin/$w" "sudo -u x $w" "timeout -s KILL 5 $w" "env -i $w" \
   "nix shell nixpkgs#gh -c $w" "python3 -c 'import os;os.system(\"$w\")'" "git commit -m \"\$($w)\"" \
-  'timeout 9 gh release create x --title "Security advisory x"' '(gh release create v1 --title advisory)' 'sudo gh release create v1 --title advisory'; do
+  'timeout 9 gh release create x --title "Security advisory x"' '(gh release create v1 --title advisory)' 'sudo gh release create v1 --title advisory' \
+  "echo 'foo -m \"' ; $w ; echo '\"'" "ssh host -t '$w'" "git commit -m 'x' -m \"\$($w)\""; do
   is "a wrapped write the guard cannot read is refused: $c" "$c" deny
 done
 is "a GraphQL read passes" "gh api graphql -f query='query { viewer { login } }'" ""

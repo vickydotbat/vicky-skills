@@ -1,10 +1,53 @@
 # shellcheck shell=bash
 # Sourced by guards that read a Bash command for a call. prose_strip <command>
-# prints the command with the quoted value of each title, message or body flag
-# emptied, so words in a pull request title or commit message never read as a
-# call. A double-quoted value holding $( or a backtick runs, so it stays.
+# prints the command with the value of each title, message or body flag emptied,
+# so words in a pull request title or commit message never read as a call.
+# It reads quotes as the shell does, and strips only in a command that carries
+# prose (git commit or tag, gh pr or issue create, edit, comment or review, and
+# tea's), so a flag inside another quoted string or another tool's -t is left.
+# A value holding $( or a backtick runs, so it stays. With unbalanced quotes
+# the command prints unchanged.
 prose_strip() {
-  sed -E \
-    -e "s/(^|[[:space:]])(--title|-t|-m|--message|--body|--notes|-n)([[:space:]]+|=)'[^']*'/\\1\\2\\3''/g" \
-    -e "s/(^|[[:space:]])(--title|-t|-m|--message|--body|--notes|-n)([[:space:]]+|=)\"[^\"\$\`]*\"/\\1\\2\\3\"\"/g" <<<"$1"
+  awk -v RS='\001' '
+  function carrier(  a, b, c) {
+    a = w[1]; b = w[2]; c = w[3]
+    if (a == "git" && (b == "commit" || b == "tag")) return 1
+    if (a == "gh" && (b == "pr" || b == "issue") && c ~ /^(create|edit|comment|review)$/) return 1
+    if (a == "tea" && b ~ /^(pr|pulls|issues?|i)$/ && c ~ /^(create|edit|comment|c|e)$/) return 1
+    return 0
+  }
+  function flag(v) { return v ~ /^(-m|--message|-t|--title|-b|--body)$/ }
+  function done_tok(  out) {
+    if (raw == "") return
+    out = raw
+    if (pend && !sub_) out = "\"\""
+    else if (val ~ /^(--message|--title|--body)=/ && carrier() && !sub_) { sub(/=.*/, "=\"\"", out) }
+    pend = 0
+    if (nw < 3) w[++nw] = val
+    if (carrier() && flag(val)) pend = 1
+    res = res out; raw = ""; val = ""; sub_ = 0
+  }
+  function seg_end() { done_tok(); nw = 0; delete w; pend = 0 }
+  {
+    s = $0; n = length(s); q = ""; res = ""; raw = ""; val = ""; sub_ = 0; nw = 0; pend = 0
+    for (i = 1; i <= n; i++) {
+      ch = substr(s, i, 1)
+      if (q == "\x27") { raw = raw ch; if (ch == "\x27") q = ""; else val = val ch; continue }
+      if (q == "\"") {
+        raw = raw ch
+        if (ch == "\\" && i < n) { i++; raw = raw substr(s, i, 1); val = val substr(s, i, 1); continue }
+        if (ch == "\"") { q = ""; continue }
+        if (ch == "`" || (ch == "$" && substr(s, i + 1, 1) == "(")) sub_ = 1
+        val = val ch; continue
+      }
+      if (ch == "\\" && i < n) { i++; raw = raw ch substr(s, i, 1); val = val substr(s, i, 1); continue }
+      if (ch == "\x27" || ch == "\"") { q = ch; raw = raw ch; continue }
+      if (ch == "`" || (ch == "$" && substr(s, i + 1, 1) == "(")) sub_ = 1
+      if (ch ~ /[;&|\n()]/) { seg_end(); res = res ch; continue }
+      if (ch ~ /[ \t]/) { done_tok(); res = res ch; continue }
+      raw = raw ch; val = val ch
+    }
+    if (q != "") { printf "%s", s; exit }
+    done_tok(); printf "%s", res
+  }' <<<"$1"
 }
