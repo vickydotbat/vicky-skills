@@ -14,7 +14,7 @@ fresh() { : > "$t"; }
 # agent <command>: the agent runs <command> in <repo> through the guard. Prints deny, or the command's output.
 agent() {
   local repo=$1 cmd=$2
-  jq -nc --arg c "$cmd" --arg t "$t" '{tool_name:"Bash",tool_input:{command:$c},transcript_path:$t}' | bash "$guard" > "$fx/guard.out" 2>/dev/null
+  jq -nc --arg c "$cmd" --arg t "$t" '{tool_name:"Bash",tool_input:{command:$c},transcript_path:$t}' | (cd "$repo" && bash "$guard") > "$fx/guard.out" 2>/dev/null
   if [ "$(jq -r '.hookSpecificOutput.permissionDecision // empty' "$fx/guard.out" 2>/dev/null)" = deny ]; then echo deny; return; fi
   (cd "$repo" && bash -c "$cmd" 2>&1)
 }

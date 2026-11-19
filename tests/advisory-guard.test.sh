@@ -9,8 +9,10 @@ guard="$plugin/scripts/advisory-guard.sh"
 t="$fx/t.jsonl"
 user() { jq -nc --arg c "$1" --arg ts "$(date -u -d "${2:-0} seconds" +%Y-%m-%dT%H:%M:%S.000Z)" '{type:"user",timestamp:$ts,message:{content:$c}}' >> "$t"; }
 said() { : > "$t"; user "$1"; }
+# The guard runs inside a repo whose remote is o/r, as a session does, so it finds that repo's drafts.
+here_repo=$(repo r https://github.com/o/r.git)
 run() { jq -nc --arg c "$1" --arg t "$t" '{tool_input:{command:$c},transcript_path:$t}' |
-  CLAUDE_PLUGIN_OPTION_GUARD_PUBLISH=${OPT:-true} bash "$guard" > "$fx/out"; local c=$?
+  (cd "$here_repo" && CLAUDE_PLUGIN_OPTION_GUARD_PUBLISH=${OPT:-true} bash "$guard") > "$fx/out"; local c=$?
   [ "$c" = 0 ] || { echo "exit $c"; return; }; jq -r '.hookSpecificOutput.permissionDecision // empty' < "$fx/out"; }
 is() { got=$(run "$2"); want=$3; check "$1" '[ "$got" = "$want" ]'; }
 cve="bash /plugin/skills/shipping/security/scripts/advisory.sh cve GHSA-aaaa-bbbb-cccc"
@@ -43,6 +45,15 @@ for c in 'gh api -X PATCH repos/o/r/security-advisories/GHSA-a -f state="publish
   'tea releases create --tag v1 --note-file notes/Security.md' 'curl -X PATCH https://api.github.com/repos/o/r/security-advisories/$ID --data @b.json'; do
   is "a publish dressed up past the word is refused: $c" "$c" deny
 done
+for c in 'p=repos/o/r/security-advisories; gh api -X PATCH $p/GHSA-1 -f state=published' 'gh api -X PATCH "$(cat endpoint)" -f state=published' \
+  'gh api -X PATCH `cat endpoint` --input b.json' 'gh api graphql -f query=@q.graphql' 'gh api graphql -f query="mutation { updateRepositoryAdvisory(input: {}) { clientMutationId } }"' \
+  'wget --method=PATCH --body-file=b.json https://api.github.com/repos/o/r/security-advisories/GHSA-1'; do
+  is "a write whose target the guard cannot read is refused: $c" "$c" deny
+done
+is "a literal write elsewhere passes" "gh api -X POST repos/o/r/issues -f title=x" ""
+is "a GraphQL read passes" "gh api graphql -f query='query { viewer { login } }'" ""
+is "a read through a variable passes" 'gh api repos/$R/pulls' ""
+is "a commit with a message file in a variable passes" 'git commit -F $msg' ""
 for c in 'gh api -X POST repos/o/r/security-advisories/GHSA-a/cv""e' 'gh api -X POST repos/o/r/security-advisories/$ID/cve' 'gh api -X POST repos/o/r/security-advisories/GHSA-a/CVE'; do
   is "a CVE request dressed up past the word is refused: $c" "$c" deny
 done

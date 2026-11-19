@@ -9,6 +9,8 @@
 # whose body it cannot read (gh api --input, curl), and a release created
 # with an advisory's text. The kit's early publish, before the fix ships,
 # waits for a second publish message sent after the kit's warning.
+# shortcut: a script file or tool config the agent wrote earlier goes unseen,
+# until advisory publishing sits behind a credential only the kit holds.
 case "${CLAUDE_PLUGIN_OPTION_GUARD_PUBLISH:-true}" in false|0) exit 0 ;; esac
 payload=$(cat)
 cmd=$(jq -r '.tool_input.command // ""' <<<"$payload" 2>/dev/null | sed -e ':a' -e '/\\$/{N;s/\\\n//;ba' -e '}')
@@ -24,8 +26,11 @@ while IFS= read -r seg; do
   # Whitelist: a raw call that writes to a named advisory may set any field, the
   # state included, in a form no pattern reads (a file, a variable, a body).
   # Only a plain read passes; edits go through advisory.sh draft.
-  grep -qiE "(gh[[:space:]]+api|curl)[[:space:]].*$adv" <<<"$seg" &&
-    grep -qiE "(-X|--method|--request)[[:space:]=]*(POST|PATCH|PUT|DELETE)|[[:space:]](-f|-F|--field|--raw-field|--input|-d|--data[a-z-]*|--json|-T)([[:space:]=]|$)" <<<"$seg" &&
+  # A write whose target is out of sight (a variable, a substitution, a GraphQL
+  # query from a file or naming an advisory) may reach an advisory too.
+  grep -qiE "(gh[[:space:]]+api|curl|wget)[[:space:]]" <<<"$seg" &&
+    grep -qiE "(-X|--method|--request)[[:space:]=]*(POST|PATCH|PUT|DELETE)|[[:space:]](-f|-F|--field|--raw-field|--input|-d|--data[a-z-]*|--json|-T|--body-[a-z]+)([[:space:]=]|$)" <<<"$seg" &&
+    grep -qiE "$adv|graphql.*(advisor|query=@)|[[:space:]][^[:space:]-]*[\$\`]" <<<"$seg" &&
     { pub=1; raw=1; }
 done < <(tr ';&|' '\n\n\n' <<<"$plain")
 [ "$cve$pub" = 00 ] && exit 0
@@ -46,7 +51,8 @@ if [ "$pub" = 1 ]; then
     deny "Publishing an advisory cannot be taken back, so only the user decides it, with the word publish in their own last message. Ask the user in one line whether to publish it, wait for their answer, and run this again once their message says publish.$([ "$raw" = 1 ] && echo " A raw write to an advisory can set its state in a form the guard cannot read: edit a draft with the security kit's advisory.sh draft, and publish with advisory.sh publish.")"
   # The kit warned that the fix has not shipped: only a publish sent after that warning opens it.
   id=$(grep -oE "advisory\.sh[[:space:]]+publish[[:space:]]+[^[:space:];&|]+" <<<"$plain" | awk '{print $3}')
-  state=$(ls "${CLAUDE_PLUGIN_DATA:-/nonexistent}"/advisories/*/"${id:-/}"/state.json 2>/dev/null | head -n1)
+  # kit.sh owns where this repo's drafts live.
+  state=$( (. "$here/../skills/shipping/security/scripts/kit.sh" >/dev/null 2>&1 && ls "$store/${id:-/}/state.json") 2>/dev/null)
   warned=$([ -n "$state" ] && jq -r '.warned_at // empty' "$state" 2>/dev/null)
   if [ -n "$warned" ]; then
     said=$(last_user_time "$transcript")
