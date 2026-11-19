@@ -49,6 +49,7 @@ note A1 "finished"
 check "its next finished notification lets the merge through" 0 "$(code 'gh pr merge 5 --squash')"
 launch tu5 E1 vicky-skills:claims-opponent
 check "a GraphQL auto-merge is refused" 2 "$(code "gh api graphql -f query='mutation{enablePullRequestAutoMerge(input:{}){clientMutationId}}'")"
+check "a GraphQL ready mark is refused" 2 "$(code "gh api graphql -f query='mutation{markPullRequestReadyForReview(input:{}){clientMutationId}}'")"
 note E1 "finished"
 launch tu2 B1 general-purpose
 check "another agent still working never holds the merge" 0 "$(code 'gh pr merge 5 --squash')"
