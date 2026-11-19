@@ -137,9 +137,9 @@ mv "$fx/gh.sh.kept" "$fx/answers/gh.sh"
 echo '{"checks":[{"name":"Security-Policy","score":0,"reason":"security policy file not detected","details":[]}]}' > "$fx/answers/scorecard"
 mkdir -p "$all4/.github"; echo policy > "$all4/.github/SECURITY.md"; out=$(levels "$all4" baseline)
 check "a SECURITY.md not yet on the default branch is unchecked, no finding" 'grep -q "^baseline: unchecked: .*default branch" <<<"$out" && ! grep -q "finding" <<<"$out"'
-(cd "$all4" && git add .github && git commit -qm policy && git update-ref refs/remotes/origin/main HEAD); out=$(levels "$all4" baseline)
+(cd "$all4" && git add .github && git commit -qm policy && git update-ref refs/remotes/origin/trunk HEAD && git symbolic-ref refs/remotes/origin/HEAD refs/remotes/origin/trunk); out=$(levels "$all4" baseline)
 check "a weak SECURITY.md already on the default branch is still a finding" 'grep -q "^baseline: finding: security policy file not detected" <<<"$out" && ! grep -q "unchecked" <<<"$out"'
-(cd "$all4" && git rm -rq .github && git commit -qm unpolicy && git update-ref -d refs/remotes/origin/main)
+(cd "$all4" && git rm -rq .github && git commit -qm unpolicy && git symbolic-ref -d refs/remotes/origin/HEAD && git update-ref -d refs/remotes/origin/trunk)
 rm "$fx/answers/scorecard"
 days=$(grep -o "+[0-9]* days" "$kit/advisory.sh" | head -1 | tr -dc 0-9)
 check "the policy template's default deadline is advisory.sh's" '[ -n "$days" ] && grep -q "default is $days days" "$kit/../SECURITY-TEMPLATE.md"'

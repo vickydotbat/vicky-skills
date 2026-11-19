@@ -72,7 +72,7 @@ skills/shipping/deathmatch/scripts/verdict.sh	e0a033ff1846ad05	2f11e4908ee63618	
 skills/shipping/engrave/scripts/law-lint.sh	c868c7dea4edca82	6c6199abec9e22cc	181/181
 skills/shipping/security/scripts/advisory.sh	937be168af245fee	574dfd35c987d4bd	152/152
 skills/shipping/security/scripts/kit.sh	1b0fc13204c4abd6	c6702dee91eed631	11/11
-skills/shipping/security/scripts/levels.sh	2b4b038e1022e957	be60774dd0bfc50d	81/81
+skills/shipping/security/scripts/levels.sh	ef85c88bb4a180e6	7d49efdc69ed8e64	86/86
 skills/shipping/security/scripts/lines.sh	c603602e3c5c5887	20929149e93861a4	8/8
 skills/shipping/security/scripts/review.sh	a23c13b21aca1642	09d744c4243a355f	10/10
 skills/writing/human-voice/scripts/lint-tells.py	d51373996ad8ae9c	a188c25f71567933	47/47
