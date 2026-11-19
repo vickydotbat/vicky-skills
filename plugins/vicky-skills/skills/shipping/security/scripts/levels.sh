@@ -82,7 +82,9 @@ baseline() {
     case $score in
       10) echo "baseline: scorecard's Security-Policy check found a security policy (run: scorecard --checks Security-Policy)." ;;
       -1|null|"") echo "baseline: scorecard's Security-Policy check could not decide: $(jq -r '.checks[0].reason' "$tmp/score.json")." ;;
-      *) finding baseline "$(jq -r '.checks[0].reason' "$tmp/score.json")" scorecard "scorecard --checks Security-Policy" ;;
+      *) if compgen -G "$top/SECURITY.md" >/dev/null || compgen -G "$top/.github/SECURITY.md" >/dev/null || compgen -G "$top/docs/SECURITY.md" >/dev/null; then
+           echo "baseline: unchecked: this checkout has a SECURITY.md, but scorecard reads the default branch. Run the level again once it merges."
+         else finding baseline "$(jq -r '.checks[0].reason' "$tmp/score.json")" scorecard "scorecard --checks Security-Policy"; fi ;;
     esac
   fi
   reporting

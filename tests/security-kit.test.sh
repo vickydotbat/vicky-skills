@@ -134,6 +134,12 @@ check "missing gh is named, and scorecard still runs" 'grep -q "gh is missing. G
 glp=$(repo glp https://gitlab.com/acme/glp.git); line "$glp" "Security levels: baseline"; : > "$fx/calls.log"; levels "$glp" baseline >/dev/null
 check "a GitLab repo never asks GitHub for the setting" '! grep -q "$pvr" "$fx/calls.log"'
 mv "$fx/gh.sh.kept" "$fx/answers/gh.sh"
+echo '{"checks":[{"name":"Security-Policy","score":0,"reason":"security policy file not detected","details":[]}]}' > "$fx/answers/scorecard"
+mkdir -p "$all4/.github"; echo policy > "$all4/.github/SECURITY.md"; out=$(levels "$all4" baseline)
+check "a SECURITY.md not yet on the default branch is unchecked, no finding" 'grep -q "^baseline: unchecked: .*default branch" <<<"$out" && ! grep -q "finding" <<<"$out"'
+rm -r "$all4/.github" "$fx/answers/scorecard"
+days=$(grep -o "+[0-9]* days" "$kit/advisory.sh" | head -1 | tr -dc 0-9)
+check "the policy template's default deadline is advisory.sh's" '[ -n "$days" ] && grep -q "default is $days days" "$kit/../SECURITY-TEMPLATE.md"'
 echo 3 > "$fx/answers/gitleaks.exit"; out=$(levels "$all4" secrets)
 check "a failed gitleaks run is no finding and no all-clear" 'grep -q "gitleaks failed with exit 3" <<<"$out" && ! grep -qE "finding|found nothing" <<<"$out"'
 rm "$fx/answers/gitleaks.exit"
