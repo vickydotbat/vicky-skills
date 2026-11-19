@@ -2,6 +2,7 @@
 # line. tests/run-all.sh and CI check each is installed before any test runs, and
 # tests/tools-declared.test.sh fails a script that calls a runtime missing here.
 awk
+check-jsonschema
 curl
 git
 jq

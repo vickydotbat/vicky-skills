@@ -29,10 +29,19 @@ jobs:
         with:
           # The red-first check reads the commits that added each approved test.
           fetch-depth: 0
+      # The runner image has no JSON Schema validator, and this job has no declared shell to hold one.
+      - name: Install check-jsonschema, the security kit's OSV file check
+        run: pipx install check-jsonschema==0.38.0
       - name: tools-declared finds a runtime a script calls but tests/tools leaves out
         run: tests/tools-declared.test.sh
       - name: Plugin layout
         run: tests/plugin-layout.test.sh
+      - name: The security kit drafts an advisory only where its line says (SEC-1)
+        run: tests/security_advisory_approved_examples.test.sh
+      - name: The security kit's levels name the run behind each finding (SEC-3)
+        run: tests/security_levels_approved_examples.test.sh
+      - name: A CVE request and a publish wait on the user's own word (SEC-2)
+        run: tests/advisory_guard_approved_examples.test.sh
       - name: approved-spec decides what holds approved examples
         run: tests/approved-spec.test.sh
       - name: heredoc-strip keeps only shell-fed bodies in code mode
