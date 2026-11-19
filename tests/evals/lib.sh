@@ -20,7 +20,8 @@ evals_plugin="$evals_root/plugins/vicky-skills"
 # beats its allow on the run's own folder, so a run under /tmp leaves the
 # agent's shell read-only. Every run and copy goes under the runtime dir instead.
 evals_tmp="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/vicky-skills-evals"
-mkdir -p "$evals_tmp" && export TMPDIR="$evals_tmp"
+mkdir -p "$evals_tmp" || { echo "evals: cannot make $evals_tmp, and a run under /tmp gets a read-only shell. Set XDG_RUNTIME_DIR to a writable folder outside /tmp." >&2; exit 2; }
+export TMPDIR="$evals_tmp"
 evals_out=$(mktemp -d) # kept after the run, so each result can be read back
 echo "eval results: $evals_out" >&2
 eval_case() {

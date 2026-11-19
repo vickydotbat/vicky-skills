@@ -17,12 +17,15 @@ out=$(cd "$root" && PATH="$work/bin:$PATH" TMPDIR=/tmp XDG_RUNTIME_DIR="$work/ru
 dir=$(echo "$out" | head -1)
 case "$dir" in "$work/run/"?*) ;; *) no "lib.sh puts eval results under a sandbox-denied folder: $dir; set TMPDIR outside /tmp in tests/evals/lib.sh";; esac
 echo "$out" | grep -qx -- --keep-temp || no "eval_case drops each run's trace: pass --keep-temp in tests/evals/lib.sh"
+# A runtime dir that can't be made stops the runner, never a quiet /tmp fallback.
+(cd "$root" && TMPDIR=/tmp XDG_RUNTIME_DIR=/proc/nope EVAL_SPEND=yes EVAL_MODEL=test bash -c '. tests/evals/lib.sh' >/dev/null 2>&1); code=$?
+[ "$code" = 2 ] || no "lib.sh went on with no writable runtime dir (exit $code): refuse with exit 2 in tests/evals/lib.sh"
 # Every regex grader compiles in JavaScript with its flags.
 bad=$(find "$root/plugins/vicky-skills/evals" -path '*/graders/*.md' -not -path '*/results/*' -print0 | xargs -0 node -e '
   const fs=require("fs"); let bad=[];
   for (const f of process.argv.slice(1)) {
     const t=fs.readFileSync(f,"utf8"); if (!/^type: regex$/m.test(t)) continue;
-    const p=t.match(/^pattern: \x27(.*)\x27$/m); const fl=(t.match(/^flags: (\w+)$/m)||[])[1]||"";
+    const p=t.match(/^pattern: \x27(.*)\x27$/m)||t.match(/^pattern: "(.*)"$/m); const fl=(t.match(/^flags: (\w+)$/m)||[])[1]||"";
     if (!p) continue;
     try { new RegExp(p[1].replace(/\x27\x27/g,"\x27"), fl); } catch (e) { bad.push(f+": "+e.message); }
   }
