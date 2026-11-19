@@ -39,7 +39,7 @@ Give the user's repo an opt-out in the same pull request: a line in a `docs/agen
 
 1. Run `claude plugin validate .`. Done when it exits 0.
 2. Run `tests/run-all.sh`, which runs every `tests/*.test.sh`; CI runs each as a step in `.github/workflows/ci.yml`. Done when it exits 0 and every new test script has a CI step.
-3. After a change to `plugins/vicky-skills/skills/shipping/deathmatch/scripts/cap.sh`, run `CAP_REAL_OOM=1 tests/deathmatch-scripts.test.sh` once. A plain run skips the real kill in a systemd scope, since each kill raises a desktop notice. Done when it exits 0.
+3. After a change to `plugins/vicky-skills/skills/shipping/deathmatch/scripts/cap.sh`, run `CAP_REAL_OOM=1 tests/deathmatch-scripts.test.sh` and `CAP_REAL_OOM=1 tests/deathmatch_approved_examples.test.sh` once. A plain run skips the real kill in a systemd scope, since each kill raises a desktop notice. Done when it exits 0.
 
 A test stops only the processes it started, by the id it saved: `pkill -f <pattern>` also matches the shell that ran the test.
 
