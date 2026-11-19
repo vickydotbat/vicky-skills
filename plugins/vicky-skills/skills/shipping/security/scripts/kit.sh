@@ -10,7 +10,7 @@ remote=$(git -C "$top" config remote.origin.url 2>/dev/null || true)
 # name characters pass, and no . or .. part, so the slug is safe in an API path.
 forge_slug() {
   local s; s=$(sed -nE "s#^(https://|git@|ssh://git@)$1[:/]([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)/?\$#\\2#p" <<<"$remote"); s=${s%.git}
-  case /$s/ in //|*//*|*/./*|*/../*) return 0 ;; esac; echo "$s"
+  case /$s/ in *//*|*/./*|*/../*) return 0 ;; esac; echo "$s"
 }
 slug=$(forge_slug 'github\.com')
 name=$(basename "${remote:-$top}" .git)

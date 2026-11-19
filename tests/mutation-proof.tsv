@@ -71,7 +71,7 @@ skills/shipping/deathmatch/scripts/triggers.sh	842b516c4c958ef3	2f11e4908ee63618
 skills/shipping/deathmatch/scripts/verdict.sh	e0a033ff1846ad05	2f11e4908ee63618	14/14
 skills/shipping/engrave/scripts/law-lint.sh	c868c7dea4edca82	6c6199abec9e22cc	181/181
 skills/shipping/security/scripts/advisory.sh	6e69fa028a48b55b	cf9a08e211eba59e	155/155
-skills/shipping/security/scripts/kit.sh	0c943fdf55e13a9a	3a55359704e54de2	11/11
+skills/shipping/security/scripts/kit.sh	103e8860e68b1f3f	3a55359704e54de2	11/11
 skills/shipping/security/scripts/levels.sh	ef85c88bb4a180e6	d8d4a14423e5cf26	86/86
 skills/shipping/security/scripts/lines.sh	c603602e3c5c5887	e749e62f985f882b	8/8
 skills/shipping/security/scripts/review.sh	a23c13b21aca1642	d8d4a14423e5cf26	10/10
