@@ -5,7 +5,9 @@
 set -u
 root=$(cd "$(dirname "$0")/.." && pwd)
 check_py="$root/plugins/vicky-skills/skills/writing/case-file/scripts/check.py"
-fx=$(mktemp -d); trap 'rm -rf "$fx"' EXIT
+scratch=$(mktemp -d); trap 'rm -rf "$scratch"' EXIT
+# A case file lives in a .case-files folder, the one place under a scratch folder the build accepts.
+fx="$scratch/.case-files"; mkdir -p "$fx"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 page() { printf '<p>%s</p>\n' "$1" > "$fx/p.html"; }
