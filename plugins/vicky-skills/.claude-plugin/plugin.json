@@ -36,6 +36,7 @@
     "./skills/housekeeping/cerebro",
     "./skills/planning/council-of-elrond",
     "./skills/building/codex-image-gen",
+    "./skills/writing/case-file",
     "./skills/writing/human-voice",
     "./skills/planning/drawing-board",
     "./skills/commands/familiar",
