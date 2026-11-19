@@ -78,7 +78,7 @@ Each skill starts on its own when its trigger fits, except the ones marked "When
 | **`interactive-page`** | When a skill hands you a draft file or a checklist, or has a question with options for you | Shows the file as a page with text to edit, boxes to tick, comment boxes and options to click, and writes your answers back. With no browser, the file opens in your editor. |
 | **`robot-voice`** | When creating or editing a skill, agent file or prompt, or when an agent misreads one | Writes skills, agent files and prompts for maximum agentic ergonomics. |
 | **`loose-lips`** | Before any commit, push or post, and when writing docs a stranger could read | Checks anything leaving the machine for an attack map and rewrites it by role. |
-| **`case-file`** | When you ask for a case file, or a write-up that shows another team how an effort was built and proven | Builds one self-contained page and a zip with a README. Every claim carries its evidence: stock, test client only, estimate, failed or not tested. A check refuses the page if it names this machine. |
+| **`case-file`** | When you ask for a case file, or a write-up that shows another team how an effort was built and proven | Builds a case file in `.case-files/<name>/`, as research, a demonstration or a pitch, in HTML, PDF and Markdown, plus a zip with a README. Claims, events and quotes carry their dates on a timeline. Every claim carries its evidence: stock, test client only, estimate, failed or not tested. A check refuses the page if it names this machine. |
 
 ### Housekeeping
 
