@@ -22,7 +22,7 @@ Each opponent is an agent, `vicky-skills:<angle>-opponent` (`intent-opponent`, `
 - **Standards**, always: the repo's rules and STANDARDS.md, quoted by leading word.
 - **Claims**, when the body has a Proof section: the pull request body's Proof and Status against what actually ran.
 
-Triggered opponents fight only when `scripts/triggers.sh <fixed-point>` names them: **Runaway** (the diff starts a process, loop, server or container) and **Security** (a route, permission check, user input, parser, query, rendered user content, secret, process spawn, network call or CI permission). Every opponent run goes through `scripts/cap.sh`, so a run over its time or memory cap is stopped and reported, and nothing else on the machine is touched.
+Triggered opponents fight when `scripts/triggers.sh <fixed-point>` names them, and Security also fights on each file an outside report claims a security hole in, whatever the diff triggers. Otherwise they stay out of reach: **Runaway** (the diff starts a process, loop, server or container) and **Security** (a route, permission check, user input, parser, query, rendered user content, secret, process spawn, network call or CI permission). Every opponent run goes through `scripts/cap.sh`, so a run over its time or memory cap is stopped and reported, and nothing else on the machine is touched.
 
 Before any opponent fights, `scripts/prefight.sh <fixed-point>` runs the Leak check. A local path, host or secret in the diff stops the deathmatch with the file and line. The Host check is the sealed copy: an undeclared tool fails there by itself.
 
