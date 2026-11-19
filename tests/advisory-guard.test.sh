@@ -53,8 +53,11 @@ done
 is "a literal write elsewhere passes" "gh api -X POST repos/o/r/issues -f title=x" ""
 is "a pull request whose title names gh api passes" 'gh pr create --draft --title "The slug reaches the gh api path" --body-file /tmp/$SID/body.md' ""
 is "a commit whose message names a security release passes" 'git commit -m "gh release create now runs for security fixes" -F $msg' ""
-for c in 'timeout 60 gh api -X PATCH "$(cat endpoint)" -f state=published' 'env GH_HOST=x gh api -X PATCH $p -f state=published' \
-  'out=$(gh api -X PATCH $p -f state=published)' 'bash -c "gh api -X PATCH $p -f state=published"' 'timeout 9 gh release create x --title "Security advisory x"'; do
+w='gh api -X PATCH repos/o/r/security-advisories/GHSA-a -f state=published'
+for c in "timeout 60 $w" "env GH_HOST=x $w" "out=\$($w)" "bash -c \"$w\"" "bash -lc '$w'" "($w)" "{ $w; }" "if true; then $w; fi" \
+  "for i in 1; do $w; done" "case x in x) $w;; esac" "! $w" "/usr/bin/$w" "sudo -u x $w" "timeout -s KILL 5 $w" "env -i $w" \
+  "nix shell nixpkgs#gh -c $w" "python3 -c 'import os;os.system(\"$w\")'" "git commit -m \"\$($w)\"" \
+  'timeout 9 gh release create x --title "Security advisory x"' '(gh release create v1 --title advisory)' 'sudo gh release create v1 --title advisory'; do
   is "a wrapped write the guard cannot read is refused: $c" "$c" deny
 done
 is "a GraphQL read passes" "gh api graphql -f query='query { viewer { login } }'" ""

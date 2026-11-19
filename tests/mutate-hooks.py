@@ -111,6 +111,7 @@ TESTS = {
     "pkill-guard.sh": ["pkill_guard_approved_examples", "pkill-guard", "refusal-note"],
     "review-brief-guard.sh": ["review-brief-guard", "deathmatch_approved_examples"],
     "opponent-wait-guard.sh": ["opponent-wait-guard"],
+    "prose-strip.sh": ["advisory-guard", "opponent-wait-guard"],
     "outside-text-guard.sh": ["outside-text-guard", "deathmatch_approved_examples"],
     "read-item.sh": ["read_item_approved_examples", "read-item"],
     "gate-state-guard.sh": ["gate-state-guard"],

@@ -32,6 +32,11 @@ msg=$(jq -nc --arg c 'gh pr merge 5' --arg t "$t" '{tool_input:{command:$c},tran
 check "the refusal names the agent and what to wait for" yes "$(grep -q A1 <<<"$msg" && grep -q finished <<<"$msg" && echo yes || echo no)"
 check "a Gitea merge is refused too" 2 "$(code 'tea pr merge 5 </dev/null')"
 check "a merge behind a cd is refused" 2 "$(code 'cd repo && gh pr merge 5 --squash')"
+for c in 'sudo gh pr merge 5' 'env X=1 gh pr merge 5' 'FOO=1 gh pr merge 5' 'timeout 60 gh pr merge 5' '{ gh pr merge 5; }' '! gh pr merge 5' \
+  'gh -R o/r pr merge 5' 'bash -c "gh pr merge 5"' "sh -c 'gh pr merge 5'" 'gh api -X PUT repos/o/r/pulls/5/merge' 'gh pr edit 5 --ready' \
+  'tea pr m 5' 'tea pulls m 5' 'tea  pr  m 5' 'gh pr merge 5; gh pr ready 6 --undo' '/usr/bin/gh pr merge 5' '(gh pr ready 5)'; do
+  check "a merge in another shape is refused: $c" 2 "$(code "$c")"
+done
 note A1 "finished"
 check "an opponent that finished lets the merge through" 0 "$(code 'gh pr merge 5 --squash')"
 launch tu2 B1 general-purpose
@@ -39,6 +44,7 @@ check "another agent still working never holds the merge" 0 "$(code 'gh pr merge
 launch tu3 C1 vicky-skills:holds-opponent
 check "a ready mark taken back passes" 0 "$(code 'gh pr ready 5 --undo')"
 check "another command passes" 0 "$(code 'gh pr view 5')"
+check "words that name a pr merge without gh pass" 0 "$(code 'echo next: pr merge 5')"
 check "a title that names a merge passes" 0 "$(code 'git commit -m "gh pr merge waits now"')"
 note C1 "failed"
 check "an opponent that failed is done, and lets the merge through" 0 "$(code 'gh pr merge 5')"

@@ -14,26 +14,28 @@
 case "${CLAUDE_PLUGIN_OPTION_GUARD_PUBLISH:-true}" in false|0) exit 0 ;; esac
 payload=$(cat)
 cmd=$(jq -r '.tool_input.command // ""' <<<"$payload" 2>/dev/null | sed -e ':a' -e '/\\$/{N;s/\\\n//;ba' -e '}')
-# Quotes and backslashes go before matching, so state="published" or cv""e reads as written.
-plain=$(tr -d "\"'\\\\" <<<"$cmd")
+# shellcheck source=prose-strip.sh
+. "$(dirname "$0")/prose-strip.sh"
+# A title's or message's words are prose, not a call: they go first. Then
+# quotes and backslashes go, so state="published" or cv""e reads as written.
+plain=$(prose_strip "$cmd" | tr -d "\"'\\\\")
 # A named advisory: an id, a variable or a substitution after the collection.
 adv='security-advisories/[^[:space:]/;&|]+'
-# A call counts only at command position: the segment's start, a substitution's
-# start, or behind assignments and wrappers. The same words in a title or a
-# message are prose, not a call.
-wrap='([A-Za-z_][A-Za-z0-9_]*=[^[:space:]]*|timeout([[:space:]]+-[^[:space:]]+)*[[:space:]]+[0-9.]+[smhd]?|env|command|exec|eval|nohup|time|nice|xargs|rtk|run0|(ba|z|da)?sh[[:space:]]+-c)'
-at="(^|\\\$\\(|\`)[[:space:]]*($wrap[[:space:]]+)*"
 cve=0; pub=0; raw=0
 # Each command segment is judged on its own, so one segment's gate never covers another's.
 while IFS= read -r seg; do
   if grep -qiE "advisory\.sh[[:space:]]+cve([[:space:]]|$)|$adv/cve" <<<"$seg"; then cve=1; continue; fi
-  grep -qiE "advisory\.sh[[:space:]]+publish([[:space:]]|$)|$at(gh|tea)[[:space:]]+releases?[[:space:]]+(create|c)[[:space:]].*(advisor|security)" <<<"$seg" && pub=1
+  grep -qiE "advisory\.sh[[:space:]]+publish([[:space:]]|$)" <<<"$seg" && pub=1
+  # A release is found in the stripped text, so a title cannot fake one, and
+  # its advisory words are read in the whole command, since its title holds them.
+  grep -qiE "(gh|tea)[[:space:]]+releases?[[:space:]]+(create|c)[[:space:]]" <<<"$seg" &&
+    grep -qiE "(gh|tea)[[:space:]]+releases?[[:space:]]+(create|c)[[:space:]].*(advisor|security)" <<<"$cmd" && pub=1
   # Whitelist: a raw call that writes to a named advisory may set any field, the
   # state included, in a form no pattern reads (a file, a variable, a body).
   # Only a plain read passes; edits go through advisory.sh draft.
   # A write whose target is out of sight (a variable, a substitution, a GraphQL
   # query from a file or naming an advisory) may reach an advisory too.
-  grep -qiE "$at(gh[[:space:]]+api|curl|wget)[[:space:]]" <<<"$seg" &&
+  grep -qiE "(gh[[:space:]]+api|curl|wget)[[:space:]]" <<<"$seg" &&
     grep -qiE "(-X|--method|--request)[[:space:]=]*(POST|PATCH|PUT|DELETE)|[[:space:]](-f|-F|--field|--raw-field|--input|-d|--data[a-z-]*|--json|-T|--body-[a-z]+)([[:space:]=]|$)" <<<"$seg" &&
     grep -qiE "$adv|graphql.*(advisor|query=@)|[[:space:]][^[:space:]-]*[\$\`]" <<<"$seg" &&
     { pub=1; raw=1; }

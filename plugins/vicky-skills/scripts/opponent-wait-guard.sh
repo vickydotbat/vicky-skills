@@ -9,8 +9,18 @@
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without jq the reads below come back empty and nothing is refused
 input=$(cat)
 cmd=$(jq -r '.tool_input.command // ""' <<<"$input" 2>/dev/null)
-grep -qE '(^|[;&|(][[:space:]]*)(gh[[:space:]]+pr[[:space:]]+(ready|merge)|tea[[:space:]]+(pr|pulls)[[:space:]]+merge)([[:space:]]|$)' <<<"$cmd" || exit 0
-grep -qE '(^|[;&|(][[:space:]]*)gh[[:space:]]+pr[[:space:]]+ready[[:space:]].*--undo' <<<"$cmd" && exit 0
+# shellcheck source=prose-strip.sh
+. "$(dirname "$0")/prose-strip.sh"
+# Each segment is read on its own, anywhere in it, so a wrapper, a subshell or
+# flags before the subcommand still count. A title's or message's words don't.
+while IFS= read -r seg; do
+  grep -qE '(^|[^[:alnum:]_-])gh([[:space:]]|$)' <<<"$seg" &&
+    grep -qE '[[:space:]]pr[[:space:]]+(merge([[:space:]]|$)|ready([[:space:]]|$)|edit[[:space:]].*--ready)' <<<"$seg" &&
+    ! grep -qE '[[:space:]]pr[[:space:]]+ready[[:space:]].*--undo' <<<"$seg" && gated=1
+  grep -qE '(^|[^[:alnum:]_-])tea[[:space:]]+(.*[[:space:]])?(pr|pulls)[[:space:]]+(merge|m)([[:space:]]|$)' <<<"$seg" && gated=1
+  grep -qE 'pulls/[^/[:space:]]+/merge' <<<"$seg" && gated=1
+done < <(prose_strip "$cmd" | tr -d "\"'\\\\" | tr ';&|\n' '\n\n\n\n')
+[ "$gated" = 1 ] || exit 0
 transcript=$(jq -r '.transcript_path // empty' <<<"$input" 2>/dev/null)
 # Each opponent launched in this session whose last task notification is
 # missing or says it still waits on its own background work.
