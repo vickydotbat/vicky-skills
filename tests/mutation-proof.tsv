@@ -70,11 +70,11 @@ skills/shipping/deathmatch/scripts/prefight.sh	64866a7207e5cfd5	2f11e4908ee63618
 skills/shipping/deathmatch/scripts/triggers.sh	842b516c4c958ef3	2f11e4908ee63618	26/26
 skills/shipping/deathmatch/scripts/verdict.sh	e0a033ff1846ad05	2f11e4908ee63618	14/14
 skills/shipping/engrave/scripts/law-lint.sh	c868c7dea4edca82	6c6199abec9e22cc	181/181
-skills/shipping/security/scripts/advisory.sh	937be168af245fee	7c92c2c55b08de33	152/152
-skills/shipping/security/scripts/kit.sh	1b0fc13204c4abd6	830f0518e606a82e	11/11
-skills/shipping/security/scripts/levels.sh	6bf29860355948e4	e2fb2bbddeb85121	70/70
-skills/shipping/security/scripts/lines.sh	c603602e3c5c5887	57890fa0679cdecb	8/8
-skills/shipping/security/scripts/review.sh	a23c13b21aca1642	e2fb2bbddeb85121	10/10
+skills/shipping/security/scripts/advisory.sh	937be168af245fee	574dfd35c987d4bd	152/152
+skills/shipping/security/scripts/kit.sh	1b0fc13204c4abd6	c6702dee91eed631	11/11
+skills/shipping/security/scripts/levels.sh	ac9525a936038cb8	09d744c4243a355f	78/78
+skills/shipping/security/scripts/lines.sh	c603602e3c5c5887	20929149e93861a4	8/8
+skills/shipping/security/scripts/review.sh	a23c13b21aca1642	09d744c4243a355f	10/10
 skills/writing/human-voice/scripts/lint-tells.py	d51373996ad8ae9c	a188c25f71567933	47/47
 skills/writing/interactive-page/scripts/open-draft.sh	09ebb597b65041c8	df92af7062cf9322	50/50
 skills/writing/interactive-page/scripts/open-page.sh	9da7be591b0eb684	5253f46f12411d94	9/9
