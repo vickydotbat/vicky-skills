@@ -4,18 +4,20 @@
 # so words in a pull request title or commit message never read as a call.
 # It reads quotes as the shell does, and strips only in a command that carries
 # prose (git commit or tag, gh pr or issue create, edit, comment or review, and
-# tea's), and the search text of git log --grep and gh pr or issue list --search, so a flag inside another quoted string or another tool's -t is left.
+# tea's), or search text (git log --grep, gh pr list --search), so a flag inside another quoted string or another tool's -t is left.
 # A value holding $( or a backtick runs, so it stays. With unbalanced quotes,
 # or any $'..' quoting, the command prints unchanged.
+# A shell variable that may stand where a tool's name does, as in $GH pr merge.
+shell_var_re='[$][{]?[A-Za-z_][A-Za-z0-9_]*[}]?'
 prose_strip() {
-  awk -v RS='\001' '
+  awk -v RS='\001' -v var="$shell_var_re" '
   function carrier(  a, b, c) {
     a = w[1]; b = w[2]; c = w[3]
     if (a == "git" && (b == "commit" || b == "tag")) return 1
     if (a == "gh" && (b == "pr" || b == "issue") && c ~ /^(create|edit|comment|review)$/) return 1
     if (a == "tea" && b ~ /^(pr|pulls|issues?|i)$/ && c ~ /^(create|edit|comment|c|e)$/) return 1
     if (a == "git" && b ~ /^(log|shortlog|rev-list)$/) return 2
-    if (a ~ /^(gh|\$\{?[A-Za-z_][A-Za-z0-9_]*\}?)$/ && (b == "pr" || b == "issue") && c == "list") return 3
+    if ((a == "gh" || a ~ ("^" var "$")) && (b == "pr" || b == "issue") && c == "list") return 3
     return 0
   }
   function flag(v,  k) {
