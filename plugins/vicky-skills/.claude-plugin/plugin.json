@@ -29,6 +29,7 @@
     "./skills/shipping/deathmatch",
     "./skills/building/sentinels",
     "./skills/shipping/ship-it",
+    "./skills/shipping/security",
     "./skills/building/spark-joy",
     "./skills/building/stacked-branches",
     "./skills/building/warp",
