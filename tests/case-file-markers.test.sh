@@ -52,6 +52,7 @@ check "a pitch says at the top that it asks the reader to act" 'grep -q "asks yo
 tpl pitch2 '<!-- KIND pitch -->\n<p>We will help you adopt it.</p>\n'
 out=$(build "$fx/pitch2.html" "$fx/out/pitch2.html"); status=$?
 check "a pitch's future tense outside its ask stops the build" '[ "$status" -ne 0 ] && grep -q "We will help you" <<<"$out"'
+check "a tense hit is not called a leak of this machine" '! grep -q "names this machine" <<<"$out"'
 printf '<body data-case-kind="research"><section class="ask" data-ask><p>We will ship it.</p></section></body>\n' > "$scratch/ask.html"
 out=$(caught "$scratch/ask.html"); status=$?
 check "only a pitch's ask may use the future tense" '[ "$status" -ne 0 ] && grep -q "We will ship it" <<<"$out"'
