@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
 """Refuse a case file that leaks this machine, before it leaves.
 
-Usage: check.py <page.html>
+Usage: check.py <page.html | page.pdf | page.md>
 
 Scans the page's text, and every data: download decoded, for loose-lips'
 "This machine" kinds: home folders, the nix store, scratch folders under
 /tmp, paths from ~ or climbing out with .., this user's name in a path or
-address, and this host's name, after HTML entities are decoded. Exits 1
-naming each hit's line or download, 0 when the page is clean.
+address, and this host's name, after HTML entities are decoded. On a page
+that names its kind, it also refuses a claim whose visible label differs from
+its data-evidence, and the future tense outside a pitch's ask. Exits 1
+naming each hit's line or download, 0 when the page is clean. A PDF is read
+as text with pdftotext, and one it can't read is refused.
 """
-import base64, html, os, re, socket, sys, urllib.parse
+import base64, html, os, re, shutil, socket, subprocess, sys, urllib.parse
 
 def patterns():
     pats = [r"(?<![\w./-])/(home|Users)/[^/\s\"'<>]+/", r"/nix/store/", r"(?<![\w./-])/tmp/[^\s\"'<>]+", r"(?<![\w.-])~/", r"(?<![\w.])\.\./"]  # local-path-ok: the patterns the check looks for
@@ -23,6 +26,35 @@ def patterns():
     if host:
         pats.append(rf"\b{re.escape(host)}\b")
     return re.compile("|".join(pats))
+
+# Each evidence label, by its attribute value and the words a reader sees.
+LABELS = {"stock": "stock", "test-client-only": "test client only", "estimate": "estimate", "failed": "failed", "not-tested": "not tested"}
+CLAIM = re.compile(r"<(\w+)\b[^>]*\bdata-evidence=\"([^\"]*)\"[^>]*>(.*?)</\1>", re.S)
+SHOWN = re.compile(r'<span class="label">(.*?)</span>', re.S)
+FUTURE = re.compile(r"\b(?:we|you|they|it|i|this|that|he|she)\s+(?:will|shall)\b|\b(?:we|you|they|it|i)'ll\b|\bgoing to\b", re.I)
+KIND = re.compile(r'data-case-kind="?(\w+)')
+QUIET = re.compile(r"<(pre|code|blockquote|style|script)\b.*?</\1>", re.S | re.I)
+ASK = re.compile(r'<section class="ask".*?</section>', re.S)
+
+def words(fragment):
+    return re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", fragment))).strip()
+
+def labels(page):
+    hits = []
+    for m in CLAIM.finditer(page):
+        shown = SHOWN.search(m.group(3))
+        if LABELS.get(m.group(2)) is None or not shown or words(shown.group(1)) != LABELS[m.group(2)]:
+            hits.append(f"claim {words(SHOWN.sub('', m.group(3)))[:80]}: its label {m.group(2)} and the words a reader sees disagree")
+    return hits
+
+def tense(page):
+    kind = KIND.search(page)
+    if not kind:
+        return []
+    text = QUIET.sub(" ", DATA.sub("data:,", page))
+    if kind.group(1) == "pitch":
+        text = ASK.sub(" ", text)
+    return [f"future tense outside a pitch's ask: {s[:120]}" for s in re.split(r"(?<=[.!?])\s+", words(text)) if FUTURE.search(s)]
 
 # A data: link in any quoting, with its tag, so the download name can be read.
 TAG = re.compile(r"<[^>]*\bdata:[^>]*>")
@@ -57,14 +89,25 @@ def scan(page):
     for n, line in enumerate(text.splitlines(), 1):
         if pat.search(line):
             hits.append(f"line {n}: {line.strip()[:120]}")
-    return hits
+    return hits + labels(page) + tense(page)
+
+def read(path):
+    """The file's text: a PDF through pdftotext, any other file as it is."""
+    if not path.lower().endswith(".pdf"):
+        return open(path, encoding="utf-8").read()
+    if not shutil.which("pdftotext"):
+        sys.exit(f"case-file check: {path} is a PDF and pdftotext is missing, so it cannot be checked")
+    try:
+        return subprocess.run(["pdftotext", "-layout", path, "-"], check=True, capture_output=True, timeout=60).stdout.decode("utf-8", "replace")
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
+        sys.exit(f"case-file check: pdftotext could not read {path}, so it cannot be checked")
 
 def main():
     if len(sys.argv) != 2:
         sys.exit(__doc__)  # mutant-ok delete: a message to a person, no behaviour
-    hits = scan(open(sys.argv[1], encoding="utf-8").read())
+    hits = scan(read(sys.argv[1]))
     if hits:
-        print("case-file check: this page names this machine. Name each by its role:")  # mutant-ok delete: a message to a person, no behaviour
+        print("case-file check: fix each of these before it leaves. Name this machine by its role, a label as its attribute says, and the past by the past tense:")  # mutant-ok delete: a message to a person, no behaviour
         print("\n".join("  " + h for h in hits))
         sys.exit(1)
     print("case-file check: clean")  # mutant-ok delete: a message to a person, no behaviour

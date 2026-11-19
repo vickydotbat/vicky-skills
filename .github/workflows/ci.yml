@@ -37,6 +37,11 @@ jobs:
       # The case-file build shrinks screenshots with ImageMagick, which the runner image may lack.
       - name: Install ImageMagick, the case-file build's image shrinker
         run: command -v convert >/dev/null || { sudo apt-get update -q && sudo apt-get install -y -q imagemagick; }
+      # The case-file build prints its PDF with a headless browser and the check reads it back with pdftotext.
+      - name: Install poppler-utils and name the runner's Chrome as chromium, for the case-file PDF
+        run: |
+          command -v pdftotext >/dev/null || { sudo apt-get update -q && sudo apt-get install -y -q poppler-utils; }
+          command -v chromium >/dev/null || sudo ln -s "$(command -v google-chrome)" /usr/local/bin/chromium
       - name: tools-declared finds a runtime a script calls but tests/tools leaves out
         run: tests/tools-declared.test.sh
       - name: Plugin layout
@@ -49,6 +54,10 @@ jobs:
         run: tests/advisory_guard_approved_examples.test.sh
       - name: A case file builds, checks and bundles as its examples say (CF-1 to CF-3)
         run: tests/case_file_approved_examples.test.sh
+      - name: A case file lives in .case-files, knows its kind and builds every format (CF-5 to CF-7)
+        run: tests/case_file_kinds_approved_examples.test.sh
+      - name: The case-file build's markers, Markdown, browser and the check's PDF and label rules
+        run: tests/case-file-markers.test.sh
       - name: The case-file check's user, home, host and image-data rules
         run: tests/case-file.test.sh
       - name: The security kit's edges, bad input and the GitHub route

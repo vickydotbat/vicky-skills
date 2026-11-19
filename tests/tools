@@ -11,3 +11,5 @@ python3
 sed
 convert
 identify
+pdftotext
+chromium
