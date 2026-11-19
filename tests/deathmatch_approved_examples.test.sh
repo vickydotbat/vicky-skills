@@ -159,11 +159,30 @@ check "E34 Claims fights only a body with proof" \
 
 # Given a deathmatch with more than three opponents to send
 # When it fights
-# Then no more than three run at once, the next starts when one reports, and each command's memory cap times the opponents running fits in the memory free
+# Then no more than three run at once, the next starts when one reports, and each command's memory cap times the opponents running fits in half the memory free
 free=$(awk '/^MemAvailable:/ {print $2 * 1024}' /proc/meminfo)
 b7=$(bash "$dm/batch.sh" 7 2>&1); b2=$(bash "$dm/batch.sh" 2 2>&1)
 at=$(sed -n 's/^at once: //p' <<<"$b7"); capb=$(numfmt --from=iec "$(sed -n 's/^memory cap: //p' <<<"$b7")" 2>/dev/null)
-check "E35 opponents fight three at a time, their caps within the memory free" \
-  '[ "$at" = 3 ] && [ -n "$capb" ] && [ $((capb * at)) -le "$free" ] && grep -qx "at once: 2" <<<"$b2"'
+check "E35 opponents fight in rounds that fit the memory free" \
+  '[ -n "$at" ] && [ "$at" -le 3 ] && [ -n "$capb" ] && [ $((capb * at)) -le $((free / 2)) ] && grep -qE "^at once: [12]$" <<<"$b2"'
+
+# Given a machine with less than 6G of memory free
+# When a deathmatch with seven opponents fights
+# Then fewer than three run at once, and never fewer than one
+printf 'MemTotal: 33554432 kB\nMemAvailable: 5242880 kB\n' > "$t/mem5g"
+printf 'MemTotal: 33554432 kB\nMemAvailable: 524288 kB\n' > "$t/mem512m"
+low=$(BATCH_MEMINFO="$t/mem5g" bash "$dm/batch.sh" 7 2>&1); tiny=$(BATCH_MEMINFO="$t/mem512m" bash "$dm/batch.sh" 7 2>&1)
+lat=$(sed -n 's/^at once: //p' <<<"$low"); tat=$(sed -n 's/^at once: //p' <<<"$tiny")
+check "E36 little memory free means fewer at once" \
+  '[ -n "$lat" ] && [ "$lat" -lt 3 ] && [ "$lat" -ge 1 ] && [ "$tat" = 1 ]'
+
+# Given a machine with plenty of memory free
+# When a deathmatch fights
+# Then each opponent's commands are capped at 2G at most
+printf 'MemTotal: 268435456 kB\nMemAvailable: 201326592 kB\n' > "$t/mem192g"
+big=$(BATCH_MEMINFO="$t/mem192g" bash "$dm/batch.sh" 7 2>&1)
+bcap=$(numfmt --from=iec "$(sed -n 's/^memory cap: //p' <<<"$big")" 2>/dev/null)
+check "E37 no opponent's commands get more than 2G" \
+  '[ -n "$bcap" ] && [ "$bcap" -le $((2 * 1024 * 1024 * 1024)) ] && grep -qx "at once: 3" <<<"$big"'
 
 exit $fail
