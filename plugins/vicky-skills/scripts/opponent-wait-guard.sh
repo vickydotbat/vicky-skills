@@ -41,7 +41,7 @@ waiting=$(jq -Rrn '
   | ([$sends[] | select(.to == $a) | .i] | max) as $s
   # A message sent to an opponent after its last notification sets it working again.
   | select($n == null or ($n.t | contains("waiting on its own background work")) or ($s != null and $s > $n.i))
-  | $a' "$transcript" 2>/dev/null | sort -u | tr '\n' ' ')
+  | $a' "$transcript" 2>/dev/null | tr '\n' ' ')
 [ -n "$waiting" ] || exit 0
 echo "opponent-wait-guard: the deathmatch opponents ${waiting% } have not finished: an interim report is not a verdict. Wait for each one's task notification that says it finished, then fix what it proves and run this again. Nothing ran." >&2
 exit 2

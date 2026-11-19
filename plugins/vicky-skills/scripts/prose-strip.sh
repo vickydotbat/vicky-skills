@@ -16,7 +16,7 @@ prose_strip() {
     if (a == "git" && (b == "commit" || b == "tag")) return 1
     if (a == "gh" && (b == "pr" || b == "issue") && c ~ /^(create|edit|comment|review)$/) return 1
     if (a == "tea" && b ~ /^(pr|pulls|issues?|i)$/ && c ~ /^(create|edit|comment|c|e)$/) return 1
-    if (a == "git" && b ~ /^(log|shortlog|rev-list)$/) return 2
+    if (a == "git" && b == "log") return 2
     if ((a == "gh" || a ~ ("^" var "$")) && (b == "pr" || b == "issue") && c == "list") return 3
     return 0
   }
