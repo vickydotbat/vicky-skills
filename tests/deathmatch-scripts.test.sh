@@ -6,14 +6,7 @@ set -u
 dm="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/shipping/deathmatch/scripts"
 fail=0
 tick=$((40000 + $$)); tick2=$((90000 + $$)) # unique to this run, so a run beside it never matches
-# Each kill in a systemd scope raises a desktop notice ("memory shortage
-# avoided"), so the memory-hog checks take the fallback unless CAP_REAL_OOM=1
-# asks for a real kill in a scope. Mutant runs, which repeat them many times,
-# always take the fallback.
-hog=(python3 -c 'b = bytearray(256 * 1024 * 1024)'); quiet=()
-# A mutant that flips the scope choice would still kill a real hog, so in a
-# mutant run the hog only prints the memory error the fallback reads.
-{ [ -n "${MUTATE_HOOKS_INNER:-}" ] || [ "${CAP_REAL_OOM:-}" != 1 ]; } && { quiet=(CAP_NO_SCOPE=1); hog=(bash -c 'echo "Cannot allocate memory" >&2; exit 1'); }
+. "$(dirname "$0")/lib/cap-hog.sh"
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 bash "$dm/cap.sh" 10 64M -- bash -c 'exit 3'; r=$?
 check "cap passes a command's own exit code through" '[ $r = 3 ]'
