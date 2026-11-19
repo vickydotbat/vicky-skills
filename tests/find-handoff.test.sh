@@ -109,7 +109,7 @@ git -C "$tea_repo" switch -q --detach
 check "a detached HEAD names the pull request as not read" "not read: pull request, HEAD is detached" "$(run "$tea_repo")"
 check "an extra argument is read as a ticket key" "ticket QQ-1" "$(run "$tea_repo" QQ-1)"
 
-# .todo is read only when the branch gave no pull request and no key.
+# Without a Handoff line, .todo's tickets are read only when the branch gave no pull request and no key.
 todo_repo=$(repo todo git@forge.example:o/t.git)
 echo '- 2026-01-01: **Handoff** from the todo' > "$dir/ticket-TODO-1"
 printf -- '- Finish it (TODO-1)\n' > "$todo_repo/.todo"
@@ -132,6 +132,25 @@ rm "$dir/ticket-TODO-2"
 printf -- '- Finish it (TODO-1)\n- Then ship it (TODO-1)\n' > "$todo_repo/.todo"
 check "a key .todo names twice is listed once" 1 "$(FIND_HANDOFF_BRANCH=main run "$todo_repo" | head -1 | grep -o 'ticket TODO-1' | wc -l)"
 rm "$dir/ticket-TODO-1"
+
+# The Handoff line is read on every branch: conn points at it "from any branch".
+echo '[{"index":"8","head":"feat-ABC-7","url":"https://forge.example/o/t/pulls/8","title":"t","body":"Closes ABC-7"}]' > "$dir/tea-prs"
+echo '[{"body":"**Handoff** resume the carriers","html_url":"https://forge.example/o/t/pulls/12#c4"}]' > "$dir/tea-comments"; : > "$dir/tea-calls"
+printf -- '- Finish it (TODO-1)\n- Handoff: !12 (2026-11-19)\n' > "$todo_repo/.todo"
+out=$(run "$todo_repo")
+check "a branch with its own pull request still reads the Handoff line" "found: .todo Handoff line: pull request 12 (!12 (2026-11-19))" "$out"
+check "a !n Handoff line reads that pull request's comments" "issues/12/comments" "$(cat "$dir/tea-calls")"
+check "a !n Handoff line links the handoff comment" "found: pull request 12 comment: https://forge.example/o/t/pulls/12#c4" "$out"
+echo '[]' > "$dir/tea-comments"
+check "a !n pull request with no handoff comment is named as not read" "not read: pull request 12, read its comments by hand" "$(run "$todo_repo")"
+printf -- '- Handoff: https://forge.example/o/t/pulls/12#c4 (2026-11-19)\n' > "$todo_repo/.todo"
+check "a keyed branch still reads a Handoff link" "found: .todo Handoff line: https://forge.example/o/t/pulls/12#c4" "$(run "$todo_repo")"
+printf -- '- Handoff: TODO-3 (2026-11-19)\n' > "$todo_repo/.todo"
+echo '- 2026-01-01: **Handoff** the other effort' > "$dir/ticket-TODO-3"
+out=$(run "$todo_repo")
+check "a keyed branch still reads the Handoff line's ticket" "found: ticket TODO-3" "$out"
+check "the branch's own ticket is still read beside it" "ticket ABC-7" "$out"
+rm "$dir/ticket-TODO-3"
 
 bare=$(repo bare git@forge.example:o/s.git)
 mkdir -p "$dir/nobin"; for t in bash git jq sed grep awk sort dirname basename timeout ls cat; do ln -s "$(command -v "$t")" "$dir/nobin/$t"; done

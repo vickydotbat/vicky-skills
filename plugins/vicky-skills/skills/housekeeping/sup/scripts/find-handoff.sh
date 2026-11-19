@@ -36,15 +36,34 @@ if [ -n "$branch" ]; then
   else unread+=("pull request, neither gh nor tea is installed"); fi
 fi
 mapfile -t keys < <({ printf '%s\n' "$@"; printf '%s\n%s\n' "$branch" "$pr_text" | keys_in; } | awk 'NF && !seen[$0]++')
-# .todo is the fallback pointer: its Handoff line first, else every ticket it names.
+# .todo's Handoff line is the pointer conn leaves for any branch, so it is read
+# on every branch, and a branch with its own pull request is no reason to skip it.
+# With no Handoff line, .todo's tickets are read only when the branch gave none.
 top=$(git rev-parse --show-toplevel 2>/dev/null)
-if [ -z "$pr_text" ] && [ "${#keys[@]}" = 0 ] && [ -f "$top/.todo" ]; then
-  searched+=(".todo")
-  pointer=$(grep -E '^- Handoff:' "$top/.todo" | tail -n 1)
+pointer=""; [ -f "$top/.todo" ] && pointer=$(grep -E '^- Handoff:' "$top/.todo" | tail -n 1)
+if [ -n "$pointer" ]; then
+  searched+=(".todo Handoff line")
   url=$(grep -oE 'https?://[^ )]*' <<<"$pointer")
+  ref=$(grep -oE '(^|[ (])[!#][0-9]+\b' <<<"$pointer" | head -n 1 | tr -dc '0-9')
   if [ -n "$url" ]; then hit ".todo Handoff line" "$url"
-  elif [ -n "$pointer" ]; then mapfile -t keys < <(keys_in <<<"$pointer")
-  else mapfile -t keys < <(keys_in < "$top/.todo"); fi
+  elif [ -n "$ref" ]; then
+    hit ".todo Handoff line" "pull request $ref (${pointer#- Handoff: })"
+    c=""
+    if git remote get-url origin 2>/dev/null | grep -q 'github\.com'; then
+      command -v gh >/dev/null && c=$(timeout 15 gh pr view "$ref" --json comments </dev/null 2>/dev/null |
+        jq -r '[.comments[] | select(.body | startswith("**Handoff**"))] | last | .url // empty' 2>/dev/null)
+    elif command -v tea >/dev/null; then
+      c=$(timeout 15 tea api "repos/{owner}/{repo}/issues/$ref/comments" </dev/null 2>/dev/null |
+        jq -r '[.[] | select(.body | startswith("**Handoff**"))] | last | .html_url // empty' 2>/dev/null)
+    fi
+    if [ -n "$c" ]; then hit "pull request $ref comment" "$c"; else unread+=("pull request $ref, read its comments by hand"); fi
+  else
+    mapfile -t todo_keys < <(keys_in <<<"$pointer")
+    mapfile -t keys < <(printf '%s\n' "${todo_keys[@]}" "${keys[@]}" | awk 'NF && !seen[$0]++')
+  fi
+elif [ -z "$pr_text" ] && [ "${#keys[@]}" = 0 ] && [ -f "$top/.todo" ]; then
+  searched+=(".todo")
+  mapfile -t keys < <(keys_in < "$top/.todo")
 fi
 for k in "${keys[@]}"; do
   out=$(timeout 15 bash "$plugin/scripts/read-item.sh" "$k" </dev/null 2>/dev/null)
