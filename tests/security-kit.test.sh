@@ -133,6 +133,10 @@ mv "$fx/bin/gh" "$fx/gh.off"; out=$(levels "$all4" baseline); mv "$fx/gh.off" "$
 check "missing gh is named, and scorecard still runs" 'grep -q "gh is missing. Get it from https://" <<<"$out" && grep -q "Security-Policy" <<<"$out"'
 glp=$(repo glp https://gitlab.com/acme/glp.git); line "$glp" "Security levels: baseline"; : > "$fx/calls.log"; levels "$glp" baseline >/dev/null
 check "a GitLab repo never asks GitHub for the setting" '! grep -q "$pvr" "$fx/calls.log"'
+dots=$(repo dots 'https://github.com/acme/..'); line "$dots" "Security levels: baseline"; : > "$fx/calls.log"; levels "$dots" baseline >/dev/null
+check "a GitHub remote whose path is no owner/repo never reaches gh api" '! grep -q "$pvr" "$fx/calls.log"'
+dotg=$(repo dotg https://github.com/acme/.github.git); line "$dotg" "Security levels: baseline"; : > "$fx/calls.log"; levels "$dotg" baseline >/dev/null
+check "a repo named .github still reads the setting" 'grep -q "^gh api repos/acme/.github/$pvr" "$fx/calls.log"'
 mv "$fx/gh.sh.kept" "$fx/answers/gh.sh"
 echo '{"checks":[{"name":"Security-Policy","score":0,"reason":"security policy file not detected","details":[]}]}' > "$fx/answers/scorecard"
 mkdir -p "$all4/.github"; echo policy > "$all4/.github/SECURITY.md"; out=$(levels "$all4" baseline)
