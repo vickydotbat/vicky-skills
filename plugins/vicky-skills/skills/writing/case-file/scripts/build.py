@@ -13,6 +13,10 @@ naming a missing file stops the build, and no page is written.
 import base64, html, os, re, subprocess, sys, tempfile
 
 WIDTH = 720
+# A case file goes out as one page: a file past this would make it too big to send or open.
+MAX_BYTES = 20 * 1024 * 1024
+# ImageMagick reads an image's declared size, so a small bomb file can still ask for gigabytes.
+LIMITS = ["-limit", "width", "16KP", "-limit", "height", "16KP", "-limit", "memory", "256MiB", "-limit", "disk", "1GiB"]
 MARKER_LINE = re.compile(r"^[ \t]*<!--\s*(IMG|FILE|BIN)\s+(.+?)\s*-->[ \t]*$", re.M)
 STYLE = """body{font:16px/1.5 system-ui,sans-serif;max-width:52rem;margin:2rem auto;padding:0 1rem;color:#1b1b1b;background:#fff}
 @media(prefers-color-scheme:dark){body{color:#e8e8e8;background:#161616}pre{background:#222!important}}
@@ -24,13 +28,16 @@ def fail(msg):
     sys.exit(f"case-file build: {msg}")  # mutant-ok delete: a message to a person, no behaviour
 
 
-def shrink(path):
+def shrink(path, label):
     """The image as JPEG bytes at most WIDTH pixels wide."""
     # shortcut: calls convert, which ImageMagick 6 and 7 both ship; switch to magick once 6 is gone.
     with tempfile.TemporaryDirectory() as tmp:
         out = os.path.join(tmp, "img.jpg")
-        subprocess.run(["convert", path + "[0]", "-resize", f"{WIDTH}x>", "-quality", "85", out],
-                       check=True, capture_output=True)
+        try:
+            subprocess.run(["convert", *LIMITS, path + "[0]", "-resize", f"{WIDTH}x>", "-quality", "85", out],
+                           check=True, capture_output=True, timeout=60)
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
+            fail(f"marker {label}: ImageMagick could not shrink it within its limits")
         return open(out, "rb").read()
 
 
@@ -45,11 +52,13 @@ def render(kind, arg, base):
     path = os.path.join(base, rel)
     if os.path.commonpath([os.path.realpath(path), os.path.realpath(base)]) != os.path.realpath(base):
         fail(f"marker {kind} {rel}: outside the template's folder")
+    if os.path.isfile(path) and os.path.getsize(path) > MAX_BYTES:
+        fail(f"marker {kind} {rel}: too big, over {MAX_BYTES // 1048576} MB")
     if not os.path.isfile(path):
         fail(f"marker {kind} {rel}: no such file")  # mutant-ok delete: open() below then stops the build naming the same path
     name = os.path.basename(rel)
     if kind == "IMG":
-        b64 = base64.b64encode(shrink(path)).decode()
+        b64 = base64.b64encode(shrink(path, f"{kind} {rel}")).decode()
         cap = html.escape(caption.strip())
         return f'<figure><img src="data:image/jpeg;base64,{b64}" alt="{cap}"><figcaption>{cap}</figcaption></figure>'
     data = open(path, "rb").read()
