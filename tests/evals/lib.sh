@@ -16,12 +16,17 @@
 }
 evals_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 evals_plugin="$evals_root/plugins/vicky-skills"
+# The eval sandbox denies shell writes under /tmp and /var/tmp, and that deny
+# beats its allow on the run's own folder, so a run under /tmp leaves the
+# agent's shell read-only. Every run and copy goes under the runtime dir instead.
+evals_tmp="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/vicky-skills-evals"
+mkdir -p "$evals_tmp" && export TMPDIR="$evals_tmp"
 evals_out=$(mktemp -d) # kept after the run, so each result can be read back
 echo "eval results: $evals_out" >&2
 eval_case() {
   local plugin=$1 name=$2 out=$3; shift 3
   timeout 900 \
-    claude plugin eval "$plugin" --case "$name" --scaffold --trust-plugin --ablation none \
+    claude plugin eval "$plugin" --case "$name" --scaffold --trust-plugin --keep-temp --ablation none \
     --runs 1 --max-cost-usd 3 --model "$EVAL_MODEL" --allow-tools Write Edit "$@" --no-publish --json "$evals_out/$out.json" >"$evals_out/$out.out" 2>&1 || return
   record_pass "$plugin" "$name"
 }

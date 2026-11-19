@@ -414,6 +414,8 @@ jobs:
         run: tests/outside-text-guard.test.sh
       - name: Deathmatch scripts' exit codes
         run: tests/deathmatch-scripts.test.sh
+      - name: Eval runners give the agent a writable shell, and graders compile
+        run: tests/eval-runner-env.test.sh
       - name: Mutation proof is current
         run: python3 tests/mutate-hooks.py --check
       - name: Red-first check
