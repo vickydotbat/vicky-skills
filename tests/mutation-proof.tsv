@@ -1,6 +1,6 @@
 adr-scope-hint.sh	dd0f4f2d0f53e71a	45856c3653158193	7/7
 advisory-deadline.sh	e8c29246ec59a753	f090969896368d98	14/14
-advisory-guard.sh	7d04e08c99ee5eb6	a975ed2863144d61	50/50
+advisory-guard.sh	ea464e9533f995ef	b646cfd39269e613	51/51
 ai-credit.sh	ce9c03ae1de6bb7b	f7f64e52d14f4c62	1/1
 approved-spec.sh	1631dde4942ed5b6	eb2c2c5a68467e94	5/5
 assign-expand.sh	a2d6f7ea568cb59e	be93477f4457b7b5	5/5
@@ -22,6 +22,7 @@ lesson-ledger.sh	4c88dc2d0aebcfe6	0dc860ef4cc168bf	18/18
 local-path-guard.sh	6250febeeda4bb1c	8983fb7ee94442b0	29/29
 merge-point.sh	a19dbe9167831b34	b8d7c836d66ed8a0	2/2
 merged-branch-guard.sh	eddb14559b662ad4	79f8b2fe1665f609	41/41
+opponent-wait-guard.sh	842778d21e157308	23850ea2ad630a16	36/36
 outside-text-guard.sh	e8f015e3aada1afe	1851fbbe860008cc	39/39
 patch-tell-hint.sh	256a998db4051de9	42dfd286cde5ae77	50/50
 pkill-guard.sh	b7b411516636d988	93270fcfdfef8c13	7/7
@@ -41,7 +42,7 @@ red-first-check.sh	e585449df8cf7aee	c217ecd017b88c7a	20/20
 red-first-guard.sh	ec04caecb4fc2494	9fb7a035039df3e7	44/44
 restack-origin-guard.sh	cb150444008a2d6b	c2e62bcdcbfa90fa	74/74
 review-brief-guard.sh	560dd59ae4621bd2	53d2bdc528ca5fe0	22/22
-since-user.sh	7be3c1c933152abd	b4dab65b2bb4f887	14/14
+since-user.sh	7be3c1c933152abd	9b0f7957504bb5bb	14/14
 skill-change-proven.sh	2a77ba5faffc92ea	8ef9dd19b5849f95	13/13
 skill-ledger.sh	5a29eb7f617f6f60	3b7646d3e9454f37	17/17
 skill-started.sh	efccf28986c36af3	20ae2a62d9f3abd6	5/5

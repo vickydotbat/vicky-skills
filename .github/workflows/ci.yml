@@ -375,6 +375,8 @@ jobs:
         run: tests/pkill-guard.test.sh
       - name: review-brief guard decisions
         run: tests/review-brief-guard.test.sh
+      - name: opponent-wait guard decisions
+        run: tests/opponent-wait-guard.test.sh
       - name: read-item edges
         run: tests/read-item.test.sh
       - name: todo.sh edges

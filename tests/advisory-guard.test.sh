@@ -51,6 +51,12 @@ for c in 'p=repos/o/r/security-advisories; gh api -X PATCH $p/GHSA-1 -f state=pu
   is "a write whose target the guard cannot read is refused: $c" "$c" deny
 done
 is "a literal write elsewhere passes" "gh api -X POST repos/o/r/issues -f title=x" ""
+is "a pull request whose title names gh api passes" 'gh pr create --draft --title "The slug reaches the gh api path" --body-file /tmp/$SID/body.md' ""
+is "a commit whose message names a security release passes" 'git commit -m "gh release create now runs for security fixes" -F $msg' ""
+for c in 'timeout 60 gh api -X PATCH "$(cat endpoint)" -f state=published' 'env GH_HOST=x gh api -X PATCH $p -f state=published' \
+  'out=$(gh api -X PATCH $p -f state=published)' 'bash -c "gh api -X PATCH $p -f state=published"' 'timeout 9 gh release create x --title "Security advisory x"'; do
+  is "a wrapped write the guard cannot read is refused: $c" "$c" deny
+done
 is "a GraphQL read passes" "gh api graphql -f query='query { viewer { login } }'" ""
 is "a read through a variable passes" 'gh api repos/$R/pulls' ""
 is "a commit with a message file in a variable passes" 'git commit -F $msg' ""

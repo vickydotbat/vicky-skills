@@ -149,6 +149,11 @@
           },
           {
             "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/opponent-wait-guard.sh\"",
+            "timeout": 10
+          },
+          {
+            "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/advisory-guard.sh\"",
             "timeout": 5
           }
