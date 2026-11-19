@@ -175,7 +175,7 @@ EOF
 out=$(kit_run "$gh_repo" cve GHSA-1111-2222-3333); code=$?
 check "a refused CVE request says so" '[ "$code" != 0 ] && grep -q "GitHub refused the CVE request: HTTP 403" <<<"$out"'
 out=$(kit_run "$gh_repo" publish GHSA-1111-2222-3333); code=$?
-st=$(find "$CLAUDE_PLUGIN_DATA" -path "*GHSA-1111-2222-3333/state.json" | head -1)
+st=$(find "$CLAUDE_PLUGIN_DATA" -path "*/acme-widget/GHSA-1111-2222-3333/state.json")
 check "a refused publish keeps the draft a draft" '[ "$code" != 0 ] && grep -q "GitHub refused to publish" <<<"$out" && [ "$(jq -r .state "$st")" = draft ]'
 echo '{"version":2,"plugins":{}}' > "$fx/config/plugins/installed_plugins.json"
 fg=$(repo fg https://github.com/acme/fg.git); line "$fg" "Advisories: file"
