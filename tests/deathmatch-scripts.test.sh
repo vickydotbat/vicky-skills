@@ -33,6 +33,7 @@ bash "$dm/verdict.sh" check x y >/dev/null 2>&1; r=$?
 check "verdict refuses a mode it doesn't know" '[ $r = 2 ]'
 # Found by the deathmatch on its own pull request.
 t=$(mktemp -d); trap 'rm -rf "$t"' EXIT
+printf 'MemAvailable: 67108864 kB\n' > "$t/mem64g"
 bash "$dm/cap.sh" 3 64M -- bash -c 'sleep 301 & echo $! > "'"$t"'/bg"; exit 0'; r=$?; bg=$(cat "$t/bg")
 check "a clean exit leaves no child of the command behind" '[ $r = 0 ] && ! kill -0 $bg 2>/dev/null'
 kill "$bg" 2>/dev/null
@@ -71,7 +72,7 @@ bash "$dm/batch.sh" none >/dev/null 2>&1; r=$?
 check "batch refuses a count that is no number" '[ $r = 2 ]'
 bash "$dm/batch.sh" 0 >/dev/null 2>&1; r=$?
 check "batch refuses no opponents" '[ $r = 2 ]'
-h=$(bash "$dm/batch.sh" 03)
+h=$(BATCH_MEMINFO="$t/mem64g" bash "$dm/batch.sh" 03)
 check "batch reads a leading zero as decimal" 'grep -qx "at once: 3" <<<"$h"'
 h=$(bash "$dm/batch.sh" 1)
 check "one opponent fights alone" 'grep -qx "at once: 1" <<<"$h"'
@@ -94,7 +95,9 @@ check "the fallback calls no memory cap on a plain failure" '[ $r = 3 ] && [ -z 
 printf '## Summary\nFixes the crash on an empty name.\n' > "$g/body.md"
 out=$(cd "$g" && bash "$dm/triggers.sh" main "$g/body.md" 2>&1)
 check "a fix claimed only in the body brings Cause" 'grep -qx "fight: cause" <<<"$out"'
-out=$(bash "$dm/batch.sh" 08 2>&1)
+out=$(BATCH_MEMINFO="$t/mem64g" bash "$dm/batch.sh" 08 2>&1)
 check "batch takes 08 as eight" 'grep -qx "at once: 3" <<<"$out"'
+out=$(BATCH_MEMINFO="$t/mem64g" bash "$dm/batch.sh" 02 2>&1)
+check "batch prints 02 as two at once" 'grep -qx "at once: 2" <<<"$out"'
 rm -rf "$g"
 exit $fail
