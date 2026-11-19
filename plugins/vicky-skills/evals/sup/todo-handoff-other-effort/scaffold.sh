@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # The session sits on branch feat-ABC-7, which names its own ticket. The last
 # conn left its handoff on another effort's ticket, NEW-2, and pointed at it
-# from .todo. sup must follow the .todo Handoff line, not stop at the branch.
+# from .todo. sup must name that handoff. An agent can also reach it by reading
+# .todo by hand, so this case guards the skill text; tests/find-handoff.test.sh
+# proves the script reads the line on a keyed branch.
 set -eu
 git init -q -b main .
 mkdir -p docs/agents ../tracker
