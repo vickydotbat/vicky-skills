@@ -185,4 +185,27 @@ bcap=$(numfmt --from=iec "$(sed -n 's/^memory cap: //p' <<<"$big")" 2>/dev/null)
 check "E37 no opponent's commands get more than 2G" \
   '[ -n "$bcap" ] && [ "$bcap" -le $((2 * 1024 * 1024 * 1024)) ] && grep -qx "at once: 3" <<<"$big"'
 
+# Given a machine with less than 2G of memory free
+# When a deathmatch works out its batches
+# Then it warns that the memory cap is under 1G, and that a memory cap finding on this machine is unproven
+printf 'MemTotal: 33554432 kB\nMemAvailable: 1572864 kB\n' > "$t/mem1500m"
+small=$(BATCH_MEMINFO="$t/mem1500m" bash "$dm/batch.sh" 7 2>&1); roomy=$(BATCH_MEMINFO="$t/mem5g" bash "$dm/batch.sh" 7 2>&1)
+check "E38 a cap under 1G comes with a warning" \
+  'grep -qiE "^warning:.*under 1G.*unproven" <<<"$small" && ! grep -qi "warning" <<<"$roomy"'
+
+# Given an opponent whose command runs under a memory cap below 1G
+# When the command goes over that cap
+# Then the finding says it is unproven, because the limit is the machine's and not the branch's
+fake=(bash -c 'echo "Cannot allocate memory" >&2; exit 1')
+lowf=$(CAP_NO_SCOPE=1 bash "$dm/cap.sh" 10 512M -- "${fake[@]}" 2>/dev/null); lrc=$?
+check "E39 going over a cap under 1G is an unproven finding" \
+  '[ "$lrc" = 125 ] && grep -qE "^finding: over the memory cap of 512M.*unproven" <<<"$lowf"'
+
+# Given an opponent whose command runs under a memory cap of 1G or more
+# When the command goes over that cap
+# Then the finding is the plain over the memory cap finding, with no unproven mark
+highf=$(CAP_NO_SCOPE=1 bash "$dm/cap.sh" 10 1G -- "${fake[@]}" 2>/dev/null); hrc=$?
+check "E39 partner: a cap of 1G or more stays a proven finding" \
+  '[ "$hrc" = 125 ] && grep -qx "finding: over the memory cap of 1G" <<<"$highf"'
+
 exit $fail
