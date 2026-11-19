@@ -3,7 +3,8 @@
 # time cap and a memory cap, and stops only what it started. Over a cap it
 # prints "finding: over the time cap" (exit 124) or "finding: over the memory
 # cap" (exit 125). Otherwise it exits as the command did, and kills anything
-# the command left running.
+# the command left running. Over a cap under 1G, the memory finding is marked
+# unproven: the limit is the machine's, not the branch's.
 #
 # With a systemd user manager the command runs in a scope of its own: the
 # memory cap counts memory used, not address space (a runtime such as .NET
@@ -58,7 +59,11 @@ if [ "$timed_out" = 1 ]; then
   exit 124
 fi
 if [ "$result" = oom-kill ] || { [ -z "$unit" ] && [ "$rc" -ne 0 ] && grep -qiE 'MemoryError|Cannot allocate memory|out of memory|bad_alloc' "$err"; }; then
-  echo "finding: over the memory cap of $mem"
+  if [ "$bytes" -lt $(( 1024 * 1024 * 1024 )) ]; then
+    echo "finding: over the memory cap of $mem (unproven: a cap under 1G is the machine's limit, not the branch's)"
+  else
+    echo "finding: over the memory cap of $mem"
+  fi
   exit 125
 fi
 exit "$rc"
