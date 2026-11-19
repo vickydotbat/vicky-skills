@@ -38,7 +38,8 @@ for c in 'sudo gh pr merge 5' 'env X=1 gh pr merge 5' 'FOO=1 gh pr merge 5' 'tim
   "echo 'foo -m \"' ; gh pr merge 5 ; echo '\"'" "echo \"x -t '\" ; gh pr merge 5 ; echo \"'\"" "ssh host -t 'gh pr merge 5'" \
   "git commit -m \$'x\\'' ; gh pr merge 1 ; echo \\'a" "gh pr \$'merge' 5" '$(command -v gh) pr merge 5' '"$(which gh)" pr merge 5' \
   "$(printf 'gh pr \\\n merge 5')" 'tea pull merge 5' 'gh pr -R o/r merge 5' "gh api graphql -f query='mutation{mergePullRequest(input:{}){clientMutationId}}'" \
-  'git commit -m "$(gh pr merge 5)"' '$GH pr merge 5' '"${GH}" pr ready 5' 'gh pr --repo=o/r merge 5' 'git -C d log --grep x; gh pr merge 5'; do
+  'git commit -m "$(gh pr merge 5)"' '$GH pr merge 5' '"${GH}" pr ready 5' 'gh pr --repo=o/r merge 5' 'git -C d log --grep x; gh pr merge 5' \
+  'gh pr -Ro/r merge 5' 'gh pr -R "$(git remote get-url origin)" merge 5' 'gh pr -R o/r -R p/q merge 5' 'gh pr -R o/r -- merge 5'; do
   check "a merge in another shape is refused: $c" 2 "$(code "$c")"
 done
 note A1 "finished"
@@ -62,7 +63,9 @@ check "a call to the merge commit API passes" 0 "$(code 'gh api repos/o/r/pulls/
 check "a title that names a merge passes" 0 "$(code 'git commit -m "gh pr merge waits now"')"
 check "a pull request comment that names a merge passes" 0 "$(code 'gh pr comment 5 -b "gh pr merge 5 is next"')"
 for c in 'gh pr list --search merge' 'gh pr list -S "gh pr merge"' 'gh issue list --search="pr merge"' 'git log --grep "gh pr merge"' \
-  'git log --grep="gh pr ready"' 'git -C dir commit -m "gh pr merge waits"' 'git -c a=b commit -m "gh pr merge"' 'gh pr view 5 --json mergeable'; do
+  'git log --grep="gh pr ready"' 'git -C dir commit -m "gh pr merge waits"' 'git -c a=b commit -m "gh pr merge"' 'gh pr view 5 --json mergeable' \
+  'git commit -am "gh pr merge"' 'git --no-pager commit -m "gh pr merge"' 'git -P log -S "gh pr merge"' 'git log -G"pr merge"' \
+  'gh pr list -S"gh pr merge"' '$GH pr list --search "pr merge"'; do
   check "a read that names a merge passes: $c" 0 "$(code "$c")"
 done
 check "a merge after a commit whose message names one is still refused" 2 "$(code 'git commit --message="gh pr merge" && gh pr merge 5')"

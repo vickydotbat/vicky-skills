@@ -15,13 +15,13 @@ prose_strip() {
     if (a == "gh" && (b == "pr" || b == "issue") && c ~ /^(create|edit|comment|review)$/) return 1
     if (a == "tea" && b ~ /^(pr|pulls|issues?|i)$/ && c ~ /^(create|edit|comment|c|e)$/) return 1
     if (a == "git" && b ~ /^(log|shortlog|rev-list)$/) return 2
-    if (a == "gh" && (b == "pr" || b == "issue") && c == "list") return 3
+    if (a ~ /^(gh|\$\{?[A-Za-z_][A-Za-z0-9_]*\}?)$/ && (b == "pr" || b == "issue") && c == "list") return 3
     return 0
   }
   function flag(v,  k) {
     k = carrier()
-    if (k == 1) return v ~ /^(-m|--message|-t|--title|-b|--body)$/
-    if (k == 2) return v == "--grep"
+    if (k == 1) return v ~ /^(-m|--message|-t|--title|-b|--body)$/ || (w[1] == "git" && v ~ /^-[a-z]+m$/)
+    if (k == 2) return v ~ /^(--grep|-S|-G)$/
     return k == 3 && (v == "-S" || v == "--search")
   }
   function done_tok(  out) {
@@ -29,10 +29,12 @@ prose_strip() {
     out = raw
     if (pend && !sub_) out = "\"\""
     else if (!sub_ && ((val ~ /^(--message|--title|--body)=/ && carrier() == 1) || (val ~ /^--grep=/ && carrier() == 2) || (val ~ /^--search=/ && carrier() == 3))) { sub(/=.*/, "=\"\"", out) }
+    else if (!sub_ && ((val ~ /^-[SG]./ && carrier() == 2) || (val ~ /^-S./ && carrier() == 3))) out = substr(val, 1, 2) "\"\""
     pend = 0
-    # git -C <dir> and -c <key=value> come before the subcommand.
+    # The flags of git itself, -C <dir> and -c <key=value> among them, come before the subcommand.
     if (skip) skip = 0
     else if (nw == 1 && w[1] == "git" && (val == "-C" || val == "-c")) skip = 1
+    else if (nw == 1 && w[1] == "git" && val ~ /^-/) { }
     else if (nw < 3) w[++nw] = val
     if (flag(val)) pend = 1
     res = res out; raw = ""; val = ""; sub_ = 0

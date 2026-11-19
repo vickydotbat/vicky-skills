@@ -14,9 +14,9 @@ cmd=$(jq -r '.tool_input.command // ""' <<<"$input" 2>/dev/null | sed -e ':a' -e
 # Each segment is read on its own, anywhere in it, so a wrapper, a subshell or
 # flags before the subcommand still count. A title's or message's words don't.
 while IFS= read -r seg; do
-  # gh, or a variable that may hold it, then pr, its -R repo, and merge or ready.
+  # gh, or a variable that may hold it, then pr, any flags, and merge or ready.
   grep -qE '(^|[^[:alnum:]_-])(gh|\$\{?[A-Za-z_][A-Za-z0-9_]*\}?)([^[:alnum:]_-]|$)' <<<"$seg" &&
-    grep -qE '[[:space:]]pr[[:space:]]+((-R|--repo)(=|[[:space:]]+)[^[:space:]]+[[:space:]]+)?(merge|ready)([[:space:]]|$)|[[:space:]]pr[[:space:]]+edit[[:space:]].*--ready' <<<"$seg" &&
+    grep -qE '[[:space:]]pr[[:space:]](.*[[:space:]])?(merge|ready)([[:space:]]|$)|[[:space:]]pr[[:space:]]+edit[[:space:]].*--ready' <<<"$seg" &&
     ! grep -qE '[[:space:]]pr[[:space:]]+ready[[:space:]].*--undo' <<<"$seg" && gated=1
   grep -qE '(^|[^[:alnum:]_-])tea[[:space:]]+(.*[[:space:]])?(pr|pulls?)[[:space:]]+(merge|m)([[:space:]]|$)' <<<"$seg" && gated=1
   grep -qE 'pulls/[^/[:space:]]+/merge([^[:alnum:]_]|$)|mergePullRequest|markPullRequestReadyForReview|enablePullRequestAutoMerge' <<<"$seg" && gated=1
