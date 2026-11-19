@@ -135,6 +135,8 @@ glp=$(repo glp https://gitlab.com/acme/glp.git); line "$glp" "Security levels: b
 check "a GitLab repo never asks GitHub for the setting" '! grep -q "$pvr" "$fx/calls.log"'
 dots=$(repo dots 'https://github.com/acme/..'); line "$dots" "Security levels: baseline"; : > "$fx/calls.log"; levels "$dots" baseline >/dev/null
 check "a GitHub remote whose path is no owner/repo never reaches gh api" '! grep -q "$pvr" "$fx/calls.log"'
+dgit=$(repo dgit https://github.com/acme/.git); line "$dgit" "Security levels: baseline"; : > "$fx/calls.log"; levels "$dgit" baseline >/dev/null
+check "a remote whose repo part is only .git never reaches gh api" '! grep -q "$pvr" "$fx/calls.log"'
 dotg=$(repo dotg https://github.com/acme/.github.git); line "$dotg" "Security levels: baseline"; : > "$fx/calls.log"; levels "$dotg" baseline >/dev/null
 check "a repo named .github still reads the setting" 'grep -q "^gh api repos/acme/.github/$pvr" "$fx/calls.log"'
 mv "$fx/gh.sh.kept" "$fx/answers/gh.sh"
@@ -188,6 +190,8 @@ check "a review handed to fp-check exits 0" '[ "$code" = 0 ]'
 kit_run() { (cd "$1" && shift && bash "$kit/advisory.sh" "$@" 2>&1); }
 out=$(kit_run "$gh_repo" publish GHSA-none); code=$?
 check "an unknown draft id is named" '[ "$code" != 0 ] && grep -q "no draft advisory GHSA-none" <<<"$out"'
+out=$(kit_run "$gh_repo" cve ../x/GHSA-none); code=$?
+check "an id with a path in it is refused as no draft id" '[ "$code" != 0 ] && grep -q "is no draft id" <<<"$out"'
 out=$(kit_run "$gh_repo" cve); code=$?
 check "cve with no id shows its usage" '[ "$code" != 0 ] && grep -q "usage: advisory.sh cve <id>" <<<"$out"'
 out=$(kit_run "$gh_repo" publish); code=$?

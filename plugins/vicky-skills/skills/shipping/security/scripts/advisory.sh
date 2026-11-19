@@ -100,7 +100,7 @@ draft() {
         gh api -X POST "repos/$slug/security-advisories" --input - 2>&1) ||
         die "advisory: the forge refused the draft: $out. Nothing was put anywhere else: no issue, no comment, no pull request."
       id=$(jq -r '.ghsa_id // empty' <<<"$out" 2>/dev/null)
-      [ -n "$id" ] || die "advisory: the forge answered without a draft id: $out"
+      draft_id "$id" || die "advisory: the forge answered without a draft id: $out"
       dir="$store/$id"; mkdir -p "$dir"
     fi
   else
@@ -150,8 +150,11 @@ draft() {
   [ -n "$(jq -r '.fixed // ""' "$report")" ] || say "the draft waits on the fix: no fixed version yet."
 }
 
+# draft_id <id>: whether <id> is a bare id, safe in a store path and an API path.
+draft_id() { [[ $1 =~ ^[A-Za-z0-9_-]+$ ]]; }
 # open_draft <id>: the draft's folder, its state and route, or an error naming the id.
 open_draft() {
+  draft_id "$1" || die "advisory: \"$1\" is no draft id: an id holds only letters, digits, - and _."
   dir="$store/$1"; state="$dir/state.json"
   [ -f "$state" ] || die "advisory: this repo has no draft advisory $1."
   route=$(jq -r .route "$state")
