@@ -55,7 +55,7 @@ Each skill starts on its own when its trigger fits, except the ones marked "When
 | **`machine-spirit`** | Before changing CI, and when a CI run is red, slow or stuck | Writes and debugs CI. It names a failure's cause before it edits, so a retry or a raised timeout never stands in for a fix. |
 | **`nwn-model-tooling`** | When working on Neverwinter Nights models, HAK files or headless Blender scripts | Points to Blender with Neverblender, `cleanmodels` and the neverwinter.nim tools, and how to call each. Plugin settings name your Blender commands and the folder of unpacked stock resources. |
 | **`codex-image-gen`** | When a task says "use codex" for an image, or a `codex exec` call looks stuck | Makes or edits an image through the Codex CLI's image tool. |
-| **`video-captions`** | When a task links a video or asks what one says | Reads a video through its captions. |
+| **`video-captions`** | When a task links a video or asks what one says | Reads a video through its captions. When YouTube asks for a sign-in, it retries once with the browser named in `video_cookies_browser`, or tells you how to set one. |
 
 ### Review and shipping
 
