@@ -16,10 +16,9 @@ concurrency:
 jobs:
   checks:
     runs-on: ubuntu-latest
-    # Main runs near seven minutes, three of them the mutation load tests and
-    # their red-first run; the cap leaves room for a slow runner and still
-    # stops a hung step fast.
-    timeout-minutes: 10
+    # Main runs near four minutes; the cap leaves room for a slow runner and
+    # still stops a hung step fast.
+    timeout-minutes: 8
     steps:
       # A draft fails here and runs nothing else. Skipping would report as
       # passed and let a draft merge.
@@ -317,10 +316,6 @@ jobs:
         run: tests/approve_all_approved_examples.test.sh
       - name: Faster mutation runner
         run: tests/mutation_speed_approved_examples.test.sh
-      - name: A machine's load decides no mutant's verdict
-        run: tests/mutation_load_approved_examples.test.sh
-      - name: Looping, waiting and slow mutants
-        run: tests/mutation-load.test.sh
       - name: Mutation runner memory limit
         run: tests/mutate-hooks-memory.test.sh
       - name: Mutation test map names each script once
@@ -432,3 +427,18 @@ jobs:
           added=$(git log --diff-filter=A --format=%H -1 -- plugins/vicky-skills/scripts/red-first-check.sh)
           if ! git merge-base --is-ancestor "$added" "$base"; then base=$added; fi
           plugins/vicky-skills/scripts/red-first-check.sh "$base"
+  mutation-load:
+    runs-on: ubuntu-latest
+    # Real mutation passes, slow on purpose, so they keep their own cap.
+    timeout-minutes: 5
+    steps:
+      - name: Refuse a draft
+        if: github.event.pull_request.draft
+        run: |
+          echo "draft: CI runs once the pull request is marked ready" >&2
+          exit 1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: A machine's load decides no mutant's verdict
+        run: tests/mutation_load_approved_examples.test.sh
+      - name: Looping, waiting and slow mutants
+        run: tests/mutation-load.test.sh
