@@ -63,16 +63,22 @@ def settings():
         with open(".language-tutor.json") as f:
             local = json.load(f)
         lang, store = str(local.get("tutor_language", "")).strip(), str(local.get("tutor_store", "")).strip()
+        if store:
+            store = os.path.abspath(os.path.expanduser(store))  # the file's folder is the working directory
     if not lang:
         raise Refusal("No language is set: set the tutor_language setting to the language you are learning. Nothing was stored.")
     if not store:
         raise Refusal("Nothing was stored: set tutor_store to a folder you own, so your history outlives the plugin.")
+    store = os.path.expanduser(store)
+    if not os.path.isabs(store):
+        # a relative store would land in whatever folder the session runs in, often a repo
+        raise Refusal("Nothing was stored: set tutor_store to a full path, such as ~/language-tutor, not %s." % store)
     return lang, store
 
 
 class Store:
     def __init__(self, lang, root):
-        slug = re.sub(r"[^a-z0-9]+", "-", lang.lower()).strip("-") or "language"
+        slug = re.sub(r"[^\w]+", "-", lang.casefold()).strip("-_") or "language"  # \w keeps every script's letters
         self.dir = os.path.join(root, slug)
 
     def path(self, name):
@@ -146,6 +152,8 @@ def cmd_add(store, a):
 
 
 def cmd_due(store, a):
+    if a.limit < 0:
+        raise Refusal("--limit takes 0 (no limit) or more.")
     cards = due_cards(store)
     shown = cards[: a.limit] if a.limit else cards
     out = {"items": shown, "left": len(cards) - len(shown)}
@@ -193,6 +201,8 @@ def cmd_ledger(store, a):
 
 
 def cmd_quiz(store, a):
+    if a.max < 1:
+        raise Refusal("--max takes 1 or more.")
     errors = store.lines("ledger.jsonl")[-QUIZ_ERRORS:]
     items = [{"source": "error", "format": "cloze", "type": e["type"], "original": e["original"], "answer": e["fix"]}
              for e in errors][: a.max]
@@ -245,6 +255,9 @@ def main(argv):
         result = globals()["cmd_" + a.cmd](Store(lang, root), a)
     except Refusal as e:
         print(e, file=sys.stderr)
+        return 3
+    except (ValueError, OSError) as e:  # bad input or a damaged store: refuse in one line, never a traceback
+        print("Refused: %s" % str(e).splitlines()[0], file=sys.stderr)
         return 3
     print(json.dumps(result, ensure_ascii=False))
     return 0

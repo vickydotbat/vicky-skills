@@ -11,6 +11,12 @@ Then type `/first-contact` once per repository. For a broken thing, type `/power
 
 No skill here shares a name with one of Matt Pocock's, so both plugins load without clashing. They describe two different workflows, so use one at a time.
 
+This marketplace also serves a second plugin, [language-tutor](plugins/language-tutor/README.md). It tutors you in any language you name, with spaced review, quizzes and rubric grading. It shares nothing with vicky-skills, so install either one alone.
+
+```
+/plugin install language-tutor@vicky-skills
+```
+
 ## Skills
 
 Each skill starts on its own when its trigger fits, except the ones marked "When you type it". Skills end with a `Charter:` line naming the lines of `skills/CHARTER.md` they serve, and a test fails when one doesn't.

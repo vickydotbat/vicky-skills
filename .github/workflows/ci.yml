@@ -50,8 +50,8 @@ jobs:
         run: tests/tools-declared.test.sh
       - name: language-tutor's store, ledger, quiz pick, drill cap and profile keep the approved examples
         run: tests/language_tutor_approved_examples.test.sh
-      - name: language-tutor's ledger top caps its list at the number asked
-        run: tests/language-tutor-ledger.test.sh
+      - name: language-tutor store edge cases: caps, blank settings, scripts, bad input, the settings file
+        run: tests/language-tutor-store.test.sh
       - name: Plugin layout
         run: tests/plugin-layout.test.sh
       - name: The security kit drafts an advisory only where its line says (SEC-1)
