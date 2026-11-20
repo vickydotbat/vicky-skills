@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # A mutant whose test stalls once past its timeout, then passes, is no kill.
-# Under a niced run on a busy machine a 0.07 s test can stall past its 5 s
-# limit once, and mutation_speed_approved_examples lost its one survivor so.
+# Under a niced run on a busy machine, hook-exits (about 5 s alone) can run
+# past its 12 s limit, and mutation_speed_approved_examples lost its one
+# survivor so.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
