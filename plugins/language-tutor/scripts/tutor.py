@@ -51,9 +51,14 @@ def parse(s):
     return dt.datetime.strptime(s, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=dt.timezone.utc)
 
 
+def setting(name):
+    value = os.environ.get(name, "").strip()
+    # Claude Code leaves ${user_config.<key>} unsubstituted when a setting was never saved.
+    return "" if value.startswith("${user_config.") else value
+
+
 def settings():
-    lang = os.environ.get("TUTOR_LANGUAGE", "").strip()
-    store = os.environ.get("TUTOR_STORE", "").strip()
+    lang, store = setting("TUTOR_LANGUAGE"), setting("TUTOR_STORE")
     if not lang and not store and os.path.isfile(".language-tutor.json"):
         with open(".language-tutor.json") as f:
             local = json.load(f)
