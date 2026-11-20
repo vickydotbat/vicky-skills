@@ -1,6 +1,6 @@
 ---
 name: lay-course
-description: The lazy front door for a session that doesn't know where it leads. A council or an interrogation finds what you want, the stars get placed as a star chart or one star, and then it stops or engages warp. Use with a loose idea to start, or with a star chart to work through.
+description: The lazy front door for a session that doesn't know where it leads. A council finds what you want, the stars get placed as a star chart or one star, and then it stops or engages warp. Use with a loose idea to start, or with a star chart to work through.
 disable-model-invocation: true
 ---
 
@@ -18,9 +18,9 @@ A plan that says where work lands (a side branch, a stack, a pull request base, 
 
 ## Start an effort
 
-When the user brings a loose idea, start at step 1. When they bring the result of a council or an interrogation instead, start at step 4.
+When the user brings a loose idea, start at step 1. When they bring the result of a council instead, start at step 4.
 
-1. **Pick the method.** Ask once: "Council, where we argue ideas, or interrogation, where you answer questions?" The council is `council-of-elrond`, the easy mode. Interrogation is `interrogation`, the hard mode, which makes the user say what they want. Done when the user has picked one.
+1. **Call the council.** The method is `council-of-elrond`: ask the user to type `/council-of-elrond` with the idea. Done when the council has started.
 2. **Name the mission** with that method, and write each settled word into the repo's glossary. Done when the user agrees to a mission of at most three sentences.
 3. **Find the frontier** with that method, breadth-first across the whole idea. Done when every open question can be stated as a ticket or is a nebula.
 4. **Place the stars.** Propose one, and wait for the user's yes:
@@ -30,11 +30,11 @@ When the user brings a loose idea, start at step 1. When they bring the result o
    Done when the user has taken one or named another.
 5. **Create the chart** with Mission, Prime directive, Sensor log, Knowns, Black holes and Nebulae filled in, the Knowns sorted as [STAR-CHART.md](STAR-CHART.md)'s "Sorting the knowns" says. Create the anomalies, away teams, probes, tasks and stars you can state now as its children, each star through [STAR-CHART.md](STAR-CHART.md)'s "Filing a star". Wire blocking in a second pass, once every ticket has a key. Draw the chart. Done when the chart shows every child and every blocker, and every landing a star names quotes the repo's rule or the user's pick.
 6. **Dispatch one `away-team` subagent per away team ticket.** Done when each one is running.
-7. **Engage or stop.** Ask: "Warp through the chart now, or stop here?" For one star, ask "Warp to <star> now, or stop here?" On "warp", run `warp` on the chart or the star. Done when `warp` is running or the user has said stop.
+7. **Engage or stop.** Ask: "Warp through the chart now, or stop here?" For one star, ask "Warp to <star> now, or stop here?" On "warp", ask the user to type `/warp` with the chart or the star. Done when that ask is sent or the user has said stop.
 
 ## Work the chart
 
-The user brings a star chart, and maybe a ticket. Resolve one anomaly per session. Away teams are the exception, and so is a council, which may settle several of the chart's tickets at once. When the user names a star to reach, or asks to clear the chart, run `warp` instead.
+The user brings a star chart, and maybe a ticket. Resolve one anomaly per session. Away teams are the exception, and so is a council, which may settle several of the chart's tickets at once. When the user names a star to reach, or asks to clear the chart, ask the user to type `/warp` instead.
 
 1. **Load the chart body.** Read other tickets only when the work needs them. Shard it first, as [STAR-CHART.md](STAR-CHART.md)'s "Sharding" says. Done when you can state the mission and the chart passes "Sharding".
 2. **Pick the ticket**: the user's, or the first on the frontier, where an open line under Knowns keeps a star off it. Claim it with the tracker's Claim operation, or "Claim a waiting ticket" for one with a `Waits on:` line, before any other work. Done when the tracker shows the claim.

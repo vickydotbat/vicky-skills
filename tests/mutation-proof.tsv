@@ -11,7 +11,6 @@ drop-worktree.sh	5642f9beebc9dad3	4b9d43d932a08d72	1/1
 familiar-voice.sh	3128a205d08ce300	eee88646822cef4a	18/18
 fetch-place-hint.sh	3573b2f17e94944d	6eb05dfcf285a9f6	12/12
 foreign-post-hint.sh	5869da3216e59b15	11ad51a7b674912a	25/25
-gamma-shift.sh	bf7b0a15b596e9fc	d165d9af9a7ba013	12/12
 gate-notify.sh	7ba893f680c5d672	8956f01ae3ab2ab0	25/25
 gate-state-guard.sh	71c338f183976bce	145fda64a0da2efc	71/71
 git-guard.sh	77dedc9bf5718121	d9e2d6ac6e165e40	51/51
@@ -88,7 +87,6 @@ skills/writing/interactive-page/scripts/open-draft.sh	2ffde8abe91f0601	ec48d8c60
 skills/writing/interactive-page/scripts/open-page.sh	9da7be591b0eb684	5253f46f12411d94	9/9
 skills/writing/interactive-page/scripts/page.py	68278b952f5d4620	06923ce2bbae471b	334/334
 skills/writing/interactive-page/scripts/write-page.py	a938fb35f036f46f	1ccfcb8f6242f205	68/68
-spark-joy.sh	e88c476e7a612966	722c0630ba69f336	29/29
 springboard.sh	0fcdfc65f3050c73	65f1df19e0a970bc	42/42
 stale-copy-hint.sh	6c278c5222834240	c338ec2942931e87	27/27
 step-hint.sh	cb10e887d9978e76	037ba8cbfe36d156	18/18
@@ -98,7 +96,6 @@ summit.sh	8e6e2e361acbd473	324b4eb59ddf61e8	43/43
 sup-handoff-hint.sh	ca0328e26873afae	94ad133e3366f5f5	37/37
 tea-stdin.awk	ddfdfc5257c31b06	8cbd65cde36c7be9	70/70
 tea-stdin.sh	c631fcfccdb1abf0	5b3f129fbea8ff8e	15/15
-ticket-drift.sh	1bc60db2e95d9227	bae9a96f83d66097	36/36
 ticket-filing-guard.sh	f7cc3c46108a91cb	5d8b3a64d1640f7a	24/24
 todo-reminder.sh	87bab188b0686e79	4e5f53240f7f398c	9/9
 user-test-guard.sh	bc4daf7276d441ce	882a2bc09d9d87c6	52/52

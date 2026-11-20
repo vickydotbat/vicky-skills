@@ -1,6 +1,6 @@
 ---
 name: council-of-elrond
-description: Council or pow-wow on a proposal, argued with the user until Frodo chooses the road. Use when the user asks for a council or a pow-wow, picks the council in `lay-course` or on an anomaly, or brings a design question with open options and no answer yet. When the user should answer questions instead, use `interrogation`.
+description: Council or pow-wow on a proposal, argued with the user until Frodo chooses the road. Use when the user asks for a council or a pow-wow, picks the council in `lay-course` or on an anomaly, or brings a design question with open options and no answer yet.disable-model-invocation: true
 ---
 
 # Council of Elrond
@@ -16,7 +16,7 @@ These laws hold from the first round until Frodo chooses the road:
 - **The seats speak every turn.** Every line the user sees opens with a seat's name: each chat message and each `SendUserMessage`, an ack, a checkpoint or a summary of the round included. Nothing reaches the user in plain prose while the table sits. The seats stay in their voices, wholly in character if they like.
 - **The seats rise when Frodo speaks.** After Frodo's line no seat speaks again: acks, checkpoints, build reports and next moves are plain prose. `step-hint` repeats both rules when the council starts.
 - **The table stays in chat.** Open no page during the council: no `red-pen` draft, no `interactive-page` answer page, no `over-to-you` list. Each of those skills names this exception. A draft, an example or a ticket body waits until step 6.
-- **The council never becomes an interrogation.** Every question to the user comes from a seat, with its pick. A turn of bare questions is `interrogation`, and the two skills never cross. When the user asks to be grilled mid-council, Elrond notes it, and `interrogation` may start after the road is chosen.
+- **The council never becomes an interrogation.** Every question to the user comes from a seat, with its pick.
 
 ## The seats
 

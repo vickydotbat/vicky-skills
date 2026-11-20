@@ -41,7 +41,6 @@
     "./skills/planning/drawing-board",
     "./skills/commands/familiar",
     "./skills/writing/interactive-page",
-    "./skills/planning/interrogation",
     "./skills/writing/loose-lips",
     "./skills/building/over-to-you",
     "./skills/planning/plot-twist",
@@ -162,17 +161,6 @@
       "description": "Refuse a commit that adds a new approved-examples test together with any other change, so the tests land red in a commit of their own.",
       "default": false
     },
-    "gamma_shift": {
-      "type": "string",
-      "title": "Gamma shift at session start (experimental)",
-      "description": "The experimental backlog-clearing powerhouse. Use it with care. off does nothing. remind says how many tickets wait on you. engage works with no one watching: it builds every ticket whose wait is over, runs spark-joy and the drift check on their schedules below, puts all of it on one draft pull request, and comments on tickets.",
-      "options": [
-        "off",
-        "remind",
-        "engage"
-      ],
-      "default": "off"
-    },
     "auto_tidy": {
       "type": "boolean",
       "title": "Tidy merged branches and worktrees",
@@ -190,18 +178,6 @@
       "title": "Familiar: its kind",
       "description": "The voice /familiar speaks in: owl (the default), imp, quasit, raven, parrot, pseudodragon, cat or spider. Every kind does the same work.",
       "default": "owl"
-    },
-    "deepen_every_days": {
-      "type": "string",
-      "title": "Gamma shift: deepen the code every few days",
-      "description": "Runs only when gamma_shift is engage. A spark-joy run joins the gamma shift at the first session start in a repo after this many days, 7 by default. 0 turns it off.",
-      "default": "7"
-    },
-    "drift_every_days": {
-      "type": "string",
-      "title": "Gamma shift: check tickets for drift every few days",
-      "description": "Runs only when gamma_shift is engage. The ticket-drift agent joins the gamma shift at the first session start in a repo after this many days, 7 by default. It comments on open tickets whose comments or merged pull requests contradict their body, and edits nothing. 0 turns it off.",
-      "default": "7"
     },
     "skill_ledger": {
       "type": "boolean",

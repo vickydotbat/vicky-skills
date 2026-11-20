@@ -1,6 +1,7 @@
 ---
 name: codex-image-gen
 description: Generate or edit an image by driving the Codex CLI's built-in image tool from another agent. Use whenever a task says "use codex" for an image, art pass, meme, portrait or reference sheet, and whenever a `codex exec` call looks silent or stuck.
+disable-model-invocation: true
 ---
 
 # Image generation through Codex

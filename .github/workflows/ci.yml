@@ -156,8 +156,6 @@ jobs:
         run: tests/sup-handoff-hint.test.sh
       - name: parked-state
         run: tests/parked-state.test.sh
-      - name: Session-start hooks stay quiet with no remote
-        run: tests/no-remote-quiet.test.sh
       - name: over-to-you lints its checklist
         run: tests/over_to_you_lint_checklist.test.sh
       - name: Hooks read SendUserMessage
@@ -254,10 +252,6 @@ jobs:
         run: tests/merged-branch-guard.test.sh
       - name: Merged-branch approved examples
         run: tests/merged_branch_approved_examples.test.sh
-      - name: Gamma-shift hook
-        run: tests/gamma-shift.test.sh
-      - name: Gamma shift keeps one pull request per run
-        run: tests/gamma-shift-runs.test.sh
       - name: Auto-tidy hook
         run: tests/auto-tidy.test.sh
       - name: Auto-tidy hands a merged clone back to main
@@ -268,8 +262,6 @@ jobs:
         run: tests/auto_tidy_approved_examples.test.sh
       - name: Auto-tidy keeps unpushed work and worktrees in use
         run: tests/auto-tidy-keeps.test.sh
-      - name: Spark-joy hook
-        run: tests/spark-joy.test.sh
       - name: Gate-notify hook
         run: tests/gate-notify.test.sh
       - name: Keep-awake examples
@@ -282,10 +274,6 @@ jobs:
         run: tests/skill_ledger_approved_examples.test.sh
       - name: Idle skills
         run: tests/idle_skills_approved_examples.test.sh
-      - name: Ticket-drift hook
-        run: tests/ticket_drift_approved_examples.test.sh
-      - name: Gamma shift runs spark-joy and the drift check on one branch
-        run: tests/gamma_powerhouse_approved_examples.test.sh
       - name: git-guard and red-first-guard judge one command at a time
         run: tests/hook_state_approved_examples.test.sh
       - name: Hook exit codes

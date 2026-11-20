@@ -1,6 +1,7 @@
 ---
 name: make-it-so
-description: Finish a draft pull request and see it through CI. Use when the user says "make it so", "finish the PR", "mark it ready", "ship it", "babysit CI" or "make sure CI passes", and when a `warp` the user engaged ends. Only the user's ask starts it.
+description: Finish a draft pull request and see it through CI. Use when the user types /make-it-so. Only the user starts it.
+disable-model-invocation: true
 ---
 
 # Make it so

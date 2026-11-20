@@ -11,7 +11,7 @@ The reference `lay-course` and `warp` both read: the words, the chart body, the 
 | **prime directive** | The rules that bind every ticket on the chart. |
 | **sensor log** | The facts the work rests on, each with its source: what the code, the engine or the spec does today. |
 | **star** | A ticket that delivers behaviour, something the running system does, specified by its approved examples. |
-| **anomaly** | A ticket that asks one question before the stars behind it can go on. A council or an interrogation answers it, picked when the user sits down to it. |
+| **anomaly** | A ticket that asks one question before the stars behind it can go on. A council answers it, picked when the user sits down to it. |
 | **away team** | A fact a decision waits on, found by the `away-team` skill. |
 | **probe** | A cheap, rough artifact (an outline, a stub, a sketch) for the human to react to. |
 | **task** | Work that has to happen before a decision can, such as getting access to a service, or work whose whole change is prose (a doc, a skill's guidance, a decision record). It ends at a `Done when` line and gets no examples. |
@@ -77,7 +77,7 @@ The Sensor log above.
 
 ## Decisions
 
-- [<ticket title>](<link>): <the answer in one line>, by <council or interrogation> (<decision record>)
+- [<ticket title>](<link>): <the answer in one line>, by council (<decision record>)
 
 ## Black holes
 

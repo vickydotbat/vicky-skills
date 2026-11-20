@@ -16,9 +16,9 @@ worker = mh.Worker()
 try:
     with open(os.path.join(worker.root, "tests", "hog.test.sh"), "w") as f:
         f.write('s=x; while :; do s=$s$s; echo ${#s} > "$HOG_LOG"; done\n')
-    with open(os.path.join(mh.SCRIPTS, "gamma-shift.sh")) as f:
+    with open(os.path.join(mh.SCRIPTS, "publickey-hint.sh")) as f:
         original = f.read()
-    print("killed" if worker.run("gamma-shift.sh", original, [("hog", 60, 60)]) else "survived")
+    print("killed" if worker.run("publickey-hint.sh", original, [("hog", 60, 60)]) else "survived")
 finally:
     shutil.rmtree(worker.root)
 PY

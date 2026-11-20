@@ -40,7 +40,7 @@ The user may be away once the examples are approved, and a question or an open e
 - **A guess too costly to undo, or an approved example the build shows is wrong**: park that slice. Add it to Check these with what it waits on, and build the rest.
 - **Inside a `warp`**, a slice parked on the user's decision, and a deathmatch finding that waits on it, follow `warp`'s "Mid-flight questions": they are built in the warp's pull request, never filed as a ticket.
 
-`make-it-so`, run by `warp` or when the user asks for it, hands the drafts and the list to the user before the pull request goes ready. Done when step 6 ends with no question asked since step 1.
+`make-it-so`, which the user types, hands the drafts and the list to the user before the pull request goes ready. Done when step 6 ends with no question asked since step 1.
 
 **State at every stop.** Write the Status section at every stop, as `ship-it`'s "State at every stop" says. A ticket whose slice is parked: park its ticket with the tracker's "Park a ticket" action, with a `Waits on:` line, as "Waiting work" in `docs/agents/issue-tracker.md` says.
 

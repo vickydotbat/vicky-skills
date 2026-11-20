@@ -14,8 +14,8 @@ setup() {
   { echo '#!/usr/bin/env bash'; echo "hook=\"\$(dirname \"\$0\")/../plugins/vicky-skills/$probe\""; echo "calls='$dir/calls'"
     echo 'n=$(( $(cat "$calls" 2>/dev/null || echo 0) + 1 )); echo $n > "$calls"'; echo "$3"; } > "$dir/tests/probe.test.sh"
   chmod +x "$dir/tests/probe.test.sh"
-  sed -i "s|    \"gamma-shift.sh\": \\[\"gamma-shift\"\\],|&\\n    \"$probe\": [\"probe\"],|" "$dir/tests/mutate-hooks.py"
-  grep -qF "\"$probe\": [\"probe\"]" "$dir/tests/mutate-hooks.py" || { echo "FAIL the test map has no gamma-shift.sh line to put the probe after"; exit 1; }
+  sed -i "s|    \"publickey-hint.sh\": \\[\"publickey-hint\"\\],|&\\n    \"$probe\": [\"probe\"],|" "$dir/tests/mutate-hooks.py"
+  grep -qF "\"$probe\": [\"probe\"]" "$dir/tests/mutate-hooks.py" || { echo "FAIL the test map has no publickey-hint.sh line to put the probe after"; exit 1; }
 }
 pass() { timeout 300 python3 "$dir/tests/mutate-hooks.py" --jobs 1 "$probe" 2>&1; }
 fail=0

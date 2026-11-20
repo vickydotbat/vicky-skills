@@ -2,6 +2,7 @@
 name: assimilate
 description: Judge a pull request, outside bug report or outside review with a deathmatch, write the verdict for posting, and claim the pull request to build on when the verdict finds work to do. Use when the user says "assimilate", asks whether a pull request's changes hold or fix the cause, when an outside report or review arrives, or before an agent takes over a pull request someone else opened.
 argument-hint: "Which pull request?"
+disable-model-invocation: true
 ---
 
 # Assimilate
