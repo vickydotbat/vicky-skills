@@ -45,6 +45,7 @@ address space a runtime such as Bun reserves and never uses.
 import concurrent.futures
 import hashlib
 import io
+import itertools
 import os
 import queue
 import re
@@ -347,21 +348,35 @@ def replace(path, text):
 
 CPU, HUNG = "cpu", "hung"
 TICK = os.sysconf("SC_CLK_TCK")
+RUNS = itertools.count()
 
 
-def session_cpu(sid):
-    """CPU seconds used by the live processes of a session, with the children each has reaped."""
-    total = 0
-    for pid in os.listdir("/proc"):
+def tagged(tag):
+    """The live processes that carry tag in their environment, and their CPU seconds with the
+    children each has reaped. A tag, not a session, since a test's process can leave its
+    session with setsid but keeps its environment."""
+    pids, total, needle = [], 0, f"MUTATE_HOOKS_RUN={tag}".encode()
+    for pid in filter(str.isdigit, os.listdir("/proc")):
         try:
+            with open(f"/proc/{pid}/environ", "rb") as handle:
+                if needle not in handle.read().split(b"\0"):
+                    continue
             with open(f"/proc/{pid}/stat") as handle:
                 fields = handle.read().rsplit(")", 1)[1].split()
         except (OSError, IndexError):
             continue
+        pids.append(int(pid))
         # After the name: state, ppid, pgrp, session, ... utime, stime, cutime, cstime.
-        if pid.isdigit() and int(fields[3]) == sid:
-            total += sum(int(f) for f in fields[11:15])
-    return total / TICK
+        total += sum(int(f) for f in fields[11:15])
+    return pids, total / TICK
+
+
+def stop(tag):
+    for pid in tagged(tag)[0]:
+        try:
+            os.kill(pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
 
 
 def capped(test):
@@ -383,21 +398,26 @@ class Worker:
         """The test's exit code, CPU when its processes worked past cpu_limit, or HUNG when it
         waited past the ceiling. CPU seconds don't grow on a busy machine, so only a test that
         neither works nor ends is left to the clock."""
-        # Its own session, so its processes can be found and stopped together.
+        # A tag in its environment finds every process it starts, so all are counted and stopped.
+        tag = f"{os.getpid()}-{next(RUNS)}"
         proc = subprocess.Popen(capped(os.path.join(self.root, "tests", test + ".test.sh")),
-                                env=dict(os.environ, MUTATE_HOOKS_INNER="1"), stdin=subprocess.DEVNULL,
-                                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+                                env=dict(os.environ, MUTATE_HOOKS_INNER="1", MUTATE_HOOKS_RUN=tag),
+                                stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         start = time.monotonic()
-        while True:
-            try:
-                return proc.wait(timeout=0.2)
-            except subprocess.TimeoutExpired:
-                pass
-            verdict = CPU if session_cpu(proc.pid) > cpu_limit else HUNG if time.monotonic() - start > ceiling else None
-            if verdict:
-                os.killpg(proc.pid, signal.SIGKILL)
-                proc.wait()
-                return verdict
+        try:
+            while True:
+                try:
+                    return proc.wait(timeout=0.2)
+                except subprocess.TimeoutExpired:
+                    pass
+                if tagged(tag)[1] > cpu_limit:
+                    return CPU
+                if time.monotonic() - start > ceiling:
+                    return HUNG
+        finally:
+            # A process left behind would load the machine under the next mutant.
+            stop(tag)
+            proc.wait()
 
     def run(self, script, text, timeouts):
         path = os.path.join(self.root, os.path.relpath(path_of(script), ROOT))

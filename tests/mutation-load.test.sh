@@ -20,6 +20,25 @@ pass() { timeout 300 python3 "$dir/tests/mutate-hooks.py" --jobs 1 probe.sh 2>&1
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; echo "$out"; fail=1; fi; }
 
+# Found in the deathmatch: a process that leaves the test's session with setsid
+# still counts toward its CPU limit, and is stopped with the test.
+mark=$(mktemp -u); spin="$scratch/spin.test.sh"
+printf '#!/usr/bin/env bash\nsetsid bash -c "echo \\$\\$ > %s; while :; do :; done" &\nwait\n' "$mark" > "$spin"
+out=$(timeout 60 python3 - "$root/tests/mutate-hooks.py" "$scratch" <<'PY'
+import importlib.util, sys
+spec = importlib.util.spec_from_file_location("mutate_hooks", sys.argv[1])
+mh = importlib.util.module_from_spec(spec); spec.loader.exec_module(mh)
+worker = mh.Worker.__new__(mh.Worker); worker.root = sys.argv[2]
+import os; os.makedirs(os.path.join(sys.argv[2], "tests"), exist_ok=True)
+os.replace(os.path.join(sys.argv[2], "spin.test.sh"), os.path.join(sys.argv[2], "tests", "spin.test.sh"))
+print(worker.test("spin", 2, 20))
+PY
+)
+sleep 0.5
+left=$(cat "$mark" 2>/dev/null); alive=no; [ -n "$left" ] && kill -0 "$left" 2>/dev/null && { alive=yes; kill "$left"; }
+rm -f "$mark"
+check "a spinner that leaves the test's session dies on CPU, and stops with the test" '[ "$out" = cpu ] && [ $alive = no ]'
+
 # ML2: a looping mutant dies on CPU, idle and with every core busy, never by the clock.
 setup ml2 '[ "$x" = 1 ] || while :; do :; done # mutant-ok delete: the line only loops' 'bash "$hook"'
 out=$(pass)
