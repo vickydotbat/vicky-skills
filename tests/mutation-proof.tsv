@@ -83,7 +83,7 @@ skills/writing/case-file/scripts/build.py	76a62b1655794a4f	3124f0bf1e59b078	228/
 skills/writing/case-file/scripts/bundle.py	0e0e30370bf3f162	8fde6aac976e9f3d	29/29
 skills/writing/case-file/scripts/check.py	78212f7c26b74114	3124f0bf1e59b078	73/73
 skills/writing/human-voice/scripts/lint-tells.py	d51373996ad8ae9c	a188c25f71567933	47/47
-skills/writing/interactive-page/scripts/open-draft.sh	167b8422185a34bf	4371656fa7ef94c8	55/55
+skills/writing/interactive-page/scripts/open-draft.sh	167b8422185a34bf	df496eec980cf794	55/55
 skills/writing/interactive-page/scripts/open-page.sh	9da7be591b0eb684	5253f46f12411d94	9/9
 skills/writing/interactive-page/scripts/page.py	68278b952f5d4620	06923ce2bbae471b	334/334
 skills/writing/interactive-page/scripts/write-page.py	a938fb35f036f46f	1ccfcb8f6242f205	68/68
@@ -91,7 +91,7 @@ spark-joy.sh	e88c476e7a612966	722c0630ba69f336	29/29
 springboard.sh	0fcdfc65f3050c73	65f1df19e0a970bc	42/42
 stale-copy-hint.sh	6c278c5222834240	c338ec2942931e87	27/27
 step-hint.sh	cb10e887d9978e76	037ba8cbfe36d156	18/18
-stop-reply.sh	e525bb25161ec89f	4658585cafaa0d93	17/17
+stop-reply.sh	e525bb25161ec89f	39f7572fd71e8575	17/17
 summit-obsidian.sh	549dda7dc9cbe154	324b4eb59ddf61e8	22/22
 summit.sh	8e6e2e361acbd473	324b4eb59ddf61e8	43/43
 sup-handoff-hint.sh	3a70a84b2f173f41	ee01dccfd7c275e5	30/30
