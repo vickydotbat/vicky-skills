@@ -28,6 +28,10 @@ jobs:
           echo "draft: CI runs once the pull request is marked ready" >&2
           exit 1
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # skill-change-tested compares the branch with origin/main.
+          fetch-depth: 0
+      # The red-first job repeats these installs: change both together.
       # The runner image has no JSON Schema validator, and this job has no declared shell to hold one.
       - name: Install check-jsonschema, the security kit's OSV file check
         run: pipx install check-jsonschema==0.38.0
