@@ -18,7 +18,7 @@ try:
         f.write('s=x; while :; do s=$s$s; echo ${#s} > "$HOG_LOG"; done\n')
     with open(os.path.join(mh.SCRIPTS, "gamma-shift.sh")) as f:
         original = f.read()
-    print("killed" if worker.run("gamma-shift.sh", original, [("hog", 60)]) else "survived")
+    print("killed" if worker.run("gamma-shift.sh", original, [("hog", 60, 60)]) else "survived")
 finally:
     shutil.rmtree(worker.root)
 PY
