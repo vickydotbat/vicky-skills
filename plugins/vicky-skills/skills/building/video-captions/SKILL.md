@@ -25,13 +25,12 @@ A video page gives you its title and little else. Its captions give you every wo
 ## When the download fails
 
 - An error that says "Sign in to confirm you're not a bot" means YouTube blocked the download. It says nothing about captions. The browser the user allows for sign-in is `${user_config.video_cookies_browser}`.
-  - When that names a browser, rerun the download once, with the sign-in flag first so a permission rule can match its start:
+  - When that names a browser, rerun the download once, with the sign-in flag first so a permission rule can match its start. It asks for one track and waits before it, since a sign-in download that asks for two tracks at once hit a rate limit:
     ```bash
-    yt-dlp --cookies-from-browser <browser> --skip-download --write-subs --write-auto-subs --sub-langs 'en.*' --sub-format vtt --sleep-subtitles 5 -o '%(title)s [%(channel)s]' '<url>'
+    yt-dlp --cookies-from-browser <browser> --skip-download --write-subs --write-auto-subs --sub-langs 'en-orig' --sub-format vtt --sleep-subtitles 5 -o '%(title)s [%(channel)s]' '<url>'
     ```
-    Through the package runner, it starts `timeout 170 nix shell nixpkgs#yt-dlp -c yt-dlp --cookies-from-browser`. Done when a `.vtt` exists, or the retry failed and your reply quotes its error.
+    Through the package runner, it starts `timeout 170 nix shell nixpkgs#yt-dlp -c yt-dlp --cookies-from-browser`. Done when a `.vtt` exists, or your reply quotes the retry's error.
   - When it is blank or still reads `${user_config...}`, quote the error line and offer two ways on: the user pastes the video's words or title, or sets the `video_cookies_browser` option and allows this command in their settings. Cookies are sign-in data: never read or use them without that option. Done when your reply quotes the error and names both ways.
-- `HTTP Error 429: Too Many Requests` is a rate limit. Wait ten minutes before the one retry, and ask only for `--sub-langs 'en-orig'`. Done when a `.vtt` exists or your reply quotes the second error.
-- Any other error, or no error and no `.vtt`: say the video has no English captions, quote the last line yt-dlp printed, and stop.
+- Any other error: quote it, say the download failed, and stop. Claim the video has no English captions only when yt-dlp finished with no error and wrote no `.vtt`. Done when your reply quotes the last line yt-dlp printed.
 
 Charter: C3 ([CHARTER.md](../../CHARTER.md)).
