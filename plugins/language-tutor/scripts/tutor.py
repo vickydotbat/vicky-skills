@@ -19,6 +19,8 @@ working directory may name them (eval scaffolds use it).
 """
 import argparse
 import datetime as dt
+import fcntl
+import hashlib
 import json
 import math
 import os
@@ -37,6 +39,11 @@ QUIZ_ERRORS = 4  # recent mistakes a quiz brings back
 
 class Refusal(Exception):
     pass
+
+
+class Parser(argparse.ArgumentParser):
+    def error(self, message):  # a bad argument is a refusal the skills read, not a usage dump
+        raise Refusal("Refused: %s" % message)
 
 
 def now():
@@ -78,7 +85,10 @@ def settings():
 
 class Store:
     def __init__(self, lang, root):
-        slug = re.sub(r"[^\w]+", "-", lang.casefold()).strip("-_") or "language"  # \w keeps every script's letters
+        name = lang.casefold()
+        slug = re.sub(r"[^\w]+", "-", name).strip("-_")  # \w keeps every script's letters
+        if slug != name:  # a lossy slug (C++ and C#) gets a hash of the full name, so no two languages meet
+            slug = "%s-%s" % (slug or "language", hashlib.sha1(name.encode()).hexdigest()[:6])
         self.dir = os.path.join(root, slug)
 
     def path(self, name):
@@ -238,7 +248,7 @@ def cmd_disagree(store, a):
 
 
 def main(argv):
-    p = argparse.ArgumentParser(prog="tutor.py")
+    p = Parser(prog="tutor.py")
     sub = p.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("add"); s.add_argument("front"); s.add_argument("back")
     s = sub.add_parser("due"); s.add_argument("--limit", type=int, default=0)
@@ -249,15 +259,18 @@ def main(argv):
     s = sub.add_parser("profile"); s.add_argument("action", choices=["set-level", "show"])
     s.add_argument("level", nargs="?"); s.add_argument("--line", action="append")
     s = sub.add_parser("disagree"); s.add_argument("text"); s.add_argument("note")
-    a = p.parse_args(argv)
     try:
+        a = p.parse_args(argv)
         lang, root = settings()
-        result = globals()["cmd_" + a.cmd](Store(lang, root), a)
+        os.makedirs(root, exist_ok=True)
+        with open(os.path.join(root, ".tutor.lock"), "w") as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX)  # one read-modify-write at a time, so no card is lost
+            result = globals()["cmd_" + a.cmd](Store(lang, root), a)
     except Refusal as e:
         print(e, file=sys.stderr)
         return 3
-    except (ValueError, OSError) as e:  # bad input or a damaged store: refuse in one line, never a traceback
-        print("Refused: %s" % str(e).splitlines()[0], file=sys.stderr)
+    except (ValueError, OSError, KeyError, TypeError, AttributeError, IndexError) as e:  # bad input or a damaged store: refuse in one line, never a traceback
+        print("Refused: the store or an argument is damaged (%s: %s)" % (type(e).__name__, (str(e).splitlines() or [""])[0]), file=sys.stderr)
         return 3
     print(json.dumps(result, ensure_ascii=False))
     return 0

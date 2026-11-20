@@ -16,7 +16,7 @@ The same five criteria for every language and for writing and speech alike, each
 ## Steps
 
 1. **Score each criterion** with one line of reason. Done when all five have a score.
-2. **Name each error** with its type and fix. Log each with `tutor ledger add <type> <the learner's text> <the fix>`. Done when every error is named and logged.
+2. **Name each error** with its type and fix. Log each with `tutor ledger add <type> -- <the learner's text> <the fix>`. Done when every error is named and logged.
 3. **Give the level** as a CEFR level labelled "estimate", such as "B1 (estimate)", never a bare letter, then one next step. For a transcript, say pronunciation is not graded. Done when the level and the next step are sent.
 4. **Ask** whether the estimate matches how the learner sees their level. Done when the question is asked.
-5. **Keep a disagreement.** When the learner disputes a grade, run `tutor disagree <their text> <what they dispute>` and say it was saved to their tutor_store folder. Done when the disagreement is saved or none came.
+5. **Keep a disagreement.** When the learner disputes a grade, run `tutor disagree -- <their text> <what they dispute>` and say it was saved to their tutor_store folder. Done when the disagreement is saved or none came.
