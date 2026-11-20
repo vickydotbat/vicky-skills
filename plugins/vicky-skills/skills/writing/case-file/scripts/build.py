@@ -45,11 +45,33 @@ DATED_LINE = re.compile(r"^[ \t]*<!--\s*(CLAIM|EVENT|QUOTE|STEP)\s+(.*?)\s*-->[ 
 ASK_LINE = re.compile(r"^[ \t]*<!--\s*(END )?ASK\s*-->[ \t]*$", re.M)
 TIMELINE_LINE = re.compile(r"^[ \t]*<!--\s*TIMELINE\s*-->[ \t]*$", re.M)
 # A reboot or a crash wipes these, and a case file grows across sessions.
+# A case folder holds these and nothing else: the page's parts, the files it ships, working material that never ships, the approved quotes, the zip's README, and the built formats.
+LAYOUT = ("sections", "files", "raw", "quotes.md", "README.md", "out")
+# What each label means, for the legend the page opens with.
+MEANS = {"stock": "Seen on the unmodified product, by a run the page names.", "test-client-only": "Seen only on a modified client, rig or harness.",
+         "estimate": "Reasoned or measured indirectly, with nothing run end to end.", "failed": "Tried, and it did not work.", "not-tested": "No run checked it."}
 VOLATILE = ("/tmp", "/var/tmp", "/dev/shm", "/run/user")
-STYLE = """body{font:16px/1.5 system-ui,sans-serif;max-width:52rem;margin:2rem auto;padding:0 1rem;color:#1b1b1b;background:#fff}
-@media(prefers-color-scheme:dark){body{color:#e8e8e8;background:#161616}pre{background:#222!important}}
-figure{margin:1.5rem 0}figure img{max-width:100%;height:auto}figcaption{font-size:.9rem;opacity:.8}
-pre{background:#f4f4f4;padding:.75rem;overflow:auto;font-size:.85rem}a.download{font-size:.9rem}"""
+STYLE = """:root{--bg:#fbfaf7;--fg:#1d1c1a;--mute:#5d5a55;--line:#d9d5cc;--code:#f1eee7;--link:#1f5fa8;--stock:#1f7a3a;--test:#7a5a00;--est:#4b4f9e;--failed:#a12a2a;--open:#6b6b6b}
+@media(prefers-color-scheme:dark){:root{--bg:#17181a;--fg:#e7e4de;--mute:#a8a49c;--line:#383a3e;--code:#222428;--link:#8cb8ef;--stock:#6fcf8a;--test:#e2bd5a;--est:#9ea3f0;--failed:#f08a8a;--open:#a0a0a0}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,sans-serif}
+main{max-width:60rem;margin:0 auto;padding:2rem 1.25rem 5rem}
+h1{font-size:1.9rem;line-height:1.2;margin:0 0 .4rem}h2{font-size:1.4rem;margin:2.6rem 0 .6rem;padding-top:.6rem;border-top:1px solid var(--line)}h3{font-size:1.12rem;margin:1.8rem 0 .4rem}
+p,li{max-width:46rem}a{color:var(--link)}.kind,.mute,small.source{color:var(--mute)}.kind{font-size:.85rem;text-transform:uppercase;letter-spacing:.06em}
+code{background:var(--code);padding:.05rem .3rem;border-radius:3px;font-size:.92em}pre{background:var(--code);padding:.8rem 1rem;overflow-x:auto;border-radius:5px;font-size:.84rem;line-height:1.45}pre code{background:none;padding:0}
+table{border-collapse:collapse;margin:.8rem 0 1.2rem;width:100%;font-size:.93rem}th,td{border:1px solid var(--line);padding:.4rem .55rem;text-align:left;vertical-align:top}th{background:var(--code)}
+figure{margin:1rem 0 1.4rem}figure img{max-width:100%;height:auto;border:1px solid var(--line);border-radius:4px;display:block}figcaption{color:var(--mute);font-size:.9rem;margin-top:.35rem;max-width:46rem}
+blockquote{margin:1rem 0;padding:.2rem 1rem;border-left:4px solid var(--line)}blockquote footer{color:var(--mute);font-size:.9rem}
+details{border:1px solid var(--line);border-radius:6px;margin:.6rem 0;padding:.3rem .8rem}details>summary{cursor:pointer;font-weight:600;padding:.2rem 0}a.download{font-size:.86rem;font-weight:400;margin-left:.4rem}
+nav ol{columns:2;max-width:46rem}@media(max-width:40rem){nav ol{columns:1}}
+.claim{border-left:4px solid var(--line);padding:.3rem .8rem;margin:.8rem 0}.claim time,.event time,.timeline time{color:var(--mute);font-size:.85rem;margin-right:.4rem;font-variant-numeric:tabular-nums}.claim small.source{display:block;font-size:.82rem}
+.label,.badge{display:inline-block;font-size:.74rem;font-weight:600;padding:.05rem .45rem;border-radius:999px;border:1px solid currentColor;white-space:nowrap;vertical-align:.08em}
+[data-evidence="stock"] .label,.badge[data-label="stock"]{color:var(--stock)}[data-evidence="stock"]{border-left-color:var(--stock)}
+[data-evidence="test-client-only"] .label,.badge[data-label="test-client-only"]{color:var(--test)}[data-evidence="test-client-only"]{border-left-color:var(--test)}
+[data-evidence="estimate"] .label,.badge[data-label="estimate"]{color:var(--est)}[data-evidence="estimate"]{border-left-color:var(--est)}
+[data-evidence="failed"] .label,.badge[data-label="failed"]{color:var(--failed)}[data-evidence="failed"]{border-left-color:var(--failed)}
+[data-evidence="not-tested"] .label,.badge[data-label="not-tested"]{color:var(--open)}[data-evidence="not-tested"]{border-left-color:var(--open)}
+.step{border:1px solid var(--line);border-radius:6px;padding:.2rem .8rem;margin:.6rem 0}.ask{border:2px solid var(--link);border-radius:6px;padding:.2rem 1rem}
+.timeline ol{list-style:none;padding-left:0}.timeline li{border-left:2px solid var(--line);padding:.15rem 0 .15rem .8rem}"""
 
 
 def fail(msg):
@@ -91,10 +113,14 @@ def render(kind, arg, base):
         return f'<figure><img src="data:image/jpeg;base64,{b64}" alt="{cap}"><figcaption>{cap}</figcaption></figure>'
     data = open(path, "rb").read()
     if kind == "FILE":
-        shown = html.escape(data.decode("utf-8", errors="replace"))
+        text = data.decode("utf-8", errors="replace")
+        n = len(text.splitlines())
+        shown, size = html.escape(text), (f"{n} line" if n == 1 else f"{n} lines")
     else:
         shown = "\n".join(" ".join(f"{b:02x}" for b in data[i:i + 16]) for i in range(0, len(data), 16))
-    return f"<p><strong>{html.escape(name)}</strong></p><pre>{shown}</pre><p>{download(name, data)}</p>"
+        size = f"{len(data)} bytes"
+    return (f'<details><summary>{html.escape(name)} <span class="mute">({size})</span> {download(name, data)}</summary>'
+            f"<pre>{shown}</pre></details>")
 
 
 def lasting(path):
@@ -107,6 +133,45 @@ def lasting(path):
         r = os.path.realpath(root)
         if real == r or real.startswith(r.rstrip(os.sep) + os.sep):
             fail(f"{path} is in the scratch folder {root}, which a reboot wipes: keep a case file under .case-files/<name>/ at the repo's root")
+
+
+def layout(src):
+    """Stop the build when a case folder holds an entry outside LAYOUT."""
+    if not os.path.isdir(src):
+        return
+    stray = sorted(n for n in os.listdir(src) if n not in LAYOUT and not n.startswith("."))
+    if stray:
+        fail(f"{src} holds {', '.join(stray)}: a case folder holds only {', '.join(LAYOUT)}; put working material that never ships in raw/")
+
+
+def slug(text, taken):
+    base = re.sub(r"[^a-z0-9]+", "-", html.unescape(re.sub(r"<[^>]+>", "", text)).lower()).strip("-") or "section"
+    name, n = base, 2
+    while name in taken:
+        name, n = f"{base}-{n}", n + 1
+    taken.add(name)
+    return name
+
+
+def contents(body):
+    """The body with an id on each h2, and the contents list that links them."""
+    taken, links = set(), []
+    def one(m):
+        attrs, inner = m.group(1), m.group(2)
+        found = re.search(r'\bid="([^"]+)"', attrs)
+        ident = found.group(1) if found else slug(inner, taken)
+        taken.add(ident)
+        links.append(f'<li><a href="#{ident}">{re.sub(r"<[^>]+>", "", inner)}</a></li>')
+        return m.group(0) if found else f'<h2 id="{ident}"{attrs}>{inner}</h2>'
+    body = re.sub(r"<h2\b([^>]*)>(.*?)</h2>", one, body, flags=re.S)
+    return body, (f'<nav><h2 class="toc">Contents</h2><ol>{"".join(links)}</ol></nav>\n' if len(links) > 1 else "")
+
+
+def legend(used):
+    """A table of the labels the page uses, in the order check.LABELS gives."""
+    rows = "".join(f'<tr><td><span class="badge" data-label="{a}">{w}</span></td><td>{MEANS[a]}</td></tr>'
+                   for a, w in check.LABELS.items() if a in used)
+    return f'<h3>How to read the labels</h3><table class="legend"><tr><th>Label</th><th>Means</th></tr>{rows}</table>\n' if rows else ""
 
 
 def kind_of(text):
@@ -177,12 +242,13 @@ def dated(text, events):
 def timeline(events):
     rows = "".join(f'<li><time datetime="{t.isoformat()}">{shown}</time> {html.escape(text)}</li>'
                    for t, shown, text in sorted(events, key=lambda ev: ev[0]))
-    return f'<section data-timeline><h2>Timeline</h2><ol>{rows}</ol></section>\n' if events else ""
+    return f'<section class="timeline" data-timeline><h2>Timeline</h2><ol>{rows}</ol></section>\n' if events else ""
 
 
 def page(src):
     """The whole page as HTML, unchecked."""
     lasting(src)
+    layout(src)
     text, base = source(src)
     body = MARKER_LINE.sub(lambda m: render(m.group(1), m.group(2), base), text)
     kind = kind_of(body)
@@ -192,16 +258,21 @@ def page(src):
     body = ASK_LINE.sub(lambda m: "</section>" if m.group(1) else '<section class="ask" data-ask>', body)
     line = timeline(events)
     body = TIMELINE_LINE.sub(lambda m: line, body, count=1) if TIMELINE_LINE.search(body) else body + line
+    body = body.replace('<section class="timeline" data-timeline><h2>', '<section class="timeline" data-timeline><h2 id="timeline">', 1)
+    body, nav = contents(body)
+    front = legend(set(re.findall(r'data-evidence="([^"]+)"', body))) + nav
+    first = body.find("<h2")
+    body = body[:first] + front + body[first:] if first >= 0 else body + front
     ask = "<p class=ask-note>This case file asks you to act.</p>\n" if kind == "pitch" else ""
     return (f"<!doctype html><html lang=en data-case-kind={kind}><meta charset=utf-8><meta name=viewport content='width=device-width'>"
-            f"<style>{STYLE}</style><body data-case-kind=\"{kind}\">\n<p class=kind>Kind: {kind}</p>\n{ask}{body}</body></html>\n")
+            f"<style>{STYLE}</style><body data-case-kind=\"{kind}\"><main>\n<p class=kind>Kind: {kind}</p>\n{ask}{body}</main></body></html>\n")
 
 
 class Markdown(HTMLParser):
     """The page's text as Markdown: headings, paragraphs, lists, code and links, images by caption."""
     def __init__(self):
         super().__init__(convert_charrefs=True)
-        self.out, self.pre, self.href, self.skip, self.quote = [], 0, None, 0, 0
+        self.out, self.pre, self.href, self.skip, self.quote, self.rows, self.cells = [], 0, None, 0, 0, 0, 0
 
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
@@ -216,6 +287,17 @@ class Markdown(HTMLParser):
             self.out.append("\n> ")
         elif tag in ("p", "figure", "section", "ul", "ol"):
             self.out.append("\n\n")
+        elif tag == "summary":
+            self.out.append("\n\n")
+        elif tag == "table":
+            self.rows = 0
+            self.out.append("\n\n")
+        elif tag == "tr":
+            self.cells = 0
+            self.out.append("\n")
+        elif tag in ("td", "th"):
+            self.cells += 1
+            self.out.append("| ")
         elif tag == "li":
             self.out.append("\n- ")
         elif tag == "pre":
@@ -232,6 +314,13 @@ class Markdown(HTMLParser):
             self.skip -= 1
         elif tag == "blockquote":
             self.quote -= 1
+        elif tag in ("td", "th"):
+            self.out.append(" ")
+        elif tag == "tr":
+            self.out.append("|")
+            self.rows += 1
+            if self.rows == 1:
+                self.out.append("\n" + "| --- " * self.cells + "|")
         elif tag == "pre":
             self.pre -= 1
             self.out.append("\n```\n\n")
@@ -267,7 +356,8 @@ def pdf(page_html, run):
     """The PDF the browser prints from the page, as bytes."""
     with tempfile.TemporaryDirectory() as tmp:
         src, out = os.path.join(tmp, "page.html"), os.path.join(tmp, "page.pdf")
-        open(src, "w", encoding="utf-8").write(page_html)
+        # A closed details prints closed: open each one so the PDF holds every file.
+        open(src, "w", encoding="utf-8").write(page_html.replace("<details>", "<details open>"))
         try:
             subprocess.run([run, "--headless", "--disable-gpu", "--no-sandbox", f"--user-data-dir={os.path.join(tmp, 'profile')}",
                             "--no-pdf-header-footer", f"--print-to-pdf={out}", "file://" + src],

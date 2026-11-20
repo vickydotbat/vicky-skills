@@ -76,4 +76,37 @@ check "a PDF pdftotext can't read is refused" '[ "$status" -ne 0 ] && grep -q "c
 mkdir -p "$scratch/bin"; ln -sf "$(command -v python3)" "$scratch/bin/python3"
 out=$(PATH="$scratch/bin" "$scratch/bin/python3" "$kit/check.py" "$scratch/bad.pdf" 2>&1); status=$?
 check "a PDF with no pdftotext to read it is refused" '[ "$status" -ne 0 ] && grep -q "pdftotext is missing" <<<"$out"'
+# The contents list, the legend and the zip check, past their approved examples.
+tpl twins '<!-- KIND research -->\n<h2>Answer</h2>\n<h2>Answer</h2>\n<h2 id="keep">Kept</h2>\n<!-- CLAIM stock | 2026-11-18T20:40+00:00 | run 1 | It glowed -->\n'
+build "$fx/twins.html" "$fx/out/twins.html" --formats html,md >/dev/null; p=$(cat "$fx/out/twins.html" 2>/dev/null); md=$(cat "$fx/out/twins.md" 2>/dev/null)
+check "two sections of one name get two ids, and a given id stays" 'grep -q "<h2 id=\"answer\">" <<<"$p" && grep -q "<h2 id=\"answer-2\">" <<<"$p" && grep -q "<h2 id=\"keep\">Kept" <<<"$p" && grep -q "href=\"#keep\"" <<<"$p" && ! grep -q "id=\"keep\" id=" <<<"$p"'
+check "the Markdown legend is a table with its header rule" 'grep -A2 -x "| Label | Means |" <<<"$md" | sed -n 2p | grep -qx "| --- | --- |" && grep -q "^| stock | " <<<"$md"'
+tpl lone '<!-- KIND research -->\n<h2>Only</h2>\n<p>One section.</p>\n'
+build "$fx/lone.html" "$fx/out/lone.html" >/dev/null
+check "a page of one section has no contents list" '[ -s "$fx/out/lone.html" ] && ! grep -q "<nav" "$fx/out/lone.html"'
+tpl flat '<!-- KIND research -->\n<p>No sections.</p>\n<!-- CLAIM failed | 2026-11-18T20:40+00:00 | run 1 | It dimmed -->\n<!-- TIMELINE -->\n'
+build "$fx/flat.html" "$fx/out/flat.html" --formats html,md >/dev/null
+check "a page with no section still shows its legend" 'grep -q "class=\"legend\"" "$fx/out/flat.html" && grep -q "No sections" "$fx/out/flat.html"'
+tpl fold '<!-- KIND research -->\n<!-- FILE files/glow.frag -->\n'
+build "$fx/fold.html" "$fx/out/fold.html" --formats html,md >/dev/null
+check "a folded file starts its own Markdown paragraph" 'grep -qx "glow.frag (3 lines).*" "$fx/out/fold.md"'
+printf 'x\n' > "$fx/files/one.txt"; tpl one '<!-- KIND research -->\n<!-- FILE files/one.txt -->\n'
+build "$fx/one.html" "$fx/out/one.html" >/dev/null
+check "a one-line file says 1 line" 'grep -q "(1 line)" "$fx/out/one.html"'
+mkdir -p "$scratch/bz/sections"; printf '# R\n' > "$scratch/bz/R.md"; printf '<p>x</p>\n' > "$scratch/bz/sections/1.html"; printf '<p>x</p>\n' > "$scratch/bz/p.html"
+python3 "$kit/bundle.py" "$scratch/bz/p.html" "$fx/files" "$scratch/bz/out" --readme "$scratch/bz/R.md" >/dev/null
+python3 "$kit/bundle.py" "$scratch/bz/p.html" "$fx/files" "$scratch/bz/out" --readme "$scratch/bz/R.md" >/dev/null
+z=$(ls "$scratch/bz/out"); 
+check "two bundles in one minute leave one zip, the second" '[ "$(wc -l <<<"$z")" -eq 1 ] && [[ "$z" =~ ^p-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{4}-2\.zip$ ]] || [[ "$z" =~ ^p-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{4}\.zip$ ]] && [ "$(wc -l <<<"$z")" -eq 1 ]'
+check "a bundle ships no source when the page has no case folder beside it" '! python3 -c "import sys,zipfile; sys.exit(0 if any(\"source/\" in n for n in zipfile.ZipFile(sys.argv[1]).namelist()) else 1)" "$scratch/bz/out/$z"'
+python3 - "$scratch/dir.zip" "$scratch/bad.pdf" <<'PY'
+import sys, zipfile
+with zipfile.ZipFile(sys.argv[1], "w") as z:
+    z.writestr("case/", "")
+    z.writestr("case/README.md", "# Fine\n")
+PY
+check "a zip with a folder entry and clean files checks clean" 'caught "$scratch/dir.zip" >/dev/null'
+python3 -c 'import sys,zipfile; zipfile.ZipFile(sys.argv[1],"w").write(sys.argv[2],"case/case.pdf")' "$scratch/badpdf.zip" "$scratch/bad.pdf"
+out=$(caught "$scratch/badpdf.zip"); status=$?
+check "a zip whose PDF pdftotext can't read is refused" '[ "$status" -ne 0 ] && grep -q "could not read" <<<"$out"'
 exit $fail

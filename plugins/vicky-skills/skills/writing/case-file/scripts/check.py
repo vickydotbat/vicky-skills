@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Refuse a case file that leaks this machine, before it leaves.
 
-Usage: check.py <page.html | page.pdf | page.md>
+Usage: check.py <page.html | page.pdf | page.md | bundle.zip>
 
 Scans the page's text, and every data: download decoded, for loose-lips'
 "This machine" kinds: home folders, the nix store, scratch folders under
@@ -10,9 +10,10 @@ address, and this host's name, after HTML entities are decoded. On a page
 that names its kind, it also refuses a claim whose visible label differs from
 its data-evidence, and the future tense outside a pitch's ask. Exits 1
 naming each hit's line or download, 0 when the page is clean. A PDF is read
-as text with pdftotext, and one it can't read is refused.
+as text with pdftotext, and one it can't read is refused. A zip is checked
+member by member, each hit named by the member it sits in.
 """
-import base64, html, os, re, shutil, socket, subprocess, sys, urllib.parse
+import base64, html, os, re, shutil, socket, subprocess, sys, tempfile, urllib.parse, zipfile
 
 def patterns():
     pats = [r"(?<![\w./-])/(home|Users)/[^/\s\"'<>]+/", r"/nix/store/", r"(?<![\w./-])/tmp/[^\s\"'<>]+", r"(?<![\w.-])~/", r"(?<![\w.])\.\./"]  # local-path-ok: the patterns the check looks for
@@ -102,10 +103,26 @@ def read(path):
     except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
         sys.exit(f"case-file check: pdftotext could not read {path}, so it cannot be checked")
 
+def bundle(path):
+    """Every hit in a zip's members, each named by its member."""
+    hits = []
+    with zipfile.ZipFile(path) as z, tempfile.TemporaryDirectory() as tmp:
+        for name in z.namelist():
+            if name.endswith("/"):
+                continue
+            if name.lower().endswith(".pdf"):
+                out = os.path.join(tmp, "member.pdf")
+                open(out, "wb").write(z.read(name))
+                text = read(out)
+            else:
+                text = z.read(name).decode("utf-8", errors="replace")
+            hits += [f"{name}: {h}" for h in scan(text)]
+    return hits
+
 def main():
     if len(sys.argv) != 2:
         sys.exit(__doc__)  # mutant-ok delete: a message to a person, no behaviour
-    hits = scan(read(sys.argv[1]))
+    hits = bundle(sys.argv[1]) if sys.argv[1].lower().endswith(".zip") else scan(read(sys.argv[1]))
     if hits:
         print("case-file check: fix each of these before it leaves. Name this machine by its role, a label as its attribute says, and the past by the past tense:")  # mutant-ok delete: a message to a person, no behaviour
         print("\n".join("  " + h for h in hits))

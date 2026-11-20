@@ -59,6 +59,8 @@ jobs:
         run: tests/case_file_kinds_approved_examples.test.sh
       - name: The case-file build's markers, Markdown, browser and the check's PDF and label rules
         run: tests/case-file-markers.test.sh
+      - name: A case file has contents, a label legend and a fixed layout, and one zip per case
+        run: tests/case_file_look_approved_examples.test.sh
       - name: The case-file check's user, home, host and image-data rules
         run: tests/case-file.test.sh
       - name: The security kit's edges, bad input and the GitHub route
