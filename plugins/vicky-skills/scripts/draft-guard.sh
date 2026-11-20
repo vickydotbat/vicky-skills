@@ -53,7 +53,7 @@ ready_steer="Only the user marks a pull request ready, through make-it-so: \"mak
 # True when make-it-so started in this session, by the agent or typed by the user.
 asked() {
   [ -r "$transcript" ] || return 0
-  skill_started "$transcript" make-it-so
+  skill_started "$transcript" make-it-so "$(agent_of "$payload")"
 }
 
 has() { grep -Eq "(^|[[:space:]])($2)([[:space:]=]|\$)" <<<"$1"; }

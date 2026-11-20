@@ -19,7 +19,7 @@ jq -nc '{type:"user",message:{role:"user",content:"open a PR"}}' >"$s/plain.json
   jq -nc '{type:"user",message:{role:"user",content:[{type:"tool_result",content:"<command-name>/make-it-so</command-name>"}]}}'; } >"$s/talk.jsonl"
 fail=0
 run() { # command transcript [cwd] [option]
-  jq -nc --arg c "$1" --arg t "$2" --arg d "${3:-$s/repo}" '{hook_event_name:"PreToolUse",tool_name:"Bash",cwd:$d,session_id:"s1",transcript_path:$t,tool_input:{command:$c}}' |
+  jq -nc --arg c "$1" --arg t "$2" --arg d "${3:-$s/repo}" --arg a "${AGENT:-}" '{hook_event_name:"PreToolUse",tool_name:"Bash",cwd:$d,session_id:"s1",transcript_path:$t,tool_input:{command:$c}} + (if $a == "" then {} else {agent_id:$a} end)' |
     CLAUDE_PLUGIN_OPTION_GUARD_DRAFT="${4-true}" bash "$hook" >/dev/null 2>&1
   echo $?
 }
@@ -50,6 +50,9 @@ expect "tea pr create with --title=WIP: goes through" 0 'tea pr create --title=W
 # Marking ready: only after make-it-so started.
 expect "gh pr ready is refused with no make-it-so" 2 'gh pr ready 5'
 expect "gh pr ready goes through after the agent started make-it-so" 0 'gh pr ready 5' "$s/agent.jsonl"
+mkdir -p "$s/plain/subagents"; tail -n1 "$s/agent.jsonl" >"$s/plain/subagents/agent-a1.jsonl"
+AGENT=a1 expect "gh pr ready goes through in a subagent that started make-it-so" 0 'gh pr ready 5'
+AGENT=b2 expect "gh pr ready is refused in a subagent that did not" 2 'gh pr ready 5'
 expect "gh pr ready goes through after the user typed make-it-so" 0 'gh pr ready 5' "$s/typed.jsonl"
 expect "talk about make-it-so is not make-it-so" 2 'gh pr ready 5' "$s/talk.jsonl"
 expect "gh pr ready --undo goes through" 0 'gh pr ready 5 --undo'

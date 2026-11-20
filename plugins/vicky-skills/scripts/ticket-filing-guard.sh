@@ -27,6 +27,6 @@ transcript=$(jq -r '.transcript_path // ""' <<<"$payload" 2>/dev/null)
 [ -f "$transcript" ] || exit 0 # mutant-ok delete: jq reads no skills from a missing file, and the next test exits 0 the same way
 # shellcheck source=skill-started.sh
 . "$(dirname "$0")/skill-started.sh"
-skill_started "$transcript" mission-brief && exit 0
+skill_started "$transcript" mission-brief "$(agent_of "$payload")" && exit 0
 echo "ticket-filing-guard: refused. A ticket is filed only through the mission-brief skill, never by hand. It checks the source material (away-team when a fact is missing), searches the tracker for the same premise, and searches the codebase for anything that looks like the thing, before it writes a word. Start mission-brief, then file. Nothing in this command ran, not even its other steps: rerun the ones that need no change on their own." >&2
 exit 2

@@ -49,7 +49,7 @@ done < <(sed -E 's/(&&|\|\||;|\|)/\n/g' <<<"$code")
 
 transcript=$(jq -r '.transcript_path // ""' <<<"$payload")
 [ -f "$transcript" ] || exit 0
-skill_started "$transcript" history-monks && exit 0
+skill_started "$transcript" history-monks "$(agent_of "$payload")" && exit 0
 GIT_TERMINAL_PROMPT=0 timeout 10 git fetch -q origin "$dflt" >/dev/null 2>&1
 git merge-base --is-ancestor "$default_ref" HEAD 2>/dev/null && exit 0
 

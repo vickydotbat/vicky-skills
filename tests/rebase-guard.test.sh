@@ -7,7 +7,7 @@ s=$(mktemp -d); trap 'rm -rf "$s"' EXIT
 fail=0
 gi() { git -C "$1" -c user.email=t@t -c user.name=t -c commit.gpgsign=false "${@:2}"; }
 run() { # command transcript cwd option
-  jq -nc --arg c "$1" --arg t "$2" --arg d "$3" '{cwd:$d,transcript_path:$t,tool_input:{command:$c}}' |
+  jq -nc --arg c "$1" --arg t "$2" --arg d "$3" --arg a "${AGENT:-}" '{cwd:$d,transcript_path:$t,tool_input:{command:$c}} + (if $a == "" then {} else {agent_id:$a} end)' |
     CLAUDE_PLUGIN_OPTION_GUARD_REBASE=${4:-true} bash "$hook" >/dev/null 2>&1; echo $?
 }
 expect() { # name want command [transcript] [cwd] [option]
@@ -41,6 +41,9 @@ expect "a strategy option before a stack parent passes" 0 'git rebase -X theirs 
 expect "via cd is refused" 2 "cd $s/work && git rebase origin/main" "$s/plain.jsonl" "$s"
 expect "a typed history-monks lets it through" 0 'git rebase origin/main' "$s/typed.jsonl"
 expect "a started history-monks lets it through" 0 'git rebase origin/main' "$s/monks.jsonl"
+mkdir -p "$s/plain/subagents"; cp "$s/monks.jsonl" "$s/plain/subagents/agent-a1.jsonl"
+AGENT=a1 expect "a subagent that started history-monks passes" 0 'git rebase origin/main'
+AGENT=b2 expect "a subagent that did not is refused" 2 'git rebase origin/main'
 expect "a quoted marker in a tool result does not count" 2 'git rebase origin/main' "$s/quoted.jsonl"
 expect "--continue passes" 0 'git rebase --continue'
 expect "--abort passes" 0 'git rebase --abort'

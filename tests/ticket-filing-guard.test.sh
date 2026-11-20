@@ -12,7 +12,7 @@ started vicky-skills:do > "$dir/none.jsonl"
 { started vicky-skills:do; started vicky-skills:mission-brief; } > "$dir/briefed.jsonl"
 expect() { # name want transcript command [env...]
   local name=$1 want=$2 transcript=$3 cmd=$4; shift 4
-  jq -nc --arg c "$cmd" --arg t "$transcript" '{tool_input:{command:$c},transcript_path:$t}' |
+  jq -nc --arg c "$cmd" --arg t "$transcript" --arg a "${AGENT:-}" '{tool_input:{command:$c},transcript_path:$t} + (if $a == "" then {} else {agent_id:$a} end)' |
     env CLAUDE_PLUGIN_OPTION_GUARD_TICKET_FILING=true "$@" "$guard" >"$dir/out" 2>"$dir/err"; got=$?
   if [ "$got" = "$want" ]; then echo "ok   $name"; else echo "FAIL $name: exit $got, want $want"; fail=1; fi
 }
@@ -46,6 +46,17 @@ expect "a heredoc body that names it is no filing" 0 "$dir/none.jsonl" "cat > n.
 bin/plane file GAME T
 EOF"
 expect "the setting off lets it through" 0 "$dir/none.jsonl" 'bin/plane file GAME T' CLAUDE_PLUGIN_OPTION_GUARD_TICKET_FILING=false
+# Inside a subagent the payload names the parent's transcript; the subagent's
+# own Skill calls sit in <session>/subagents/agent-<id>.jsonl.
+mkdir -p "$dir/none/subagents"
+started vicky-skills:mission-brief > "$dir/none/subagents/agent-a1b2.jsonl"
+started vicky-skills:do > "$dir/none/subagents/agent-c3d4.jsonl"
+AGENT=a1b2 expect "a subagent that started mission-brief files" 0 "$dir/none.jsonl" 'gh issue create --title T --body b'
+AGENT=c3d4 expect "a subagent that did not start mission-brief is refused" 2 "$dir/none.jsonl" 'gh issue create --title T --body b'
+AGENT=zz99 expect "a subagent with no transcript of its own is refused" 2 "$dir/none.jsonl" 'gh issue create --title T --body b'
+AGENT=c3d4 expect "a subagent of a session that started mission-brief files" 0 "$dir/briefed.jsonl" 'gh issue create --title T --body b'
+AGENT=../none/subagents/agent-a1b2 expect "an agent_id holding a path is ignored" 2 "$dir/none.jsonl" 'gh issue create --title T --body b'
+expect "the main session does not count a subagent's mission-brief" 2 "$dir/none.jsonl" 'gh issue create --title T --body b'
 expect "a missing transcript lets it through" 0 "$dir/missing.jsonl" 'bin/plane file GAME T'
 echo '' | CLAUDE_PLUGIN_OPTION_GUARD_TICKET_FILING=true "$guard" >/dev/null 2>&1; [ $? = 0 ] && echo "ok   an empty payload passes" || { echo "FAIL an empty payload passes"; fail=1; }
 exit $fail
