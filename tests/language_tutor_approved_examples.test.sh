@@ -152,4 +152,42 @@ before=$(git -C "$root" status --porcelain)
 t Italian "$G" disagree "Io sono andata" "B1 is too low" >/dev/null 2>&1
 if grep -rqs "B1 is too low" "$G" && grep -rqs "Io sono andata" "$G" && [ "$(git -C "$root" status --porcelain)" = "$before" ]; then ok "LT-12 a disagreement is saved to tutor_store"; else no "LT-12 a disagreement is saved to tutor_store"; fi
 
+# LT-18: the session-start reminder, run as plugins/language-tutor/hooks/hooks.json registers it.
+remind="$root/plugins/language-tutor/scripts/remind.sh"
+r() { env -u CLAUDE_PLUGIN_OPTION_TUTOR_REMIND -u CLAUDE_PLUGIN_OPTION_TUTOR_LANGUAGE -u CLAUDE_PLUGIN_OPTION_TUTOR_STORE "$@" timeout 20 bash "$remind" 2>/dev/null; }
+if jq -e '.hooks.SessionStart[].hooks[].command | test("remind.sh")' "$root/plugins/language-tutor/hooks/hooks.json" >/dev/null 2>&1; then ok "LT-18 the reminder is a SessionStart hook"; else no "LT-18 the reminder is a SessionStart hook"; fi
+R="$work/remind"; mkdir -p "$R"
+for w in uno due tre quattro; do t Italian "$R" add "$w" "$w" >/dev/null 2>&1; done
+
+# LT-18: Given tutor_remind is on and 4 Italian words are due
+# When a session starts
+# Then the user sees one line: Italian: 4 words due. Type /language-tutor:drill.
+got=$(r CLAUDE_PLUGIN_OPTION_TUTOR_REMIND=true CLAUDE_PLUGIN_OPTION_TUTOR_LANGUAGE=Italian CLAUDE_PLUGIN_OPTION_TUTOR_STORE="$R" | jq -r .systemMessage 2>/dev/null)
+if [ "$got" = "Italian: 4 words due. Type /language-tutor:drill." ]; then ok "LT-18 the reminder names the words due"; else no "LT-18 the reminder names the words due (got: $got)"; fi
+
+# LT-18: Given tutor_remind is on and nothing is due
+# When a session starts
+# Then no line shows
+E="$work/remind-empty"; mkdir -p "$E"; t Italian "$E" profile set-level A1 >/dev/null 2>&1
+got=$(r CLAUDE_PLUGIN_OPTION_TUTOR_REMIND=true CLAUDE_PLUGIN_OPTION_TUTOR_LANGUAGE=Italian CLAUDE_PLUGIN_OPTION_TUTOR_STORE="$E")
+if [ -z "$got" ]; then ok "LT-18 nothing due shows no line"; else no "LT-18 nothing due shows no line (got: $got)"; fi
+
+# LT-18: Given tutor_remind is off, or tutor_language or tutor_store is unset
+# When a session starts
+# Then no line shows and the store is not touched
+N="$work/remind-untouched"
+got=$(r CLAUDE_PLUGIN_OPTION_TUTOR_REMIND=false CLAUDE_PLUGIN_OPTION_TUTOR_LANGUAGE=Italian CLAUDE_PLUGIN_OPTION_TUTOR_STORE="$R")
+got+=$(r CLAUDE_PLUGIN_OPTION_TUTOR_LANGUAGE=Italian CLAUDE_PLUGIN_OPTION_TUTOR_STORE="$R")
+got+=$(r CLAUDE_PLUGIN_OPTION_TUTOR_REMIND=true CLAUDE_PLUGIN_OPTION_TUTOR_STORE="$R")
+got+=$(r CLAUDE_PLUGIN_OPTION_TUTOR_REMIND=true CLAUDE_PLUGIN_OPTION_TUTOR_LANGUAGE=Italian CLAUDE_PLUGIN_OPTION_TUTOR_STORE='${user_config.tutor_store}')
+got+=$(r CLAUDE_PLUGIN_OPTION_TUTOR_REMIND=true CLAUDE_PLUGIN_OPTION_TUTOR_LANGUAGE=Italian CLAUDE_PLUGIN_OPTION_TUTOR_STORE="$N")
+if [ -z "$got" ] && [ ! -e "$N" ]; then ok "LT-18 off or unset shows no line and touches no store"; else no "LT-18 off or unset shows no line and touches no store (got: $got)"; fi
+
+# LT-18: Given the store cannot be read
+# When a session starts
+# Then no line shows and the session starts normally
+B="$work/remind-bad"; mkdir -p "$B/italian"; echo 'not json' > "$B/italian/cards.json"
+got=$(r CLAUDE_PLUGIN_OPTION_TUTOR_REMIND=true CLAUDE_PLUGIN_OPTION_TUTOR_LANGUAGE=Italian CLAUDE_PLUGIN_OPTION_TUTOR_STORE="$B"); code=$?
+if [ -z "$got" ] && [ $code -eq 0 ]; then ok "LT-18 an unreadable store shows no line and exits 0"; else no "LT-18 an unreadable store shows no line and exits 0 (exit $code, got: $got)"; fi
+
 exit $fail
