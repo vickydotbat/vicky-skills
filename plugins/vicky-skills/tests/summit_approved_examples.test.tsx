@@ -2,7 +2,7 @@
 // summit-automatic, 2026-11-20, and those approved on the star "Summit: an
 // opened-versus-closed record", 2026-11-01. Each test drives the viewscreen
 // band through Claude Code's mod test kit: the band reads the kept summit line
-// itself, with summit.sh show, and also learns it from a `summit:` line in a
+// itself, from the repo's common git folder, and also learns it from a `summit:` line in a
 // tool's output.
 import { describe, expect, mock, test } from 'claude-code/testing'
 import type { Engine } from 'claude-code/testing'
@@ -39,9 +39,11 @@ describe('summit', () => {
   // And the agent is told nothing about tracker counts or the summit
   test('the band shows the summit with no agent work', async ($, on) => {
     engine(on)
-    on('process.run', (_$: unknown, e: { argv: string[] }) => ({
-      value: { exitCode: 0, stderr: '', stdout: e.argv.some(a => a.endsWith('summit.sh')) ? `summit: ${LINE}\n` : '/r/.git\n/r/.git\n' },
-    }))
+    on('process.run', () => ({ value: { exitCode: 0, stderr: '', stdout: '/r/.git\n/r/.git\n' } }))
+    on('fs.read', (_$: unknown, e: { path: string }) => {
+      if (e.path === '/r/.git/summit-line') return { value: `${LINE}\n` }
+      throw new Error('no such file')
+    })
     await $.session.start({ cwd: '/r' } as never)
     const ui = await $.ui.mount(BAND)
 
@@ -53,11 +55,8 @@ describe('summit', () => {
   // Then the band shows no summit line, and the agent is told nothing about it
   test('no Summit count line, no summit', async ($, on) => {
     engine(on)
-    on('process.run', (_$: unknown, e: { argv: string[] }) => ({
-      value: e.argv.some(a => a.endsWith('summit.sh'))
-        ? { exitCode: 1, stderr: 'summit: nothing counted yet\n', stdout: '' }
-        : { exitCode: 0, stderr: '', stdout: '/r/.git\n/r/.git\n' },
-    }))
+    on('process.run', () => ({ value: { exitCode: 0, stderr: '', stdout: '/r/.git\n/r/.git\n' } }))
+    on('fs.read', () => { throw new Error('no such file') })
     await $.session.start({ cwd: '/r' } as never)
     const ui = await $.ui.mount(BAND)
 
