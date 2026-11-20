@@ -20,10 +20,10 @@ pr_state() { # pr_state <n>: merged, closed, open or unread
   fi
   case "$s" in MERGED) echo merged ;; CLOSED) echo closed ;; OPEN) echo open ;; *) echo unread ;; esac
 }
-ticket_state() { # ticket_state <key>: done, open or unread, from the thread's state: line
+ticket_state() { # ticket_state <key>: done, open or unread, from the thread's first column-0 state: or status: line
   local s # mutant-ok delete: the assignment below always sets s
   s=$(timeout "$limit" bash "$plugin/scripts/read-item.sh" "$1" </dev/null 2>/dev/null |
-    grep -m1 -iE '^[[:space:]]*(state|status):' | sed -E 's/^[^:]*:[[:space:]]*//' | tr 'A-Z' 'a-z')
+    grep -m1 -iE '^(state|status):' | sed -E 's/^[^:]*:[[:space:]]*//' | tr 'A-Z' 'a-z')
   case "$s" in "") echo unread ;; done*|closed*|completed*|cancel*|resolved*) echo done ;; *) echo open ;; esac
 }
 # Each distinct ref is read once, all at once, so the run takes one lookup's time.
@@ -39,9 +39,9 @@ while IFS= read -r line; do
   mapfile -t prs < <(grep -oE '(![0-9]+|\bPR [0-9]+)\b' <<<"$line" | tr -dc '0-9\n' | awk 'NF && !seen[$0]++')
   mapfile -t keys < <(grep -oE '\b[A-Z][A-Z0-9]+-[0-9]+\b' <<<"$line" | awk '!seen[$0]++')
   hashes=$(grep -oE '(^|[^&A-Za-z0-9])#[0-9]+\b' <<<"$line" | tr -dc '#0-9\n')
-  states=() pr_done=1 pr_open=0 tk_open=0 unread=0 n=0
+  states=() pr_open=0 tk_open=0 unread=0 n=0
   for p in "${prs[@]}"; do s=$(cat "$cache/pr-$p"); states+=("!$p $s"); n=$((n + 1))
-    case "$s" in merged|closed) ;; open) pr_open=1; pr_done=0 ;; *) unread=1; pr_done=0 ;; esac; done
+    case "$s" in merged) ;; open|closed) pr_open=1 ;; *) unread=1 ;; esac; done # closed unmerged is abandoned, not finished
   for k in "${keys[@]}"; do s=$(cat "$cache/tk-$k"); states+=("$k $s"); n=$((n + 1))
     case "$s" in done) ;; open) tk_open=1 ;; *) unread=1 ;; esac; done
   for h in $hashes; do states+=("$h unread"); unread=1; n=$((n + 1)); done
@@ -49,7 +49,7 @@ while IFS= read -r line; do
   elif [ "$unread" = 1 ]; then v=unread
   elif [ "$pr_open" = 1 ]; then v=open
   elif [ "$tk_open" = 0 ]; then v=done
-  elif [ "${#prs[@]}" -gt 0 ] && [ "$pr_done" = 1 ]; then v=merged-ticket-open
+  elif [ "${#prs[@]}" -gt 0 ]; then v=merged-ticket-open
   else v=open; fi
   st=$(printf '%s, ' "${states[@]}"); st=${st%, }
   printf '%s: %s%s\n' "$v" "$line" "${st:+ [$st]}"

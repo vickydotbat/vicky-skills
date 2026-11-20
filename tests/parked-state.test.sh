@@ -27,6 +27,7 @@ echo '{"merged":false,"state":"closed"}' > "$dir/pr-12"
 printf 'ABC-1 t\nstate: Done\n' > "$dir/t/ABC-1"
 printf 'ABC-2 t\nstate: In Progress\n' > "$dir/t/ABC-2"
 printf 'ABC-3 t\nno state line\n' > "$dir/t/ABC-3"
+printf 'ABC-4 t\n  status: done, said a comment\nstate: In Progress\n' > "$dir/t/ABC-4"
 r=$(repo forge git@forge.example:o/r.git)
 cat > "$r/.todo" <<'EOF'
 # springboard start
@@ -38,6 +39,8 @@ N1 press Done on the page
 - Answer the journal interview (Journal #25)
 - Read ABC-3 again
 - Close !12
+- Redo !12 (ABC-2)
+- Read ABC-4
 - Chart the rewrite
 - Tidy ABC-2 alone
 - Land !11, then !11 again
@@ -49,7 +52,9 @@ check "every ref finished is done" "done: - Ship it after !10 (ABC-1) [!10 merge
 check "an open pull request keeps the line open" "open: - Rebase !11 (ABC-2) [!11 open, ABC-2 open]" "$out"
 check "a bare #n is never read as a pull request" "unread: - Answer the journal interview (Journal #25) [#25 unread]" "$out"
 check "a ticket with no state line is unread" "unread: - Read ABC-3 again [ABC-3 unread]" "$out"
-check "a closed pull request is finished" "done: - Close !12 [!12 closed]" "$out"
+check "a pull request closed unmerged keeps its line" "open: - Close !12 [!12 closed]" "$out"
+check "a closed unmerged pull request beside an open ticket is never called merged" "open: - Redo !12 (ABC-2) [!12 closed, ABC-2 open]" "$out"
+check "a status line in a comment, indented, is not the ticket's state" "open: - Read ABC-4 [ABC-4 open]" "$out"
 check "a line with no ref says so" "no ref: - Chart the rewrite" "$out"
 check "an open ticket with no pull request is open" "open: - Tidy ABC-2 alone [ABC-2 open]" "$out"
 check "a ref named twice is read once" "open: - Land !11, then !11 again [!11 open]" "$out"
