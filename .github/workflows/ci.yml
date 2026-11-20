@@ -50,7 +50,7 @@ jobs:
         run: tests/tools-declared.test.sh
       - name: language-tutor's store, ledger, quiz pick, drill cap and profile keep the approved examples
         run: tests/language_tutor_approved_examples.test.sh
-      - name: language-tutor store edge cases: caps, blank settings, scripts, bad input, the settings file
+      - name: "language-tutor store edge cases: caps, blank settings, scripts, bad input, the settings file"
         run: tests/language-tutor-store.test.sh
       - name: Plugin layout
         run: tests/plugin-layout.test.sh
