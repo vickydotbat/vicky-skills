@@ -21,7 +21,10 @@ printf '#!/usr/bin/env bash\necho "PATH=$PATH"\necho "BROWSER=${BROWSER:-true}"\
 chmod +x "$scratch/desktop/systemctl"
 export PATH="$scratch/desktop:$PATH"
 pids=()
-cleanup() { for p in "${pids[@]}"; do kill "$p" 2>/dev/null; done; rm -rf "$scratch"; }
+# Each page runs in its own process group, so stopping it stops open-draft.sh
+# and page.py too, not only the subshell that started them.
+stop() { kill -- -"$1" 2>/dev/null; }
+cleanup() { for p in "${pids[@]}"; do stop "$p"; done; rm -rf "$scratch"; }
 trap cleanup EXIT
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
@@ -33,8 +36,10 @@ printf '#!/usr/bin/env bash\necho "$1" >"%s/url"\n' "$scratch" >"$scratch/browse
 chmod +x "$scratch/browser"
 start() {
   rm -f "$scratch/url"
+  set -m
   (cd "$repo" && DISPLAY=:99 BROWSER="$scratch/browser" bash "$open_page" "$1" >"$scratch/open.log" 2>&1) &
   pid=$!
+  set +m
   pids+=("$pid")
   for _ in $(seq 50); do [ -s "$scratch/url" ] && break; sleep 0.2; done
   url=$(cat "$scratch/url" 2>/dev/null)
@@ -46,12 +51,34 @@ done_with() {
   for _ in $(seq 50); do kill -0 "$pid" 2>/dev/null || break; sleep 0.2; done
 }
 gone() { ! kill -0 "$pid" 2>/dev/null; }
+# descendants <pid>: every process under <pid>, read from /proc.
+descendants() {
+  local todo=("$1") out=() p s rest
+  while [ ${#todo[@]} -gt 0 ]; do
+    p=${todo[0]}; todo=("${todo[@]:1}")
+    for s in /proc/[0-9]*/stat; do
+      { read -r rest <"$s"; } 2>/dev/null || continue
+      rest=${rest##*) }; set -- $rest
+      [ "$2" = "$p" ] && { s=${s#/proc/}; s=${s%/stat}; out+=("$s"); todo+=("$s"); }
+    done
+  done
+  echo "${out[*]}"
+}
+alive() { local p; for p in $1; do kill -0 "$p" 2>/dev/null && return 0; done; return 1; }
 
 mkdir -p "$scratch/plan"
 echo '<svg width="3000" height="100" xmlns="http://www.w3.org/2000/svg"><rect width="3000" height="100"/></svg>' >"$scratch/plan/chart.svg"
 printf '# Pre-flight\n\n## Chart\n![Todo list warp](chart.svg)\n\n## Q1: Which?\n- (x) One\n- ( ) Two\n' >"$scratch/plan/chart.md"
 start "$scratch/plan/chart.md"
-html=$(curl -s "$url"); kill "$pid" 2>/dev/null
+html=$(curl -s "$url")
+under=$(descendants "$pid")
+stop "$pid"
+for _ in $(seq 25); do alive "$under" || break; sleep 0.2; done
+# Given a page the test opened
+# When the test stops it, as its cleanup does
+# Then no process the page started is still running
+check "a page the test stops leaves no server running" \
+  '[ -n "$under" ] && ! alive "$under"'
 check "a chart on a page: the chart shows at its natural size, a chart wider than the window shrinks to fit, and a click on it zooms in" \
   'grep -qF "<div class=chart onclick=\"zoom(this)\"><svg width=\"3000\"" <<<"$html" && grep -qF ".chart svg{max-width:100%;height:auto" <<<"$html" && grep -qF "function zoom(c)" <<<"$html" && grep -qF "c.clientWidth*n" <<<"$html"'
 

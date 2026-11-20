@@ -12,7 +12,10 @@ printf '#!/usr/bin/env bash\necho "PATH=$PATH"\necho "BROWSER=${BROWSER:-true}"\
 chmod +x "$scratch/desktop/systemctl"
 export PATH="$scratch/desktop:$PATH"
 pids=()
-cleanup() { for p in "${pids[@]}"; do kill "$p" 2>/dev/null; done; rm -rf "$scratch"; }
+# Each page runs in its own process group, so stopping it stops open-draft.sh
+# and page.py too, not only the subshell that started them.
+stop() { kill -- -"$1" 2>/dev/null; }
+cleanup() { for p in "${pids[@]}"; do stop "$p"; done; rm -rf "$scratch"; }
 trap cleanup EXIT
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
@@ -23,8 +26,10 @@ printf '#!/usr/bin/env bash\necho "$1" >"%s/url"\n' "$scratch" >"$scratch/browse
 chmod +x "$scratch/browser"
 start() {
   rm -f "$scratch/url"
+  set -m
   (cd "$repo" && DISPLAY=:99 BROWSER="$scratch/browser" bash "$open_page" "$1" >"$scratch/open.log" 2>&1) &
   pid=$!
+  set +m
   pids+=("$pid")
   for _ in $(seq 50); do [ -s "$scratch/url" ] && break; sleep 0.2; done
   url=$(cat "$scratch/url" 2>/dev/null)
@@ -44,6 +49,6 @@ gone() { ! kill -0 "$pid" 2>/dev/null; }
 # Then an approve all box sits beside Done
 printf '## One\nsrc/a.txt:1\n- [ ] approve\n\n```text\nOne\n```\n' >"$scratch/one.md"
 start "$scratch/one.md"
-html=$(curl -s "$url"); kill "$pid" 2>/dev/null
+html=$(curl -s "$url"); stop "$pid"
 check "AA1 a page with one approve box shows approve all" 'grep -q "name=\"approve_all\"" <<<"$html"'
 exit $fail
