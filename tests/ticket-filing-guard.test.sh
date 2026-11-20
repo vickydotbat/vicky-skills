@@ -56,6 +56,11 @@ AGENT=c3d4 expect "a subagent that did not start mission-brief is refused" 2 "$d
 AGENT=zz99 expect "a subagent with no transcript of its own is refused" 2 "$dir/none.jsonl" 'gh issue create --title T --body b'
 AGENT=c3d4 expect "a subagent of a session that started mission-brief files" 0 "$dir/briefed.jsonl" 'gh issue create --title T --body b'
 AGENT=../none/subagents/agent-a1b2 expect "an agent_id holding a path is ignored" 2 "$dir/none.jsonl" 'gh issue create --title T --body b'
+jq -nc '{type:"user",message:{content:"<command-name>/vicky-skills:mission-brief</command-name>"}}' > "$dir/none/subagents/agent-e5f6.jsonl"
+AGENT=e5f6 expect "a parent's prompt that quotes the typed marker does not count in a subagent" 2 "$dir/none.jsonl" 'gh issue create --title T --body b'
+mkdir -p "$dir/torn/subagents"; printf '{bad\n' > "$dir/torn.jsonl"
+started vicky-skills:mission-brief > "$dir/torn/subagents/agent-a1b2.jsonl"
+AGENT=a1b2 expect "a torn line in the parent transcript does not hide the subagent's call" 0 "$dir/torn.jsonl" 'gh issue create --title T --body b'
 expect "the main session does not count a subagent's mission-brief" 2 "$dir/none.jsonl" 'gh issue create --title T --body b'
 expect "a missing transcript lets it through" 0 "$dir/missing.jsonl" 'bin/plane file GAME T'
 echo '' | CLAUDE_PLUGIN_OPTION_GUARD_TICKET_FILING=true "$guard" >/dev/null 2>&1; [ $? = 0 ] && echo "ok   an empty payload passes" || { echo "FAIL an empty payload passes"; fail=1; }

@@ -6,7 +6,7 @@ approved-spec.sh	1631dde4942ed5b6	2a32f906bc6be7dd	5/5
 assign-expand.sh	a2d6f7ea568cb59e	f4007e4e2c5284dc	5/5
 auto-tidy.sh	744f3115cff7b6d1	feba0dae85d3d150	154/154
 cerebro-ask-guard.sh	3d06494f2356b096	3b2dd2228340f9cc	23/23
-draft-guard.sh	68268cd08f64dfc9	423389b620436849	61/61
+draft-guard.sh	68268cd08f64dfc9	451210fdf537e885	61/61
 drop-worktree.sh	5642f9beebc9dad3	4b9d43d932a08d72	1/1
 familiar-voice.sh	3128a205d08ce300	eee88646822cef4a	18/18
 fetch-place-hint.sh	3573b2f17e94944d	6eb05dfcf285a9f6	12/12
@@ -47,7 +47,7 @@ review-brief-guard.sh	560dd59ae4621bd2	859ea9b91a373030	22/22
 since-user.sh	7be3c1c933152abd	aa89ac192d4cd28b	14/14
 skill-change-proven.sh	2a77ba5faffc92ea	4092a7189648e66e	13/13
 skill-ledger.sh	5a29eb7f617f6f60	5b87eaa3b3ecfeb1	17/17
-skill-started.sh	86832d9a5eacfc8d	1221b68836a190cb	9/9
+skill-started.sh	fcfb07feca5ca217	dc64527908a44a46	13/13
 skills/building/over-to-you/scripts/checklist.py	7c1b3bf7d2bf2744	57e4131035290c8f	86/86
 skills/building/over-to-you/scripts/lint-checklist.py	80e5765a76b4cf46	530598300fdf49e4	61/61
 skills/building/over-to-you/scripts/ran.sh	40e67b26ed507cc6	57e4131035290c8f	34/34
@@ -98,7 +98,7 @@ sup-handoff-hint.sh	3a70a84b2f173f41	ee01dccfd7c275e5	30/30
 tea-stdin.awk	ddfdfc5257c31b06	8cbd65cde36c7be9	70/70
 tea-stdin.sh	c631fcfccdb1abf0	5b3f129fbea8ff8e	15/15
 ticket-drift.sh	1bc60db2e95d9227	bae9a96f83d66097	36/36
-ticket-filing-guard.sh	f7cc3c46108a91cb	7da4633a9b5986f8	24/24
+ticket-filing-guard.sh	f7cc3c46108a91cb	5d8b3a64d1640f7a	24/24
 todo-reminder.sh	87bab188b0686e79	4e5f53240f7f398c	9/9
 user-test-guard.sh	bc4daf7276d441ce	882a2bc09d9d87c6	52/52
 watch.sh	8361b0cd96435e12	78ee0c5c0fde8487	33/33

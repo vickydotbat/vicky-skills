@@ -53,6 +53,7 @@ expect "gh pr ready goes through after the agent started make-it-so" 0 'gh pr re
 mkdir -p "$s/plain/subagents"; tail -n1 "$s/agent.jsonl" >"$s/plain/subagents/agent-a1.jsonl"
 AGENT=a1 expect "gh pr ready goes through in a subagent that started make-it-so" 0 'gh pr ready 5'
 AGENT=b2 expect "gh pr ready is refused in a subagent that did not" 2 'gh pr ready 5'
+AGENT=../plain/subagents/agent-a1 expect "an agent_id holding a path is ignored" 2 'gh pr ready 5'
 expect "gh pr ready goes through after the user typed make-it-so" 0 'gh pr ready 5' "$s/typed.jsonl"
 expect "talk about make-it-so is not make-it-so" 2 'gh pr ready 5' "$s/talk.jsonl"
 expect "gh pr ready --undo goes through" 0 'gh pr ready 5 --undo'

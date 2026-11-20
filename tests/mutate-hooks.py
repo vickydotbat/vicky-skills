@@ -89,7 +89,7 @@ TESTS = {
     "quote-mask.awk": ["pr-guard"],
     "local-path-guard.sh": ["local-path-guard"],
     "draft-guard.sh": ["draft-guard"],
-    "skill-started.sh": ["draft-guard", "ticket-filing-guard"],
+    "skill-started.sh": ["draft-guard", "rebase-guard", "ticket-filing-guard"],
     "pr-guard.sh": ["pr-guard", "deathmatch_approved_examples", "pr_guard_ai_credit_approved_examples", "pr_guard_one_pr_approved_examples", "pr_guard_create_approved_examples"],
     "push-behind-guard.sh": ["push-behind-guard"],
     "rebase-guard.sh": ["rebase-guard"],
