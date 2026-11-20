@@ -1,6 +1,6 @@
 ---
 type: regex
 target: trace
-pattern: '^(?![\s\S]*ledger add)'
+pattern: '^(?![\s\S]*"command":"[^"]*ledger add)'
 flags: i
 ---

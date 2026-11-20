@@ -11,6 +11,8 @@ Speak to the learner in English, and write the tasks, items and model answers in
 
 ## Steps
 
+Run steps 1 and 2 at the start of every session, whatever the learner says is due: the store, not the learner, says what is due.
+
 1. **Check the level.** Run `tutor profile show`. When it refuses with "No profile yet", start the `placement` skill with the Skill tool and come back here when it ends. Done when the profile holds a level.
 2. **Review what is due.** Run `tutor due --limit 10`. Ask each item's `front` and wait for the answer. Grade it `again`, `hard`, `good` or `easy` with `tutor grade <id> <rating>`: `hard` is a pass. Done when every item shown is graded, or the list was empty.
 3. **Set one task** at the profile's level: a short piece of writing or a reply to a prompt, written in the target language, on a topic tied to the learner's own reasons for learning. Done when the task is asked.
