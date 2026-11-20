@@ -1,6 +1,7 @@
 ---
 name: council-of-elrond
-description: Council or pow-wow on a proposal, argued with the user until Frodo chooses the road. Use when the user asks for a council or a pow-wow, picks the council in `lay-course` or on an anomaly, or brings a design question with open options and no answer yet.disable-model-invocation: true
+description: Council or pow-wow on a proposal, argued with the user until Frodo chooses the road. Use when the user asks for a council or a pow-wow, picks the council in `lay-course` or on an anomaly, or brings a design question with open options and no answer yet.
+disable-model-invocation: true
 ---
 
 # Council of Elrond

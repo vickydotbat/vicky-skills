@@ -45,7 +45,7 @@ refuse() {
   exit 2
 }
 
-ready_steer="Only the user marks a pull request ready, through make-it-so: \"make it so\", \"ship it\", \"mark it ready\", or a warp they engaged. If they asked, start the make-it-so skill and mark it ready from there. If not, leave it a draft and say in your report that it waits on their word."
+ready_steer="Only the user marks a pull request ready, by typing /make-it-so. If they asked for it, ask them to type /make-it-so. If not, leave it a draft and say in your report that it waits on their word."
 
 # shellcheck source=skill-started.sh
 . "$(dirname "$0")/skill-started.sh"

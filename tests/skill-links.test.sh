@@ -25,5 +25,11 @@ for f in "$root"/*/*/SKILL.md; do
     done <<<"$hits"
   done
 done
+# A hook's steer reaches the agent too: it never says to start a typed-only skill.
+scripts="$root/../scripts"
+for name in "${typed[@]}"; do
+  hits=$(grep -nEi "(start|run|invoke|load) the \`?/?$name\`? skill" "$scripts"/*.sh 2>/dev/null || true)
+  [ -n "$hits" ] && { echo "FAIL a hook script steers the agent to start typed-only $name: ${hits:0:140}"; fail=1; }
+done
 [ $fail = 0 ] && echo "ok   no startable skill starts a typed-only one"
 exit $fail
