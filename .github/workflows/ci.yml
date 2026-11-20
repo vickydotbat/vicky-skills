@@ -16,7 +16,7 @@ concurrency:
 jobs:
   checks:
     runs-on: ubuntu-latest
-    # Main runs near four minutes; the cap leaves room for a slow runner and
+    # Main runs near five minutes; the cap leaves room for a slow runner and
     # still stops a hung step fast.
     timeout-minutes: 8
     steps:
@@ -28,9 +28,6 @@ jobs:
           echo "draft: CI runs once the pull request is marked ready" >&2
           exit 1
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          # The red-first check reads the commits that added each approved test.
-          fetch-depth: 0
       # The runner image has no JSON Schema validator, and this job has no declared shell to hold one.
       - name: Install check-jsonschema, the security kit's OSV file check
         run: pipx install check-jsonschema==0.38.0
@@ -420,8 +417,40 @@ jobs:
         run: tests/planted-cause-grader.test.sh
       - name: Mutation proof is current
         run: python3 tests/mutate-hooks.py --check
+  red-first:
+    runs-on: ubuntu-latest
+    # Runs each approved test the branch adds at the commit that added it,
+    # apart from checks so neither job nears its cap.
+    timeout-minutes: 8
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Refuse a draft
+        if: github.event.pull_request.draft
+        run: |
+          echo "draft: CI runs once the pull request is marked ready" >&2
+          exit 1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The check reads the commits that added each approved test.
+          fetch-depth: 0
+      # An approved test fails for a missing tool as well as a missing
+      # behaviour, so this job has the same tools as checks.
+      # The runner image has no JSON Schema validator, and this job has no declared shell to hold one.
+      - name: Install check-jsonschema, the security kit's OSV file check
+        run: pipx install check-jsonschema==0.38.0
+      # The case-file build shrinks screenshots with ImageMagick, which the runner image may lack.
+      - name: Install ImageMagick, the case-file build's image shrinker
+        run: command -v convert >/dev/null || { sudo apt-get update -q && sudo apt-get install -y -q imagemagick; }
+      # The case-file build prints its PDF with a headless browser and the check reads it back with pdftotext.
+      - name: Install poppler-utils and name the runner's Chrome as chromium, for the case-file PDF
+        run: |
+          command -v pdftotext >/dev/null || { sudo apt-get update -q && sudo apt-get install -y -q poppler-utils; }
+          command -v chromium >/dev/null || sudo ln -s "$(command -v google-chrome)" /usr/local/bin/chromium
+      # The viewscreen band is a function-hook module; only Claude Code's own
+      # mod test kit can load it.
+      - name: Install Claude Code
+        run: npm install --global @anthropic-ai/claude-code@2.1.316
       - name: Red-first check
-        if: github.event_name == 'pull_request'
         run: |
           base=$(git merge-base "origin/${{ github.base_ref }}" HEAD)
           added=$(git log --diff-filter=A --format=%H -1 -- plugins/vicky-skills/scripts/red-first-check.sh)
