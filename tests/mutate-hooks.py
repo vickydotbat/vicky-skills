@@ -376,8 +376,6 @@ class Worker:
                 code = self.test(test, limit)
                 if code is None:
                     code = self.test(test, limit * 2)
-                if code is None:
-                    return True
                 if code != 0:
                     return True
             return False
