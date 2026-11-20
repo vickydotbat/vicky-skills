@@ -1,6 +1,6 @@
 ---
 type: regex
 target: trace
-pattern: '(is|means|=)\s*\*{0,2}the spoon'
+pattern: '(is|means|=)[^.\n"]{0,12}the spoon'
 flags: i
 ---
