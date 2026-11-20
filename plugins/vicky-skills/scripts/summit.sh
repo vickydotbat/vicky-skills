@@ -33,15 +33,14 @@ label() {
 
 # count <since>: the doc's command, cut off after 6 seconds, as "<opened> <closed>".
 count() {
-  local out
-  out=$(SUMMIT_SINCE="$1" timeout -k 1 6 bash -c "$cmd" </dev/null 2>/dev/null) || return 1
-  [[ "$out" =~ ^[[:space:]]*([0-9]+)[[:space:]]+([0-9]+)[[:space:]]*$ ]] || return 1
-  echo "${BASH_REMATCH[1]} ${BASH_REMATCH[2]}"
+  local out # mutant-ok delete: a local declaration: no caller reads this name
+  out=$(SUMMIT_SINCE="$1" timeout -k 1 6 bash -c "$cmd" </dev/null 2>/dev/null) &&
+    [[ "$out" =~ ^[[:space:]]*([0-9]+)[[:space:]]+([0-9]+)[[:space:]]*$ ]] &&
+    echo "${BASH_REMATCH[1]} ${BASH_REMATCH[2]}"
 }
 
 case "${1:-}" in
   auto)
-    cat >/dev/null 2>&1
     last=$(cat "$stamp" 2>/dev/null)
     date -Iseconds > "$stamp"
     rm -f "$file"
@@ -51,9 +50,11 @@ case "${1:-}" in
     count "$(date -d '30 days ago' +%F)" > "$tmp/thirty" &
     [ -n "$last" ] && count "$last" > "$tmp/since" &
     wait
-    read -r o c 2>/dev/null < "$tmp/thirty" && [ -n "${c:-}" ] || exit 0
+    read -r o c 2>/dev/null < "$tmp/thirty"
+    [ -n "${c:-}" ] || exit 0
     line="30 days: +$o / −$c, $(verdict "$o" "$c")"
-    if read -r so sc 2>/dev/null < "$tmp/since" && [ -n "${sc:-}" ]; then
+    read -r so sc 2>/dev/null < "$tmp/since"
+    if [ -n "${sc:-}" ]; then
       line="Since $(label "$last"): $so opened, $sc closed · $line"
     fi
     mkdir -p "${file%/*}" && echo "$line" > "$file" ;;
@@ -62,4 +63,3 @@ case "${1:-}" in
     echo "summit: $(cat "$file")" ;;
   *) echo "usage: summit.sh auto|show" >&2; exit 2 ;;
 esac
-exit 0

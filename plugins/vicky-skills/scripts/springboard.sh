@@ -55,5 +55,6 @@ fi
 
 [ "$event" = SessionStart ] || exit 0
 first=$(grep -m1 '^N1 ' <<<"$lines")
-[ -n "$first" ] && echo "Open your first reply with this line alone, and give the rest of the .todo springboard block only when the user asks: next: $first"
-exit 0
+if [ -n "$first" ]; then
+  echo "Open your first reply with this line alone, and give the rest of the .todo springboard block only when the user asks: next: $first"
+fi

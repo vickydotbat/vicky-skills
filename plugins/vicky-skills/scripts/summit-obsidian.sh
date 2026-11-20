@@ -11,8 +11,8 @@ since=${SUMMIT_SINCE:?SUMMIT_SINCE is not set}
 [ -d "$dir" ] && [ "$dir" != / ] || { echo "summit-obsidian: no folder $dir" >&2; exit 1; }
 from=$(date -d "$since" +%Y%m%d%H%M%S) && day=$(date -d "$since" +%F) || exit 1
 opened=0 closed=0
+shopt -s nullglob # mutant-ok delete: an empty folder then reads its own pattern, which has no timestamp and no status
 for f in "$dir"/*.md; do
-  [ -f "$f" ] || continue
   name=${f##*/}
   [[ "$name" =~ ^([0-9]{14}) ]] && [ "$((10#${BASH_REMATCH[1]}))" -ge "$((10#$from))" ] && opened=$((opened + 1))
   grep -q '^status: done' "$f" || continue
