@@ -48,6 +48,11 @@ A waiting ticket can't go on until the thing its `Waits on:` line names is done.
 - **List notes off the tracker**: `bash plugins/vicky-skills/skills/housekeeping/summit/scripts/tracker-status.sh "<vault>/vicky-skills/"`. It lists each note with no `status:` in its frontmatter, a status outside the four above, or no timestamp in its name. The "since" operations miss such a note, so give each one its status from its own text (a note with no word of being done stays `open`) and its timestamped name, stamped with the note's own creation time so it never counts as new, and update the links to a renamed note.
 - **List items created or changed since <time>**: `find "<vault>/vicky-skills/" -name '*.md' -newermt '<time>'`. A note whose name's timestamp is at or after `<time>` is new, any other is edited. Show at most five, then a count of the rest.
 - **List items closed since <time>**: `find "<vault>/vicky-skills/" -name '*.md' -exec grep -l '^status: done' {} +`, keeping each note whose `closed:` date is on or after `<time>`'s date, and each note with no `closed:` date that changed since `<time>`. A later edit to a closed note never counts it again. Give the count.
+
+Summit count: `bash "$CLAUDE_PLUGIN_ROOT/scripts/summit-obsidian.sh" "$CLAUDE_PLUGIN_OPTION_OBSIDIAN_VAULT/vicky-skills"`
+
+The session-start summit runs this line with no agent: it prints the opened and closed counts since `$SUMMIT_SINCE`. Delete it to switch the summit off in this repo. The vault folder comes from the plugin's `obsidian_vault` setting.
+
 - **Park a ticket**: set `status: waiting` and add a `Waits on: <who or what>` line under the frontmatter.
 - **Claim a waiting ticket**: set `status: claimed` and delete its `Waits on:` line, before any other work.
 

@@ -22,6 +22,11 @@ A waiting ticket can't go on until the thing its `Waits on:` line names is done.
 - **Move a ticket to <state>**: set the `Status:` line to `open` for not-started, `claimed` for started, `waiting` when parked or `done`.
 - **List items created or changed since <time>**: `find .scratch -path '*/issues/*.md' -newermt '<time>'`. A ticket that `git log --diff-filter=A --since=<time>` adds is new, any other is edited. Show at most five, then a count of the rest.
 - **List items closed since <time>**: `git log --since=<time> -G '^Status: done' --name-only --format= -- .scratch | sort -u`, keeping each ticket whose `Status:` line now reads `done`. Give the count.
+
+Summit count: `echo "$(git log --since="$SUMMIT_SINCE" --diff-filter=A --name-only --format= -- .scratch | grep -c "/issues/.*\.md$") $(git log --since="$SUMMIT_SINCE" -G "^Status: done" --name-only --format= -- .scratch | sort -u | grep -c "/issues/.*\.md$")"`
+
+The session-start summit runs this line with no agent: it prints the opened and closed counts since `$SUMMIT_SINCE`. Delete it to switch the summit off in this repo.
+
 - **Park a ticket**: set `Status: waiting` and add a `Waits on: <who or what>` line.
 - **Claim a waiting ticket**: set `Status: claimed` and delete its `Waits on:` line, before any other work.
 

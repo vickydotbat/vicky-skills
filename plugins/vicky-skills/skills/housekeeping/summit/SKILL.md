@@ -1,18 +1,19 @@
 ---
 name: summit
-description: Count tickets opened versus closed in a repo's tracker and give the 30-day verdict, A, B or C. Use when the session-start hook asks for the summit count, when the user asks "summit", "are we closing more than we open" or for the backlog trend, and when `captains-log` or `cerebro` reads the trend.
+description: Typed by the user as /summit, for the detailed breakdown of tickets opened versus closed in a repo's tracker. Use when the user types summit. The session-start hook counts the summit and the band shows it with no agent work; any other ask for the trend reads `summit.sh show`.
+disable-model-invocation: true
 ---
 
 # Summit
 
 > _Discoveries never stop. The summit is closing more than you open._
 
-The **summit** is tickets closed against tickets opened in one repo's tracker. The 30-day **verdict**: A when closed is more than 10% above opened, C when it is more than 10% below, B in between. The record keeps one 30-day count per repo per day, in the plugin's data folder, through `${CLAUDE_PLUGIN_ROOT}/scripts/summit.sh`.
+The **summit** is tickets closed against tickets opened in one repo's tracker. The 30-day **verdict**: A when closed is more than 10% above opened, C when it is more than 10% below, B in between. The `summit.sh auto` session-start hook counts it with the `Summit count:` line of `docs/agents/issue-tracker.md`, and the viewscreen band shows the line it keeps. A repo without that line has no summit. This skill gives the breakdown behind the line.
 
 ## Steps
 
-1. **Count with the tracker's "since" operations.** When the tracker has a "List notes off the tracker" operation, run it first, and fix each note it lists before you count: a note it lists is missing from both counts. An Obsidian tracker whose doc lacks the operation gets the same check: `bash ${CLAUDE_PLUGIN_ROOT}/skills/housekeeping/summit/scripts/tracker-status.sh <its notes folder>`, and its fix as first-contact's `issue-tracker-obsidian.md` gives it. Add the operation to that doc too. Run "List items created or changed since <time>" and "List items closed since <time>" from `docs/agents/issue-tracker.md`, for the time the hook or the user names. Opened is the new items only. Never count from snapshots. Done when you hold the opened and closed numbers.
-2. **Record or show.** For a 30-day count, run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/summit.sh record <opened> <closed> <since-opened> <since-closed>`, with the counts since the user's last session as the last two. When the hook says today's count is kept, run `summit.sh show <since-opened> <since-closed>` instead. Both print a `summit:` line, which the viewscreen band shows. Done when the script printed its line.
-3. **Report the line** in the reply, as the script printed it, without the `summit: ` prefix. On B or C, propose one way to close more, never a way to find less. Done when the reply holds the line.
+1. **Read the kept line.** Run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/summit.sh show` from the repo. On `nothing counted yet`, say the repo's tracker doc needs a `Summit count:` line, as first-contact's tracker docs give it, and stop. Done when you hold the line.
+2. **List the items.** When the tracker has a "List notes off the tracker" operation, run it first and name each note it lists: such a note is missing from both counts. Run "List items created or changed since <time>" and "List items closed since <time>" from `docs/agents/issue-tracker.md`, for the time of the user's last session (`.git/summit-last-session` holds this session's start, so take the Since part of the line) and for 30 days ago. Done when you hold the opened and closed items of both spans.
+3. **Report.** Give the line without its `summit: ` prefix, then the items opened and closed since the last session, then the 30-day counts by kind or label when the tracker has them. On B or C, propose one way to close more, never a way to find less. Done when the reply holds the line and the lists.
 
 Charter: C6 ([CHARTER.md](../../CHARTER.md)).

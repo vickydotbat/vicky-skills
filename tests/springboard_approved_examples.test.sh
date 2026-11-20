@@ -15,8 +15,6 @@ chmod +x "$fx/bin/gh"
 export PATH="$fx/bin:$PATH" GH_PRS="$fx/prs.json" CLAUDE_PROJECT_DIR="$fx/repo"
 git -C "$fx/repo" init -q; git -C "$fx/repo" remote add origin https://github.com/someone/repo.git
 printf '.todo\n' > "$fx/repo/.gitignore"
-# The repo has a tracker, so the session-start counts run.
-mkdir -p "$fx/repo/docs/agents"; : > "$fx/repo/docs/agents/issue-tracker.md"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 pr() { # number draft check-state body
@@ -78,11 +76,4 @@ after "git push origin topic" >/dev/null
 check "the block follows a push, a merge or a closed page" \
   'block | grep -q "^# springboard start" && ! block | grep -q "#7"'
 
-# Given four tickets opened and nine closed since your last session in this repo, which started on Saturday 31 October, and Claude Code with function hooks turned off
-# When a session starts
-# Then one line reads Since Sat: 4 opened, 9 closed. Say since for the list.
-date -d yesterday -Iseconds > "$fx/repo/.git/springboard-last-session"
-out=$(start)
-check "since you last worked" \
-  'grep -q "List items created or changed since <time>" <<<"$out" && grep -q "List items closed since <time>" <<<"$out" && grep -qF "Since $(date -d yesterday +%a): <n> opened, <m> closed. Say \`since\` for the list." <<<"$out" && grep -qE "since [0-9]{4}-[0-9]{2}-[0-9]{2}T" <<<"$out"'
 exit $fail

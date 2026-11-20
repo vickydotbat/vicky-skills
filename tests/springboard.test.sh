@@ -83,12 +83,9 @@ for v in false 0; do
 done
 reset; check "standing_orders=true keeps the block" 'CLAUDE_PLUGIN_OPTION_STANDING_ORDERS=true start | grep -q "next: N1"'
 check "the setting is on by default" '[ "$(jq ".userConfig.standing_orders.default" "$root/plugins/vicky-skills/.claude-plugin/plugin.json")" = true ]'
-check "a repo with no tracker doc gets no tracker counts" 'reset; date -Iseconds > "$fx/repo/.git/springboard-last-session"; out=$(start); ! grep -q "List items" <<<"$out" && ! grep -q "summit" <<<"$out"'
-mkdir -p "$fx/repo/docs/agents"; : > "$fx/repo/docs/agents/issue-tracker.md"
-check "a repo with a tracker doc gets the tracker counts" 'reset; out=$(start); grep -q "List items created or changed since <time>" <<<"$out" && grep -q "summit" <<<"$out"'
-check "a session start with a tracker doc stamps when the session began" 'reset; rm -f "$fx/repo/.git/springboard-last-session"; start >/dev/null; [ -s "$fx/repo/.git/springboard-last-session" ]'
-rm "$fx/repo/docs/agents/issue-tracker.md"
+mkdir -p "$fx/repo/docs/agents"; printf 'Summit count: \x60echo 1 1\x60\n' > "$fx/repo/docs/agents/issue-tracker.md"
+check "a repo with a tracker doc gets no tracker counts or summit" 'reset; out=$(start); ! grep -qi "List items\|summit" <<<"$out"'
+rm -r "$fx/repo/docs"
 pr 3 true "" "\`Waits on:\` you, the merge order" | jq -s . > "$GH_PRS"
 check "a push rebuilds the block with a first line, but asks for no first-reply line" 'reset; out=$(after "git push"); grep -q "^N1 " "$fx/repo/.todo" && ! grep -q "Open your first reply" <<<"$out" && start | grep -q "Open your first reply"'
-check "a first session has no since line" 'reset; rm -f "$fx/repo/.git/springboard-last-session"; ! start | grep -q "Since then"'
 exit $fail

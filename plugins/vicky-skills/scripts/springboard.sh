@@ -4,15 +4,13 @@
 # each with its link: a draft page open in their browser, a ready pull
 # request with green checks to merge, and a pull request whose `Waits on:`
 # line names them. Lines outside the block are the user's and stay as they
-# are. At session start it tells the agent to open on N1 alone, and to say
-# what changed in the tracker since the user's last session in this repo.
+# are. At session start it tells the agent to open on N1 alone.
 # After a Bash call it rebuilds only on a push, a merge or a page that closed.
 # It touches only a repo whose .gitignore ignores .todo, so it never leaves
 # an untracked file in a repo that didn't ask for one.
 # shortcut: reads pull requests from GitHub only; add tea when a Gitea repo wants the block.
 set -u
 input=$(cat)
-summit="$(cd "$(dirname "$0")" && pwd)/summit.sh"
 case "${CLAUDE_PLUGIN_OPTION_STANDING_ORDERS:-true}" in
   false|0)
     grep -q '"SessionStart"' <<<"$input" && echo "Standing orders are off in the vicky-skills settings: keep no .todo lines, and report parked work in chat."
@@ -58,16 +56,4 @@ fi
 [ "$event" = SessionStart ] || exit 0
 first=$(grep -m1 '^N1 ' <<<"$lines")
 [ -n "$first" ] && echo "Open your first reply with this line alone, and give the rest of the .todo springboard block only when the user asks: next: $first"
-# The counts below are tracker queries. A repo with no tracker doc has none to run.
-[ -f docs/agents/issue-tracker.md ] || exit 0
-stamp="$gitdir/springboard-last-session"
-ops='the tracker'"'"'s "List items created or changed since <time>" and "List items closed since <time>" operations from docs/agents/issue-tracker.md'
-if [ -f "$stamp" ]; then
-  echo "Run $ops for the items since $(cat "$stamp"), when the user's last session in this repo started, and add one line: Since $(bash "$summit" since): <n> opened, <m> closed. Say \`since\` for the list. <n> counts the new items only."
-fi
-if today=$(bash "$summit" today 2>/dev/null); then
-  echo "Add the summit to that line, or give it alone when there is none: $today. Then run \`bash $summit show <n> <m>\` with the counts since the last session, so the viewscreen band shows it."
-else
-  echo "Count the last 30 days with $ops, for the items since $(date -d '30 days ago' +%F): opened is the new items. Run \`bash $summit record <opened> <closed> <n> <m>\` with those counts and the counts since the last session, and add the 30-day part it prints to the summit line."
-fi
-date -Iseconds > "$stamp"
+exit 0

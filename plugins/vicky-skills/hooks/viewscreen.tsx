@@ -216,6 +216,7 @@ export const register: Register = on => {
     live.cwd = e.cwd
     await previewStarted($, e.cwd)
     await locate($, live.cwd)
+    await readSummit($)
     await publish($, live)
 
     return result
@@ -226,6 +227,8 @@ export const register: Register = on => {
       return next(e)
     }
 
+    // The session-start count may land after the band first drew.
+    if ((await read($, summit)) === '') await readSummit($)
     live.turnStartMs = await $.clock.now()
     live.turnActions = 0
     live.isFirstRequest = true
@@ -638,6 +641,19 @@ async function placeOf($: EngineInterface, cwd: string | undefined): Promise<str
     return gitDir === commonDir ? `${shown} · main checkout` : `worktree: ${shown}`
   } catch {
     return ''
+  }
+}
+
+/** Sets the band's summit from the line summit.sh keeps, when it keeps one. */
+async function readSummit($: EngineInterface): Promise<void> {
+  try {
+    const env = await $.process.hookEnv().catch(() => ({}) as Record<string, string>)
+    const script = `${env.CLAUDE_PLUGIN_ROOT ?? ''}/scripts/summit.sh`
+    const out = await $.process.run(['bash', script, 'show'], { env, timeoutMs: 3000 })
+    const told = out.exitCode === 0 ? summitOf({ stdout: out.stdout }) : null
+    if (told !== null) await update($, summit, () => told)
+  } catch {
+    // No data folder or no script: the band shows no summit.
   }
 }
 

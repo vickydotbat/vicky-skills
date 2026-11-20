@@ -350,6 +350,12 @@
       "title": "Browser whose YouTube sign-in video-captions may use",
       "description": "When YouTube blocks a caption download with a bot check, video-captions retries once with this browser's cookies (yt-dlp --cookies-from-browser), such as firefox or chromium. Leave blank to be asked each time.",
       "default": ""
+    },
+    "obsidian_vault": {
+      "type": "string",
+      "title": "Obsidian vault folder",
+      "description": "The folder of the Obsidian vault that holds your tickets. A repo whose tracker is Obsidian counts its summit there; left empty, that repo shows no summit.",
+      "default": ""
     }
   }
 }

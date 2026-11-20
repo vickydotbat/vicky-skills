@@ -19,18 +19,4 @@ hint() { jq -nc --arg p "$1" '{prompt:$p}' | CLAUDE_PLUGIN_OPTION_LESSON_HINT=tr
 check "a peer session's message teaches no lesson" \
   '[ -z "$(hint "$peer")" ] && hint "$mine" | grep -q engrave'
 
-# Given a repo with no tracker doc, such as your machine config
-# When a session starts there
-# Then the agent runs no tracker counts and no summit
-mkdir -p "$fx/bin" "$fx/repo" "$fx/data"
-printf '#!/usr/bin/env bash\necho "[]"\n' > "$fx/bin/gh"; chmod +x "$fx/bin/gh"
-git -C "$fx/repo" init -q; printf '.todo\n' > "$fx/repo/.gitignore"
-date -Iseconds > "$fx/repo/.git/springboard-last-session"
-start() { echo '{"hook_event_name":"SessionStart","source":"startup"}' | PATH="$fx/bin:$PATH" CLAUDE_PROJECT_DIR="$fx/repo" CLAUDE_PLUGIN_DATA="$fx/data" bash "$plugin/scripts/springboard.sh" 2>/dev/null; }
-bare=$(start)
-mkdir -p "$fx/repo/docs/agents"; : > "$fx/repo/docs/agents/issue-tracker.md"
-tracked=$(start)
-check "a repo with no tracker skips the counts" \
-  '! grep -qi "tracker\|summit" <<<"$bare" && grep -q "summit" <<<"$tracked"'
-
 exit $fail

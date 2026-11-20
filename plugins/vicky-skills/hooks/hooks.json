@@ -294,6 +294,11 @@
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/springboard.sh\"",
             "timeout": 15
+          },
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/summit.sh\" auto",
+            "timeout": 15
           }
         ]
       },
