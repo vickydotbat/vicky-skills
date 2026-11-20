@@ -44,12 +44,12 @@ KINDS = ("research", "demonstration", "pitch")
 DATED_LINE = re.compile(r"^[ \t]*<!--\s*(CLAIM|EVENT|QUOTE|STEP)\s+(.*?)\s*-->[ \t]*$", re.M)
 ASK_LINE = re.compile(r"^[ \t]*<!--\s*(END )?ASK\s*-->[ \t]*$", re.M)
 TIMELINE_LINE = re.compile(r"^[ \t]*<!--\s*TIMELINE\s*-->[ \t]*$", re.M)
-# A reboot or a crash wipes these, and a case file grows across sessions.
 # A case folder holds these and nothing else: the page's parts, the files it ships, working material that never ships, the approved quotes, the zip's README, and the built formats.
 LAYOUT = ("sections", "files", "raw", "quotes.md", "README.md", "out")
 # What each label means, for the legend the page opens with.
 MEANS = {"stock": "Seen on the unmodified product, by a run the page names.", "test-client-only": "Seen only on a modified client, rig or harness.",
          "estimate": "Reasoned or measured indirectly, with nothing run end to end.", "failed": "Tried, and it did not work.", "not-tested": "No run checked it."}
+# A reboot or a crash wipes these, and a case file grows across sessions.
 VOLATILE = ("/tmp", "/var/tmp", "/dev/shm", "/run/user")
 STYLE = """:root{--bg:#fbfaf7;--fg:#1d1c1a;--mute:#5d5a55;--line:#d9d5cc;--code:#f1eee7;--link:#1f5fa8;--stock:#1f7a3a;--test:#7a5a00;--est:#4b4f9e;--failed:#a12a2a;--open:#6b6b6b}
 @media(prefers-color-scheme:dark){:root{--bg:#17181a;--fg:#e7e4de;--mute:#a8a49c;--line:#383a3e;--code:#222428;--link:#8cb8ef;--stock:#6fcf8a;--test:#e2bd5a;--est:#9ea3f0;--failed:#f08a8a;--open:#a0a0a0}}

@@ -9,7 +9,8 @@ diff. The document's source ships too: the case folder's sections/ under
 source/, so a reader can rebuild or quote it.
 
 The zip is named <name>-<YYYY-MM-DD>-<HHMM>.zip for the page's name and the
-minute it was made, and unpacks into one <name>/ folder: README.md, the page,
+minute it was made. A PDF or Markdown older than the page stops the bundle
+before any zip is written, so one zip never mixes two builds. It unpacks into one <name>/ folder: README.md, the page,
 the PDF and Markdown built beside it, and every file under files-folder under
 files/. One zip per case: once the new zip is written, every earlier zip of
 the same case in out-folder is deleted, and any other file is left alone. The
@@ -39,6 +40,10 @@ def main():
     a = p.parse_args()
     os.makedirs(a.out, exist_ok=True)
     stem = os.path.splitext(os.path.basename(a.page))[0]
+    for ext in (".pdf", ".md"):
+        built = os.path.splitext(a.page)[0] + ext
+        if os.path.isfile(built) and os.path.getmtime(built) < os.path.getmtime(a.page):
+            sys.exit(f"case-file bundle: {built} is older than {a.page}: rebuild every format before bundling")
     path, f = new_zip(a.out, stem)
     with f, zipfile.ZipFile(f, "w", zipfile.ZIP_DEFLATED) as z:
         z.write(a.readme, f"{stem}/README.md")
@@ -47,8 +52,10 @@ def main():
             if os.path.isfile(built):
                 z.write(built, f"{stem}/{stem}{ext}")
         sections = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(a.page))), "sections")
-        for name in sorted(os.listdir(sections)) if os.path.isdir(sections) else []:
-            z.write(os.path.join(sections, name), f"{stem}/source/sections/{name}")
+        for d, _, names in os.walk(sections):
+            for name in sorted(names):
+                full = os.path.join(d, name)
+                z.write(full, os.path.join(stem, "source", "sections", os.path.relpath(full, sections)))
         for d, _, names in os.walk(a.files):
             for name in sorted(names):
                 full = os.path.join(d, name)

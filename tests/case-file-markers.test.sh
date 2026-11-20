@@ -95,10 +95,20 @@ build "$fx/one.html" "$fx/out/one.html" >/dev/null
 check "a one-line file says 1 line" 'grep -q "(1 line)" "$fx/out/one.html"'
 mkdir -p "$scratch/bz/sections"; printf '# R\n' > "$scratch/bz/R.md"; printf '<p>x</p>\n' > "$scratch/bz/sections/1.html"; printf '<p>x</p>\n' > "$scratch/bz/p.html"
 python3 "$kit/bundle.py" "$scratch/bz/p.html" "$fx/files" "$scratch/bz/out" --readme "$scratch/bz/R.md" >/dev/null
+z1=$(ls "$scratch/bz/out")
 python3 "$kit/bundle.py" "$scratch/bz/p.html" "$fx/files" "$scratch/bz/out" --readme "$scratch/bz/R.md" >/dev/null
-z=$(ls "$scratch/bz/out"); 
-check "two bundles in one minute leave one zip, the second" '[ "$(wc -l <<<"$z")" -eq 1 ] && [[ "$z" =~ ^p-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{4}-2\.zip$ ]] || [[ "$z" =~ ^p-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{4}\.zip$ ]] && [ "$(wc -l <<<"$z")" -eq 1 ]'
+z=$(ls "$scratch/bz/out")
+check "two bundles in one minute leave one zip, the second" '[ "$(wc -l <<<"$z")" -eq 1 ] && [ "$z" != "$z1" ]'
 check "a bundle ships no source when the page has no case folder beside it" '! python3 -c "import sys,zipfile; sys.exit(0 if any(\"source/\" in n for n in zipfile.ZipFile(sys.argv[1]).namelist()) else 1)" "$scratch/bz/out/$z"'
+mkdir -p "$scratch/nc/sections/sub" "$scratch/nc/out"; printf '<p>deep</p>\n' > "$scratch/nc/sections/sub/a.html"
+printf '<p>x</p>\n' > "$scratch/nc/out/c.pdf"; touch -d '2020-01-01' "$scratch/nc/out/c.pdf"; printf '<p>x</p>\n' > "$scratch/nc/out/c.html"
+out=$(python3 "$kit/bundle.py" "$scratch/nc/out/c.html" "$fx/files" "$scratch/nc/out" --readme "$scratch/bz/R.md" 2>&1); status=$?
+check "a PDF older than its page stops the bundle, and no zip is written" '[ "$status" -ne 0 ] && grep -q "older than" <<<"$out" && ! ls "$scratch/nc/out"/*.zip 2>/dev/null'
+rm "$scratch/nc/out/c.pdf"; python3 "$kit/bundle.py" "$scratch/nc/out/c.html" "$fx/files" "$scratch/nc/out" --readme "$scratch/bz/R.md" >/dev/null
+check "a section in a subfolder ships in the source" 'unzip -l "$scratch/nc/out"/c-*.zip | grep -q "c/source/sections/sub/a.html"'
+python3 -c 'import sys,zipfile; z=zipfile.ZipFile(sys.argv[1],"w",zipfile.ZIP_DEFLATED); w=z.open("big.md","w",force_zip64=True); w.write(b"~/x\n"); [w.write(bytes(1<<20)) for _ in range(65)]; w.close(); z.close()' "$scratch/big.zip"
+out=$(caught "$scratch/big.zip"); status=$?
+check "a zip member over the check limit is refused, unread" '[ "$status" -ne 0 ] && grep -q "big.md: over" <<<"$out" && ! grep -q "big.md: line" <<<"$out"'
 python3 - "$scratch/dir.zip" "$scratch/bad.pdf" <<'PY'
 import sys, zipfile
 with zipfile.ZipFile(sys.argv[1], "w") as z:

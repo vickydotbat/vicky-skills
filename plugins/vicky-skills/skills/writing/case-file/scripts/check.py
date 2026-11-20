@@ -11,7 +11,8 @@ that names its kind, it also refuses a claim whose visible label differs from
 its data-evidence, and the future tense outside a pitch's ask. Exits 1
 naming each hit's line or download, 0 when the page is clean. A PDF is read
 as text with pdftotext, and one it can't read is refused. A zip is checked
-member by member, each hit named by the member it sits in.
+member by member, each hit named by the member it sits in, and a member over
+64 MiB is refused unread.
 """
 import base64, html, os, re, shutil, socket, subprocess, sys, tempfile, urllib.parse, zipfile
 
@@ -103,17 +104,25 @@ def read(path):
     except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
         sys.exit(f"case-file check: pdftotext could not read {path}, so it cannot be checked")
 
+# A member past this is refused unread, so a zip bomb cannot fill memory.
+LIMIT = 64 << 20
+
 def bundle(path):
     """Every hit in a zip's members, each named by its member."""
     hits = []
     with zipfile.ZipFile(path) as z, tempfile.TemporaryDirectory() as tmp:
         for name in z.namelist():
+            with z.open(name) as m:
+                data = m.read(LIMIT + 1)
+            if len(data) > LIMIT:
+                hits.append(f"{name}: over the {LIMIT >> 20} MiB check limit, so it cannot be checked")
+                continue
             if name.lower().endswith(".pdf"):
                 out = os.path.join(tmp, "member.pdf")
-                open(out, "wb").write(z.read(name))
+                open(out, "wb").write(data)
                 text = read(out)
             else:
-                text = z.read(name).decode("utf-8", errors="replace")
+                text = data.decode("utf-8", errors="replace")
             hits += [f"{name}: {h}" for h in scan(text)]
     return hits
 
