@@ -109,4 +109,15 @@ check "a zip with a folder entry and clean files checks clean" 'caught "$scratch
 python3 -c 'import sys,zipfile; zipfile.ZipFile(sys.argv[1],"w").write(sys.argv[2],"case/case.pdf")' "$scratch/badpdf.zip" "$scratch/bad.pdf"
 out=$(caught "$scratch/badpdf.zip"); status=$?
 check "a zip whose PDF pdftotext can't read is refused" '[ "$status" -ne 0 ] && grep -q "could not read" <<<"$out"'
+tpl three '<!-- KIND research -->\n<h2 id="answer">Given</h2>\n<h2>Answer</h2>\n<h2>Answer</h2>\n<table><tr><th>A</th><th>B</th><th>C</th></tr><tr><td>1</td><td>2</td><td>3</td></tr></table>\n<!-- CLAIM stock | 2026-11-18T20:40+00:00 | run 1 | It glowed -->\n'
+build "$fx/three.html" "$fx/out/three.html" --formats html,md >/dev/null; p=$(cat "$fx/out/three.html" 2>/dev/null)
+check "a name a given id holds, then twice more, gets the next free numbers" 'grep -q "<h2 id=\"answer-2\">Answer" <<<"$p" && grep -q "<h2 id=\"answer-3\">Answer" <<<"$p"'
+check "the timeline heading has an id the contents list links" 'grep -q "<h2 id=\"timeline\">Timeline" <<<"$p" && grep -q "href=\"#timeline\"" <<<"$p"'
+check "a second Markdown table gets its own header rule" 'grep -B1 -x "| A | B | C |" "$fx/out/three.md" | head -1 | grep -qx "" && grep -A1 -x "| A | B | C |" "$fx/out/three.md" | grep -qx "| --- | --- | --- |"'
+build "$fx/pdf.html" "$fx/out/pdfok.html" --formats pdf >/dev/null
+python3 -c 'import sys,zipfile; zipfile.ZipFile(sys.argv[1],"w").write(sys.argv[2],"case/case.pdf")' "$scratch/goodpdf.zip" "$fx/out/pdfok.pdf"
+check "a zip whose PDF is clean checks clean" '[ -s "$fx/out/pdfok.pdf" ] && caught "$scratch/goodpdf.zip" >/dev/null'
+tpl noim '<!-- KIND research -->\n<!-- IMG files/dusk.png | Dusk -->\n'
+out=$(PATH="$scratch/bin" "$scratch/bin/python3" "$kit/build.py" "$fx/noim.html" "$fx/out/noim.html" 2>&1); status=$?
+check "an image with no ImageMagick on PATH stops the build, naming convert" '[ "$status" -ne 0 ] && grep -q "convert on PATH" <<<"$out" && ! grep -q Traceback <<<"$out"'
 exit $fail

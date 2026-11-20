@@ -88,6 +88,8 @@ def shrink(path, label):
                            check=True, capture_output=True, timeout=60)
         except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
             fail(f"marker {label}: ImageMagick could not shrink it within its limits")
+        except FileNotFoundError:
+            fail(f"marker {label}: an image needs ImageMagick's convert on PATH, and there is none")
         return open(out, "rb").read()
 
 
@@ -149,7 +151,6 @@ def slug(text, taken):
     name, n = base, 2
     while name in taken:
         name, n = f"{base}-{n}", n + 1
-    taken.add(name)
     return name
 
 
@@ -258,7 +259,6 @@ def page(src):
     body = ASK_LINE.sub(lambda m: "</section>" if m.group(1) else '<section class="ask" data-ask>', body)
     line = timeline(events)
     body = TIMELINE_LINE.sub(lambda m: line, body, count=1) if TIMELINE_LINE.search(body) else body + line
-    body = body.replace('<section class="timeline" data-timeline><h2>', '<section class="timeline" data-timeline><h2 id="timeline">', 1)
     body, nav = contents(body)
     front = legend(set(re.findall(r'data-evidence="([^"]+)"', body))) + nav
     first = body.find("<h2")

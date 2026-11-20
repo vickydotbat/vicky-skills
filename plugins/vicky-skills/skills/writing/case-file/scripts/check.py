@@ -108,8 +108,6 @@ def bundle(path):
     hits = []
     with zipfile.ZipFile(path) as z, tempfile.TemporaryDirectory() as tmp:
         for name in z.namelist():
-            if name.endswith("/"):
-                continue
             if name.lower().endswith(".pdf"):
                 out = os.path.join(tmp, "member.pdf")
                 open(out, "wb").write(z.read(name))
