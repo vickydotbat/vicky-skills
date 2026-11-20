@@ -51,6 +51,10 @@ def quick_notes():
     return ["quick notes:"] + [f"- {tag}:" for tag in TAGS]
 
 
+# Commands that print or exit and test nothing.
+NOOPS = {"true", "false", ":", "echo", "printf"}
+
+
 def receipt(item, n, out_dir):
     """Returns (the item's ran: line, None) or (None, the problem)."""
     rid = item.get("ran") or ""
@@ -65,6 +69,8 @@ def receipt(item, n, out_dir):
     if got.get("exit") != 0:
         return None, f"item {n}: receipt {rid} exited {got.get('exit')}: fix the check until your own run passes"
     command = got.get("command", "")
+    if (command.split() or [""])[0] in NOOPS:
+        return None, f"item {n}: receipt {rid} ran `{command}`, which does nothing: run the check itself through ran.sh"
     for kit in re.findall(r"`([^`]+)`", item.get("kit", "")):
         if kit not in command and kit not in got.get("tail", ""):
             return None, f"item {n}: receipt {rid} ran `{command}`, and neither it nor its output holds the kit `{kit}`: run the kit itself through ran.sh"

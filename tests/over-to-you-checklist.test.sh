@@ -164,14 +164,16 @@ check "a refused checklist leaves no marker" '[ ! -e "$dir/rt/s2/over-to-you-ope
 printf 'F1 | open | x\n' > "$dir/rt/s2/over-to-you-ledger.md"
 (cd "$dir" && VISUAL=true bash "$page/open-draft.sh" "$dir/rt/s2/over-to-you-ledger.md" >/dev/null 2>&1)
 check "the ledger opens with no lint and leaves no marker" '[ $? = 0 ] && [ ! -e "$dir/rt/s2/over-to-you-opened" ]'
-exit $fail
-"'"'\n'"'"'* ]]'
-check "ran.sh refuses with no session id" 'env -u CLAUDE_CODE_SESSION_ID bash "$skill/ran.sh" x true 2>/dev/null; [ $? = 2 ]'
-check "ran.sh with too few arguments prints its usage" 'bash "$skill/ran.sh" x 2>&1 | grep -q "^usage: ran.sh"'
-mkdir -p "$dir/rt/s2"; jq -n '{name: "Bob", open: "x", signed_off: "n", proven_by: "p", sections: [{title: "P", items: [{do: "Open the pack", see: "the slots show", person: "look", ran: "ok"}]}]}' > "$dir/spec.json"
-check "a receipt ran.sh wrote opens the way to the checklist" 'env TMPDIR="$dir/rt" CLAUDE_CODE_SESSION_ID=s2 python3 -I "$skill/checklist.py" "$dir/spec.json" "$dir/rt/s2/over-to-you-ok.md" && grep -q "^   ran: .bash -c echo hello; exit 0. exit 0" "$dir/rt/s2/over-to-you-ok.md"'
-# The page opener refuses a checklist typed by hand.
-printf '# Over to you, Bob!\nproven by: p\n1. [ ] Open the pack → the slots show\n   person: look\n' > "$dir/rt/s2/over-to-you-hand.md"
-check "open-page refuses a hand-typed checklist with no ran lines" 'out=$(VISUAL=true bash "$page/open-draft.sh" "$dir/rt/s2/over-to-you-hand.md" 2>&1); [ $? = 2 ] && grep -q "page stays shut" <<<"$out"'
-check "open-page opens a checklist checklist.py wrote" '(cd "$dir" && VISUAL=true bash "$page/open-draft.sh" "$dir/rt/s2/over-to-you-ok.md" >/dev/null 2>&1)'
+# A receipt from a command that does nothing proves no check ran.
+for noop in "true" "echo '/runscript paper'" ": /runscript paper" "printf '/runscript paper'"; do
+  receipt "$dir" noop 0 "$noop"
+  spec "[{\"do\": \"Spawn the paper\", \"see\": \"the sheet shows\", \"person\": \"real client\", \"kit\": \"\`/runscript paper\`\", \"ran\": \"noop\"}]"
+  check "a receipt of a no-op command is refused: $noop" 'out=$(write 2>&1); [ $? != 0 ] && grep -q "does nothing" <<<"$out"'
+done
+spec "[$item]"
+# ran.sh stays inside its time and size bounds.
+check "a command that leaves a child holding its output still ends at RAN_TIMEOUT" 's=$SECONDS; RAN_TIMEOUT=1 ran bg bash -c "sleep 30 & echo hi" >/dev/null 2>&1; [ $(( SECONDS - s )) -lt 10 ]'
+check "a command that ignores TERM is killed after the grace" 's=$SECONDS; RAN_TIMEOUT=1 RAN_GRACE=1 ran term bash -c "trap \"\" TERM; sleep 30" >/dev/null 2>&1; r=$?; [ $(( SECONDS - s )) -lt 10 ] && [ $r = 137 ]'
+check "a noisy command's log stops at RAN_MAX_BYTES" 'RAN_TIMEOUT=3 RAN_MAX_BYTES=4096 ran noisy yes >/dev/null 2>&1; [ -f "$dir/rt/s2/over-to-you-receipts/noisy.json" ] && [ -z "$(find "$dir/rt/s2/over-to-you-receipts" -name ".*" -type f)" ]'
+check "the output of a noisy command passes through only up to RAN_MAX_BYTES" '[ "$(RAN_TIMEOUT=3 RAN_MAX_BYTES=4096 ran noisy2 yes 2>/dev/null | wc -c)" -le 4096 ]'
 exit $fail

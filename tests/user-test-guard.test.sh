@@ -34,7 +34,16 @@ red=("The test server is up. Test it like this: 1. Connect to the local server a
      "Let me know if it works."
      "When you test it, open the map first."
      "Could you try the new door in the tavern?"
-     "Before I push it, please re-check the helmet in game.")
+     "Before I push it, please re-check the helmet in game."
+     "Test it by joining the server."
+     "Give it a go and tell me what you see."
+     "Take it for a spin."
+     "Here is how to try it: start the server and connect."
+     "Please play through the quest."
+     "Could you load the module and report back?"
+     "Run the kit and confirm the door opens."
+     "Steps: 1. Open the client 2. Click the door."
+     "Once you have pulled this branch, try logging in.")
 for r in "${red[@]}"; do
   { user "go"; text "$r"; } > "$fx/t.jsonl"
   check "a chat hand-off is sent back: ${r:0:50}" 'sent_back'
@@ -50,7 +59,10 @@ green=("I'd test it with a shader that declares 80 parameters."
        "Next I'll check that the icon loads, then verify it in the client."
        "The CI diff only adds four test steps."
        "Upstream ships one file per release, and you can check that on its releases page."
-       "Merged. Every check passed.")
+       "Merged. Every check passed."
+       "Could you confirm the ticket name?"
+       "Three reviewers run now, and I'll fix what they find when they report back."
+       "The run log has three steps: 1. build, 2. test, 3. deploy.")
 for g in "${green[@]}"; do
   { user "go"; text "$g"; } > "$fx/t.jsonl"
   check "no hand-off goes through: ${g:0:50}" 'passes'

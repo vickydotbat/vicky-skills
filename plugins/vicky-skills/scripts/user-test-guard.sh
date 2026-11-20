@@ -32,14 +32,13 @@ else
 fi
 # The agent's own plans ("I'd test it with...", "then I'll check") are no hand-off.
 mine=$(sed -E "s/\b(I|I'd|I'll|I will|I would|I can|I'm going to|we|we'll|we can|let me)( [a-z]+){0,2} (test|try|check|verify)\b//gI" <<<"$words")
-handoff=$(grep -oiE "\b(test|try) (it|this|that|them)( out)? (like this|yourself|in[- ]game|in the (game|client|browser|app))\b|\bto (test|try|check|verify) (it|this|that|them)( out)? yourself\b|\b(you can|you could|you may|can you|could you|please|feel free to)( now| already| also)? (test|try)\b|\b(can you|could you|please)( now| also)? (re-?)?(check|verify)\b|\bwhen you (test|try|check|verify)\b|\b(steps to (test|verify)|how to test( it)?:|to test it:|to verify it:)|\b(test|try) (it|them|this) (on|from) (the |your |this |that )?(branch|main|checkout|local|server|client|build)\b|\blet me know (if|whether|how) (it|that|this|they) (works?|looks?|goes|feels?|behaves?)\b|\byou can test now\b" <<<"$mine" | head -1)
+handoff=$(grep -oiE "\b(test|try) (it|this|that|them)( out)? (like this|yourself|in[- ]game|in the (game|client|browser|app))\b|\bto (test|try|check|verify) (it|this|that|them)( out)? yourself\b|\b(you can|you could|you may|can you|could you|please|feel free to)( now| already| also)? (test|try)\b|\b(can you|could you|please)( now| also)? (re-?)?(check|verify)\b|\bwhen you (test|try|check|verify)\b|\b(steps to (test|verify)|how to test( it)?:|to test it:|to verify it:)|\b(test|try) (it|them|this) (on|from) (the |your |this |that )?(branch|main|checkout|local|server|client|build)\b|\blet me know (if|whether|how) (it|that|this|they) (works?|looks?|goes|feels?|behaves?)\b|\byou can test now\b|\btest (it|this|that|them) by\b|\b(give it|take it for) a (go|spin|try|whirl)\b|\bhow to try it\b|\b(please|can you|could you|feel free to)( now| also| just)? (play|run|load|launch|join|open|reload|restart|start)\b|\byou report back\b|\breport back (to me|what you)\b|\bconfirm (it|that|this|they|the [a-z]+) (works?|opens?|shows?|loads?|looks?)\b|^steps: *1\.|\bonce you('ve| have) (pulled|played|tried|tested|loaded|built|updated)\b" <<<"$mine" | head -1)
 [ -n "$handoff" ] || exit 0
-# The user's last typed message: its timestamp keys the cap, and its time
-# dates the turn. Tool results are user entries too, so the filter is
-# stop-reply.sh's: a string, or a text block.
+# The last typed message's time keys the cap and dates the turn.
 sid=$(jq -r '.session_id // "none"' <<<"$raw" 2>/dev/null)
-key=$([ -f "$transcript" ] && tail -n 400 "$transcript" | jq -rs '[.[] | select(.type == "user" and (.isMeta | not) and ((.message.content | type) == "string" or any(.message.content[]?; .type == "text"))) | .timestamp // ""] | last // ""' 2>/dev/null)
-since=$(date -d "$key" +%s 2>/dev/null || echo 0)
+. "$(dirname "$0")/since-user.sh"
+since=$(last_user_time "$transcript" || echo 0)
+key=$since
 # open-draft.sh leaves this marker only when it opened a checklist that passed
 # its lint. It counts while that page is still open, or when it opened this turn.
 marker="${TMPDIR:-/tmp}/$sid/over-to-you-opened"
