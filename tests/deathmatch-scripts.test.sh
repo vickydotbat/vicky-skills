@@ -105,5 +105,7 @@ check "a count keeps its 2G ceiling" 'grep -qx "memory cap: 2.0G" <<<"$out"'
 printf 'MemAvailable:    1048576 kB\n' > "$t/mem1g"
 out=$(BATCH_MEMINFO="$t/mem1g" bash "$dm/batch.sh" holds 2>&1)
 check "Holds under 1G warns that a cap finding is unproven" 'grep -q "under 1G" <<<"$out"'
+out=$(BATCH_MEMINFO=/dev/null bash "$dm/batch.sh" holds 2>&1); r=$?
+check "batch with no MemAvailable stops and says so" '[ $r = 2 ] && grep -q "no MemAvailable" <<<"$out"'
 rm -rf "$g"
 exit $fail

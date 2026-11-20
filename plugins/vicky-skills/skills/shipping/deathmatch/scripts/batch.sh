@@ -11,14 +11,17 @@
 # cap under 1G gets a warning line.
 set -u
 n=${1:?usage: batch.sh <opponents> | holds}
-budget=$(( $(awk '/^MemAvailable:/ {print $2 * 1024}' "${BATCH_MEMINFO:-/proc/meminfo}") / 2 ))
+free=$(awk '/^MemAvailable:/ {print $2 * 1024}' "${BATCH_MEMINFO:-/proc/meminfo}")
+[ -n "$free" ] || { echo "batch.sh: no MemAvailable in ${BATCH_MEMINFO:-/proc/meminfo}" >&2; exit 2; }
+budget=$(( free / 2 ))
+gib=$(( 1024 * 1024 * 1024 ))
 if [ "$n" = holds ]; then
   at=1
-  ceiling=$(( 6 * 1024 * 1024 * 1024 ))
+  ceiling=$(( 6 * gib ))
 else
   [[ $n =~ ^[0-9]+$ ]] && [ $((10#$n)) -ge 1 ] || { echo "batch.sh: <opponents> is a count of one or more, or holds" >&2; exit 2; }
   n=$((10#$n))
-  ceiling=$(( 2 * 1024 * 1024 * 1024 ))
+  ceiling=$(( 2 * gib ))
   at=$(( budget / ceiling ))
   [ "$at" -gt 3 ] && at=3
   [ "$at" -gt "$n" ] && at=$n
@@ -28,6 +31,6 @@ cap=$(( budget / at ))
 [ "$cap" -gt "$ceiling" ] && cap=$ceiling
 echo "at once: $at"
 echo "memory cap: $(numfmt --to=iec --round=down "$cap")"
-if [ "$cap" -lt $(( 1024 * 1024 * 1024 )) ]; then
+if [ "$cap" -lt "$gib" ]; then
   echo "warning: the memory cap is under 1G, so a memory cap finding on this machine is unproven"
 fi

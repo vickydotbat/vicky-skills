@@ -18,6 +18,7 @@ Every deathmatch opponent works to this contract. Its own agent file holds only 
 <file>:<line> — <what breaks the intent> → <the fix>
   run: <command>  →  <the output line>
   (or) patch: <diff>
+Not run: <path>, over the memory cap of <cap> (one line each, or none)
 Suspicions: <one line each, or none>
 Clean: <files with no finding>
 ```
