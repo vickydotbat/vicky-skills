@@ -11,14 +11,14 @@ set -u
 [ $# = 1 ] || { echo "usage: open-draft.sh <draft file>" >&2; exit 2; }
 # An over-to-you checklist opens only when its lint passes, so a page typed by
 # hand, with no ran: receipt on each item, never reaches the user.
-case $(basename "$1") in
-  over-to-you-ledger.md) ;;
-  over-to-you-*.md)
-    problems=$(python3 -I "$(dirname "$0")/../../../building/over-to-you/scripts/lint-checklist.py" "$1" 2>&1) || {
-      printf 'open-draft: the checklist fails its lint, so the page stays shut. Run each check with ran.sh, then write the file with over-to-you'"'"'s checklist.py:\n%s\n' "$problems" >&2
-      exit 2
-    } ;;
-esac
+checklist=""
+case $(basename "$1") in over-to-you-ledger.md) ;; over-to-you-*.md) checklist=1 ;; esac
+if [ -n "$checklist" ]; then
+  problems=$(python3 -I "$(dirname "$0")/../../../building/over-to-you/scripts/lint-checklist.py" "$1" 2>&1) || {
+    printf 'open-draft: the checklist fails its lint, so the page stays shut. Run each check with ran.sh, then write the file with over-to-you'"'"'s checklist.py:\n%s\n' "$problems" >&2
+    exit 2
+  }
+fi
 # shellcheck source=../../../../scripts/approved-spec.sh
 . "$(dirname "$0")/../../../../scripts/approved-spec.sh"
 # A section for a file that holds approved examples reaches the editor only in a form a tick can grant:
@@ -54,8 +54,9 @@ $editor "$1" & pid=$!
 # The third line says where the draft is open: open-page.sh sets DRAFT_PAGE.
 [ -n "$lock" ] && printf '%s\n%s\n%s\n' "$pid" "$1" "${DRAFT_PAGE:+page}" > "$lock"
 # An over-to-you checklist that passed its lint leaves a marker beside it, in the
-# session folder: the editor's pid and the time it opened. user-test-guard reads it.
-case $(basename "$1") in over-to-you-ledger.md) ;; over-to-you-*.md) printf '%s %s\n' "$pid" "$(date +%s)" > "$(dirname "$1")/over-to-you-opened" ;; esac
+# session folder: the editor's pid, the time it opened and the checklist's path.
+# user-test-guard reads it, and lints the checklist again.
+[ -n "$checklist" ] && printf '%s %s %s\n' "$pid" "$(date +%s)" "$(cd "$(dirname "$1")" && pwd)/$(basename "$1")" > "$(dirname "$1")/over-to-you-opened"
 trap '[ -n "$lock" ] && rm -f "$lock"; echo "${status:-1}" > "$closed"' EXIT
 wait "$pid"; status=$?
 [ -n "$lock" ] && [ -f "$1" ] || exit "$status"

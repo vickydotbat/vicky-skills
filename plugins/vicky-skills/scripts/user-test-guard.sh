@@ -17,7 +17,7 @@
 # On unless the plugin option guard_user_test is false or 0.
 set -u
 case "${CLAUDE_PLUGIN_OPTION_GUARD_USER_TEST:-}" in false | 0) exit 0 ;; esac
-command -v jq >/dev/null || exit 0 # mutant-ok delete: without jq every read below comes back empty and the hook exits 0
+command -v jq >/dev/null || { echo "user-test-guard: jq is missing, so no hand-off is checked" >&2; exit 0; } # mutant-ok delete: without jq every read below comes back empty and the hook exits 0
 raw=$(cat)
 event=$(jq -r '.hook_event_name // ""' <<<"$raw" 2>/dev/null)
 if [ "$event" = PreToolUse ]; then
@@ -40,9 +40,13 @@ sid=$(jq -r '.session_id // "none"' <<<"$raw" 2>/dev/null)
 since=$(last_user_time "$transcript" || echo 0)
 key=$since
 # open-draft.sh leaves this marker only when it opened a checklist that passed
-# its lint. It counts while that page is still open, or when it opened this turn.
+# its lint. It counts while that page is still open, or when it opened this turn,
+# and only when the checklist it names still passes that lint, so a marker
+# written by hand opens nothing.
 marker="${TMPDIR:-/tmp}/$sid/over-to-you-opened"
-if [ -f "$marker" ] && read -r pid at <"$marker"; then
+lint="$(dirname "$0")/../skills/building/over-to-you/scripts/lint-checklist.py"
+if [ -f "$marker" ] && read -r pid at page <"$marker" && [[ "$(basename "${page:-}")" == over-to-you-*.md ]] &&
+  python3 -I "$lint" "$page" >/dev/null 2>&1; then
   kill -0 "$pid" 2>/dev/null && exit 0
   [ "${at:-0}" -ge "$since" ] 2>/dev/null && exit 0
 fi

@@ -73,12 +73,23 @@ check "a hand-off inside backticks is quoted code" 'passes'
 check "a hand-off inside backticks is sent" 'sent "The guard reads \`let me know if it works\`."'
 
 { jq -nc --arg ts "$(date -u +%FT%TZ)" '{type:"user",timestamp:$ts,message:{content:"go"}}'; text "Let me know if it works."; } > "$fx/t.jsonl"
+good="$fx/tmp/s1/over-to-you-door.md"
+printf '# Door\nproven by: kit.sh, green\n## Door\n1. [ ] Open the door → it opens\n   person: look\n   ran: `kit.sh` exit 0 at 2026-01-01T00:00:00Z\n' > "$good"
+python3 -I "$root/plugins/vicky-skills/skills/building/over-to-you/scripts/lint-checklist.py" "$good" >/dev/null 2>&1 || echo "FAIL fixture checklist does not lint"
 sleep 30 & live=$!
-echo "$live 1" > "$marker"
+echo "$live 1 $good" > "$marker"
 check "a checklist page still open lets the reply through" 'passes'
 check "a checklist page still open lets the message through" 'sent "Please check that the door opens."'
+echo "$live 1" > "$marker"
+check "a marker with no checklist named is sent back" 'sent_back'
+grep -v 'ran:' "$good" > "$fx/tmp/s1/over-to-you-bad.md"
+echo "$live 1 $fx/tmp/s1/over-to-you-bad.md" > "$marker"
+check "a marker naming a checklist that fails its lint is sent back" 'sent_back'
+echo "$live 1 $fx/t.jsonl" > "$marker"
+check "a marker naming a file that is no checklist is refused" 'refused "Let me know if it works."'
+echo "$live 1 $good" > "$marker"
 kill "$live"; wait "$live" 2>/dev/null
-echo "999999999 $(date +%s)" > "$marker"
+echo "999999999 $(date +%s) $good" > "$marker"
 check "a checklist opened this turn and closed lets it through" 'passes'
 { jq -nc --arg ts "$(date -u -d "+1 hour" +%FT%TZ)" '{type:"user",timestamp:$ts,message:{content:"and the window?"}}'; text "Let me know if it works."; } > "$fx/t.jsonl"
 check "a closed checklist opened before the user's last message is old" 'sent_back'
@@ -108,5 +119,5 @@ opt=0; check "the setting 0 lets it through" 'sent "Let me know if it works."'
 opt=true; check "the setting on sends it back" 'sent_back'
 unset opt
 mkdir -p "$fx/nobin"; for t in bash cat sed grep tail head; do ln -s "$(command -v "$t")" "$fx/nobin/$t"; done
-check "without jq it goes through" '[ -z "$(jq -nc --arg t "$fx/t.jsonl" "{hook_event_name:\"Stop\",transcript_path:\$t}" | PATH="$fx/nobin" bash "$hook" 2>&1)" ]'
+check "without jq it goes through and says the guard is off" 'out=$(jq -nc --arg t "$fx/t.jsonl" "{hook_event_name:\"Stop\",transcript_path:\$t}" | PATH="$fx/nobin" bash "$hook" 2>&1); [ $? = 0 ] && [[ $out == *"jq is missing"* ]] && [[ $out != *block* ]]'
 exit $fail

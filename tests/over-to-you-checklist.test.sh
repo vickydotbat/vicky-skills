@@ -157,7 +157,7 @@ check "a receipt ran.sh wrote opens the way to the checklist" 'env TMPDIR="$dir/
 printf '# Over to you, Bob!\nproven by: p\n1. [ ] Open the pack → the slots show\n   person: look\n' > "$dir/rt/s2/over-to-you-hand.md"
 check "open-page refuses a hand-typed checklist with no ran lines" 'out=$(VISUAL=true bash "$page/open-draft.sh" "$dir/rt/s2/over-to-you-hand.md" 2>&1); [ $? = 2 ] && grep -q "page stays shut" <<<"$out"'
 check "open-page opens a checklist checklist.py wrote" '(cd "$dir" && VISUAL=true bash "$page/open-draft.sh" "$dir/rt/s2/over-to-you-ok.md" >/dev/null 2>&1)'
-check "an opened checklist leaves its marker, the editor pid and the time" 'read -r p t < "$dir/rt/s2/over-to-you-opened" && [ "$p" -gt 0 ] && [ "$t" -ge "$(( $(date +%s) - 60 ))" ]'
+check "an opened checklist leaves its marker, the editor pid, the time and its path" 'read -r p t f < "$dir/rt/s2/over-to-you-opened" && [ "$p" -gt 0 ] && [ "$t" -ge "$(( $(date +%s) - 60 ))" ] && [ "$f" -ef "$dir/rt/s2/over-to-you-ok.md" ]'
 rm -f "$dir/rt/s2/over-to-you-opened"
 VISUAL=true bash "$page/open-draft.sh" "$dir/rt/s2/over-to-you-hand.md" >/dev/null 2>&1
 check "a refused checklist leaves no marker" '[ ! -e "$dir/rt/s2/over-to-you-opened" ]'
