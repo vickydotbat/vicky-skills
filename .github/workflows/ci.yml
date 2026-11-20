@@ -35,13 +35,16 @@ jobs:
       # The runner image has no JSON Schema validator, and this job has no declared shell to hold one.
       - name: Install check-jsonschema, the security kit's OSV file check
         run: pipx install check-jsonschema==0.38.0
-      # The case-file build shrinks screenshots with ImageMagick, which the runner image may lack.
-      - name: Install ImageMagick, the case-file build's image shrinker
-        run: command -v convert >/dev/null || { sudo apt-get update -q && sudo apt-get install -y -q imagemagick; }
-      # The case-file build prints its PDF with a headless browser and the check reads it back with pdftotext.
-      - name: Install poppler-utils and name the runner's Chrome as chromium, for the case-file PDF
+      # The case-file build shrinks screenshots with ImageMagick, prints its PDF
+      # with a headless browser, and its check reads the PDF with pdftotext.
+      # apt-get update took 2m30s on one run, so it runs only when the
+      # image's package lists can't install them.
+      - name: Install ImageMagick and poppler-utils, and name the runner's Chrome as chromium, for the case-file build
         run: |
-          command -v pdftotext >/dev/null || { sudo apt-get update -q && sudo apt-get install -y -q poppler-utils; }
+          pkgs=(); command -v convert >/dev/null || pkgs+=(imagemagick); command -v pdftotext >/dev/null || pkgs+=(poppler-utils)
+          if [ ${#pkgs[@]} -gt 0 ]; then
+            sudo apt-get install -y -q --no-install-recommends "${pkgs[@]}" || { sudo apt-get update -q && sudo apt-get install -y -q --no-install-recommends "${pkgs[@]}"; }
+          fi
           command -v chromium >/dev/null || sudo ln -s "$(command -v google-chrome)" /usr/local/bin/chromium
       - name: tools-declared finds a runtime a script calls but tests/tools leaves out
         run: tests/tools-declared.test.sh
@@ -444,13 +447,16 @@ jobs:
       # The runner image has no JSON Schema validator, and this job has no declared shell to hold one.
       - name: Install check-jsonschema, the security kit's OSV file check
         run: pipx install check-jsonschema==0.38.0
-      # The case-file build shrinks screenshots with ImageMagick, which the runner image may lack.
-      - name: Install ImageMagick, the case-file build's image shrinker
-        run: command -v convert >/dev/null || { sudo apt-get update -q && sudo apt-get install -y -q imagemagick; }
-      # The case-file build prints its PDF with a headless browser and the check reads it back with pdftotext.
-      - name: Install poppler-utils and name the runner's Chrome as chromium, for the case-file PDF
+      # The case-file build shrinks screenshots with ImageMagick, prints its PDF
+      # with a headless browser, and its check reads the PDF with pdftotext.
+      # apt-get update took 2m30s on one run, so it runs only when the
+      # image's package lists can't install them.
+      - name: Install ImageMagick and poppler-utils, and name the runner's Chrome as chromium, for the case-file build
         run: |
-          command -v pdftotext >/dev/null || { sudo apt-get update -q && sudo apt-get install -y -q poppler-utils; }
+          pkgs=(); command -v convert >/dev/null || pkgs+=(imagemagick); command -v pdftotext >/dev/null || pkgs+=(poppler-utils)
+          if [ ${#pkgs[@]} -gt 0 ]; then
+            sudo apt-get install -y -q --no-install-recommends "${pkgs[@]}" || { sudo apt-get update -q && sudo apt-get install -y -q --no-install-recommends "${pkgs[@]}"; }
+          fi
           command -v chromium >/dev/null || sudo ln -s "$(command -v google-chrome)" /usr/local/bin/chromium
       # The viewscreen band is a function-hook module; only Claude Code's own
       # mod test kit can load it.
