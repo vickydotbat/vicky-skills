@@ -24,6 +24,12 @@
       "title": "Learner store folder",
       "description": "A folder you own, where the tutor keeps your words, reviews, mistakes and level, one subfolder per language. It survives a plugin uninstall. Leave blank and the tutor stores nothing.",
       "default": ""
+    },
+    "tutor_remind": {
+      "type": "boolean",
+      "title": "Remind me when words are due",
+      "description": "Each new session opens with one line naming the words due. Off by default.",
+      "default": false
     }
   }
 }

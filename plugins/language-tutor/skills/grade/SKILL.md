@@ -1,6 +1,7 @@
 ---
 name: grade
 description: Grade a piece of writing, or a pasted speaking transcript, in the target language on one fixed rubric, with a CEFR level labelled estimate. Use when the learner types /grade, or asks for their writing or speaking to be marked, scored or levelled.
+disable-model-invocation: true
 ---
 
 # Grade
