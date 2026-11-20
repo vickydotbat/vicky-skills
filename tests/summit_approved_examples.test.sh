@@ -27,7 +27,7 @@ start() {
   { echo "$in" | bash "$plugin/scripts/summit.sh" auto; echo "$in" | bash "$plugin/scripts/springboard.sh"; } 2>/dev/null
 }
 band() { (cd "$fx/repo" && bash "$summit" show 2>/dev/null); }
-fresh() { rm -rf "$fx/data" "$stamp"; mkdir -p "$fx/data"; }
+fresh() { rm -f "$fx/repo/.git/summit-line" "$stamp"; }
 verdict() { fresh; counts "0 0" "$1 $2"; start >/dev/null; band | grep -o '30 days: .*'; }
 
 # Given a repo whose tracker doc has a Summit count line, and your last session started on Friday
@@ -78,7 +78,7 @@ printf -- '---\nstatus: done\nclosed: %s\n---\n' "$(date +%F)" > "$vault/proj/$(
 touch -d '60 days ago' "$vault/proj/"*Old*
 date -d '2 days ago' -Iseconds > "$stamp"
 CLAUDE_PLUGIN_OPTION_OBSIDIAN_VAULT="$vault" start >/dev/null; seen=$(band)
-rm -rf "$fx/data" "$stamp"; mkdir -p "$fx/data"; CLAUDE_PLUGIN_OPTION_OBSIDIAN_VAULT= start >/dev/null
+fresh; CLAUDE_PLUGIN_OPTION_OBSIDIAN_VAULT= start >/dev/null
 check "SA6 an Obsidian tracker reads the vault from the plugin setting" \
   '[ "$seen" = "summit: Since $(date -d "2 days ago" +%a): 1 opened, 1 closed · 30 days: +1 / −1, B" ] && [ -z "$(band)" ]'
 

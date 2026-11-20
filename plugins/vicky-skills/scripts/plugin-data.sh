@@ -1,5 +1,5 @@
 # shellcheck shell=bash
-# Sourced by a script an agent runs from its own shell (summit, lesson-ledger,
+# Sourced by a script an agent runs from its own shell (lesson-ledger,
 # a skill's own scripts such as the security kit's).
 # Hooks get CLAUDE_PLUGIN_DATA and the agent's shell does not. An installed copy
 # sits at <plugins>/cache/<marketplace>/<plugin>/<version>/scripts, and its data

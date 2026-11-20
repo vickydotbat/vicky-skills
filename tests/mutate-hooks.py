@@ -126,7 +126,7 @@ TESTS = {
     "springboard.sh": ["springboard", "springboard_approved_examples", "summit_approved_examples"],
     "summit.sh": ["summit", "summit_approved_examples"],
     "summit-obsidian.sh": ["summit", "summit_approved_examples"],
-    "plugin-data.sh": ["summit", "lesson-ledger"],
+    "plugin-data.sh": ["lesson-ledger"],
     "stop-reply.sh": ["stop-reply", "read-before-asking"],
     "read-before-asking.sh": ["read-before-asking"],
     "fetch-place-hint.sh": ["fetch-place-hint"],

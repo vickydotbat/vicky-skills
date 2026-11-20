@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 # summit.sh's own decisions beyond the approved examples: the usage, a missing
-# data folder or repository, the stamp, a record kept per repo, a count that
+# repository, the stamp, a record kept per repo, a count that
 # fails on one side only, and summit-obsidian.sh's rules.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
 scripts="$root/plugins/vicky-skills/scripts"
 summit="$scripts/summit.sh"
 fx=$(mktemp -d); trap 'rm -rf "$fx"' EXIT
-mkdir -p "$fx/a/docs/agents" "$fx/b/docs/agents" "$fx/plain" "$fx/data"
+mkdir -p "$fx/a/docs/agents" "$fx/b/docs/agents" "$fx/plain"
 git -C "$fx/a" init -q; git -C "$fx/b" init -q
-export CLAUDE_PLUGIN_DATA="$fx/data" CLAUDE_PROJECT_DIR="$fx/a"
+export CLAUDE_PROJECT_DIR="$fx/a"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 run() { bash "$summit" "$@" 2>"$fx/err"; }
@@ -18,11 +18,8 @@ doc() { printf 'Summit count: `%s`\n' "$1" > "$fx/a/docs/agents/issue-tracker.md
 
 check "no subcommand prints the usage and exits 2" 'run >/dev/null; [ $? = 2 ] && grep -q "usage: summit.sh" "$fx/err"'
 check "show before any count says so and fails" 'run show >/dev/null; [ $? = 1 ] && grep -q "nothing counted yet" "$fx/err"'
-check "with no data folder it refuses, exit 2" '[ "$(CLAUDE_PLUGIN_DATA= bash "$summit" show 2>&1)" = "summit: no plugin data folder" ] && { CLAUDE_PLUGIN_DATA= bash "$summit" show 2>/dev/null; [ $? = 2 ]; }'
 check "outside a repository it refuses, exit 2" 'CLAUDE_PROJECT_DIR="$fx/plain" bash "$summit" show 2>"$fx/err"; [ $? = 2 ] && grep -q "not in a repository" "$fx/err"'
-mkdir -p "$fx/plugins/cache/mkt/plug/1.0/scripts"; cp "$summit" "$scripts/plugin-data.sh" "$fx/plugins/cache/mkt/plug/1.0/scripts/"
 doc 'echo 2 1'
-check "an installed copy with no data folder set finds its own" 'echo "{}" | CLAUDE_PLUGIN_DATA= bash "$fx/plugins/cache/mkt/plug/1.0/scripts/summit.sh" auto && [ -n "$(ls "$fx/plugins/data/plug-mkt/summit")" ]'
 rm -f "$fx/a/.git/summit-last-session"
 check "auto prints nothing and exits 0" '[ -z "$(auto)" ] && [ ! -s "$fx/err" ]'
 check "auto stamps when the session began" '[ -s "$fx/a/.git/summit-last-session" ]'

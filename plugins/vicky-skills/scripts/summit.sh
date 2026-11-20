@@ -9,14 +9,12 @@
 #                    30 days, keeps both, and prints nothing the agent reads
 #   summit.sh show   prints the kept line as "summit: <text>", which the
 #                    viewscreen band shows; fails when nothing is kept
-# One file per repo in the plugin's data folder keeps the line.
+# The repo's git folder keeps the line, so the agent's shell and the hook
+# read the same one.
 set -u
 top=$(git -C "${CLAUDE_PROJECT_DIR:-.}" rev-parse --show-toplevel 2>/dev/null) || { echo "summit: not in a repository" >&2; exit 2; }
-# shellcheck source=plugin-data.sh
-. "$(dirname "$0")/plugin-data.sh"
-[ -n "${CLAUDE_PLUGIN_DATA:-}" ] || { echo "summit: no plugin data folder" >&2; exit 2; }
-file="$CLAUDE_PLUGIN_DATA/summit/$(tr '/' '_' <<<"$top")"
-stamp="$(git -C "$top" rev-parse --absolute-git-dir)/summit-last-session"
+gitdir=$(git -C "$top" rev-parse --absolute-git-dir)
+file="$gitdir/summit-line" stamp="$gitdir/summit-last-session"
 
 # B when closed is within 10% of opened, either way.
 verdict() {
@@ -57,7 +55,7 @@ case "${1:-}" in
     if [ -n "${sc:-}" ]; then
       line="Since $(label "$last"): $so opened, $sc closed · $line"
     fi
-    mkdir -p "${file%/*}" && echo "$line" > "$file" ;;
+    echo "$line" > "$file" ;;
   show)
     [ -s "$file" ] || { echo "summit: nothing counted yet" >&2; exit 1; }
     echo "summit: $(cat "$file")" ;;
