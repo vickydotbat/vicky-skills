@@ -53,7 +53,7 @@ out=$(pass)
 kill "${busy[@]}" 2>/dev/null; wait "${busy[@]}" 2>/dev/null
 check "ML2 a looping mutant dies with every core busy" 'grep -qE "^script $probe: ([0-9]+)/\1$" <<<"$out" && ! grep -q "^hung " <<<"$out"'
 # ML4: a test that fails late kills its mutant through its result.
-setup ml4 '[ "$x" = 1 ] || { sleep 8; exit 1; } # mutant-ok delete: the line only fails' '[ $n -gt 1 ] && sleep 8; bash "$hook"'
+setup ml4 '[ "$x" = 1 ] || { sleep 3; exit 1; } # mutant-ok delete: the line only fails' '[ $n -gt 1 ] && sleep 3; bash "$hook"'
 out=$(pass)
 check "ML4 a slow test is judged by its result" 'grep -qE "^script $probe: [1-9][0-9]*/" <<<"$out" && ! grep -q "^hung " <<<"$out"'
 exit $fail

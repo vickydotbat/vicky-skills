@@ -16,9 +16,10 @@ concurrency:
 jobs:
   checks:
     runs-on: ubuntu-latest
-    # Main runs near four minutes; the cap leaves room for a slow runner and
-    # still stops a hung step fast.
-    timeout-minutes: 8
+    # Main runs near seven minutes, three of them the mutation load tests and
+    # their red-first run; the cap leaves room for a slow runner and still
+    # stops a hung step fast.
+    timeout-minutes: 10
     steps:
       # A draft fails here and runs nothing else. Skipping would report as
       # passed and let a draft merge.
