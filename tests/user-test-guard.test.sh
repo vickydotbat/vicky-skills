@@ -72,7 +72,7 @@ done
 check "a hand-off inside backticks is quoted code" 'passes'
 check "a hand-off inside backticks is sent" 'sent "The guard reads \`let me know if it works\`."'
 
-{ user "go"; text "Let me know if it works."; } > "$fx/t.jsonl"
+{ jq -nc --arg ts "$(date -u +%FT%TZ)" '{type:"user",timestamp:$ts,message:{content:"go"}}'; text "Let me know if it works."; } > "$fx/t.jsonl"
 sleep 30 & live=$!
 echo "$live 1" > "$marker"
 check "a checklist page still open lets the reply through" 'passes'

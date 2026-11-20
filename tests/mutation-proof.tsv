@@ -48,8 +48,9 @@ since-user.sh	7be3c1c933152abd	aa89ac192d4cd28b	14/14
 skill-change-proven.sh	2a77ba5faffc92ea	4092a7189648e66e	13/13
 skill-ledger.sh	5a29eb7f617f6f60	5b87eaa3b3ecfeb1	17/17
 skill-started.sh	efccf28986c36af3	51812d9af299d72f	5/5
-skills/building/over-to-you/scripts/checklist.py	dd5d4c895c1c0068	fcb4be643393a8d6	82/82
+skills/building/over-to-you/scripts/checklist.py	7c1b3bf7d2bf2744	bee4420eae5e6c49	86/86
 skills/building/over-to-you/scripts/lint-checklist.py	80e5765a76b4cf46	530598300fdf49e4	61/61
+skills/building/over-to-you/scripts/ran.sh	40e67b26ed507cc6	bee4420eae5e6c49	34/34
 skills/building/video-captions/scripts/flatten-captions.sh	415082ac283f9808	37d767511d6f2968	6/6
 skills/commands/captains-log/scripts/hook-audit.py	486062a3faf327d6	974c7fd10d2960e2	64/64
 skills/commands/captains-log/scripts/idle-skills.py	a2b8bf6588ba88a3	5106d5763b5a3fd3	29/29
