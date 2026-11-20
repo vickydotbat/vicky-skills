@@ -30,6 +30,13 @@ when any mutant survives. A line ending in "# mutant-ok: <reason>" makes no
 mutant, and one ending in "# mutant-ok delete: <reason>" makes no deletion,
 for code no test can tell apart from its mutant.
 
+A machine's load decides no verdict. A test that works past its CPU limit, its
+CPU time on the real script times 1.5 plus 5 seconds, summed over the processes
+it starts, kills its mutant. A test that waits past a far wall-clock ceiling,
+its usual time times 10 plus 60 seconds (MUTATE_HOOKS_CEILING sets it), kills
+its mutant and is printed as "hung <script>:<line>: <mutated line>". Any other
+test is judged by its exit code, however long it took.
+
 Every test runs under `ulimit -d`, MUTANT_MEMORY of allocated memory per
 process, on the real script too, so a test that needs more fails before the
 pass starts rather than counting as a kill. The data limit leaves alone the
@@ -41,6 +48,7 @@ import io
 import os
 import queue
 import re
+import resource
 import shutil
 import signal
 import subprocess
@@ -337,6 +345,25 @@ def replace(path, text):
     os.replace(handle.name, path)
 
 
+CPU, HUNG = "cpu", "hung"
+TICK = os.sysconf("SC_CLK_TCK")
+
+
+def session_cpu(sid):
+    """CPU seconds used by the live processes of a session, with the children each has reaped."""
+    total = 0
+    for pid in os.listdir("/proc"):
+        try:
+            with open(f"/proc/{pid}/stat") as handle:
+                fields = handle.read().rsplit(")", 1)[1].split()
+        except (OSError, IndexError):
+            continue
+        # After the name: state, ppid, pgrp, session, ... utime, stime, cutime, cstime.
+        if pid.isdigit() and int(fields[3]) == sid:
+            total += sum(int(f) for f in fields[11:15])
+    return total / TICK
+
+
 def capped(test):
     """The command that runs a test with each of its processes held to MUTANT_MEMORY."""
     return ["bash", "-c", f'ulimit -d {MUTANT_MEMORY // 1024} && exec bash "$0"', test]
@@ -352,30 +379,35 @@ class Worker:
         # A checkout, as CI's is: some tests treat the repo root as one.
         subprocess.run(["git", "init", "-q", self.root], check=True)
 
-    def test(self, test, limit):
-        """The test's exit code, or None when it ran past its limit."""
-        # Its own process group, so a timeout stops every child the test started.
+    def test(self, test, cpu_limit, ceiling):
+        """The test's exit code, CPU when its processes worked past cpu_limit, or HUNG when it
+        waited past the ceiling. CPU seconds don't grow on a busy machine, so only a test that
+        neither works nor ends is left to the clock."""
+        # Its own session, so its processes can be found and stopped together.
         proc = subprocess.Popen(capped(os.path.join(self.root, "tests", test + ".test.sh")),
                                 env=dict(os.environ, MUTATE_HOOKS_INNER="1"), stdin=subprocess.DEVNULL,
                                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
-        try:
-            return proc.wait(timeout=limit)
-        except subprocess.TimeoutExpired:
-            os.killpg(proc.pid, signal.SIGKILL)
-            proc.wait()
-            return None
+        start = time.monotonic()
+        while True:
+            try:
+                return proc.wait(timeout=0.2)
+            except subprocess.TimeoutExpired:
+                pass
+            verdict = CPU if session_cpu(proc.pid) > cpu_limit else HUNG if time.monotonic() - start > ceiling else None
+            if verdict:
+                os.killpg(proc.pid, signal.SIGKILL)
+                proc.wait()
+                return verdict
 
     def run(self, script, text, timeouts):
         path = os.path.join(self.root, os.path.relpath(path_of(script), ROOT))
         # A new file renamed into place, since a test left running may still hold the old one open.
         replace(path, text)
         try:
-            for test, limit in timeouts:
-                # A busy machine can stall a test past its limit once: only a second
-                # timeout, at twice the limit, makes a kill.
-                code = self.test(test, limit)
-                if code is None:
-                    code = self.test(test, limit * 2)
+            for test, cpu_limit, ceiling in timeouts:
+                code = self.test(test, cpu_limit, ceiling)
+                if code == HUNG:
+                    return HUNG
                 if code != 0:
                     return True
             return False
@@ -388,19 +420,21 @@ def baseline(script, root):
     """Each test's time on the real script, fastest first, with its per-mutant timeout. It runs in a
     worker copy, as every mutant does: a test that fails there for any reason would count every
     mutant as killed."""
-    times = []
+    times, fixed = [], os.environ.get("MUTATE_HOOKS_CEILING")
     for test in TESTS[script]:
-        start = time.monotonic()
+        start, used = time.monotonic(), resource.getrusage(resource.RUSAGE_CHILDREN)
         done = subprocess.run(capped(os.path.join(root, "tests", test + ".test.sh")), stdin=subprocess.DEVNULL,
                               env=dict(os.environ, MUTATE_HOOKS_INNER="1"), capture_output=True)
-        took = time.monotonic() - start
+        took, after = time.monotonic() - start, resource.getrusage(resource.RUSAGE_CHILDREN)
+        cpu = after.ru_utime + after.ru_stime - used.ru_utime - used.ru_stime
         if done.returncode:
             failing = [line for line in done.stdout.decode(errors="replace").splitlines() if line.startswith("FAIL")]
             sys.exit(f"mutate-hooks: {test} fails on the real {script} in a copy of plugins/ and tests/ alone, where mutants run; "
                      "fix it before a pass, or it would count every mutant as killed" + "".join("\n  " + line for line in failing[:5]))
-        # Stryker's rule: a mutant times out at the baseline times 1.5 plus a fixed margin.
-        times.append((took, test, took * 1.5 + 5))
-    return [(test, limit) for _, test, limit in sorted(times)], sum(t for t, _, _ in times)
+        # Stryker's rule, baseline times 1.5 plus a fixed margin, in CPU seconds. The wall-clock
+        # ceiling only catches a test that waits forever, so it sits far out.
+        times.append((took, test, cpu * 1.5 + 5, float(fixed) if fixed else took * 10 + 60))
+    return [(test, cpu, ceiling) for _, test, cpu, ceiling in sorted(times)], sum(t[0] for t in times)
 
 
 def main(argv):
@@ -482,7 +516,10 @@ def main(argv):
         for name, original, found, timeouts, _, code_hash, test_hash, whole in plan:
             killed = list(pool.map(lambda m: one(name, original, m, timeouts), found))
             unrun += killed.count(None)
-            print(f"script {name}: {killed.count(True)}/{len(found)}", flush=True)
+            print(f"script {name}: {killed.count(True) + killed.count(HUNG)}/{len(found)}", flush=True)
+            for (n, line), k in zip(found, killed):
+                if k == HUNG:
+                    print(f"hung {name}:{n + 1}: {line.strip()}", flush=True)
             mine = [f"survivor {name}:{n + 1}: {line.strip()}" for (n, line), k in zip(found, killed) if k is False]
             survivors += mine
             if not mine and None not in killed and not again:

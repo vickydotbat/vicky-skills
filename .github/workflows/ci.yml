@@ -316,8 +316,10 @@ jobs:
         run: tests/approve_all_approved_examples.test.sh
       - name: Faster mutation runner
         run: tests/mutation_speed_approved_examples.test.sh
-      - name: A mutant whose test stalls once survives
-        run: tests/mutation_timeout_retry.test.sh
+      - name: A machine's load decides no mutant's verdict
+        run: tests/mutation_load_approved_examples.test.sh
+      - name: Looping, waiting and slow mutants
+        run: tests/mutation-load.test.sh
       - name: Mutation runner memory limit
         run: tests/mutate-hooks-memory.test.sh
       - name: Mutation test map names each script once
