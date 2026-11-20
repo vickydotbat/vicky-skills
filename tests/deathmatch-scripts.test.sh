@@ -94,5 +94,16 @@ out=$(BATCH_MEMINFO="$t/mem64g" bash "$dm/batch.sh" 08 2>&1)
 check "batch takes 08 as eight" 'grep -qx "at once: 3" <<<"$out"'
 out=$(BATCH_MEMINFO="$t/mem64g" bash "$dm/batch.sh" 02 2>&1)
 check "batch prints 02 as two at once" 'grep -qx "at once: 2" <<<"$out"'
+out=$(BATCH_MEMINFO="$t/mem64g" bash "$dm/batch.sh" holds 2>&1)
+check "Holds fights alone" 'grep -qx "at once: 1" <<<"$out"'
+check "Holds gets room for a mutation pass, up to 6G" 'grep -qx "memory cap: 6.0G" <<<"$out"'
+printf 'MemAvailable:    8388608 kB\n' > "$t/mem8g"
+out=$(BATCH_MEMINFO="$t/mem8g" bash "$dm/batch.sh" holds 2>&1)
+check "Holds takes half the memory free when that is under 6G" 'grep -qx "memory cap: 4.0G" <<<"$out"'
+out=$(BATCH_MEMINFO="$t/mem8g" bash "$dm/batch.sh" 1 2>&1)
+check "a count keeps its 2G ceiling" 'grep -qx "memory cap: 2.0G" <<<"$out"'
+printf 'MemAvailable:    1048576 kB\n' > "$t/mem1g"
+out=$(BATCH_MEMINFO="$t/mem1g" bash "$dm/batch.sh" holds 2>&1)
+check "Holds under 1G warns that a cap finding is unproven" 'grep -q "under 1G" <<<"$out"'
 rm -rf "$g"
 exit $fail
