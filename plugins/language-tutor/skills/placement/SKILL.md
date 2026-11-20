@@ -13,15 +13,20 @@ Speak to the learner in English, and write the tasks, items and model answers in
 
 From the CEFR Companion Volume global scale (Council of Europe, 2020):
 
-- A1: Can understand and use familiar everyday expressions and very basic phrases aimed at the satisfaction of needs of a concrete type.
-- A2: Can communicate in simple and routine tasks requiring a simple and direct exchange of information on familiar and routine matters.
-- B1: Can produce simple connected text on topics which are familiar or of personal interest.
-- B2: Can interact with a degree of fluency and spontaneity that makes regular interaction with users of the target language quite possible without imposing strain on either party.
-- C1: Can express themselves fluently and spontaneously without much obvious searching for expressions.
-- C2: Can express themselves spontaneously, very fluently and precisely, differentiating finer shades of meaning.
+```text
+A1: Can understand and use familiar everyday expressions and very basic phrases aimed at the satisfaction of needs of a concrete type.
+A2: Can communicate in simple and routine tasks requiring a simple and direct exchange of information on familiar and routine matters.
+B1: Can produce simple connected text on topics which are familiar or of personal interest.
+B2: Can interact with a degree of fluency and spontaneity that makes regular interaction with users of the target language quite possible without imposing strain on either party.
+C1: Can express themselves fluently and spontaneously without much obvious searching for expressions.
+C2: Can express themselves spontaneously, very fluently and precisely, differentiating finer shades of meaning.
+```
 
 ## Steps
 
 1. **Ask each line** from A1 upward, in English: "Can you do this?" Stop at the first no. Done when a line got a no, or C2 got a yes.
+   Proven by: plugins/language-tutor/evals/placement/runs-before-the-session
 2. **Check the top yes** with one short task at that level in the target language. When the answer fails the line, step one level down. Done when the task is answered.
+   Proven by: plugins/language-tutor/evals/placement/runs-before-the-session
 3. **Record the level** with `tutor profile set-level <level> --line "<each can-do line answered yes>"`, and say the level is an estimate. Done when the profile holds the level.
+   Proven by: tests/language_tutor_approved_examples.test.sh

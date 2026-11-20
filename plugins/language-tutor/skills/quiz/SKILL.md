@@ -12,6 +12,10 @@ Speak to the learner in English, and write the tasks, items and model answers in
 ## Steps
 
 1. **Pick the items** with `tutor quiz pick`. When `items` is empty, say its `message` in one line and stop. Done when the items are in hand.
+   Proven by: tests/language_tutor_approved_examples.test.sh
 2. **Ask them in the order given**: a `recall` item asks for the `answer` from its `front`; a `cloze` item gives the learner's old `original` with the faulty part blanked; a `choice` item offers the `answer` among three plausible wrong options. Show no running score. Done when each item is asked.
+   Proven by: plugins/language-tutor/evals/quiz/wrong-answer-gets-the-fix
 3. **Give feedback on every item** as it is answered: a wrong answer gets the right answer and the rule at once, and a right one gets one line with the full correct form. Grade each `card` item with `tutor grade <id> again` when wrong and `good` when right. When the learner gives several answers at once, still give each item its own feedback line, with the right answer after every wrong one. Done when every item has its feedback and every card item its grade.
+   Proven by: plugins/language-tutor/evals/quiz/wrong-answer-gets-the-fix
 4. **Report** the score as right out of total, then name the weakest item type. Done when the report is sent.
+   Proven by: plugins/language-tutor/evals/quiz/wrong-answer-gets-the-fix

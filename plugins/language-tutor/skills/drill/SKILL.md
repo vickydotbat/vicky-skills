@@ -12,6 +12,10 @@ Speak to the learner in English, and write the tasks, items and model answers in
 ## Steps
 
 1. **Fetch what is due** with `tutor due --limit 10`. When `items` is empty, say its `message` in one line and stop. Done when the items are in hand.
+   Proven by: tests/language_tutor_approved_examples.test.sh
 2. **Ask each item** by its `front` and wait for the answer. Done when each item has an answer.
+   Proven by: plugins/language-tutor/evals/drill/asks-grades-records
 3. **Grade each answer** with `tutor grade <id> again|hard|good|easy`: wrong is `again`, right with effort is `hard`, right is `good`, instant is `easy`. Give the right answer at once after a wrong one. Done when every item is graded in the store.
+   Proven by: plugins/language-tutor/evals/drill/asks-grades-records
 4. **Close** with the count right, and when `left` is above 0, say how many are left. Done when the line is sent.
+   Proven by: tests/language_tutor_approved_examples.test.sh
