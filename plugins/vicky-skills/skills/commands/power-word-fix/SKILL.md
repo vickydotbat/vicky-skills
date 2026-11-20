@@ -16,7 +16,7 @@ The user names something broken. Sort it, run the skills its kind calls for, and
 1. **Restate it** in one sentence: what is broken, and what "fixed" looks like. Done when the user could answer it with a yes. Ask only when two readings lead to different fixes.
 2. **Sort it** into one kind from the table. A problem of two kinds is two fixes, done in the table's order. Done when each part has a kind.
 3. **Run the skills** for its kind, in order. Done when each skill's own last step is done.
-4. **Prove it.** Rerun the loop that showed the problem and see it pass. For what only a person can see, hand it over with `over-to-you`. Done when the proof is in your reply: the command and its result, or the human's verdict.
+4. **Prove it.** Rerun the loop that showed the problem and see it pass, and the same for each sibling path `never-lupus` step 6 listed. For what only a person can see, hand it over with `over-to-you`. Done when the proof is in your reply: the command and its result, or the human's verdict.
 5. **Close the loop.** Commit on the effort's branch, and settle the tickets with `make-it-so`'s [SETTLE.md](../../shipping/make-it-so/SETTLE.md) when a ticket or pull request is involved. Done when nothing about the fix lives only in the chat.
 
 ## Kinds
