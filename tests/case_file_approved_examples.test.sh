@@ -109,13 +109,12 @@ zips=("$fx"/out/*.zip)
 listing=$(python3 -c 'import sys,zipfile; print("\n".join(zipfile.ZipFile(sys.argv[1]).namelist()))' "${zips[0]}" 2>/dev/null)
 check "CF-E9 one zip holds a README, the case file and the files in folders" '[ "${#zips[@]}" -eq 1 ] && grep -Eq "(^|/)README(\.md)?$" <<<"$listing" && grep -q "text.html$" <<<"$listing" && grep -Eq "/glow\.frag$" <<<"$listing" && grep -Eq "/stone\.tga$" <<<"$listing"'
 
-# Given an earlier bundle in the output folder
+# Given an earlier bundle of this case and an unrelated zip in the output folder
 # When the case file is bundled again
-# Then the new zip is written beside it
-# And nothing in the folder is deleted
-printf x > "$fx/out/earlier.zip"
-before=$(ls "$fx/out")
+# Then one zip of this case is left, the new one
+# And the unrelated zip is kept
+printf x > "$fx/out/text-2026-01-01-0000.zip"; printf x > "$fx/out/text-20260101-000000-1.zip"; printf x > "$fx/out/other.zip"
 bundle "$fx/text.html" "$fx/case/files" "$fx/out" --readme "$fx/README.md" >/dev/null
-check "CF-E10 a second bundle is written beside the first" '[ "$(ls "$fx"/out/*.zip | wc -l)" -eq 3 ]'
-check "CF-E10 nothing in the folder is deleted" '[ "$(ls "$fx"/out/*.zip | wc -l)" -eq 3 ] && for f in $before; do [ -e "$fx/out/$f" ] || exit 1; done'
+check "CF-E10 a rebundle leaves one zip of this case" '[ "$(ls "$fx"/out/text-*.zip | wc -l)" -eq 1 ] && [ ! -e "$fx/out/text-2026-01-01-0000.zip" ] && [ ! -e "$fx/out/text-20260101-000000-1.zip" ]'
+check "CF-E10 an unrelated zip is kept" '[ -e "$fx/out/other.zip" ]'
 exit $fail

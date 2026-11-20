@@ -160,9 +160,9 @@ for k in research demonstration; do
   d=$(case_dir "future-$k"); section "$d" 1-a.html "<!-- KIND $k -->\n<p>The glow worked. Next, we will ship it.</p>\n"
   # The build runs the check too, so it refuses the page: the check is then run on the HTML the build would have written.
   built=$(build "$d" "$d/out/f.html"); bstatus=$?
-  python3 -c "import sys; sys.path.insert(0, sys.argv[1]); import build; open(sys.argv[3], 'w').write(build.page(sys.argv[2]))" "$kit" "$d" "$d/raw.html" 2>/dev/null
-  out=$(caught "$d/raw.html"); status=$?
-  check "CF-E43 the check names the future tense on a $k page" '[ "$bstatus" -ne 0 ] && grep -q "we will ship it" <<<"$built" && [ -s "$d/raw.html" ] && [ "$status" -ne 0 ] && grep -q "we will ship it" <<<"$out"'
+  mkdir -p "$d/out"; python3 -c "import sys; sys.path.insert(0, sys.argv[1]); import build; open(sys.argv[3], 'w').write(build.page(sys.argv[2]))" "$kit" "$d" "$d/out/raw.html" 2>/dev/null
+  out=$(caught "$d/out/raw.html"); status=$?
+  check "CF-E43 the check names the future tense on a $k page" '[ "$bstatus" -ne 0 ] && grep -q "we will ship it" <<<"$built" && [ -s "$d/out/raw.html" ] && [ "$status" -ne 0 ] && grep -q "we will ship it" <<<"$out"'
 done
 
 # Given a claim whose visible label differs from its machine-readable one
