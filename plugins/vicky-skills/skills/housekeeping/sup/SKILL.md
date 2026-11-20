@@ -29,6 +29,7 @@ A **catch-up** answers four questions, plus the lessons engraved, for someone wh
    - `merged-ticket-open:`: its pull requests merged and its ticket is still open. Offer nothing from the line. Ask once whether the ticket closes, after reading its thread: a star chart with open children stays open.
 
    When the user moved away from something unfinished, end with at most three lines: "Still want X?" Count only work they left, not work you found. Done when each parked item is asked once or dropped, and no `done:` or `merged-ticket-open:` line was offered.
+   Proven by: tests/parked-state.test.sh
 4. **Pick up a handoff.** When step 1 found a `**Handoff**` comment or note, run `do` on the work it names, after the catch-up is sent. When the `.todo` Handoff line names other work than the branch's own handoff, the `.todo` line is the newer pointer: resume it, and name the branch's work under Still want: the ticket or pull request it links is the source, so `do` step 0 asks nothing, and `do` resumes at the step that work's records show. Skip step 5 then: `do` ends in its own report. Done when `do` has started on the handed-off work, or no handoff was found.
 5. **Look ahead.** Run `cerebro` as a forecast. Done when its proposals end the catch-up, or it found nothing to forecast.
 
