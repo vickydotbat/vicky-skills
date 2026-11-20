@@ -43,7 +43,7 @@ jobs:
         run: |
           pkgs=(); command -v convert >/dev/null || pkgs+=(imagemagick); command -v pdftotext >/dev/null || pkgs+=(poppler-utils)
           if [ ${#pkgs[@]} -gt 0 ]; then
-            sudo apt-get install -y -q --no-install-recommends "${pkgs[@]}" || { sudo apt-get update -q && sudo apt-get install -y -q --no-install-recommends "${pkgs[@]}"; }
+            sudo apt-get install -y -q "${pkgs[@]}" || { sudo apt-get update -q && sudo apt-get install -y -q "${pkgs[@]}"; }
           fi
           command -v chromium >/dev/null || sudo ln -s "$(command -v google-chrome)" /usr/local/bin/chromium
       - name: tools-declared finds a runtime a script calls but tests/tools leaves out
@@ -457,7 +457,7 @@ jobs:
         run: |
           pkgs=(); command -v convert >/dev/null || pkgs+=(imagemagick); command -v pdftotext >/dev/null || pkgs+=(poppler-utils)
           if [ ${#pkgs[@]} -gt 0 ]; then
-            sudo apt-get install -y -q --no-install-recommends "${pkgs[@]}" || { sudo apt-get update -q && sudo apt-get install -y -q --no-install-recommends "${pkgs[@]}"; }
+            sudo apt-get install -y -q "${pkgs[@]}" || { sudo apt-get update -q && sudo apt-get install -y -q "${pkgs[@]}"; }
           fi
           command -v chromium >/dev/null || sudo ln -s "$(command -v google-chrome)" /usr/local/bin/chromium
       # The viewscreen band is a function-hook module; only Claude Code's own

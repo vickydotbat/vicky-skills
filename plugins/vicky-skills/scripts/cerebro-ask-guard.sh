@@ -11,18 +11,21 @@ command -v jq >/dev/null || exit 0 # mutant-ok delete: stop-reply.sh reads with 
 . "$(dirname "$0")/stop-reply.sh"
 words=$(prose)
 # Each proposal is a "- C<n>:" line and the lines under it. It asks when its
-# own text, or a later "Waiting on you" line naming its code, asks.
+# own text, or a later "Waiting on you" line naming its code, asks. An ask that
+# also deletes, publishes, releases or changes a setting or a secret may wait.
 ask=$(awk '
   /Cerebro/ {on=1; next}
   !on {next}
-  match($0, /^- (C[0-9]+):/) {code=substr($0, 3, RLENGTH - 3); text[code]=$0; next}
+  match($0, /^[-*] \**C[0-9]+\**:/) {code=substr($0, 3, RLENGTH - 3); gsub(/\*/, "", code); text[code]=$0; next}
   /^[[:space:]]+/ && code != "" {text[code]=text[code] " " $0; next}
   {code=""; tail=tail " " $0}
   END {
     for (c in text) {
       t = tolower(text[c])
-      if (t !~ /new (pull request|pr)([^a-z]|$)/) continue
-      if (t ~ /waits on you|want it\?/ || (tolower(tail) ~ /waiting on you|want it\?/ && tail ~ ("(^|[^A-Za-z0-9])" c "([^0-9]|$)"))) {print text[c]; exit}
+      if (t !~ /(^|[^a-z])(pull request|pr)s?([^a-z]|$)/ || t ~ /not (a |an )?(new )?(pull request|pr)/) continue
+      if (t ~ /delet|remov|drop|publish|releas|setting|secret|rotat|force/) continue
+      asks = "waits on you|want it\\?|shall i|should i|go ahead\\?|reply (\\*\\*)?yes"
+      if (t ~ asks || (tolower(tail) ~ ("waiting on you|" asks) && tail ~ ("(^|[^A-Za-z0-9])" c "([^0-9]|$)"))) {print text[c]; exit}
     }
   }' <<<"$words")
 [ -n "$ask" ] || exit 0

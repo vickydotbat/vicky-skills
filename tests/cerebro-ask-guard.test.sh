@@ -41,4 +41,20 @@ check "no transcript goes through" '[ -z "$(echo "{}" | bash "$hook" 2>/dev/null
 check "a new pull request named on a question line under the ask is sent back" 'sent_back'
 { user "go"; text $'🧠 **Cerebro**\n- C1: Split the job in a new pull request. Done: #285 is green.\n- C2: Delete the old branch. Waits on a deletion.\n\n🚪 Waiting on you: reply **yes** to C2.'; } > "$fx/t.jsonl"
 check "a waiting line that names another proposal goes through" 'passes'
+for p in "It needs its own pull request. Want it?" "Needs another PR. Shall I?" "New pull requests, two of them. Should I?" "A follow-up PR. Go ahead?"; do
+  { user "go"; text "🧠 **Cerebro**"$'\n'"- C1: Fix CI. $p"; } > "$fx/t.jsonl"
+  check "an ask in other words is sent back: $p" 'sent_back'
+done
+{ user "go"; text $'🧠 **Cerebro**\n- **C1**: Split the job. Want it? A new pull request.'; } > "$fx/t.jsonl"
+check "a bold code is read" 'sent_back'
+{ user "go"; text $'🧠 **Cerebro**\n* C1: Split the job. Want it? A new pull request.'; } > "$fx/t.jsonl"
+check "an asterisk bullet is read" 'sent_back'
+for p in "Open a new pull request to delete the old branch. Want it?" "Publish the release in a new pull request. Want it?" "Rotate the shared deploy key. Waits on you: others rely on it." "Change a setting others use. Waits on you: not a new pull request alone."; do
+  { user "go"; text "🧠 **Cerebro**"$'\n'"- C1: $p"; } > "$fx/t.jsonl"
+  check "a costly ask goes through: $p" 'passes'
+done
+{ user "go"; text $'🧠 **Cerebro**\n- C1: Split the job. Waits on you: not a pull request, a decision.'; } > "$fx/t.jsonl"
+check "a reason that says it is not a pull request goes through" 'passes'
+{ user "go"; text $'🧠 **Cerebro**\n- C1: Split the job in a new pull request. Done: #285 is green.\nThe merge is yours. Want it?'; } > "$fx/t.jsonl"
+check "an ask on a later line that names no proposal goes through" 'passes'
 exit $fail
