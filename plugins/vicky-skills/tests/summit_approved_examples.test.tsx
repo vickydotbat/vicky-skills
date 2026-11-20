@@ -1,7 +1,9 @@
-// approved-spec: the band examples approved on the star "Summit: an
-// opened-versus-closed record", 2026-11-01. Each test is named after its
-// example and drives the viewscreen band through Claude Code's mod test kit:
-// the band learns the summit from the `summit:` line that summit.sh prints.
+// approved-spec: the band examples ticked on the drafts page for
+// summit-automatic, 2026-11-20, and those approved on the star "Summit: an
+// opened-versus-closed record", 2026-11-01. Each test drives the viewscreen
+// band through Claude Code's mod test kit: the band reads the kept summit line
+// itself, with summit.sh show, and also learns it from a `summit:` line in a
+// tool's output.
 import { describe, expect, mock, test } from 'claude-code/testing'
 import type { Engine } from 'claude-code/testing'
 
@@ -19,38 +21,65 @@ const BAND = {
   },
 } as const
 
-const LINE = 'Since Sat: 4 opened, 9 closed · 30 days: +611 / −451, C'
+const LINE = 'Since Fri: 0 opened, 3 closed · 30 days: +322 / −30, C'
+
+function engine(on: Parameters<Parameters<typeof test>[1]>[1]): void {
+  mock.clock(on, { now: 1_000_000 })
+  on('ui.render', { component: 'AbovePrompt' }, ($, e) => {
+    const { Box } = $.ui.resolve(e)
+    return <Box key="engine" />
+  })
+  on('session.start', (_$, e) => ({ cwd: e.cwd }))
+}
 
 describe('summit', () => {
-  // Given four tickets opened and nine closed since your last session, which started on Saturday 31 October, and 611 opened and 451 closed in the last 30 days
-  // When the viewscreen band shows
-  // Then the band reads Since Sat: 4 opened, 9 closed · 30 days: +611 / −451, C
-  test('the summit in the viewscreen band', async ($, on) => {
-    mock.clock(on, { now: 1_000_000 })
-    on('ui.render', { component: 'AbovePrompt' }, ($, e) => {
-      const { Box } = $.ui.resolve(e)
-      return <Box key="engine" />
-    })
-    on('tool.call', async () => ({ result: { stdout: `recorded\nsummit: ${LINE}\n`, stderr: '' } }) as never)
+  // Given a repo whose tracker doc has a Summit count line, and your last session started on Friday
+  // When a session starts
+  // Then the band shows Since Fri: 0 opened, 3 closed · 30 days: +322 / −30, C
+  // And the agent is told nothing about tracker counts or the summit
+  test('the band shows the summit with no agent work', async ($, on) => {
+    engine(on)
+    on('process.run', (_$: unknown, e: { argv: string[] }) => ({
+      value: { exitCode: 0, stderr: '', stdout: e.argv.some(a => a.endsWith('summit.sh')) ? `summit: ${LINE}\n` : '/r/.git\n/r/.git\n' },
+    }))
+    await $.session.start({ cwd: '/r' } as never)
     const ui = await $.ui.mount(BAND)
-
-    await $.tool.call({ tool: 'Bash', command: 'bash scripts/summit.sh record 611 451 4 9' } as Parameters<Engine['tool']['call']>[0])
 
     expect((await ui.find({ key: 'summit' }))?.text ?? '').toContain(LINE)
   })
 
-  // Given a session where nothing has been counted yet
+  // Given a repo whose tracker doc has no Summit count line
+  // When a session starts
+  // Then the band shows no summit line, and the agent is told nothing about it
+  test('no Summit count line, no summit', async ($, on) => {
+    engine(on)
+    on('process.run', (_$: unknown, e: { argv: string[] }) => ({
+      value: e.argv.some(a => a.endsWith('summit.sh'))
+        ? { exitCode: 1, stderr: 'summit: nothing counted yet\n', stdout: '' }
+        : { exitCode: 0, stderr: '', stdout: '/r/.git\n/r/.git\n' },
+    }))
+    await $.session.start({ cwd: '/r' } as never)
+    const ui = await $.ui.mount(BAND)
+
+    expect(await ui.find({ key: 'activity' })).toBeDefined()
+    expect(await ui.find({ key: 'summit' })).toBeUndefined()
+  })
+
+  // Given four tickets opened and nine closed since your last session, which started on Saturday 31 October, and 611 opened and 451 closed in the last 30 days
   // When the viewscreen band shows
-  // Then the band shows no summit line
-  test('the summit before anything is counted', async ($, on) => {
+  // Then the band reads Since Sat: 4 opened, 9 closed · 30 days: +611 / −451, C
+  test('the summit in the viewscreen band', async ($, on) => {
+    const told = 'Since Sat: 4 opened, 9 closed · 30 days: +611 / −451, C'
     mock.clock(on, { now: 1_000_000 })
     on('ui.render', { component: 'AbovePrompt' }, ($, e) => {
       const { Box } = $.ui.resolve(e)
       return <Box key="engine" />
     })
+    on('tool.call', async () => ({ result: { stdout: `summit: ${told}\n`, stderr: '' } }) as never)
     const ui = await $.ui.mount(BAND)
 
-    expect(await ui.find({ key: 'activity' })).toBeDefined()
-    expect(await ui.find({ key: 'summit' })).toBeUndefined()
+    await $.tool.call({ tool: 'Bash', command: 'bash scripts/summit.sh show' } as Parameters<Engine['tool']['call']>[0])
+
+    expect((await ui.find({ key: 'summit' }))?.text ?? '').toContain(told)
   })
 })

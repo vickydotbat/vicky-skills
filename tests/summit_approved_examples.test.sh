@@ -1,42 +1,86 @@
 #!/usr/bin/env bash
-# approved-spec: the examples approved on the star "Summit: an
-# opened-versus-closed record", 2026-11-01. The session-start checks run
-# springboard.sh in a fixture repo with a stand-in gh, and summit.sh records
-# the counts the agent took, so each check sees what the session sees.
+# approved-spec: the examples ticked on the drafts page for summit-automatic,
+# 2026-11-20, and the verdict examples approved on the star "Summit: an
+# opened-versus-closed record", 2026-11-01. Each check runs the session-start
+# hooks in a fixture repo, then reads the line the band shows with
+# summit.sh show, so each check sees what the session sees.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
 plugin="$root/plugins/vicky-skills"
-hook="$plugin/scripts/springboard.sh"
 summit="$plugin/scripts/summit.sh"
 fx=$(mktemp -d); trap 'rm -rf "$fx"' EXIT
-mkdir -p "$fx/bin" "$fx/repo" "$fx/data"
+mkdir -p "$fx/bin" "$fx/repo/docs/agents" "$fx/data"
 printf '#!/usr/bin/env bash\necho "[]"\n' > "$fx/bin/gh"; chmod +x "$fx/bin/gh"
-export PATH="$fx/bin:$PATH" CLAUDE_PROJECT_DIR="$fx/repo" CLAUDE_PLUGIN_DATA="$fx/data"
+export PATH="$fx/bin:$PATH" CLAUDE_PROJECT_DIR="$fx/repo" CLAUDE_PLUGIN_DATA="$fx/data" CLAUDE_PLUGIN_ROOT="$plugin"
 git -C "$fx/repo" init -q
 printf '.todo\n' > "$fx/repo/.gitignore"
-# The repo has a tracker, so the session-start counts run.
-mkdir -p "$fx/repo/docs/agents"; : > "$fx/repo/docs/agents/issue-tracker.md"
-stamp="$fx/repo/.git/springboard-last-session"
+doc="$fx/repo/docs/agents/issue-tracker.md"
+stamp="$fx/repo/.git/summit-last-session"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
-start() { echo '{"hook_event_name":"SessionStart","source":"startup"}' | bash "$hook" 2>/dev/null; }
-record() { (cd "$fx/repo" && bash "$summit" record "$1" "$2" 2>/dev/null); }
-fresh() { rm -rf "$fx/data"; mkdir -p "$fx/data"; }
-verdict() { fresh; record "$1" "$2" >/dev/null; start | grep -o '30 days: [^.]*'; }
+# A tracker doc whose count prints <since> for the time of the last session
+# and <thirty> for the date 30 days ago.
+counts() { printf '# Tickets\n\nSummit count: `case "$SUMMIT_SINCE" in *T*) echo %s ;; *) echo %s ;; esac`\n' "$1" "$2" > "$doc"; }
+# The agent's words from every session-start hook that speaks of the summit.
+start() {
+  local in='{"hook_event_name":"SessionStart","source":"startup"}'
+  { echo "$in" | bash "$plugin/scripts/summit.sh" auto; echo "$in" | bash "$plugin/scripts/springboard.sh"; } 2>/dev/null
+}
+band() { (cd "$fx/repo" && bash "$summit" show 2>/dev/null); }
+fresh() { rm -rf "$fx/data" "$stamp"; mkdir -p "$fx/data"; }
+verdict() { fresh; counts "0 0" "$1 $2"; start >/dev/null; band | grep -o '30 days: .*'; }
 
-# Given your last session in this repo started on Friday 23 October
+# Given a repo whose tracker doc has a Summit count line, and your last session started on Friday
 # When a session starts
-# Then the line reads Since 23 Oct: 4 opened, 9 closed
-date -d '9 days ago' -Iseconds > "$stamp"
-want="Since $(date -d '9 days ago' '+%-d %b'): <n> opened, <m> closed"
-check "since a week or more ago" 'grep -qF "$want" <<<"$(start)"'
+# Then the band shows Since Fri: 0 opened, 3 closed · 30 days: +322 / −30, C
+# And the agent is told nothing about tracker counts or the summit
+fresh; counts "0 3" "322 30"; date -d '2 days ago' -Iseconds > "$stamp"
+told=$(start)
+check "SA1 the band shows the summit with no agent work" \
+  '[ "$(band)" = "summit: Since $(date -d "2 days ago" +%a): 0 opened, 3 closed · 30 days: +322 / −30, C" ] && ! grep -qi "summit\|tracker\|opened" <<<"$told"'
+
+# Given a repo whose tracker doc has no Summit count line
+# When a session starts
+# Then the band shows no summit line, and the agent is told nothing about it
+fresh; printf '# Tickets\n' > "$doc"; told=$(start)
+check "SA2 no Summit count line, no summit" '[ -z "$(band)" ] && ! grep -qi "summit\|tracker" <<<"$told"'
+
+# Given a repo whose Summit count command fails or prints something that is not two numbers
+# When a session starts
+# Then the band shows no summit line, and the agent is told nothing about it
+fresh; printf 'Summit count: `false`\n' > "$doc"; told=$(start)
+fresh2=$(band)
+fresh; printf 'Summit count: `echo lots`\n' > "$doc"; told2=$(start)
+check "SA3 a count that fails shows nothing" '[ -z "$fresh2" ] && [ -z "$(band)" ] && ! grep -qi "summit" <<<"$told$told2"'
+
+# Given a repo whose Summit count command never ends
+# When a session starts
+# Then the session opens within the hook's time limit, with no summit line
+fresh; printf 'Summit count: `sleep 60`\n' > "$doc"
+limit=$(jq '[.hooks.SessionStart[].hooks[] | select(.command | test("summit.sh"))][0].timeout' "$plugin/hooks/hooks.json" 2>/dev/null)
+t0=$(date +%s); start >/dev/null; took=$(( $(date +%s) - t0 ))
+check "SA4 a count that hangs never holds up the session" '[ -n "$limit" ] && [ "$limit" != null ] && [ "$took" -lt "$limit" ] && [ -z "$(band)" ]'
 
 # Given no earlier session in this repo
 # When a session starts
-# Then the line holds only the 30-day part: 30 days: +611 / −451, C
-rm -f "$stamp"; fresh; record 611 451 >/dev/null
-out=$(start)
-check "first session in a repo" 'grep -qF "30 days: +611 / −451, C" <<<"$out" && ! grep -q "Since " <<<"$out"'
+# Then the band shows only the 30-day part: 30 days: +611 / −451, C
+fresh; counts "4 9" "611 451"; start >/dev/null
+check "SA5 first session in a repo" '[ "$(band)" = "summit: 30 days: +611 / −451, C" ]'
+
+# Given an Obsidian tracker and the obsidian_vault setting naming your vault
+# When a session starts
+# Then the band counts that vault's notes
+# And with the setting empty, the band shows no summit line
+fresh; vault="$fx/vault"; mkdir -p "$vault/proj"
+printf 'Summit count: `bash "$CLAUDE_PLUGIN_ROOT/scripts/summit-obsidian.sh" "$CLAUDE_PLUGIN_OPTION_OBSIDIAN_VAULT/proj"`\n' > "$doc"
+printf -- '---\nstatus: open\n---\n' > "$vault/proj/$(date -d '1 day ago' +%Y%m%d%H%M%S) New one.md"
+printf -- '---\nstatus: done\nclosed: %s\n---\n' "$(date +%F)" > "$vault/proj/$(date -d '60 days ago' +%Y%m%d%H%M%S) Old one.md"
+touch -d '60 days ago' "$vault/proj/"*Old*
+date -d '2 days ago' -Iseconds > "$stamp"
+CLAUDE_PLUGIN_OPTION_OBSIDIAN_VAULT="$vault" start >/dev/null; seen=$(band)
+rm -rf "$fx/data" "$stamp"; mkdir -p "$fx/data"; CLAUDE_PLUGIN_OPTION_OBSIDIAN_VAULT= start >/dev/null
+check "SA6 an Obsidian tracker reads the vault from the plugin setting" \
+  '[ "$seen" = "summit: Since $(date -d "2 days ago" +%a): 1 opened, 1 closed · 30 days: +1 / −1, B" ] && [ -z "$(band)" ]'
 
 # Given 611 tickets opened and 451 closed in the last 30 days
 # When a session starts
@@ -73,22 +117,8 @@ check "nothing happened" 'verdict 0 0 | grep -q ", B$"'
 # Then the verdict is A
 check "only closing" 'verdict 0 3 | grep -q ", A$"'
 
-# Given the 30-day count was taken earlier today
-# When a second session starts today
-# Then the line shows that count, and the agent is not asked to count again
-fresh; record 611 451 >/dev/null; start >/dev/null; out=$(start)
-check "counted once a day" 'grep -qF "30 days: +611 / −451, C" <<<"$out" && ! grep -q "summit.sh record" <<<"$out"'
-
-# Given the 30-day count was taken yesterday
-# When a session starts
-# Then the agent is asked to count the last 30 days again
-fresh; record 611 451 >/dev/null
-for f in "$fx/data"/summit/*; do sed -i "1s/^[0-9-]*/$(date -d yesterday +%F)/" "$f"; done
-out=$(start)
-check "a new day, a new count" 'grep -q "List items closed since <time>" <<<"$out" && grep -q "$(date -d "30 days ago" +%F)" <<<"$out" && grep -q "summit.sh record" <<<"$out"'
-
 # The band's examples run in Claude Code's mod test kit, from
 # plugins/vicky-skills/tests/summit_approved_examples.test.tsx.
 check "the band's summit examples pass in the mod test kit" \
-  'out=$(timeout 120 claude plugin test "$plugin" 2>&1) && [ "$(grep -c "^(pass) summit > " <<<"$out")" = 2 ]'
+  'out=$(timeout 120 claude plugin test "$plugin" 2>&1) && [ "$(grep -c "^(pass) summit > " <<<"$out")" = 3 ]'
 exit $fail
