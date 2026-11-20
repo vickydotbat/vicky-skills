@@ -150,6 +150,7 @@ Many guards have a per-repo opt-out line, named in their rows.
 | Hook | What it does | Setting |
 | --- | --- | --- |
 | **Step hints** (recommended) | When `do`, `warp`, `examples`, `deathmatch`, `sentinels`, `over-to-you`, `make-it-so`, `council-of-elrond`, `gamma-shift`, `away-team` or `lay-course` starts, adds one line naming what its steps need. | Off (`step_guard`) |
+| **Cerebro ask guard** (recommended) | When a `cerebro` proposal asks before a change only because it needs a new pull request, sends the reply back to build it. A revert undoes a pull request. | On (`guard_cerebro_ask`) |
 | **Promise guard** (recommended) | When the agent owns up to a mistake and ends on a promise ("from now on I'll..."), sends it back to run `engrave` so the mistake becomes a check, hook or skill line. A promise lives only in one chat. | On (`guard_promise`) |
 | **Decision-record hint** (recommended) | Reminds an agent writing a decision record that it holds a broad architecture rule, and a reason for one class, item or value goes in a comment at its code. | On (`adr_scope_hint`) |
 | **A refused key is checked before it is blamed** (recommended) | After an ssh `Permission denied (publickey)`, tells the agent to compare your keys with the forge's and read the forge's status page before it asks you to add a key. | On (`guard_publickey_hint`) |

@@ -228,6 +228,8 @@ jobs:
         run: tests/ready-resume-hint.test.sh
       - name: Promise guard
         run: tests/promise-guard.test.sh
+      - name: Cerebro ask guard
+        run: tests/cerebro-ask-guard.test.sh
       - name: Eval spend gate
         run: tests/eval-spend-gate.test.sh
       - name: Eval proof record

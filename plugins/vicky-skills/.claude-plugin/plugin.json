@@ -255,6 +255,12 @@
       "description": "When do, warp, examples, deathmatch, sentinels, over-to-you, make-it-so, council-of-elrond, gamma-shift, away-team or lay-course starts, add one line of context naming what its steps need.",
       "default": false
     },
+    "guard_cerebro_ask": {
+      "type": "boolean",
+      "title": "Cerebro builds a change that needs only a new pull request",
+      "description": "When a Cerebro proposal asks before a change because it needs a new pull request, send the reply back to build it, since a revert undoes a pull request.",
+      "default": true
+    },
     "guard_promise": {
       "type": "boolean",
       "title": "A promise to do better goes through engrave",

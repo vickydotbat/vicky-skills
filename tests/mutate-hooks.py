@@ -97,6 +97,7 @@ TESTS = {
     "workflow-lint.sh": ["workflow-lint"],
     "ready-resume-hint.sh": ["ready-resume-hint"],
     "promise-guard.sh": ["promise-guard"],
+    "cerebro-ask-guard.sh": ["cerebro-ask-guard"],
     "restack-origin-guard.sh": ["restack-origin-guard"],
     "red-first-check.sh": ["red-first", "red_first_approved_examples"],
     "skills/shipping/deathmatch/scripts/triggers.sh": ["deathmatch_approved_examples", "deathmatch-scripts"],
