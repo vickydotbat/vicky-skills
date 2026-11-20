@@ -21,6 +21,7 @@ A plan that says where work lands (a side branch, a stack, a pull request base, 
 When the user brings a loose idea, start at step 1. When they bring the result of a council instead, start at step 4.
 
 1. **Call the council.** The method is `council-of-elrond`: ask the user to type `/council-of-elrond` with the idea. Done when the council has started.
+   Proven by: plugins/vicky-skills/evals/lay-course/council-first
 2. **Name the mission** with that method, and write each settled word into the repo's glossary. Done when the user agrees to a mission of at most three sentences.
 3. **Find the frontier** with that method, breadth-first across the whole idea. Done when every open question can be stated as a ticket or is a nebula.
 4. **Place the stars.** Propose one, and wait for the user's yes:
@@ -31,6 +32,7 @@ When the user brings a loose idea, start at step 1. When they bring the result o
 5. **Create the chart** with Mission, Prime directive, Sensor log, Knowns, Black holes and Nebulae filled in, the Knowns sorted as [STAR-CHART.md](STAR-CHART.md)'s "Sorting the knowns" says. Create the anomalies, away teams, probes, tasks and stars you can state now as its children, each star through [STAR-CHART.md](STAR-CHART.md)'s "Filing a star". Wire blocking in a second pass, once every ticket has a key. Draw the chart. Done when the chart shows every child and every blocker, and every landing a star names quotes the repo's rule or the user's pick.
 6. **Dispatch one `away-team` subagent per away team ticket.** Done when each one is running.
 7. **Engage or stop.** Ask: "Warp through the chart now, or stop here?" For one star, ask "Warp to <star> now, or stop here?" On "warp", ask the user to type `/warp` with the chart or the star. Done when that ask is sent or the user has said stop.
+   Proven by: plugins/vicky-skills/evals/lay-course/engage-asks-warp
 
 ## Work the chart
 

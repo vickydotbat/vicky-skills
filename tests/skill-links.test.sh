@@ -5,6 +5,17 @@
 # types, runs or is told the skill.
 # Usage: skill-links.test.sh [skills dir]
 set -u
+# Self-check on a fixture, when run with no skills dir: a step that runs a
+# typed-only skill fails, and a line that only mentions one passes.
+if [ $# -eq 0 ]; then
+  fx=$(mktemp -d); trap 'rm -rf "$fx"' EXIT
+  mkdir -p "$fx/g/finisher" "$fx/g/caller"
+  printf -- '---\nname: finisher\ndescription: x. Use when asked.\ndisable-model-invocation: true\n---\nbody\n' > "$fx/g/finisher/SKILL.md"
+  printf -- '---\nname: caller\ndescription: y. Use when z.\n---\n1. **Finish.** Run `finisher` on the branch.\n' > "$fx/g/caller/SKILL.md"
+  bash "$0" "$fx" >/dev/null && { echo "FAIL a step that runs a typed-only skill passes"; exit 1; }
+  printf -- '---\nname: caller\ndescription: y. Use when z.\n---\n1. Run the checks, then leave the rest to `finisher`.\n' > "$fx/g/caller/SKILL.md"
+  bash "$0" "$fx" >/dev/null || { echo "FAIL a line that only mentions a typed-only skill fails"; exit 1; }
+fi
 root="${1:-$(dirname "$0")/../plugins/vicky-skills/skills}"
 fm() { awk '/^---$/{n++; next} n==1' "$1"; }
 typed=()
@@ -19,7 +30,7 @@ for f in "$root"/*/*/SKILL.md; do
     hits=$(awk '/^---$/{n++; next} n>=2' "$f" | grep -nE "\`/?$name\`" || true)
     while IFS= read -r line; do
       [ -z "$line" ] && continue
-      echo "$line" | grep -Eiq '\b(call|run|start|invoke|use|load|hand)\b' || continue
+      echo "$line" | grep -Eiq "\b(call|run|start|invoke|use|load|hand( it)? to)( the)? \`/?$name\`" || continue
       echo "$line" | grep -Eiq '\b(type|types|typed)\b|user (to )?run|tell the user|ask the user' && continue
       echo "FAIL $(basename "$(dirname "$f")") starts typed-only $name: ${line:0:110}"; fail=1
     done <<<"$hits"

@@ -18,6 +18,7 @@ These laws hold from the first round until Frodo chooses the road:
 - **The seats rise when Frodo speaks.** After Frodo's line no seat speaks again: acks, checkpoints, build reports and next moves are plain prose. `step-hint` repeats both rules when the council starts.
 - **The table stays in chat.** Open no page during the council: no `red-pen` draft, no `interactive-page` answer page, no `over-to-you` list. Each of those skills names this exception. A draft, an example or a ticket body waits until step 6.
 - **The council never becomes an interrogation.** Every question to the user comes from a seat, with its pick.
+   Proven by: plugins/vicky-skills/evals/council-of-elrond/road-waits-for-user
 
 ## The seats
 

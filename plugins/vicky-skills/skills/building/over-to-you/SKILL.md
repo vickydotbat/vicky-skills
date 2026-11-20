@@ -7,7 +7,7 @@ description: Hand the live checks only a person can do to the human, as a checkl
 
 > _Over to you in the field. Everything the agent can run, it already ran._
 
-Everything the agent can run, it runs, and only the rest goes **over to you**. **Handoff**: every test the user is asked to run reaches them on this skill's page, whoever asked for it; `user-test-guard` sends back a reply or message that hands a test over in chat. A page the agent can look at itself goes through `by-eye` first; only a look a person must judge, such as whether it feels right, comes here. During a `council-of-elrond`, which the user types, the list waits until Frodo has chosen the road.
+Everything the agent can run, it runs, and only the rest goes **over to you**. **Handoff**: every test the user is asked to run reaches them on this skill's page, whoever asked for it; `user-test-guard` sends back a reply or message that hands a test over in chat. A page the agent can look at itself goes through `by-eye` first; only a look a person must judge, such as whether it feels right, comes here. During a `council-of-elrond`, the list waits until Frodo has chosen the road.
 
 Proven by: tests/user-test-guard.test.sh
 
