@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # A repo with a local tracker: two tickets opened and one closed this week.
 # Its Summit count line prints those counts, so the kept line reads
-# 30 days: +2 / −1, C once a session has counted.
+# 30 days: +2 / −1, C once the session-start hook has counted.
 set -eu
 git init -q -b main .
 mkdir -p docs/agents .scratch/issues
@@ -19,4 +19,3 @@ printf 'Status: open\n\nThe lantern flickers\n' > .scratch/issues/lantern-flicke
 printf 'Status: open\n\nThe ferry sinks\n' > .scratch/issues/ferry-sinks.md
 printf 'Status: done\n\nThe bell is silent\n' > .scratch/issues/bell-silent.md
 git add -A && git -c user.name=eval -c user.email=eval@example.invalid commit -q -m start
-echo '{"hook_event_name":"SessionStart","source":"startup"}' | CLAUDE_PROJECT_DIR="$PWD" bash "$CLAUDE_PLUGIN_ROOT/scripts/summit.sh" auto || true
