@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # batch.sh <opponents>: how many opponents fight at once and the memory cap
-# each one's commands get. Each cap is 2G at most, and the caps of every
-# opponent running fit in half the memory free now, since other sessions and
+# each one's commands get. Each cap is 2G at most, outside the holds form
+# below, and the caps of every opponent running fit in half the memory free now, since other sessions and
 # the desktop share it. Three run at once at most, one at least: with less
 # free, the opponents fight in more rounds.
 # batch.sh holds: the cap for the Holds opponent, which fights alone in its own
@@ -12,7 +12,7 @@
 set -u
 n=${1:?usage: batch.sh <opponents> | holds}
 free=$(awk '/^MemAvailable:/ {print $2 * 1024}' "${BATCH_MEMINFO:-/proc/meminfo}")
-[ -n "$free" ] || { echo "batch.sh: no MemAvailable in ${BATCH_MEMINFO:-/proc/meminfo}" >&2; exit 2; }
+[[ $free =~ ^[0-9]+$ ]] && [ "$free" -gt 0 ] || { echo "batch.sh: no MemAvailable in ${BATCH_MEMINFO:-/proc/meminfo}" >&2; exit 2; }
 budget=$(( free / 2 ))
 gib=$(( 1024 * 1024 * 1024 ))
 if [ "$n" = holds ]; then

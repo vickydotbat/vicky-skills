@@ -9,6 +9,7 @@ Every deathmatch opponent works to this contract. Its own agent file holds only 
   - `run:` the command that shows the failure, run once by you under `bash ${CLAUDE_PLUGIN_ROOT}/skills/shipping/deathmatch/scripts/cap.sh 300 <the memory cap the brief names> -- <command>`, with the output line that shows it;
   - `patch:` a unified diff that fixes it, for the arena, when no command can show it (a deletion, a rename, a better design).
   A finding with neither is a suspicion: list it under `Suspicions`, and it never blocks.
+- **Not run.** A run stopped at its memory cap tested nothing. Report its path on the `Not run:` line, never as clean.
 - **Hands off.** Edit no file, commit nothing, push nothing, post nothing. A patch is text in the report.
 
 ## Report

@@ -107,5 +107,11 @@ out=$(BATCH_MEMINFO="$t/mem1g" bash "$dm/batch.sh" holds 2>&1)
 check "Holds under 1G warns that a cap finding is unproven" 'grep -q "under 1G" <<<"$out"'
 out=$(BATCH_MEMINFO=/dev/null bash "$dm/batch.sh" holds 2>&1); r=$?
 check "batch with no MemAvailable stops and says so" '[ $r = 2 ] && grep -q "no MemAvailable" <<<"$out"'
+printf 'MemAvailable:    abc kB\n' > "$t/membad"
+out=$(BATCH_MEMINFO="$t/membad" bash "$dm/batch.sh" holds 2>&1); r=$?
+check "batch with an unreadable MemAvailable stops and says so" '[ $r = 2 ] && grep -q "no MemAvailable" <<<"$out"'
+printf 'MemAvailable:    0 kB\n' > "$t/mem0"
+out=$(BATCH_MEMINFO="$t/mem0" bash "$dm/batch.sh" 2 2>&1); r=$?
+check "batch with no memory free stops and says so" '[ $r = 2 ] && grep -q "no MemAvailable" <<<"$out"'
 rm -rf "$g"
 exit $fail
