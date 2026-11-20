@@ -1,12 +1,19 @@
 {
   "name": "vicky-skills",
   "description": "Skills for steering coding agents with approved examples",
-  "owner": { "name": "vickydotbat" },
+  "owner": {
+    "name": "vickydotbat"
+  },
   "plugins": [
     {
       "name": "vicky-skills",
       "source": "./plugins/vicky-skills",
       "description": "Approved Given / When / Then examples as the spec a build must pass, and a guard on approved tests"
+    },
+    {
+      "name": "language-tutor",
+      "source": "./plugins/language-tutor",
+      "description": "A language tutor for any language: spaced review, quizzes, rubric grading, an error ledger and placement"
     }
   ]
 }

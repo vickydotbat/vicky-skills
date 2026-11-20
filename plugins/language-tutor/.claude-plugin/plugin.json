@@ -1,0 +1,29 @@
+{
+  "name": "language-tutor",
+  "description": "A language tutor that lives in Claude Code: spaced review, quizzes, rubric grading, an error ledger and placement, for any language you name",
+  "author": {
+    "name": "vickydotbat"
+  },
+  "repository": "https://github.com/vickydotbat/vicky-skills",
+  "skills": [
+    "./skills/tutor",
+    "./skills/drill",
+    "./skills/quiz",
+    "./skills/grade",
+    "./skills/placement"
+  ],
+  "userConfig": {
+    "tutor_language": {
+      "type": "string",
+      "title": "Language you are learning",
+      "description": "The language the tutor teaches, such as Italian. Leave blank to keep the tutor off.",
+      "default": ""
+    },
+    "tutor_store": {
+      "type": "string",
+      "title": "Learner store folder",
+      "description": "A folder you own, where the tutor keeps your words, reviews, mistakes and level, one subfolder per language. It survives a plugin uninstall. Leave blank and the tutor stores nothing.",
+      "default": ""
+    }
+  }
+}
