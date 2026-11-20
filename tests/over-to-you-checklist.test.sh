@@ -142,8 +142,10 @@ check "ran.sh refuses an id with a space" 'ran "a b" true 2>/dev/null; [ $? = 2 
 check "ran.sh leaves no scratch log behind" '[ -z "$(find "$dir/rt/s2/over-to-you-receipts" -name ".*" -type f)" ]'
 mkdir -p "$dir/rt3"; : > "$dir/rt3/s3"
 check "ran.sh stops when the receipt folder cannot be made" 'env TMPDIR="$dir/rt3" CLAUDE_CODE_SESSION_ID=s3 bash "$skill/ran.sh" x true 2>/dev/null; [ $? = 2 ]'
-mkdir -p "$dir/nojq"; for t in bash timeout tee git date mktemp tail mkdir rm true; do ln -s "$(command -v "$t")" "$dir/nojq/$t"; done
-check "ran.sh without jq stops before it runs the command" 'out=$(env PATH="$dir/nojq" TMPDIR="$dir/rt" CLAUDE_CODE_SESSION_ID=s2 bash "$skill/ran.sh" nj bash -c "echo ran-it" 2>&1); [ $? = 2 ] && grep -q "jq is missing" <<<"$out" && ! grep -q ran-it <<<"$out"'
+mkdir -p "$dir/nopy"; for t in bash timeout tee git date mktemp tail mkdir rm; do ln -s "$(command -v "$t")" "$dir/nopy/$t"; done
+check "ran.sh without python3 stops before it runs the command" 'out=$(env PATH="$dir/nopy" TMPDIR="$dir/rt" CLAUDE_CODE_SESSION_ID=s2 bash "$skill/ran.sh" np bash -c "echo ran-it" 2>&1); [ $? = 2 ] && grep -q "python3 is missing" <<<"$out" && ! grep -q ran-it <<<"$out"'
+mkdir -p "$dir/nojq"; for t in bash timeout tee git date mktemp tail mkdir rm python3; do ln -s "$(command -v "$t")" "$dir/nojq/$t"; done
+check "ran.sh writes its receipt with no jq on the machine" 'env PATH="$dir/nojq" TMPDIR="$dir/rt" CLAUDE_CODE_SESSION_ID=s2 bash "$skill/ran.sh" nj bash -c "exit 0" 2>/dev/null && [ "$(python3 -c "import json,sys; print(json.load(open(sys.argv[1]))[\"exit\"])" "$dir/rt/s2/over-to-you-receipts/nj.json")" = 0 ]'
 check "ran.sh refuses with no session id" 'env -u CLAUDE_CODE_SESSION_ID bash "$skill/ran.sh" x true 2>/dev/null; [ $? = 2 ]'
 check "ran.sh with too few arguments prints its usage and exits 2" 'out=$(bash "$skill/ran.sh" x 2>&1); [ $? = 2 ] && grep -q "^usage: ran.sh" <<<"$out"'
 mkdir -p "$dir/rt/s2"; jq -n '{name: "Bob", open: "x", signed_off: "n", proven_by: "p", sections: [{title: "P", items: [{do: "Open the pack", see: "the slots show", person: "look", ran: "ok"}]}]}' > "$dir/spec.json"

@@ -15,7 +15,7 @@ set -u
 id=$1; shift
 [[ $id =~ ^[A-Za-z0-9._-]+$ ]] || { echo "ran.sh: the id '$id' holds a character outside letters, digits, dot, dash and underscore" >&2; exit 2; }
 [ -n "${CLAUDE_CODE_SESSION_ID:-}" ] || { echo "ran.sh: CLAUDE_CODE_SESSION_ID is unset, so there is no session folder for the receipt" >&2; exit 2; }
-command -v jq >/dev/null || { echo "ran.sh: jq is missing, so no receipt can be written" >&2; exit 2; }
+command -v python3 >/dev/null || { echo "ran.sh: python3 is missing, so no receipt can be written" >&2; exit 2; }
 dir="${TMPDIR:-/tmp}/$CLAUDE_CODE_SESSION_ID/over-to-you-receipts"
 mkdir -p "$dir" || exit 2
 log=$(mktemp "$dir/.$id.XXXXXX") || exit 2 # mutant-ok: mkdir -p made the folder a line above, so mktemp fails here only on a full disk
@@ -24,7 +24,11 @@ at=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 timeout "${RAN_TIMEOUT:-600}" "$@" 2>&1 | tee "$log"
 status=${PIPESTATUS[0]}
 head=$(git rev-parse HEAD 2>/dev/null || true)
-jq -n --arg id "$id" --arg command "$*" --arg at "$at" --arg head "$head" --arg cwd "$PWD" --argjson exit "$status" \
-  --arg tail "$(tail -n 20 "$log")" '{id:$id, command:$command, exit:$exit, at:$at, head:$head, cwd:$cwd, tail:$tail}' > "$dir/$id.json"
+# python3, which checklist.py needs anyway, writes the receipt.
+python3 -I -c 'import json, sys
+keys = ("id", "command", "exit", "at", "head", "cwd", "tail")
+got = dict(zip(keys, sys.argv[1:]))
+got["exit"] = int(got["exit"])
+print(json.dumps(got))' "$id" "$*" "$status" "$at" "$head" "$PWD" "$(tail -n 20 "$log")" > "$dir/$id.json"
 echo "ran.sh: receipt $dir/$id.json, exit $status" >&2
 exit "$status"
