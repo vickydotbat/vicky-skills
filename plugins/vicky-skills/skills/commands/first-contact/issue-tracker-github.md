@@ -33,7 +33,7 @@ A waiting ticket can't go on until the thing its `Waits on:` line names is done.
 - **List items created or changed since <time>**: `gh issue list --state all --search 'updated:>=<time>' --json number,title,createdAt,updatedAt`. An item created at or after `<time>` is new, any other is edited. Show at most five, then a count of the rest.
 - **List items closed since <time>**: `gh issue list --state closed --search 'closed:>=<time>' --json number,title,closedAt`. Give the count.
 
-Summit count: `echo "$(gh issue list --state all --limit 1000 --search "created:>=$SUMMIT_SINCE" --json number --jq length) $(gh issue list --state closed --limit 1000 --search "closed:>=$SUMMIT_SINCE" --json number --jq length)"`
+Summit count: `r=$(gh repo view --json nameWithOwner -q .nameWithOwner) && n() { gh api "search/issues?q=$(jq -rn --arg q "repo:$r is:issue $1:>=$SUMMIT_SINCE" '$q|@uri')" --jq .total_count; } && echo "$(n created) $(n closed)"`
 
 The session-start summit runs this line with no agent: it prints the opened and closed counts since `$SUMMIT_SINCE`. Delete it to switch the summit off in this repo.
 

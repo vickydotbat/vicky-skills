@@ -9,12 +9,14 @@
 #                    30 days, keeps both, and prints nothing the agent reads
 #   summit.sh show   prints the kept line as "summit: <text>", which the
 #                    viewscreen band shows; fails when nothing is kept
-# The repo's git folder keeps the line, so the agent's shell and the hook
-# read the same one.
+# The repo's common git folder keeps the line, so the agent's shell, the hook
+# and every worktree read the same one. summit-since holds the time the Since
+# part counts from.
 set -u
 top=$(git -C "${CLAUDE_PROJECT_DIR:-.}" rev-parse --show-toplevel 2>/dev/null) || { echo "summit: not in a repository" >&2; exit 2; }
-gitdir=$(git -C "$top" rev-parse --absolute-git-dir)
-file="$gitdir/summit-line" stamp="$gitdir/summit-last-session"
+# The common git folder, so every worktree of a repo shares one line and stamp.
+gitdir=$(cd "$top" && cd "$(git rev-parse --git-common-dir)" && pwd)
+file="$gitdir/summit-line" stamp="$gitdir/summit-last-session" since="$gitdir/summit-since"
 
 # B when closed is within 10% of opened, either way.
 verdict() {
@@ -40,7 +42,10 @@ count() {
 case "${1:-}" in
   auto)
     last=$(cat "$stamp" 2>/dev/null)
+    date -d "$last" +%s >/dev/null 2>&1 || last=
     date -Iseconds > "$stamp"
+    # The breakdown lists the items since this time.
+    printf '%s\n' "$last" > "$since"
     rm -f "$file"
     row=$(grep -m1 -E '^Summit count:[[:space:]]*`[^`]+`' "$top/docs/agents/issue-tracker.md" 2>/dev/null) || exit 0
     cmd=$(sed -E 's/^Summit count:[[:space:]]*`([^`]+)`.*/\1/' <<<"$row")

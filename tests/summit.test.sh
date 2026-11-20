@@ -55,4 +55,12 @@ check "obsidian with no time fails" '! bash "$obs" "$v" 2>/dev/null'
 check "obsidian with a time it cannot read fails" '! SUMMIT_SINCE=someday bash "$obs" "$v" 2>/dev/null'
 mkdir -p "$fx/empty"
 check "obsidian with no notes counts none" '[ "$(SUMMIT_SINCE="$since" bash "$obs" "$fx/empty")" = "0 0" ]'
+wt="$fx/a-wt"; git -C "$fx/a" -c user.name=t -c user.email=t@example.invalid commit -q --allow-empty -m base; git -C "$fx/a" worktree add -q "$wt" 2>/dev/null
+mkdir -p "$wt/docs/agents"; printf 'Summit count: \x60echo 6 6\x60\n' > "$wt/docs/agents/issue-tracker.md"
+date -d '3 days ago' -Iseconds > "$fx/a/.git/summit-last-session"
+check "a session in a new worktree counts since the repo's last session" 'echo "{}" | CLAUDE_PROJECT_DIR="$wt" bash "$summit" auto; CLAUDE_PROJECT_DIR="$wt" bash "$summit" show | grep -q "^summit: Since $(date -d "3 days ago" +%a): "'
+check "the main checkout reads the line a worktree kept" 'run show | grep -q "+6 / −6"'
+check "the time the Since part counts from is kept for the breakdown" '[ "$(date -d "$(cat "$fx/a/.git/summit-since")" +%F)" = "$(date -d "3 days ago" +%F)" ]'
+echo garbage > "$fx/a/.git/summit-last-session"
+check "a stamp that is no time leaves only the 30 days" 'auto; [ -z "$(cat "$fx/err")" ] && [ "$(run show)" = "summit: 30 days: +4 / −4, B" ]'
 exit $fail
