@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: wrong-answer-gets-the-fix
+context:
+  scaffold_script: scaffold.sh

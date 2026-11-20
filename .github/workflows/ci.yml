@@ -48,6 +48,8 @@ jobs:
           command -v chromium >/dev/null || sudo ln -s "$(command -v google-chrome)" /usr/local/bin/chromium
       - name: tools-declared finds a runtime a script calls but tests/tools leaves out
         run: tests/tools-declared.test.sh
+      - name: language-tutor's store, ledger, quiz pick, drill cap and profile keep the approved examples
+        run: tests/language_tutor_approved_examples.test.sh
       - name: Plugin layout
         run: tests/plugin-layout.test.sh
       - name: The security kit drafts an advisory only where its line says (SEC-1)

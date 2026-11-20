@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: transcript-says-no-pronunciation
+context:
+  scaffold_script: scaffold.sh
