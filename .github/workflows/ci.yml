@@ -416,6 +416,8 @@ jobs:
         run: tests/deathmatch-scripts.test.sh
       - name: Eval runners give the agent a writable shell, and graders compile
         run: tests/eval-runner-env.test.sh
+      - name: The planted-cause grader fails a verdict that names 4.1 ms as the cause
+        run: tests/planted-cause-grader.test.sh
       - name: Mutation proof is current
         run: python3 tests/mutate-hooks.py --check
       - name: Red-first check

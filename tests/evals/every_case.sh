@@ -41,7 +41,7 @@ done
 run_all() { # run_all <plugin dir> <out name>
   timeout 3600 \
     claude plugin eval "$1" --scaffold --trust-plugin --keep-temp --ablation none -j "$jobs" \
-    --runs 1 --max-cost-usd 40 --model "$EVAL_MODEL" --allow-tools Write Edit Bash --no-publish --json "$evals_out/$2.json" >"$evals_out/$2.out" 2>&1
+    --runs 1 --max-cost-usd 40 --model "$EVAL_MODEL" --allow-tools "${evals_tools[@]}" --no-publish --json "$evals_out/$2.json" >"$evals_out/$2.out" 2>&1
 }
 run_all "$evals_out/now-plugin" now
 run_all "$evals_out/cut-plugin" cut

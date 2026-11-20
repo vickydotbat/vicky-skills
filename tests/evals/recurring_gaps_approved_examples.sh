@@ -20,10 +20,10 @@ do/settled-by-a-stated-deferral 81db017"
 while read -r path commit; do
   name=${path#*/}
   if ! case_exists "$path"; then echo "FAIL S4-1 $name: no eval case at evals/$path"; fail=1; continue; fi
-  if ! eval_case "$evals_plugin" "$name" "$name-now" --allow-tools "Bash"; then
+  if ! eval_case "$evals_plugin" "$name" "$name-now"; then
     echo "FAIL S4-1 $name: the case fails against today's plugin"; fail=1; continue; fi
   plugin_before "$commit" "$evals_out/$name-before"
-  if eval_case "$evals_out/$name-before" "$name" "$name-before" --allow-tools "Bash"; then
+  if eval_case "$evals_out/$name-before" "$name" "$name-before"; then
     echo "FAIL S4-1 $name: the case passes before $commit, so it can't go red"; fail=1
   else echo "ok   S4-1 $name: passes now, fails before $commit"; fi
 done <<<"$gaps"
