@@ -24,7 +24,7 @@ ask=$(awk '
       t = tolower(text[c])
       if (t !~ /(^|[^a-z])(pull request|pr)s?([^a-z]|$)/ || t ~ /not (a |an )?(new )?(pull request|pr)/) continue
       if (t ~ /delet|remov|drop|publish|releas|setting|secret|rotat|force/) continue
-      asks = "waits on you|want it\\?|shall i|should i|go ahead\\?|reply (\\*\\*)?yes"
+      asks = "waits on you|want it\\?|shall i|should i|(go) ahead\\?|reply (\\*\\*)?yes"
       if (t ~ asks || (tolower(tail) ~ ("waiting on you|" asks) && tail ~ ("(^|[^A-Za-z0-9])" c "([^0-9]|$)"))) {print text[c]; exit}
     }
   }' <<<"$words")
