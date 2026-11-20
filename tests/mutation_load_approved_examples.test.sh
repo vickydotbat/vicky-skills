@@ -10,7 +10,7 @@ setup() {
   dir="$scratch/$1"; mkdir -p "$dir"; cp -r "$root/plugins" "$root/tests" "$dir/"
   printf '#!/usr/bin/env bash\nx=1\n%s\n' "$2" > "$dir/plugins/vicky-skills/scripts/probe.sh"
   chmod +x "$dir/plugins/vicky-skills/scripts/probe.sh"
-  { echo '#!/usr/bin/env bash'; echo "hook='$dir/plugins/vicky-skills/scripts/probe.sh'"; echo "calls='$dir/calls'"
+  { echo '#!/usr/bin/env bash'; echo 'hook="$(dirname "$0")/../plugins/vicky-skills/scripts/probe.sh"'; echo "calls='$dir/calls'"
     echo 'n=$(( $(cat "$calls" 2>/dev/null || echo 0) + 1 )); echo $n > "$calls"'; echo "$3"; } > "$dir/tests/probe.test.sh"
   chmod +x "$dir/tests/probe.test.sh"
   sed -i 's|    "gamma-shift.sh": \["gamma-shift"\],|&\n    "probe.sh": ["probe"],|' "$dir/tests/mutate-hooks.py"
