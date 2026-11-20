@@ -12,15 +12,23 @@ The spec:
      "sections": [{"title": "Pack", "items": [
         {"do": "Spawn the paper", "see": "the sheet shows",
          "person": "real client", "kit": "`/runscript paper` as a DM",
-         "source": "scripts/paper.nss in the module"}]}],
+         "source": "scripts/paper.nss in the module", "ran": "paper"}]}],
      "extra": "checks run outside the list"}
 
 Writes the file and exits 0, or prints `<problem>` lines and exits 1 without
 writing: a missing field, more than seven items, or anything lint-checklist.py
 refuses. The agent never types the checklist by hand.
+
+Every item names in "ran" the receipt of the agent's own run of it, written by
+ran.sh into over-to-you-receipts/ beside the checklist. A receipt that is missing,
+exited non-zero, was run on a commit other than HEAD, or (for an item with a kit)
+does not hold the kit's command is refused: the agent runs every check before a
+person does.
 """
 import json
 import os
+import re
+import subprocess
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -43,7 +51,32 @@ def quick_notes():
     return ["quick notes:"] + [f"- {tag}:" for tag in TAGS]
 
 
-def render(spec):
+def receipt(item, n, out_dir):
+    """Returns (the item's ran: line, None) or (None, the problem)."""
+    rid = item.get("ran") or ""
+    if not rid:
+        return None, f"item {n} has no ran: run it first with ran.sh <id> <command>, then name the id"
+    path = os.path.join(out_dir, "over-to-you-receipts", f"{rid}.json")
+    try:
+        with open(path, encoding="utf-8") as f:
+            got = json.load(f)
+    except (OSError, ValueError):
+        return None, f"item {n}: no receipt {rid}: run the check with ran.sh {rid} <command> in this session first"
+    if got.get("exit") != 0:
+        return None, f"item {n}: receipt {rid} exited {got.get('exit')}: fix the check until your own run passes"
+    command = got.get("command", "")
+    for kit in re.findall(r"`([^`]+)`", item.get("kit", "")):
+        if kit not in command:
+            return None, f"item {n}: receipt {rid} ran `{command}`, which does not hold the kit `{kit}`: run the kit itself through ran.sh"
+    head = got.get("head") or ""
+    if head:
+        now = subprocess.run(["git", "-C", got.get("cwd") or ".", "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
+        if now and now != head:
+            return None, f"item {n}: receipt {rid} ran on {head[:9]}, not HEAD {now[:9]}: run it again on this build"
+    return f"   ran: `{command}` exit 0 at {got.get('at', '')}", None
+
+
+def render(spec, out_dir="."):
     problems = []
     for key in ("name", "open", "signed_off", "proven_by", "sections"):
         if not spec.get(key):
@@ -57,6 +90,12 @@ def render(spec):
         for key in ("do", "see", "person"):
             if not item.get(key):
                 problems.append(f"item {n} has no {key}")
+    ran = {}
+    for n, item in enumerate(items, 1):
+        line, problem = receipt(item, n, out_dir)
+        if problem:
+            problems.append(problem)
+        ran[n] = line
     if problems:
         return None, problems
     brief = spec.get("brief", [])
@@ -74,6 +113,7 @@ def render(spec):
             n += 1
             lines.append(f"{n}. [ ] {item['do']} → {item['see']}")
             lines.append(f"   person: {item['person']}")
+            lines.append(ran[n])
             if item.get("kit"):
                 lines.append(f"   kit: {item['kit']}")
             if item.get("source"):
@@ -98,7 +138,7 @@ def main(argv):
         print(refusal)
         return 1
     with open(argv[1], encoding="utf-8") as f:
-        text, problems = render(json.load(f))
+        text, problems = render(json.load(f), os.path.dirname(os.path.abspath(argv[2])))
     if problems:
         print("\n".join(problems))
         return 1

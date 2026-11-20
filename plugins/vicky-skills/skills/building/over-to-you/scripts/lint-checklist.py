@@ -13,7 +13,9 @@ run. A kit run in a game console or chat needs a `source:` line saying where its
 spelling comes from. A kit that turns state on (a toggle, a debug view, a mode) needs a
 later item that turns it off with the same command. A `person: second client` item names
 the gap no simulated-player harness reaches ("second client, no harness reaches ..."). A repo whose docs/agents files
-say "Checklist lint: basic" keeps only the person, kit and proof checks.
+say "Checklist lint: basic" keeps only the person, kit, ran and proof checks.
+Every item needs a `ran:` line, the receipt of the agent's own run of it, which
+checklist.py writes from ran.sh's receipt; no setting turns that check off.
 """
 import glob
 import re
@@ -26,6 +28,7 @@ KIT = re.compile(r"^\s*kit:.*`[^`]+`")
 REACHES = re.compile(r"\b(spawn|give|create|place|equip|summon|seed|load)s?\b", re.IGNORECASE)
 TERMINAL = re.compile(r"`(?:sudo |run0 )?(grep|rg|cat|ls|tail|head|less|find|wc|jq)\b|\bgrep\b|\bread the (?:log|file)\b", re.IGNORECASE)
 CONSOLE = re.compile(r"\b(console|chat)\b", re.IGNORECASE)
+RAN = re.compile(r"^\s*ran:\s*`[^`]+` exit 0\b")
 SOURCE = re.compile(r"^\s*source:\s*\S")
 TOGGLE = re.compile(r"\b(toggles?|turns? (?:it )?on|debug view|slot view|run (?:it )?again to turn)", re.IGNORECASE)
 OFF = re.compile(r"\boff\b", re.IGNORECASE)
@@ -40,7 +43,7 @@ def lint(lines, basic=False):
     for number, line in enumerate(lines, 1):
         if not ITEM.match(line):
             continue
-        reason, kits, source = None, [], False
+        reason, kits, source, ran = None, [], False, False
         for after in lines[number:]:
             if ITEM.match(after) or after.startswith("#"):
                 break
@@ -50,6 +53,7 @@ def lint(lines, basic=False):
             if KIT.match(after):
                 kits.append(after)
             source = source or bool(SOURCE.match(after))
+            ran = ran or bool(RAN.match(after))
         action = line.split("→")[0]
         if REACHES.search(action) and not kits:
             problems.append((number, "item reaches a thing but has no `kit:` line with its command in backticks"))
@@ -60,6 +64,8 @@ def lint(lines, basic=False):
         elif reason.startswith("second client") and "harness" not in reason:
             problems.append((number, "a second-client check goes to the repo's simulated-player harness as an integration test, run green; "
                              "keep it here only as `person: second client, no harness reaches <the gap>`"))
+        if not ran:
+            problems.append((number, "item has no `ran:` line: the agent runs every check first, with ran.sh, and checklist.py writes the line from its receipt"))
         if basic:
             continue
         if TERMINAL.search(action) or any(TERMINAL.search(k) for k in kits):

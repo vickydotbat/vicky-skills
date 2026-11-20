@@ -362,6 +362,12 @@
       "title": "Obsidian vault folder",
       "description": "The folder of the Obsidian vault that holds your tickets. A repo whose tracker is Obsidian counts its summit there; left empty, that repo shows no summit.",
       "default": ""
+    },
+    "guard_user_test": {
+      "type": "boolean",
+      "title": "A test for you goes on a checklist page",
+      "description": "When the agent's reply or message asks you to run a test in chat, and it opened no over-to-you checklist this turn, it is sent back to run each check itself and hand you the page. On unless you turn it off.",
+      "default": true
     }
   }
 }

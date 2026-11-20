@@ -12,6 +12,7 @@ proven by: integration.sh --branch, 15 fixtures green
 ## Pack
 1. [ ] Open the hub → the grid draws
    person: look
+   ran: `check.sh` exit 0 at 2026-01-01T00:00:00Z
    notes:
 MD
 sed 's/^   person: look$//' "$dir/good.md" > "$dir/no-person.md"
@@ -48,10 +49,12 @@ proven by: offline compile clean
 ## Probe
 1. [ ] Turn on the slot view → each layer draws flat
    person: real client
+   ran: `check.sh` exit 0 at 2026-01-01T00:00:00Z
    kit: `dm_runscript rgbprobe_dbg` in the game console
    source: scripts/rgbprobe_dbg.nss in the kit
 2. [ ] Run the colour script → the cloth turns red
    person: real client
+   ran: `check.sh` exit 0 at 2026-01-01T00:00:00Z
 MD2
 check "a toggle with no later off item is refused" 'python3 "$lint" "$dir/toggle.md" | grep -q "no later item turns it off"'
 sed 's/^2\. \[ \] Run the colour script/2. [ ] Turn the slot view off with `dm_runscript rgbprobe_dbg`, then run the colour script/' "$dir/toggle.md" > "$dir/toggle-off.md"
@@ -79,6 +82,7 @@ proven by: integration.sh --branch, 15 fixtures green
 1. [ ] Open the hub → the grid draws
 ## Notes
    person: look
+   ran: `check.sh` exit 0 at 2026-01-01T00:00:00Z
 MD
 check "an item's lines end at the next heading" 'python3 "$lint" "$dir/heading.md" | grep -q "^4: item has no \`person:\` line"'
 # A second-client check names the harness gap, or becomes a harness test
@@ -86,4 +90,8 @@ sed 's/person: look/person: second client/' "$dir/good.md" > "$dir/second.md"
 check "a second-client item that names no harness gap is refused" 'python3 "$lint" "$dir/second.md" | grep -q "simulated-player harness"'
 sed 's/person: look/person: second client, no harness reaches the hot reload/' "$dir/good.md" > "$dir/second-gap.md"
 check "a second-client item that names its harness gap passes" 'python3 "$lint" "$dir/second-gap.md" >/dev/null'
+grep -v '^   ran:' "$dir/good.md" > "$dir/no-ran.md"
+check "an item with no ran line is refused" 'python3 "$lint" "$dir/no-ran.md" | grep -q "no \`ran:\` line"'
+mkdir -p "$dir/basic/docs/agents"; echo "Checklist lint: basic" > "$dir/basic/docs/agents/testing.md"
+check "Checklist lint: basic still refuses an item with no ran line" '(cd "$dir/basic" && python3 "$lint" "$dir/no-ran.md") | grep -q "no \`ran:\` line"'
 exit $fail

@@ -6,7 +6,8 @@
 # SendUserMessage. `prose` prints it with code in backticks dropped, since
 # quoted code is text the reply talks about, never its own words.
 payload=$(cat)
-[ "$(jq -r '.stop_hook_active // false' <<<"$payload" 2>/dev/null)" = false ] || exit 0
+# A hook that sets STOP_REPLY_REPEAT=1 reads the second stop too and keeps its own cap.
+[ -n "${STOP_REPLY_REPEAT:-}" ] || [ "$(jq -r '.stop_hook_active // false' <<<"$payload" 2>/dev/null)" = false ] || exit 0
 transcript=$(jq -r '.transcript_path // ""' <<<"$payload" 2>/dev/null)
 [ -f "$transcript" ] || exit 0 # mutant-ok delete: tail reads nothing from a missing file, so the reply reads empty and each hook exits 0
 # `turn` is the JSON array of the agent's content blocks since that message.

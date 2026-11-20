@@ -9,6 +9,16 @@
 # Usage: open-draft.sh <draft file>
 set -u
 [ $# = 1 ] || { echo "usage: open-draft.sh <draft file>" >&2; exit 2; }
+# An over-to-you checklist opens only when its lint passes, so a page typed by
+# hand, with no ran: receipt on each item, never reaches the user.
+case $(basename "$1") in
+  over-to-you-ledger.md) ;;
+  over-to-you-*.md)
+    problems=$(python3 -I "$(dirname "$0")/../../../building/over-to-you/scripts/lint-checklist.py" "$1" 2>&1) || {
+      printf 'open-draft: the checklist fails its lint, so the page stays shut. Run each check with ran.sh, then write the file with over-to-you'"'"'s checklist.py:\n%s\n' "$problems" >&2
+      exit 2
+    } ;;
+esac
 # shellcheck source=../../../../scripts/approved-spec.sh
 . "$(dirname "$0")/../../../../scripts/approved-spec.sh"
 # A section for a file that holds approved examples reaches the editor only in a form a tick can grant:
