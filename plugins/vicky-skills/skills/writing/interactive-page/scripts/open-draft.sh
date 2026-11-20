@@ -53,6 +53,9 @@ before=$(cat "$1" 2>/dev/null)
 $editor "$1" & pid=$!
 # The third line says where the draft is open: open-page.sh sets DRAFT_PAGE.
 [ -n "$lock" ] && printf '%s\n%s\n%s\n' "$pid" "$1" "${DRAFT_PAGE:+page}" > "$lock"
+# An over-to-you checklist that passed its lint leaves a marker beside it, in the
+# session folder: the editor's pid and the time it opened. user-test-guard reads it.
+case $(basename "$1") in over-to-you-ledger.md) ;; over-to-you-*.md) printf '%s %s\n' "$pid" "$(date +%s)" > "$(dirname "$1")/over-to-you-opened" ;; esac
 trap '[ -n "$lock" ] && rm -f "$lock"; echo "${status:-1}" > "$closed"' EXIT
 wait "$pid"; status=$?
 [ -n "$lock" ] && [ -f "$1" ] || exit "$status"

@@ -13,9 +13,11 @@ check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 user() { jq -nc --arg t "$1" '{type:"user",message:{content:$t}}'; }
 text() { jq -nc --arg t "$1" '{type:"assistant",message:{content:[{type:"text",text:$t}]}}'; }
 bash_call() { jq -nc --arg c "$1" '{type:"assistant",message:{content:[{type:"tool_use",name:"Bash",input:{command:$c}}]}}'; }
+export TMPDIR="$fx/tmp"; mkdir -p "$fx/tmp/s1"
+marker="$fx/tmp/s1/over-to-you-opened"
 stop() { jq -nc --arg t "$fx/t.jsonl" --argjson a "${1:-false}" '{hook_event_name:"Stop",session_id:"s1",stop_hook_active:$a,transcript_path:$t}' \
   | CLAUDE_PLUGIN_DATA="$fx/data" CLAUDE_PLUGIN_OPTION_GUARD_USER_TEST="${opt-}" bash "$hook" 2>/dev/null; }
-send() { jq -nc --arg t "$fx/t.jsonl" --arg m "$1" '{hook_event_name:"PreToolUse",tool_name:"SendUserMessage",tool_input:{message:$m},transcript_path:$t}' \
+send() { jq -nc --arg t "$fx/t.jsonl" --arg m "$1" '{hook_event_name:"PreToolUse",session_id:"s1",tool_name:"SendUserMessage",tool_input:{message:$m},transcript_path:$t}' \
   | CLAUDE_PLUGIN_OPTION_GUARD_USER_TEST="${opt-}" bash "$hook" 2>&1; }
 sent_back() { rm -rf "$fx/data"; [ "$(stop | jq -r '.decision // empty' 2>/dev/null)" = block ]; }
 passes() { local out; rm -rf "$fx/data"; out=$(stop "${1:-false}"); [ $? = 0 ] && [ -z "$out" ]; }
@@ -31,7 +33,8 @@ red=("The test server is up. Test it like this: 1. Connect to the local server a
      "Please check that the icon shows in the inventory."
      "Let me know if it works."
      "When you test it, open the map first."
-     "Could you try the new door in the tavern?")
+     "Could you try the new door in the tavern?"
+     "Before I push it, please re-check the helmet in game.")
 for r in "${red[@]}"; do
   { user "go"; text "$r"; } > "$fx/t.jsonl"
   check "a chat hand-off is sent back: ${r:0:50}" 'sent_back'
@@ -45,6 +48,8 @@ green=("I'd test it with a shader that declares 80 parameters."
        "The frame is fixed in all three mockups. Reload the page to see it."
        "Moving one subpage first to test."
        "Next I'll check that the icon loads, then verify it in the client."
+       "The CI diff only adds four test steps."
+       "Upstream ships one file per release, and you can check that on its releases page."
        "Merged. Every check passed.")
 for g in "${green[@]}"; do
   { user "go"; text "$g"; } > "$fx/t.jsonl"
@@ -55,15 +60,20 @@ done
 check "a hand-off inside backticks is quoted code" 'passes'
 check "a hand-off inside backticks is sent" 'sent "The guard reads \`let me know if it works\`."'
 
+{ user "go"; text "Let me know if it works."; } > "$fx/t.jsonl"
+sleep 30 & live=$!
+echo "$live 1" > "$marker"
+check "a checklist page still open lets the reply through" 'passes'
+check "a checklist page still open lets the message through" 'sent "Please check that the door opens."'
+kill "$live"; wait "$live" 2>/dev/null
+echo "999999999 $(date +%s)" > "$marker"
+check "a checklist opened this turn and closed lets it through" 'passes'
+{ jq -nc --arg ts "$(date -u -d "+1 hour" +%FT%TZ)" '{type:"user",timestamp:$ts,message:{content:"and the window?"}}'; text "Let me know if it works."; } > "$fx/t.jsonl"
+check "a closed checklist opened before the user's last message is old" 'sent_back'
+check "a SendUserMessage after an old closed checklist is refused" 'refused "Let me know if it works."'
+rm -f "$marker"
 { user "go"; bash_call "bash skills/writing/interactive-page/scripts/$page_opener.sh /tmp/s1/over-to-you-door.md"; text "Let me know if it works."; } > "$fx/t.jsonl"
-check "a turn that opened an over-to-you page goes through" 'passes'
-{ user "go"; bash_call "bash skills/writing/interactive-page/scripts/open-draft.sh /tmp/s1/over-to-you-door.md"; text "Let me know if it works."; } > "$fx/t.jsonl"
-check "a turn that opened an over-to-you checklist in the editor goes through" 'passes'
-check "a turn that opened an over-to-you page sends" 'sent "Please check that the door opens."'
-{ user "go"; bash_call "bash $page_opener.sh /tmp/s1/drafts.md"; text "Let me know if it works."; } > "$fx/t.jsonl"
-check "a red-pen page is no over-to-you page" 'sent_back'
-{ user "go"; bash_call "bash $page_opener.sh /tmp/s1/over-to-you-door.md"; user "and the window?"; text "Let me know if it works."; } > "$fx/t.jsonl"
-check "a page opened before the user's last message is old" 'sent_back'
+check "a command that only names the opener, with no marker, is sent back" 'sent_back'
 
 { user "go"; text "Let me know if it works."; } > "$fx/t.jsonl"
 check "the reason names over-to-you and ran.sh" '[[ "$(rm -rf "$fx/data"; stop)" == *over-to-you*ran.sh* ]]'
@@ -72,6 +82,8 @@ rm -rf "$fx/data"
 check "the second stop of a turn is sent back again" '[ "$(stop true | jq -r .decision)" = block ]'
 stop true >/dev/null; stop true >/dev/null
 check "after three send-backs in one turn the stop goes through" 'out=$(stop true); [ $? = 0 ] && [ -z "$out" ]'
+jq -nc '{type:"user",timestamp:"2026-01-01T00:05:00Z",message:{content:[{type:"tool_result",tool_use_id:"x",content:"ok"}]}}' >> "$fx/t.jsonl"; text "Let me know if it works." >> "$fx/t.jsonl"
+check "a tool result between stops keeps the count" '[ -z "$(stop true)" ]'
 jq -nc '{type:"user",timestamp:"2026-01-01T00:00:00Z",message:{content:"next"}}' >> "$fx/t.jsonl"; text "Let me know if it works." >> "$fx/t.jsonl"
 check "a new user message starts a new count" '[ "$(stop true | jq -r .decision)" = block ]'
 check "a missing transcript goes through" 'rm -f "$fx/t.jsonl"; passes'

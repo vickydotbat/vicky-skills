@@ -22,7 +22,7 @@ refuses. The agent never types the checklist by hand.
 Every item names in "ran" the receipt of the agent's own run of it, written by
 ran.sh into over-to-you-receipts/ beside the checklist. A receipt that is missing,
 exited non-zero, was run on a commit other than HEAD, or (for an item with a kit)
-does not hold the kit's command is refused: the agent runs every check before a
+holds the kit's command in neither its command nor its output is refused: the agent runs every check before a
 person does.
 """
 import json
@@ -66,8 +66,8 @@ def receipt(item, n, out_dir):
         return None, f"item {n}: receipt {rid} exited {got.get('exit')}: fix the check until your own run passes"
     command = got.get("command", "")
     for kit in re.findall(r"`([^`]+)`", item.get("kit", "")):
-        if kit not in command:
-            return None, f"item {n}: receipt {rid} ran `{command}`, which does not hold the kit `{kit}`: run the kit itself through ran.sh"
+        if kit not in command and kit not in got.get("tail", ""):
+            return None, f"item {n}: receipt {rid} ran `{command}`, and neither it nor its output holds the kit `{kit}`: run the kit itself through ran.sh"
     head = got.get("head") or ""
     if head:
         now = subprocess.run(["git", "-C", got.get("cwd") or ".", "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()

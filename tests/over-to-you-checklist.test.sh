@@ -126,7 +126,10 @@ spec '[{"do": "Open the pack", "see": "the slots show", "person": "look", "ran":
 check "a receipt that exited non-zero is refused" 'out=$(write); [ $? = 1 ] && grep -q "receipt red exited 1" <<<"$out"'
 receipt "$dir" other 0 "harness.sh --chat '/runscript door'"
 spec '[{"do": "Spawn the paper", "see": "the sheet shows", "person": "real client", "kit": "`/runscript paper` in the game chat", "source": "s", "ran": "other"}]'
-check "a receipt that does not hold the kit is refused" 'out=$(write); [ $? = 1 ] && grep -q "does not hold the kit" <<<"$out"'
+check "a receipt that does not hold the kit is refused" 'out=$(write); [ $? = 1 ] && grep -q "neither it nor its output holds the kit" <<<"$out"'
+mkdir -p "$dir/over-to-you-receipts"; jq -n '{id:"logged", command:"harness.sh scenarios/paper.lua", exit:0, at:"t", head:"", cwd:"/", tail:"chat: /runscript paper\nok"}' > "$dir/over-to-you-receipts/logged.json"
+spec '[{"do": "Spawn the paper", "see": "the sheet shows", "person": "real client", "kit": "`/runscript paper` in the game chat", "source": "s", "ran": "logged"}]'
+check "a harness that runs the kit from a scenario file passes when its output shows the kit" 'write >/dev/null'
 git -C "$dir" init -q repo && git -C "$dir/repo" -c user.name=t -c user.email=t@example.invalid commit -q --allow-empty -m one
 old=$(git -C "$dir/repo" rev-parse HEAD); git -C "$dir/repo" -c user.name=t -c user.email=t@example.invalid commit -q --allow-empty -m two
 jq -n --arg h "$old" --arg c "$dir/repo" '{id:"stale", command:"harness.sh", exit:0, at:"t", head:$h, cwd:$c, tail:""}' > "$dir/over-to-you-receipts/stale.json"
@@ -154,6 +157,13 @@ check "a receipt ran.sh wrote opens the way to the checklist" 'env TMPDIR="$dir/
 printf '# Over to you, Bob!\nproven by: p\n1. [ ] Open the pack → the slots show\n   person: look\n' > "$dir/rt/s2/over-to-you-hand.md"
 check "open-page refuses a hand-typed checklist with no ran lines" 'out=$(VISUAL=true bash "$page/open-draft.sh" "$dir/rt/s2/over-to-you-hand.md" 2>&1); [ $? = 2 ] && grep -q "page stays shut" <<<"$out"'
 check "open-page opens a checklist checklist.py wrote" '(cd "$dir" && VISUAL=true bash "$page/open-draft.sh" "$dir/rt/s2/over-to-you-ok.md" >/dev/null 2>&1)'
+check "an opened checklist leaves its marker, the editor pid and the time" 'read -r p t < "$dir/rt/s2/over-to-you-opened" && [ "$p" -gt 0 ] && [ "$t" -ge "$(( $(date +%s) - 60 ))" ]'
+rm -f "$dir/rt/s2/over-to-you-opened"
+VISUAL=true bash "$page/open-draft.sh" "$dir/rt/s2/over-to-you-hand.md" >/dev/null 2>&1
+check "a refused checklist leaves no marker" '[ ! -e "$dir/rt/s2/over-to-you-opened" ]'
+printf 'F1 | open | x\n' > "$dir/rt/s2/over-to-you-ledger.md"
+(cd "$dir" && VISUAL=true bash "$page/open-draft.sh" "$dir/rt/s2/over-to-you-ledger.md" >/dev/null 2>&1)
+check "the ledger opens with no lint and leaves no marker" '[ $? = 0 ] && [ ! -e "$dir/rt/s2/over-to-you-opened" ]'
 exit $fail
 "'"'\n'"'"'* ]]'
 check "ran.sh refuses with no session id" 'env -u CLAUDE_CODE_SESSION_ID bash "$skill/ran.sh" x true 2>/dev/null; [ $? = 2 ]'

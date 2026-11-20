@@ -51,11 +51,13 @@ Mark each item: [x] completed as expected, [~] completed with changes, [-] faile
 
 1. [ ] <verb first: what to do> → <what you should see>
    person: <look | feel | real client | second client, no harness reaches <the gap> | extender | hardware | outside account | timing>
+   ran: <checklist.py writes it from the item's ran.sh receipt: `the command` exit 0 at <time>>
    kit: <for an item that reaches a thing: `the exact command` and where to run it>
    notes:
 
 2. [ ] <...> → <...>
    person: <...>
+   ran: <...>
    notes:
 
 quick notes:
