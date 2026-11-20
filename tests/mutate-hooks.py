@@ -352,21 +352,31 @@ class Worker:
         # A checkout, as CI's is: some tests treat the repo root as one.
         subprocess.run(["git", "init", "-q", self.root], check=True)
 
+    def test(self, test, limit):
+        """The test's exit code, or None when it ran past its limit."""
+        # Its own process group, so a timeout stops every child the test started.
+        proc = subprocess.Popen(capped(os.path.join(self.root, "tests", test + ".test.sh")),
+                                env=dict(os.environ, MUTATE_HOOKS_INNER="1"), stdin=subprocess.DEVNULL,
+                                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+        try:
+            return proc.wait(timeout=limit)
+        except subprocess.TimeoutExpired:
+            os.killpg(proc.pid, signal.SIGKILL)
+            proc.wait()
+            return None
+
     def run(self, script, text, timeouts):
         path = os.path.join(self.root, os.path.relpath(path_of(script), ROOT))
         # A new file renamed into place, since a test left running may still hold the old one open.
         replace(path, text)
         try:
             for test, limit in timeouts:
-                # Its own process group, so a timeout stops every child the test started.
-                proc = subprocess.Popen(capped(os.path.join(self.root, "tests", test + ".test.sh")),
-                                        env=dict(os.environ, MUTATE_HOOKS_INNER="1"), stdin=subprocess.DEVNULL,
-                                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
-                try:
-                    code = proc.wait(timeout=limit)
-                except subprocess.TimeoutExpired:
-                    os.killpg(proc.pid, signal.SIGKILL)
-                    proc.wait()
+                # A busy machine can stall a test past its limit once: only a second
+                # timeout, at twice the limit, makes a kill.
+                code = self.test(test, limit)
+                if code is None:
+                    code = self.test(test, limit * 2)
+                if code is None:
                     return True
                 if code != 0:
                     return True
