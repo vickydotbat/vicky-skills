@@ -23,7 +23,7 @@ An agent document is a program the model runs. Good ergonomics means the agent t
 4. **Write the steps**, each ending in **Done when** plus a condition the agent can see. Done when no step ends on a feeling ("understood", "thorough").
 5. **Name each rule.** Find the known term for the property each rule protects (_deterministic_, _idempotent_, _single source of truth_, _fail closed_, _zero drift_), and put it first: `<Leading word>: <the rule that pins its meaning here>.` Then use that word, and only that word, everywhere the rule comes up again: in steps, checks, pointers and the findings a review writes. Coin a word only when none fits, and define it once where it first appears. Done when every rule opens with a term a reviewer could quote as the finding, and no later line names the rule by a paraphrase.
 6. **Push reference down.** Inline what every branch needs. Move what only some branches need into a sibling file behind a pointer. Done when the steps fit on one screen.
-7. **Sweep end to end.** After every change, however small, lint the whole document against the checklist below, from its first line to its last, the lines you never touched included, and collapse each long passage into a leading word. Done when a pass from the top changes nothing.
+7. **Sweep end to end.** After every change, however small, hold the whole document to step 5 and the checklist below, from its first line to its last, the lines you never touched included, and collapse each long passage into a leading word. Done when a pass from the top changes nothing.
 8. **Run it.** Start a fresh agent on two different branches and read its transcript. A wrong path is fixed by sharpening the wording first, and by inlining material only when sharpening fails. When the skill already has cases under the plugin's `evals/<skill>/`, rerun them once, by hand, with `--max-cost-usd` set. Done when both runs take the path you meant, and every existing case of an edited skill passes.
 
 ## Lint checklist
@@ -37,8 +37,6 @@ An agent document is a program the model runs. Good ergonomics means the agent t
 - [ ] Every command is exact and ready to paste, with placeholders in `<angle brackets>`.
 - [ ] Where the output matters, a template shows its form.
 - [ ] Every step says what to do when it can't finish (stop and ask, file a ticket, say "unchecked").
-- [ ] Every law and heading opens with a leading word, not a sentence that describes one ("Every X ships its Y").
-- [ ] A rule is named by its one leading word everywhere it appears, repeated and never re-explained. A paraphrase ("one point of entry" for _single source of truth_) is a second name, and two names drift into two rules.
 - [ ] No filler: "make sure to", "it is important that", "always try to", "in order to", "please note". Delete it, or replace it with the verb.
 - [ ] No sentence states what the model does by default. Delete each one that fails the test of changing behaviour. A line marked `<!-- kept` stays: `captains-log` saw it cause a high point.
 - [ ] Nothing restates what the environment already says: `package.json`, `--help`, the directory listing.
