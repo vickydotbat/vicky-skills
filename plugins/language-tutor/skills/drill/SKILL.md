@@ -1,6 +1,6 @@
 ---
 name: drill
-description: Run a short review of the words due in the tutor's learner store, at most ten, grading each answer. Use when the learner types /drill or asks to review or practise their words.
+description: Run a short review of the words due in the tutor's learner store, at most ten, grading each answer. Typed as /drill.
 disable-model-invocation: true
 ---
 

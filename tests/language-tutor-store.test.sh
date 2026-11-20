@@ -104,4 +104,10 @@ O="$work/order"; mkdir -p "$O/italian"
 printf '%s\n' '[{"id":"c1","front":"new","back":"x","due":"2026-01-02T00:00:00Z","state":"new","stability":null,"difficulty":null,"reps":0,"lapses":0,"last_review":null},{"id":"c2","front":"old","back":"x","due":"2026-01-01T00:00:00Z","state":"new","stability":null,"difficulty":null,"reps":0,"lapses":0,"last_review":null}]' > "$O/italian/cards.json"
 first=$(TUTOR_LANGUAGE=Italian TUTOR_STORE="$O" timeout 20 python3 "$tutor" due | jq -r '.items[0].front')
 if [ "$first" = old ]; then ok "what is due comes oldest first"; else no "what is due comes oldest first (got $first)"; fi
+# The reminder says "1 word" for a single due word.
+O="$work/remind-one"; mkdir -p "$O"
+TUTOR_LANGUAGE=Italian TUTOR_STORE="$O" timeout 20 python3 "$tutor" add uno one >/dev/null 2>&1
+got=$(CLAUDE_PLUGIN_OPTION_TUTOR_REMIND=1 CLAUDE_PLUGIN_OPTION_TUTOR_LANGUAGE=Italian CLAUDE_PLUGIN_OPTION_TUTOR_STORE="$O" timeout 20 bash "$(dirname "$tutor")/remind.sh" 2>/dev/null | jq -r .systemMessage 2>/dev/null)
+if [ "$got" = "Italian: 1 word due. Type /language-tutor:drill." ]; then echo "ok   the reminder says 1 word for one due word"; else echo "FAIL the reminder says 1 word for one due word (got: $got)"; fail=1; fi
+
 exit $fail

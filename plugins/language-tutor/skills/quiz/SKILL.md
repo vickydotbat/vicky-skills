@@ -1,6 +1,6 @@
 ---
 name: quiz
-description: Run a low-stakes quiz from the tutor's due words and recent mistakes, recall first, with feedback on every item and the score only at the end. Use when the learner types /quiz or asks to be quizzed or tested.
+description: Run a low-stakes quiz from the tutor's due words and recent mistakes, recall first, with feedback on every item and the score only at the end. Typed as /quiz.
 disable-model-invocation: true
 ---
 
