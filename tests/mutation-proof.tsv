@@ -100,7 +100,7 @@ tea-stdin.sh	c631fcfccdb1abf0	5b3f129fbea8ff8e	15/15
 ticket-drift.sh	1bc60db2e95d9227	bae9a96f83d66097	36/36
 ticket-filing-guard.sh	13841080ab73f460	f19fc98d85d4194a	24/24
 todo-reminder.sh	87bab188b0686e79	4e5f53240f7f398c	9/9
-user-test-guard.sh	d8dc7c66be89e266	8732bcd45245a56a	50/50
+user-test-guard.sh	00f167952359974d	faa0bf94a01345cd	49/49
 watch.sh	8361b0cd96435e12	78ee0c5c0fde8487	33/33
 whole-read-guard.sh	28a648d3b1a48a47	1c17cfad8dfc740a	17/17
 workflow-lint.sh	31fd4d7feb0edf4c	440f7a44980eaf90	26/26
