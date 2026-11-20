@@ -22,5 +22,9 @@ root=${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "$0")/.." && pwd)}
 out=$(cd "${cwd:-.}" 2>/dev/null && timeout "${SUP_HANDOFF_LIMIT:-50}" bash "$root/skills/housekeeping/sup/scripts/find-handoff.sh" 2>&1)
 [ $? = 124 ] && out+=$'\n'"not read: the rest, the finder hit its ${SUP_HANDOFF_LIMIT:-50}-second limit: run it by hand."
 [ -n "$out" ] || out="find-handoff.sh printed nothing: run it by hand."
+# The state of each .todo line's refs, for step 3's Still want.
+parked=$(cd "${cwd:-.}" 2>/dev/null && timeout "${SUP_PARKED_LIMIT:-30}" bash "$root/skills/housekeeping/sup/scripts/parked-state.sh" 2>&1)
+[ $? = 124 ] && parked+=$'\n'"parked-state.sh hit its ${SUP_PARKED_LIMIT:-30}-second limit: run it by hand."
+[ -n "$parked" ] && out+=$'\n\n'"parked-state.sh (sup step 3) read each .todo line's refs:"$'\n'"$parked"
 jq -nc --arg e "$event" --arg h "sup started, so find-handoff.sh ran (sup step 1). Its output:
 $out" '{hookSpecificOutput:{hookEventName:$e,additionalContext:$h}}'

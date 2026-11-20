@@ -9,6 +9,7 @@ dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 mkdir -p "$dir/plugin/scripts" "$dir/plugin/skills/housekeeping/sup/scripts" "$dir/work"
 cp "$hook" "$dir/plugin/scripts/"
 printf '#!/usr/bin/env bash\necho "found: in $(pwd)"\n' > "$dir/plugin/skills/housekeeping/sup/scripts/find-handoff.sh"
+printf '#!/usr/bin/env bash\necho "done: - a line in $(pwd)"\n' > "$dir/plugin/skills/housekeeping/sup/scripts/parked-state.sh"
 fail=0
 run() { TMPDIR="$(mktemp -d -p "$dir")" CLAUDE_PLUGIN_ROOT="${proot-$dir/plugin}" CLAUDE_PLUGIN_OPTION_SUP_HANDOFF_HINT="${opt-}" bash "$dir/plugin/scripts/sup-handoff-hint.sh" <<<"$1" 2>&1; }
 has() { if grep -qF -- "$2" <<<"$3"; then echo "ok   $1"; else echo "FAIL $1: got '$3'"; fail=1; fi; }
@@ -37,6 +38,12 @@ out=$(once "$(s sup | jq -c '.session_id="a"')"); code=$?; none "the skill call 
 has "another session still runs it" "found: in" "$(once "$(s sup | jq -c '.session_id="b"')")"
 touch -d '11 minutes ago' "$m/sup-handoff-a"
 has "a sup ten minutes later runs it again" "found: in" "$(once "$(s sup | jq -c '.session_id="a"')")"
+has "typed /sup hands over each .todo line's verdict, read in the session's folder" "done: - a line in $dir/work" "$(run "$(p '/sup')")"
+printf '#!/usr/bin/env bash\necho early; sleep 5\n' > "$dir/plugin/skills/housekeeping/sup/scripts/parked-state.sh"
+out=$(SUP_PARKED_LIMIT=1 run "$(p '/sup')")
+has "a parked-state run cut off at its limit keeps what it printed" "early" "$out"
+has "a parked-state run cut off at its limit says so" "parked-state.sh hit its 1-second limit" "$out"
+printf '#!/usr/bin/env bash\necho "done: - a line in $(pwd)"\n' > "$dir/plugin/skills/housekeeping/sup/scripts/parked-state.sh"
 proot=""; has "with no plugin root it finds the finder beside itself" "found: in" "$(run "$(p '/sup')")"; unset proot
 printf '#!/usr/bin/env bash\necho partial; sleep 5\n' > "$dir/plugin/skills/housekeeping/sup/scripts/find-handoff.sh"
 out=$(SUP_HANDOFF_LIMIT=1 run "$(p '/sup')")

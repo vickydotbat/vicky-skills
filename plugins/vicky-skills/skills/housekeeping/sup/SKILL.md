@@ -23,7 +23,12 @@ A **catch-up** answers four questions, plus the lessons engraved, for someone wh
    ```
 
    Read Lessons from the ledger engrave keeps for every repo: `bash ${CLAUDE_PLUGIN_ROOT}/scripts/lesson-ledger.sh since <that point in UTC, as 2026-10-31T12:00:00Z>`, one line per lesson, each with its snag and its home. With no lesson, leave Lessons out, and leave out any other empty part. Done when the whole thing fits on one screen.
-3. **Add parked work.** When the user moved away from something unfinished, end with at most three lines: "Still want X?" Count only work they left, not work you found. Done when each parked item is asked once or dropped.
+3. **Add parked work.** Fresh parking: offer a line only when its refs are still open now. `bash ${CLAUDE_PLUGIN_ROOT}/skills/housekeeping/sup/scripts/parked-state.sh` prints one verdict per `.todo` line, and the `sup-handoff-hint` hook hands you that output:
+   - `open:`, `no ref:` or `unread:`: the line may be offered.
+   - `done:`: every ref finished. Offer nothing, and strike the line with `standing-orders`. Quote each struck line in the catch-up.
+   - `merged-ticket-open:`: its pull requests merged and its ticket is still open. Offer nothing from the line. Ask once whether the ticket closes, after reading its thread: a star chart with open children stays open.
+
+   When the user moved away from something unfinished, end with at most three lines: "Still want X?" Count only work they left, not work you found. Done when each parked item is asked once or dropped, and no `done:` or `merged-ticket-open:` line was offered.
 4. **Pick up a handoff.** When step 1 found a `**Handoff**` comment or note, run `do` on the work it names, after the catch-up is sent. When the `.todo` Handoff line names other work than the branch's own handoff, the `.todo` line is the newer pointer: resume it, and name the branch's work under Still want: the ticket or pull request it links is the source, so `do` step 0 asks nothing, and `do` resumes at the step that work's records show. Skip step 5 then: `do` ends in its own report. Done when `do` has started on the handed-off work, or no handoff was found.
 5. **Look ahead.** Run `cerebro` as a forecast. Done when its proposals end the catch-up, or it found nothing to forecast.
 

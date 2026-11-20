@@ -160,6 +160,7 @@ TESTS = {
     "skills/planning/drawing-board/scripts/board.py": ["board-edges", "drawing-board", "drawing_board_approved_examples"],
     "skills/planning/drawing-board/scripts/fetch-drawio.sh": ["fetch-drawio"],
     "skills/housekeeping/sup/scripts/find-handoff.sh": ["find-handoff", "handoff_pointer_approved_examples"],
+    "skills/housekeeping/sup/scripts/parked-state.sh": ["parked-state"],
     "skills/commands/familiar/scripts/familiar-replay.sh": ["familiar-replay", "familiar_replay_approved_examples", "familiar_evidence_approved_examples"],
     "skills/commands/familiar/scripts/familiar-sessions.sh": ["familiar", "familiar-sessions-off", "familiar_approved_examples", "familiar_catchup_approved_examples", "familiar_handoff_id_approved_examples", "familiar_intent_approved_examples"],
     "skills/commands/familiar/scripts/familiar-shapes.sh": ["familiar-shapes", "familiar_shapes_approved_examples"],

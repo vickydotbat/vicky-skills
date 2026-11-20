@@ -63,6 +63,7 @@ skills/commands/lay-course/scripts/draw-chart.py	0c5de7696438df4a	c963455b75e41e
 skills/housekeeping/standing-orders/scripts/todo.sh	8b469102d3f5fa91	f6fdfdfd9ab0076e	32/32
 skills/housekeeping/summit/scripts/tracker-status.sh	6a332a8355300f2b	d075af041ac67551	25/25
 skills/housekeeping/sup/scripts/find-handoff.sh	fd054d9e6a8755c3	14223912ae92b749	84/84
+skills/housekeeping/sup/scripts/parked-state.sh	10cd5461e078423e	5391840f0766c771	39/39
 skills/planning/decision-record/scripts/check-adr.sh	57813a13ad94dad7	13883e643234ea19	93/93
 skills/planning/drawing-board/scripts/board.py	511cd6695d270424	6fd635ca7c3ae576	140/140
 skills/planning/drawing-board/scripts/fetch-drawio.sh	e69344201d3866d9	24c3bdd937c83529	24/24
@@ -94,7 +95,7 @@ step-hint.sh	cb10e887d9978e76	037ba8cbfe36d156	18/18
 stop-reply.sh	e525bb25161ec89f	d6272a736060cfb7	17/17
 summit-obsidian.sh	549dda7dc9cbe154	324b4eb59ddf61e8	22/22
 summit.sh	8e6e2e361acbd473	324b4eb59ddf61e8	43/43
-sup-handoff-hint.sh	3a70a84b2f173f41	ee01dccfd7c275e5	30/30
+sup-handoff-hint.sh	ca0328e26873afae	94ad133e3366f5f5	37/37
 tea-stdin.awk	ddfdfc5257c31b06	8cbd65cde36c7be9	70/70
 tea-stdin.sh	c631fcfccdb1abf0	5b3f129fbea8ff8e	15/15
 ticket-drift.sh	1bc60db2e95d9227	bae9a96f83d66097	36/36
