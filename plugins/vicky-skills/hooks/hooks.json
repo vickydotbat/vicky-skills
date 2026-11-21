@@ -223,6 +223,11 @@
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/repeat-call-hint.sh\"",
             "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/approved-test-lock.sh\"",
+            "timeout": 10
           }
         ]
       },
