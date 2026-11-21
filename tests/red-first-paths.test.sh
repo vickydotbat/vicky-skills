@@ -48,5 +48,7 @@ expect "a cd before the add resolves its paths there" 0 "$(guard "cd $repo/tests
 rm -r "$repo/sub"
 expect "a commit that names a path takes that path" 2 "$(guard "git add $t && git commit -m red ci.yml")"
 expect "a commit's unquoted message word is no path" 0 "$(guard "git add $t && git commit -m red")"
-expect "a quoted path with a space counts every change" 2 "$(guard "git add 'tests/a b.sh' $t && git commit -m red")"
+expect "a quoted path with a space counts only what it stages (LC-7)" 0 "$(guard "git add 'tests/a b.sh' $t && git commit -m red")"
+printf 'x\n' >"$repo/tests/a b.sh"
+expect "a quoted path with a space that stages code beside the test is refused" 2 "$(guard "git add 'tests/a b.sh' $t && git commit -m both")"
 exit $fail
