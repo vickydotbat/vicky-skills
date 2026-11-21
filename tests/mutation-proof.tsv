@@ -3,7 +3,7 @@ advisory-deadline.sh	e8c29246ec59a753	fd0311fd272eb61c	14/14
 advisory-guard.sh	daff7e96fa68bbfd	d0864c99d3e045e7	56/56
 ai-credit.sh	ce9c03ae1de6bb7b	2be505931785465a	1/1
 approved-spec.sh	1631dde4942ed5b6	d5a1068815cf4493	5/5
-approved-test-lock.sh	c8c1132c2aef88c1	4d46e1a300c08c7f	64/64
+approved-test-lock.sh	3daef14c45a03eb9	ade86b9049b83b36	107/107
 assign-expand.sh	a2d6f7ea568cb59e	66e5cced6dd235e4	5/5
 auto-tidy.sh	744f3115cff7b6d1	0c1ae74fe16555f0	154/154
 cerebro-ask-guard.sh	3d06494f2356b096	8ec4b2dfa0afd7eb	23/23

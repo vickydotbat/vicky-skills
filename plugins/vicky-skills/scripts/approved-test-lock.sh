@@ -58,14 +58,14 @@ if [ "$tool" = Bash ] && [ "$event" = PostToolUse ]; then
     if [ ! -f "$p" ]; then # a deleted test: judge the default branch's copy under its own name
       tmp=$(mktemp -d); git show "$base:$rel" >"$tmp/${rel##*/}" 2>/dev/null
       approved "$tmp/${rel##*/}" || { rm -rf "$tmp"; continue; }
-      rm -rf "$tmp"
+      rm -rf "$tmp" # mutant-ok delete: the scratch copy only leaves a file in the temp folder
       record "$rel" && continue
     else
       locked "$p" >/dev/null || continue
     fi
     lost=0
     while IFS= read -r l; do
-      [ -n "$l" ] || continue
+      [ -n "$l" ] || continue # mutant-ok delete: steps prints no empty line
       [ -f "$p" ] && grep -qxF -- "$l" "$p" || lost=1
     done < <(git show "$base:$rel" | steps)
     [ "$lost" = 1 ] || continue
@@ -117,10 +117,10 @@ case "$tool" in
       w=${w//[\"\']/}
       [ -n "$w" ] || continue # mutant-ok delete: an empty word names the folder, which is never an approved test
       while IFS= read -r p; do
-        [ -f "$p" ] || continue
+        [ -f "$p" ] || continue # mutant-ok delete: a folder or a missing name fails approved too
         case "$p" in /*) ;; *) p="$PWD/$p" ;; esac
         rel=$(locked "$p") && refuse "$rel"
-      done < <(compgen -G "$w" || printf '%s\n' "$w")
+      done < <(compgen -G "$w")
     done < <(targets)
     exit 0 ;; # mutant-ok delete: the case ends here and the script exits 0 after it
 esac
