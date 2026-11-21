@@ -83,6 +83,7 @@ TESTS = {
     "gate-notify.sh": ["gate-notify"],
     "keep-awake.sh": ["keep-awake", "keep-awake-crash", "sleep_lock_approved_examples"],
     "git-hook-lib.sh": GIT_GUARDS,
+    "stale-text.sh": ["git-guard", "pr-guard"],
     "ai-credit.sh": ["git-guard", "git_guard_approved_examples", "pr-guard", "pr_guard_ai_credit_approved_examples"],
     "heredoc-strip.awk": ["heredoc-strip"] + GIT_GUARDS + ["pr-guard", "pkill_guard_approved_examples"],
     "quote-mask.awk": ["pr-guard"],

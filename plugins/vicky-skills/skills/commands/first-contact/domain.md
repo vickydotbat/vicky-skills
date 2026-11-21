@@ -15,6 +15,10 @@ Chart cap: 8
 
 Found work check: on
 
+Stale text: on
+
+Write `Stale text: off` to stop `git-guard` and `pr-guard` from refusing a commit message or pull request text that goes stale: a present-tense count, or a word such as "currently".
+
 Patch-tell hint: on
 
 Write `Patch-tell hint: off` to stop the reminder when an edit to a CI workflow adds a patch tell: a retry, a sleep, `continue-on-error`, a switched-off step, a skipped test or a raised timeout.

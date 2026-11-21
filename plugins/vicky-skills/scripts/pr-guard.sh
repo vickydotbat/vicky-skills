@@ -25,6 +25,8 @@
 #      down is no exception to it.
 #   8. A body or comment that names the review skill as its proof and never
 #      names deathmatch.
+#   9. A body or comment with text that goes stale: a present-tense count or
+#      a word such as "currently", by human-voice's lint (stale-text.sh).
 #
 # Each refusal says what to do instead and never hands the user a command.
 # After a command that printed a pull request's address, the PostToolUse pass
@@ -116,6 +118,15 @@ if [[ $event != PostToolUse ]] && [ -n "$sends_text" ] &&
   refuse "This body names a review as its proof, and review has become deathmatch." \
     "Run the deathmatch skill and put its verdict line in the Proof section." \
     "Then run the command again."
+fi
+
+# Rule 9: text that leaves is dated or lasting.
+# shellcheck source=stale-text.sh
+. "$(dirname "$0")/stale-text.sh"
+if [[ $event != PostToolUse ]] && [ -n "$sends_text" ] && hits=$(stale_hits "$forge_text"); then
+  refuse "This text goes stale: $(awk -F': ' '{print $2}' <<<"$hits" | paste -sd, -)." \
+    "Report each count as a dated run in the past tense (on 2026-11-21 the run matched 4 of 9), or say what stays true." \
+    "STANDARDS.md's 'Dated or lasting' law says what replaces each one. Then run the command again."
 fi
 
 # Rule 6, in each gh or tea segment that creates a pull request or edits its body.

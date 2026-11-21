@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Catch the habits a script can find in a draft, and give the move to make.
 
-Usage: lint-tells.py <draft>
+Usage: lint-tells.py [--stale] <draft>
 
-Prints one line per hit, "<line>: <matched words>: <move to make>", and exits
+With --stale it reports only text that goes stale, for the hooks that read
+commit messages and pull request bodies. Prints one line per hit, "<line>: <matched words>: <move to make>", and exits
 1 when there is any. A clean draft prints nothing and exits 0. Code spans and
 code blocks are skipped. The habits that need a reader are the guiderails in
 SKILL.md.
@@ -11,6 +12,8 @@ SKILL.md.
 import re
 import sys
 
+STALE_MOVE = "Date it in the past tense, or say what stays true."
+COUNT_MOVE = "Report the count as a dated run in the past tense, or give where to read it."
 # Each check: (move to make, regex). Matching ignores case.
 WORDS = [
     ("Say what it does, how fast or for whom, with a number or a name.",
@@ -52,7 +55,7 @@ WORDS = [
     ("Open with the content, and stop when it ends.",
      r"\b(in this (article|post|guide) we will|let's dive in|I hope this helps)\b"),
     ("Fill it in, or cut the sentence.", r"\[(citation needed|TODO)\]|\bturn\d+search\d+\b"),
-    ("Date it in the past tense, or say what stays true.",
+    (STALE_MOVE,
      r"\b(currently|at the moment|at present|right now|as of (now|today|this writing)|for now|nowadays|"
      r"these days|so far|to date|as yet|recently|newly|brand-new)\b"),
     ("Use words. Emoji go only where the house style uses them.", "[\U0001F300-\U0001FAFF☀-➿]"),
@@ -70,7 +73,6 @@ DASH_MOVE = "Use a full stop or a comma. Keep one dash pair per paragraph at mos
 BOLD_MOVE = "Bold only the one word a reader must not miss."
 RHYTHM_MOVE = "Size each paragraph to its content: short for one point, longer where the reasoning runs."
 RULE_MOVE = "Let headings separate the sections, with no rule above them."
-COUNT_MOVE = "Report the count as a dated run in the past tense, or give where to read it."
 # A count in the present tense goes stale. One with a date or a past verb reports a run.
 COUNT = r"\b\d+ (of|out of) \d+\b"
 PRESENT = r"\b(is|are|has|have|match(es)?|pass(es)?|fail(s)?|show(s)?|cover(s)?|hold(s)?|work(s)?)\b"
@@ -133,10 +135,14 @@ def lint(text):
 
 
 def main(argv):
+    stale = argv[:1] == ["--stale"]
+    argv = argv[1:] if stale else argv
     if len(argv) != 1:
         sys.exit(__doc__.strip().splitlines()[2])
     with open(argv[0], encoding="utf-8") as handle:
         hits = lint(handle.read())
+    if stale:
+        hits = [hit for hit in hits if hit[2] in (STALE_MOVE, COUNT_MOVE)]
     for number, match, move in hits:
         print(f"{number}: {match}: {move}")
     return 1 if hits else 0

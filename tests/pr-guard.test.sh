@@ -256,4 +256,11 @@ for c in "tea pr create --help" "tea pr edit -h" "gh pr create --help"; do
   [ -z "$(sent "$c")" ] && echo "ok   $c goes through" || { echo "FAIL $c goes through"; fail=1; }
 done
 rm -rf "$scratch/hub/docs"
+# Rule 9: text that goes stale is refused, and dated or past text passes.
+printf 'Body.\n\n4 of 9 windows match.\n' >"$scratch/count.md"
+printf 'Body.\n\nOn 2026-11-21 the run matched 4 of 9.\n' >"$scratch/dated.md"
+expect "a present-tense count in a body is refused" 2 "gh pr create --title T --body-file $scratch/count.md"
+expect "a stale word in a comment is refused" 2 "gh pr comment 7 --body \"It currently fails.\""
+expect "a dated count passes" 0 "gh pr comment 7 --body-file $scratch/dated.md"
+expect "a stale word in a read-only command passes" 0 "gh pr view 7 --json title -q \"currently\""
 exit $fail

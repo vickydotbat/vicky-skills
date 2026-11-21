@@ -52,11 +52,14 @@ check "paragraphs of mixed length are not" '[ -z "$(run "$(printf '"'"'One. Two.
 check "headings, lists and numbered steps don't count toward the rhythm" '[ -z "$(run "$(printf '"'"'One. Two.\n\n# Head. Er.\n\n1. Step two.\n\nFive. Six.'"'"')")" ]'
 check "two rules before headings are a hit" 'run "$(printf -- '"'"'---\n# A\nText here.\n---\n# B\nMore text.'"'"')" | grep -q "^1: 2 rules before headings: "'
 check "one rule before a heading is not" '[ -z "$(run "$(printf -- '"'"'---\n# A\nText here.\n---\nMore text.'"'"')")" ]'
-check "the wrong number of arguments prints the usage" '[ "$(python3 -I "$lint" 2>&1)" = "Usage: lint-tells.py <draft>" ]'
+check "the wrong number of arguments prints the usage" '[ "$(python3 -I "$lint" 2>&1)" = "Usage: lint-tells.py [--stale] <draft>" ]'
 check "a fence line ends a paragraph" 'run "$(printf '"'"'One. Two.\n```\n```\nThree. Four.\n\nFive. Six.'"'"')" | grep -q "every paragraph has 2 sentences"'
 check "a closing fence line's own text is skipped" '[ -z "$(run "$(printf '"'"'```\ncode\n``` robust\nPlain words.'"'"')")" ]'
 check "a present-tense word that goes stale gets the dated-or-lasting move" 'run "The cache is currently off." | grep -q "^1: currently: Date it in the past tense"'
 check "a present-tense count gets the count move" 'run "40 of 90 windows match." | grep -q "^1: 40 of 90: Report the count as a dated run"'
 check "a dated count passes" '[ -z "$(run "On 2026-11-21 the run matched 40 of 90 windows, and 3 of 3 are green.")" ]'
 check "a past-tense count passes" '[ -z "$(run "The run matched 40 of 90 windows.")" ]'
+stale() { printf '%s\n' "$1" > "$scratch/d.md"; python3 -I "$lint" --stale "$scratch/d.md"; }
+check "--stale reports a stale word and a present count" '[ "$(stale "It is robust and currently 4 of 9 pass." | cut -d: -f2 | tr -d " " | sort | tr "\n" ,)" = "4of9,currently," ]'
+check "--stale passes text whose only tell is another kind" '[ -z "$(stale "It is robust.")" ]'
 exit $fail

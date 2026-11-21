@@ -150,6 +150,18 @@ expect 2 "$scratch/near" 'git push origin main'
 # A message file passed with --file is read too.
 printf 'x\n\nCo-Authored-By: A <a@example.com>\n' >"$scratch/credit.txt"
 expect 2 "$scratch/code" "git commit --file=$scratch/credit.txt"
+# Rule 5: a commit message that goes stale is refused; a dated or past one runs.
+expect 2 "$scratch/code" 'git commit -m "Tests currently pass"'
+expect 2 "$scratch/code" 'git commit -m "4 of 9 checks pass"'
+expect 0 "$scratch/code" 'git commit -m "The run matched 4 of 9 checks"'
+out=$(printf '{"tool_name":"Bash","cwd":"%s","tool_input":{"command":"git commit -m \\"Tests currently pass\\""}}' "$scratch/code" | bash "$hook" 2>&1 >/dev/null || true)
+grep -q "goes stale: currently\." <<<"$out" || { echo "FAIL the refusal names the stale word: $out"; failed=1; }
+printf 'x\n\nSo far it holds.\n' >"$scratch/stale.txt"
+expect 2 "$scratch/code" "git commit --file=$scratch/stale.txt"
+# A repo that writes "Stale text: off" opts out.
+mkdir -p "$scratch/code/docs/agents" && echo 'Stale text: off' >"$scratch/code/docs/agents/domain.md"
+expect 0 "$scratch/code" 'git commit -m "Tests currently pass"'
+rm "$scratch/code/docs/agents/domain.md"
 # Bad input lets the command run.
 got=$(printf 'not json' | bash "$hook" >/dev/null 2>&1 && echo 0 || echo $?)
 [[ $got == 0 ]] || { echo "FAIL want 0, got $got: bad input"; failed=1; }

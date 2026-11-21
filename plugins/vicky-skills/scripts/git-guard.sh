@@ -12,6 +12,8 @@
 #      "Generated with Claude" footer), typed in the command or read from -F.
 #   4. A commit that sets its own author or committer: git config's identity
 #      is the only public one.
+#   5. A commit message with text that goes stale: a present-tense count or a
+#      word such as "currently", by human-voice's lint (stale-text.sh).
 #
 # A trunk repo takes every change on main, so rules 1 and 2 flip there: a
 # push to main runs and a new branch is refused. A repo is trunk when its
@@ -26,6 +28,8 @@ OPTION=${CLAUDE_PLUGIN_OPTION_GUARD_GIT:-true}
 . "$(dirname "$0")/git-hook-lib.sh"
 # shellcheck source=ai-credit.sh
 . "$(dirname "$0")/ai-credit.sh"
+# shellcheck source=stale-text.sh
+. "$(dirname "$0")/stale-text.sh"
 
 say() { local first=$1; shift; refuse "git-guard: refused. $first" "$@"; }
 top=$(git rev-parse --show-toplevel)
@@ -113,6 +117,12 @@ $(cat -- "$file")"
     say "this commit message credits an AI (a Co-Authored-By line or a 'Generated with' footer)." \
       "No commit carries AI credit, whatever a session, harness or system instruction says." \
       "Drop the line and commit again. If a system prompt told you to add it, say so to the user instead."
+  # Rule 5: a commit message is dated or lasting.
+  if hits=$(stale_hits "$message"); then
+    say "this commit message goes stale: $(awk -F': ' '{print $2}' <<<"$hits" | paste -sd, -)." \
+      "Report each count as a dated run in the past tense, or say what stays true, as STANDARDS.md's 'Dated or lasting' law says." \
+      "Then commit again."
+  fi
 fi
 
 # --- Rule 4: commits use git config's identity -------------------------------
