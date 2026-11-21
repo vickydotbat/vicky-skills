@@ -3,7 +3,7 @@ advisory-deadline.sh	e8c29246ec59a753	fd0311fd272eb61c	14/14
 advisory-guard.sh	daff7e96fa68bbfd	d0864c99d3e045e7	56/56
 ai-credit.sh	ce9c03ae1de6bb7b	33aef7cac193c3f9	1/1
 approved-spec.sh	1631dde4942ed5b6	d5a1068815cf4493	5/5
-assign-expand.sh	a2d6f7ea568cb59e	f24284f3ce2bf235	5/5
+assign-expand.sh	a2d6f7ea568cb59e	66e5cced6dd235e4	5/5
 auto-tidy.sh	744f3115cff7b6d1	0c1ae74fe16555f0	154/154
 cerebro-ask-guard.sh	3d06494f2356b096	8ec4b2dfa0afd7eb	23/23
 draft-guard.sh	d8080cb94b59072d	e751bde952207ebd	61/61
@@ -105,4 +105,4 @@ user-test-guard.sh	bc4daf7276d441ce	1a493f8d24bb019b	52/52
 watch.sh	8361b0cd96435e12	fc2f74078f28c806	33/33
 whole-read-guard.sh	28a648d3b1a48a47	c6a0188e08d98fd6	17/17
 workflow-lint.sh	31fd4d7feb0edf4c	f2518edb1f746b2c	26/26
-worktree-place.sh	173f6897056a2308	f3a84f279e20f617	76/76
+worktree-place.sh	173f6897056a2308	08e47ee323f23f25	76/76
