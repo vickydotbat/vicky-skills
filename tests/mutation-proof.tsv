@@ -44,7 +44,7 @@ ready-resume-hint.sh	7790bb36a9046171	b4e739af781a4cef	22/22
 rebase-guard.sh	0e11e65b1bb7219d	13db23ace696773c	45/45
 red-first-check.sh	e585449df8cf7aee	d64417f2206f21c4	20/20
 red-first-guard.sh	82f8c645439f2b90	bb5249d5995f0204	46/46
-repeat-call-hint.sh	dabf51855eb72623	76c9bf576f8c1bbe	23/23
+repeat-call-hint.sh	421adcd33a063615	6c17557d3c6836b9	27/27
 restack-origin-guard.sh	cb150444008a2d6b	b0aff1578e77ce0d	74/74
 review-brief-guard.sh	560dd59ae4621bd2	35d1f7542328b43e	22/22
 shellcheck-guard.sh	4a1cd489a882b91c	500ead1978c8e431	31/31

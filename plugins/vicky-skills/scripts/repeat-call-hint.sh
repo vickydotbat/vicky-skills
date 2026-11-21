@@ -9,7 +9,11 @@ case "${CLAUDE_PLUGIN_OPTION_GUARD_REPEAT_CALL:-true}" in false | 0) exit 0 ;; e
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without jq the read below fails and the hook exits 0 there
 payload=$(cat)
 sig=$(jq -r '[.tool_input.command // "", .tool_response.stdout // "", .tool_response.stderr // ""] | tojson' <<<"$payload" 2>/dev/null | cksum)
-session=$(jq -r '.session_id // "none"' <<<"$payload" 2>/dev/null | tr -c 'A-Za-z0-9_-' _)
+# Calls with no session id share no run: one state file for all of them would
+# join unrelated callers, such as test runs, into one.
+session=$(jq -r '.session_id // empty' <<<"$payload" 2>/dev/null)
+[ -n "$session" ] || exit 0
+session=$(tr -c 'A-Za-z0-9_-' _ <<<"$session")
 state="${REPEAT_CALL_STATE:-${TMPDIR:-/tmp}/vicky-skills-repeat-call}"
 mkdir -p "$state" || exit 0
 file="$state/$session"

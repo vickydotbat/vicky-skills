@@ -25,6 +25,8 @@ call b "y" "o" >/dev/null; call c "y" "o" >/dev/null; out=$(call b "y" "o")
 check "another session's call breaks no run and joins none" '[ -z "$out" ]'
 call d "z" "o" "e1" >/dev/null; call d "z" "o" "e2" >/dev/null; out=$(call d "z" "o" "e3")
 check "stderr that changes is a changing output" '[ -z "$out" ]'
+for i in 1 2 3; do out=$(jq -nc '{tool_name:"Bash",tool_input:{command:"x"},tool_response:{stdout:"same"}}' | bash "$hook"); rc=$?; done
+check "input with no session id counts toward no run" '[ $rc = 0 ] && [ -z "$out" ]'
 for i in 1 2 3; do out=$(opt=false call e "x" "same"); rc=$?; done
 check "the setting off adds nothing and exits 0" '[ $rc = 0 ] && [ -z "$out" ]'
 for i in 1 2 3; do out=$(call f "cargo test" "running 3 tests
@@ -37,5 +39,7 @@ check "a first call writes nothing to stderr" '[ -z "$err" ]'
 check "bad input exits 0" '[ "$(echo notjson | bash "$hook" >/dev/null 2>&1; echo $?)" = 0 ]'
 check "no jq exits 0" '[ "$(echo "{}" | PATH=/nonexistent "$BASH" "$hook" >/dev/null 2>&1; echo $?)" = 0 ]'
 mkdir -p "$fx/ro"; chmod a-w "$fx/ro"
-check "an unwritable state folder exits 0" '[ "$(echo "{}" | REPEAT_CALL_STATE="$fx/ro/s" bash "$hook" >/dev/null 2>&1; echo $?)" = 0 ]'
+check "an unwritable state folder exits 0" '[ "$(echo "{\"session_id\":\"s\"}" | REPEAT_CALL_STATE="$fx/ro/s" bash "$hook" >/dev/null 2>&1; echo $?)" = 0 ]'
+call ../esc "x" "same" >/dev/null
+check "a session id with a slash writes inside the state folder" '[ ! -e "$fx/esc" ] && [ ! -e "$fx/esc_" ]'
 exit $fail
