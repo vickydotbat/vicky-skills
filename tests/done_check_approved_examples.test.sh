@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2016,SC2034,SC2069,SC2329 # check() evals its single-quoted condition later, which reads these names; a hook's stderr alone is read on purpose
 # approved-spec: the examples approved on the notes "LC-1 A Stop hook runs the
 # repo's check before done" and "LC-2 A subagent's done is checked too".
 # done-check.sh records the tree's state on UserPromptSubmit and SubagentStart,
@@ -99,6 +100,7 @@ setup "Check: touch $fx/ran; sleep 20"; ev UserPromptSubmit >/dev/null; echo b >
 out=$(DONE_CHECK_TIMEOUT=1 ev Stop)
 check "LC-1 E7 a check past its limit blocks saying it timed out" 'blocked "$out" && jq -r .reason <<<"$out" | grep -qi "timed out"'
 mkdir -p "$fx/bin"; printf '#!/usr/bin/env bash\necho "$1" >"%s/limit"\nexit 124\n' "$fx" >"$fx/bin/timeout"; chmod +x "$fx/bin/timeout"
+rm -rf "$DONE_CHECK_STATE"; ev UserPromptSubmit >/dev/null; echo d >"$repo/a.txt"
 PATH="$fx/bin:$PATH" ev Stop >/dev/null
 check "LC-1 E7 the default limit is 300 seconds" '[ "$(cat "$fx/limit" 2>/dev/null)" = 300 ]'
 rm -rf "$DONE_CHECK_STATE"; ev UserPromptSubmit >/dev/null; echo c >"$repo/a.txt"; DONE_CHECK_TIMEOUT=1 ev Stop >/dev/null
