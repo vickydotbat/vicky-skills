@@ -21,7 +21,6 @@ get() { jq -r "$1 // \"\"" <<<"$payload" 2>/dev/null; }
 tool=$(get .tool_name); cwd=$(get .cwd)
 cd "${cwd:-.}" 2>/dev/null || exit 0
 root=$(git rev-parse --show-toplevel 2>/dev/null) || exit 0
-root=$(realpath -m -- "$root")
 base=origin/main; git rev-parse -q --verify "$base" >/dev/null || base=main
 steps() { grep -E '^[[:space:]]*#[[:space:]]*(Given|When|Then|And)[[:space:]]' ; }
 record() { # record <repo path>: a ticked change record on the branch

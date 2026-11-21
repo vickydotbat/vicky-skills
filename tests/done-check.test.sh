@@ -49,6 +49,8 @@ check "a child the check leaves running does not hold the stop past the limit" '
 line "Check: setsid sleep 8 & sleep 30"; edit_turn
 s=$SECONDS; jq -nc --arg d "$repo" '{hook_event_name:"Stop",session_id:"s1",cwd:$d}' | DONE_CHECK_TIMEOUT=1 bash "$hook" >/dev/null 2>&1
 check "a child holding the output pipe does not hold the stop past the limit" '[ $((SECONDS - s)) -lt 5 ]'
+line "Check: false"; edit_turn
+check "no temp file for the check's output lets the stop through" '[ "$(jq -nc --arg d "$repo" "{hook_event_name:\"Stop\",session_id:\"s1\",cwd:\$d}" | TMPDIR="$fx/ro-tmp/none" bash "$hook" >/dev/null 2>&1; echo $?)" = 0 ]'
 check "a folder outside git exits 0" '[ "$(ev Stop "$fx")" = 0 ]'
 check "no jq exits 0" '[ "$(echo "{}" | PATH=/nonexistent "$BASH" "$hook" >/dev/null 2>&1; echo $?)" = 0 ]'
 mkdir -p "$fx/ro"; chmod a-w "$fx/ro"
