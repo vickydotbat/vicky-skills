@@ -52,7 +52,28 @@ check "burst one starts" 0 "$(try b1 ${o}intent-opponent s2)"
 check "burst two starts" 0 "$(try b2 ${o}claims-opponent s2)"
 check "burst three starts" 0 "$(try b3 ${o}cause-opponent s2)"
 check "burst four is refused with no receipt in the transcript" 2 "$(try b4 ${o}standards-opponent s2)"
-check "a hook rerun for a launch it passed passes again" 0 "$(try b1 ${o}intent-opponent s2)"
+# Every launch of one script may reach the hook under one tool use id: each still counts.
+: > "$t"; batch 2
+try d1 ${o}intent-opponent s10 >/dev/null
+check "a second launch under the same tool use id fills the batch" 0 "$(try d1 ${o}claims-opponent s10)"
+check "a third under that id is refused" 2 "$(try d1 ${o}cause-opponent s10)"
+
+# The record only bridges the gap until receipts land: a row older than 30 seconds holds no slot.
+: > "$t"; batch 1
+printf 'old1\t%sintent-opponent\t%s\n' "$o" "$(( $(date +%s) - 31 ))" > "$CLAUDE_PLUGIN_DATA/opponent-batch/s11.tsv"
+check "a record row 31 seconds old holds no slot" 0 "$(try old2 ${o}claims-opponent s11)"
+check "a fresh record row holds its slot" 2 "$(try old3 ${o}cause-opponent s11)"
+
+# A launch both the record and the transcript hold counts once.
+: > "$t"; batch 2
+receipt k1 K1 ${o}intent-opponent; try k1 ${o}intent-opponent s12 >/dev/null
+check "a launch in the record and the transcript counts once" 0 "$(try k2 ${o}claims-opponent s12)"
+receipt k2 K2 ${o}claims-opponent
+check "two receipts and two record rows fill a batch of two" 2 "$(try k3 ${o}cause-opponent s12)"
+check "the refusal names TaskStop for an opponent that will never report" yes "$(grep -q TaskStop "$tmp/err" && echo yes || echo no)"
+jq -nc '{type:"assistant",message:{content:[{type:"tool_use",id:"ts",name:"TaskStop",input:{task_id:"K1"}}]}}' >> "$t"
+printf '' > "$CLAUDE_PLUGIN_DATA/opponent-batch/s12.tsv"
+check "an opponent stopped with TaskStop frees its slot" 0 "$(try k3 ${o}cause-opponent s12)"
 
 # No batch.sh answer yet: three at a time, its ceiling.
 : > "$t"

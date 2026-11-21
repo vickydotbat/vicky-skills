@@ -25,7 +25,7 @@ lesson-ledger.sh	4c88dc2d0aebcfe6	1c3b836542cb0487	18/18
 local-path-guard.sh	6250febeeda4bb1c	7a1c8c2b96c6670c	29/29
 merge-point.sh	a19dbe9167831b34	bdb7b61b80c0c3d4	2/2
 merged-branch-guard.sh	eddb14559b662ad4	46991f45e4a0d2d3	41/41
-opponent-batch-guard.sh	bf3be360f8294ca9	6c0d943f519d6c37	77/77
+opponent-batch-guard.sh	363073379d4c2ba7	bcb7ec174fd6a51a	84/84
 opponent-wait-guard.sh	f823210d0539e775	bdf7b0798172bd08	54/54
 outside-text-guard.sh	e8f015e3aada1afe	08fac32ab3bc707c	39/39
 patch-tell-hint.sh	256a998db4051de9	5fe1d435fef9a19b	50/50

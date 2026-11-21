@@ -190,7 +190,7 @@
           {
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/opponent-batch-guard.sh\"",
-            "timeout": 10
+            "timeout": 30
           }
         ]
       }
