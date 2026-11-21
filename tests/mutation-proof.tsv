@@ -44,7 +44,7 @@ red-first-check.sh	e585449df8cf7aee	d64417f2206f21c4	20/20
 red-first-guard.sh	ec04caecb4fc2494	2136a504d9171232	44/44
 restack-origin-guard.sh	cb150444008a2d6b	b0aff1578e77ce0d	74/74
 review-brief-guard.sh	560dd59ae4621bd2	35d1f7542328b43e	22/22
-shellcheck-guard.sh	cf088c188e8827fd	c0c4f6f0643de8aa	31/31
+shellcheck-guard.sh	cf088c188e8827fd	41923536519f64c0	31/31
 since-user.sh	7be3c1c933152abd	86d6a8cd389726ce	14/14
 skill-change-proven.sh	2a77ba5faffc92ea	0d52c550be388664	13/13
 skill-ledger.sh	5a29eb7f617f6f60	ff7ccbbd36194ae4	17/17
@@ -75,7 +75,7 @@ skills/shipping/deathmatch/scripts/mark-outside.sh	528410eaee9fa576	3ba49f335a64
 skills/shipping/deathmatch/scripts/prefight.sh	64866a7207e5cfd5	3ba49f335a640c5c	10/10
 skills/shipping/deathmatch/scripts/triggers.sh	842b516c4c958ef3	3ba49f335a640c5c	26/26
 skills/shipping/deathmatch/scripts/verdict.sh	e0a033ff1846ad05	3ba49f335a640c5c	14/14
-skills/shipping/engrave/scripts/law-lint.sh	c868c7dea4edca82	6c6199abec9e22cc	181/181
+skills/shipping/engrave/scripts/law-lint.sh	dac08591a6a5fc99	1b866b7214fbdffa	181/181
 skills/shipping/security/scripts/advisory.sh	6e69fa028a48b55b	cf9a08e211eba59e	155/155
 skills/shipping/security/scripts/kit.sh	103e8860e68b1f3f	3a55359704e54de2	11/11
 skills/shipping/security/scripts/levels.sh	ef85c88bb4a180e6	d8d4a14423e5cf26	86/86
