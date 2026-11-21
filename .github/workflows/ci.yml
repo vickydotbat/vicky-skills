@@ -421,6 +421,8 @@ jobs:
         run: tests/review-brief-guard.test.sh
       - name: opponent-wait guard decisions
         run: tests/opponent-wait-guard.test.sh
+      - name: opponent-batch guard decisions
+        run: tests/opponent-batch-guard.test.sh
       - name: prose-strip reads titles and messages
         run: tests/prose-strip.test.sh
       - name: read-item edges
