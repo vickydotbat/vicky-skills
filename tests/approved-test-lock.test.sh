@@ -12,6 +12,7 @@ fx=$(mktemp -d); trap 'rm -rf "$fx"' EXIT
 repo="$fx/repo"; mkdir -p "$repo/tests" "$repo/docs"
 git -C "$repo" init -q -b main; git -C "$repo" config user.email t@t; git -C "$repo" config user.name t
 printf '# Given a thing\n# When it runs\n# Then it works\ncheck x\n' >"$repo/tests/foo_approved_examples.test.sh"
+printf '# approved-spec: x\n# Given a tag\n# Then it counts\n' >"$repo/tests/tagged.test.sh"
 git -C "$repo" add -A; git -C "$repo" commit -qm init; git -C "$repo" switch -qc work
 f="$repo/tests/foo_approved_examples.test.sh"
 fail=0
@@ -20,12 +21,18 @@ rc() { jq -nc --arg d "$repo" "$1" | CLAUDE_PLUGIN_OPTION_GUARD_APPROVED_TEST_LO
 edit() { rc "{tool_name:\"Edit\",cwd:\$d,tool_input:{file_path:\"$1\",old_string:\"$2\",new_string:\"$3\"}}"; }
 
 check "an edit that keeps every step line goes through" '[ "$(edit "$f" "check x" "check y")" = 0 ]'
+check "an Edit with replace_all that drops a repeated step line is refused" '[ "$(cp "$f" "$fx/keep"; printf "# Then it works\n" >>"$f"; r=$(rc "{tool_name:\"Edit\",cwd:\$d,tool_input:{file_path:\"$f\",old_string:\"# Then it works\",new_string:\"# Then no\",replace_all:true}}"); cp "$fx/keep" "$f"; echo "$r")" = 2 ]'
 check "a relative path is read from the folder" '[ "$(edit tests/foo_approved_examples.test.sh "# Then it works" "# Then no")" = 2 ]'
 check "a MultiEdit that drops a step line is refused" '[ "$(rc "{tool_name:\"MultiEdit\",cwd:\$d,tool_input:{file_path:\"$f\",edits:[{old_string:\"# When it runs\",new_string:\"\"}]}}")" = 2 ]'
 check "a MultiEdit that keeps them goes through" '[ "$(rc "{tool_name:\"MultiEdit\",cwd:\$d,tool_input:{file_path:\"$f\",edits:[{old_string:\"check x\",new_string:\"check z\"}]}}")" = 0 ]'
 printf '# Given new\n' >"$repo/tests/new_approved_examples.test.sh"
 check "a new approved file main lacks goes through" '[ "$(edit "$repo/tests/new_approved_examples.test.sh" "# Given new" "# Given newer")" = 0 ]'
 check "a shell write to a plain file goes through" '[ "$(rc "{tool_name:\"Bash\",cwd:\$d,tool_input:{command:\"echo x > notes.txt\"}}")" = 0 ]'
+bash_rc() { rc "{tool_name:\"Bash\",cwd:\$d,tool_input:{command:\"$1\"}}"; }
+check "a glob that names an approved test is refused" '[ "$(bash_rc "rm tests/*approved_examples*")" = 2 ]'
+check "a prefix glob that names an approved test is refused" '[ "$(bash_rc "rm tests/foo_approved_exam*")" = 2 ]'
+check "a tagged approved test named otherwise is refused" '[ "$(bash_rc "rm tests/tagged.test.sh")" = 2 ]'
+check "a glob that names no approved test goes through" '[ "$(bash_rc "rm tests/*.txt")" = 0 ]'
 check "reading an approved test goes through" '[ "$(rc "{tool_name:\"Bash\",cwd:\$d,tool_input:{command:\"cat $f\"}}")" = 0 ]'
 printf 'tests/foo_approved_examples.test.sh:3\n- [ ] approve\n' >"$repo/docs/a.md"; git -C "$repo" add -A; git -C "$repo" commit -qm a
 check "an unticked record keeps the lock" '[ "$(edit "$f" "# Then it works" "# Then no")" = 2 ]'
