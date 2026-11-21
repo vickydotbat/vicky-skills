@@ -4,7 +4,7 @@ advisory-guard.sh	daff7e96fa68bbfd	d0864c99d3e045e7	56/56
 ai-credit.sh	ce9c03ae1de6bb7b	54a54a7b1bf4c1d7	1/1
 approved-spec.sh	1631dde4942ed5b6	d5a1068815cf4493	5/5
 approved-test-lock.sh	caceebe790075633	c605f269c1ec5c5b	108/108
-assign-expand.sh	a2d6f7ea568cb59e	66e5cced6dd235e4	5/5
+assign-expand.sh	a2d6f7ea568cb59e	78556a7a7d220be6	5/5
 auto-tidy.sh	744f3115cff7b6d1	0c1ae74fe16555f0	154/154
 cerebro-ask-guard.sh	3d06494f2356b096	8ec4b2dfa0afd7eb	23/23
 done-check.sh	7ef4ac769cc241a5	f119be1bdab65605	63/63
