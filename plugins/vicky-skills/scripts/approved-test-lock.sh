@@ -21,6 +21,7 @@ get() { jq -r "$1 // \"\"" <<<"$payload" 2>/dev/null; }
 tool=$(get .tool_name); cwd=$(get .cwd)
 cd "${cwd:-.}" 2>/dev/null || exit 0
 root=$(git rev-parse --show-toplevel 2>/dev/null) || exit 0
+root=$(realpath -m -- "$root")
 base=origin/main; git rev-parse -q --verify "$base" >/dev/null || base=main
 steps() { grep -E '^[[:space:]]*#[[:space:]]*(Given|When|Then|And)[[:space:]]' ; }
 record() { # record <repo path>: a ticked change record on the branch
@@ -80,7 +81,8 @@ fi
 case "$tool" in
   Edit | Write | MultiEdit)
     path=$(get .tool_input.file_path)
-    case "$path" in /*) ;; *) path="$root/$path" ;; esac
+    case "$path" in /*) ;; *) path="$PWD/$path" ;; esac
+    path=$(realpath -m -- "$path") # a .., a double slash or a symlinked folder names the same file
     rel=$(locked "$path") || exit 0
     old=$(git show "$base:$rel" | steps)
     swap() { if [ "$3" = true ]; then new=${new//"$1"/"$2"}; else new=${new/"$1"/"$2"}; fi; }
@@ -119,7 +121,7 @@ case "$tool" in
       while IFS= read -r p; do
         [ -f "$p" ] || continue # mutant-ok delete: a folder or a missing name fails approved too
         case "$p" in /*) ;; *) p="$PWD/$p" ;; esac
-        rel=$(locked "$p") && refuse "$rel"
+        rel=$(locked "$(realpath -m -- "$p")") && refuse "$rel"
       done < <(compgen -G "$w")
     done < <(targets)
     exit 0 ;; # mutant-ok delete: the case ends here and the script exits 0 after it

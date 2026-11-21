@@ -13,10 +13,11 @@ session=$(jq -r '.session_id // "none"' <<<"$payload" 2>/dev/null | tr -c 'A-Za-
 state="${REPEAT_CALL_STATE:-${TMPDIR:-/tmp}/vicky-skills-repeat-call}"
 mkdir -p "$state" || exit 0
 file="$state/$session"
-read -r last count <"$file" 2>/dev/null || { last=""; count=0; }
+{ [ -f "$file" ] && read -r last count <"$file"; } 2>/dev/null || { last=""; count=0; }
 if [ "$last" = "${sig// /_}" ]; then count=$((count + 1)); else count=1; fi
 echo "${sig// /_} $count" >"$file"
 [ "$count" = 3 ] || exit 0
-# A status poll that still shows a run in flight is waiting, not looping.
-jq -r '.tool_response.stdout // ""' <<<"$payload" | grep -Eqi '(pending|queued|in[_ -]progress|running|waiting)' && exit 0
+# A status poll that still shows a run in flight is waiting, not looping. The word
+# must stand as a status, ending its line or a column, so "running 3 tests" is no status.
+jq -r '.tool_response.stdout // ""' <<<"$payload" | grep -Eqi '(^|[[:space:]"=:])(pending|queued|in[_ -]progress|running|waiting)([[:space:]]*$|[[:space:]]{2,}|'$'\t''|[",])' && exit 0
 jq -nc '{hookSpecificOutput:{hookEventName:"PostToolUse",additionalContext:"repeat-call-hint: you repeated the same call 3 times in a row with the same output. Change approach or ask the user."}}'

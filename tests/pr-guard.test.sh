@@ -73,6 +73,9 @@ expect "another session's deathmatch record does not let ready through" 2 "gh pr
 expect "the GraphQL ready mutation needs a record too" 2 "gh api graphql -f query='mutation { markPullRequestReadyForReview(input:{pullRequestId:\"x\"}) { clientMutationId } }'" true "$scratch/r"
 echo sid1 >>"$scratch/r/.git/vicky-skills/deathmatch/work"
 expect "this session's record for an older commit does not let ready through" 2 "gh pr ready 3" true "$scratch/r"
+expect "a flag between pr and ready needs a record" 2 "gh pr -R o/r ready 3" true "$scratch/r"
+expect "a flag between gh and pr needs a record" 2 "gh --repo o/r pr ready 3" true "$scratch/r"
+expect "--undo in a trailing comment needs a record" 2 "gh pr ready 3 # --undo" true "$scratch/r"
 git -C "$scratch/r" -c user.email=t@t -c user.name=t commit -q --allow-empty -m head
 echo "sid1 $(git -C "$scratch/r" rev-parse HEAD)" >>"$scratch/r/.git/vicky-skills/deathmatch/work"
 expect "this session's record for the head commit lets ready through" 0 "gh pr ready 3" true "$scratch/r"

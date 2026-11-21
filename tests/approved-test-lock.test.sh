@@ -38,7 +38,7 @@ check "listing tests into /dev/null goes through" '[ "$(bash_rc "ls tests/* >/de
 check "copying an approved test elsewhere goes through" '[ "$(bash_rc "cat tests/tagged.test.sh > $fx/x")" = 0 ]'
 post() { jq -nc --arg d "$repo" '{hook_event_name:"PostToolUse",tool_name:"Bash",cwd:$d,tool_input:{command:"x"}}' | bash "$hook" >/dev/null 2>&1; echo $?; }
 cp "$f" "$fx/keep"
-check "a write the pre-check cannot read is reverted after it runs" '[ "$(perl -pi -e "s/# Then it works/# Then no/" "$f"; post)" = 2 ] && cmp -s "$f" "$fx/keep"'
+check "a write the pre-check cannot read is reverted after it runs" '[ "$(sed -i "s/# Then it works/# Then no/" "$f"; post)" = 2 ] && cmp -s "$f" "$fx/keep"'
 check "a deleted approved test is restored after the command" '[ "$(rm "$f"; post)" = 2 ] && cmp -s "$f" "$fx/keep"'
 check "a quoted rm target is refused" '[ "$(bash_rc "rm \\\"tests/foo_approved_examples.test.sh\\\"")" = 2 ]'
 check "a command that only prints rm and an approved test goes through" '[ "$(bash_rc "echo rm tests/foo_approved_examples.test.sh")" = 0 ]'
@@ -47,6 +47,9 @@ check "a Write that keeps every step line goes through" '[ "$(rc "{tool_name:\"W
 check "a command that keeps every step line is left alone" '[ "$(printf "check more\n" >>"$f"; post)" = 0 ] && grep -q "check more" "$f"'
 cp "$fx/keep" "$f"
 check "a MultiEdit entry with replace_all that drops a repeated step line is refused" '[ "$(printf "# Then it works\n" >>"$f"; r=$(rc "{tool_name:\"MultiEdit\",cwd:\$d,tool_input:{file_path:\"$f\",edits:[{old_string:\"# Then it works\",new_string:\"# Then no\",replace_all:true}]}}"); cp "$fx/keep" "$f"; echo "$r")" = 2 ]'
+check "a path through .. is locked too" '[ "$(edit "$repo/tests/../tests/foo_approved_examples.test.sh" "# Then it works" "# Then no")" = 2 ]'
+check "a path with a double slash is locked too" '[ "$(edit "$repo/tests//foo_approved_examples.test.sh" "# Then it works" "# Then no")" = 2 ]'
+check "a relative path is read from the hook's folder" '[ "$(jq -nc --arg d "$repo/tests" "{tool_name:\"Edit\",cwd:\$d,tool_input:{file_path:\"foo_approved_examples.test.sh\",old_string:\"# Then it works\",new_string:\"# Then no\"}}" | bash "$hook" >/dev/null 2>&1; echo $?)" = 2 ]'
 check "reading an approved test goes through" '[ "$(rc "{tool_name:\"Bash\",cwd:\$d,tool_input:{command:\"cat $f\"}}")" = 0 ]'
 printf 'tests/foo_approved_examples.test.sh:3\n- [ ] approve\n' >"$repo/docs/a.md"; git -C "$repo" add -A; git -C "$repo" commit -qm a
 check "an unticked record keeps the lock" '[ "$(edit "$f" "# Then it works" "# Then no")" = 2 ]'

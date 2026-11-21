@@ -10,6 +10,7 @@ node
 python3
 sed
 shellcheck
+xargs
 convert
 identify
 pdftotext

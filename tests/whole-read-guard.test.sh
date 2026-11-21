@@ -12,6 +12,10 @@ printf '| Operation | How |\n| --- | --- |\n| Read, whole | `tracker view --comm
 fail=0
 run() { jq -nc --arg c "$1" --arg d "$tmp" '{tool_name:"Bash",tool_input:{command:$c},cwd:$d}' | bash "$guard" 2>&1 >/dev/null; echo "exit=$?"; }
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
+tx() { : >"$tmp/t.jsonl"; for c in "$@"; do jq -nc --arg c "$c" '{type:"assistant",message:{content:[{type:"tool_use",name:"Bash",input:{command:$c}}]}}' >>"$tmp/t.jsonl"; done; }
+runt() { jq -nc --arg c "$1" --arg d "$tmp" --arg t "$tmp/t.jsonl" '{tool_name:"Bash",tool_input:{command:$c},cwd:$d,transcript_path:$t}' | bash "$guard" 2>&1 >/dev/null; echo "exit=$?"; }
+check "an earlier whole read with 2>&1 counts as whole" 'tx "read-item.sh GAME-9 2>&1"; runt "read-item.sh GAME-9 | head" | grep -qx "exit=0"'
+check "an earlier echo of the read is not a read" 'tx "echo read-item.sh GAME-9"; runt "read-item.sh GAME-9 | head" | grep -q "exit=2"'
 check "plane show into head is refused with the whole-thread steer" 'run "bin/plane show GAME-2819 | head -30" | grep -q "Read the whole thread: read-item.sh GAME-2819"'
 check "the refusal exits 2" 'run "bin/plane show GAME-1 | head" | grep -q "exit=2"'
 check "read-item.sh into tail is refused" 'run "read-item.sh GAME-3 | tail -5" | grep -q "exit=2"'

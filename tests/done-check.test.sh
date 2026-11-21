@@ -39,6 +39,16 @@ out=$(jq -nc --arg d "$repo" '{hook_event_name:"Stop",session_id:"s1",cwd:$d}' |
 check "a timeout blocks once, with one answer, and exits 0" '[ $rc = 0 ] && [ "$(grep -c . <<<"$out")" = 1 ]'
 check "the stop after a timeout exits 0" '[ "$(DONE_CHECK_TIMEOUT=1 ev Stop)" = 0 ]'
 check "bad input exits 0" '[ "$(echo notjson | bash "$hook" >/dev/null 2>&1; echo $?)" = 0 ]'
+blocked() { jq -nc --arg d "$repo" '{hook_event_name:"Stop",session_id:"s1",cwd:$d}' | bash "$hook" 2>/dev/null | jq -e '.decision == "block"' >/dev/null 2>&1; }
+line "Check: false"; echo u >"$repo/u.txt"; rm -rf "$DONE_CHECK_STATE"; ev UserPromptSubmit >/dev/null; echo more >>"$repo/u.txt"
+check "an edit to a file already untracked counts as a change" 'blocked'
+rm -f "$repo/u.txt"
+line "Check: setsid sleep 8 >/dev/null 2>&1 & sleep 30"; edit_turn
+s=$SECONDS; jq -nc --arg d "$repo" '{hook_event_name:"Stop",session_id:"s1",cwd:$d}' | DONE_CHECK_TIMEOUT=1 bash "$hook" >/dev/null 2>&1
+check "a child the check leaves running does not hold the stop past the limit" '[ $((SECONDS - s)) -lt 5 ]'
+line "Check: setsid sleep 8 & sleep 30"; edit_turn
+s=$SECONDS; jq -nc --arg d "$repo" '{hook_event_name:"Stop",session_id:"s1",cwd:$d}' | DONE_CHECK_TIMEOUT=1 bash "$hook" >/dev/null 2>&1
+check "a child holding the output pipe does not hold the stop past the limit" '[ $((SECONDS - s)) -lt 5 ]'
 check "a folder outside git exits 0" '[ "$(ev Stop "$fx")" = 0 ]'
 check "no jq exits 0" '[ "$(echo "{}" | PATH=/nonexistent "$BASH" "$hook" >/dev/null 2>&1; echo $?)" = 0 ]'
 mkdir -p "$fx/ro"; chmod a-w "$fx/ro"
