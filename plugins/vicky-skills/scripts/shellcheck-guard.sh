@@ -15,7 +15,8 @@ OPTION=${CLAUDE_PLUGIN_OPTION_GUARD_SHELLCHECK:-true}
 grep -Eq "git[[:space:]].*push([[:space:]]|\$)" <<<"$code" || exit 0
 grep -Eq -- 'push[^;&|]*(--delete|[[:space:]]-d)([[:space:]]|$)' <<<"$code" && exit 0
 # git diff names files from the top of the repository, and the opt-out lives there too.
-cd "$(git rev-parse --show-toplevel)" || exit 0command -v shellcheck >/dev/null || exit 0 # mutant-ok delete: without shellcheck the run below fails with 127, which refuses nothing
+cd "$(git rev-parse --show-toplevel)" || exit 0 # mutant-ok: the top of a repository git just named is always there
+command -v shellcheck >/dev/null || exit 0 # mutant-ok delete: without shellcheck the run below fails with 127, which refuses nothing
 cat AGENTS.md docs/agents/*.md 2>/dev/null | grep -qix 'Shellcheck:[[:space:]]*off' && exit 0
 base=$(git merge-base "$(default_ref_of origin)" HEAD 2>/dev/null) || exit 0
 # shortcut: this reads the working tree, not the pushed commit; a dirty tree can differ from what goes up.
