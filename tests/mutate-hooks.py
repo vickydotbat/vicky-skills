@@ -407,9 +407,12 @@ class Worker:
         neither works nor ends is left to the clock."""
         # A tag in its environment finds every process it starts, so all are counted and stopped.
         tag = f"{os.getpid()}-{next(RUNS)}"
-        proc = subprocess.Popen(capped(os.path.join(self.root, "tests", test + ".test.sh")),
-                                env=dict(os.environ, MUTATE_HOOKS_INNER="1", MUTATE_HOOKS_RUN=tag),
-                                stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        # The output goes to a file, so a kill with no FAIL line in it can be named in the report.
+        self.out = os.path.join(self.root, ".mutant.out")
+        with open(self.out, "wb") as sink:
+            proc = subprocess.Popen(capped(os.path.join(self.root, "tests", test + ".test.sh")),
+                                    env=dict(os.environ, MUTATE_HOOKS_INNER="1", MUTATE_HOOKS_RUN=tag),
+                                    stdin=subprocess.DEVNULL, stdout=sink, stderr=subprocess.STDOUT)
         start = time.monotonic()
         try:
             while True:
@@ -433,10 +436,14 @@ class Worker:
         try:
             for test, cpu_limit, ceiling in timeouts:
                 code = self.test(test, cpu_limit, ceiling)
-                if code == HUNG:
-                    return HUNG
+                if code in (HUNG, CPU):
+                    return code
                 if code != 0:
-                    return True
+                    with open(self.out, errors="replace") as handle:
+                        said = handle.read()
+                    # A kill no assertion explains is reported, since a test that fails for another
+                    # reason (a missing tool, a limit) would count a harmless mutant as killed.
+                    return True if any(line.startswith("FAIL") for line in said.splitlines()) else (code, test, said.strip().splitlines()[-3:])
             return False
         finally:
             with open(path_of(script)) as handle:
@@ -543,10 +550,13 @@ def main(argv):
         for name, original, found, timeouts, _, code_hash, test_hash, whole in plan:
             killed = list(pool.map(lambda m: one(name, original, m, timeouts), found))
             unrun += killed.count(None)
-            print(f"script {name}: {killed.count(True) + killed.count(HUNG)}/{len(found)}", flush=True)
+            print(f"script {name}: {sum(k not in (False, None) for k in killed)}/{len(found)}", flush=True)
             for (n, line), k in zip(found, killed):
-                if k == HUNG:
-                    print(f"hung {name}:{n + 1}: {line.strip()}", flush=True)
+                if k in (HUNG, CPU):
+                    print(f"{k} {name}:{n + 1}: {line.strip()}", flush=True)
+                elif isinstance(k, tuple):
+                    print(f"no FAIL line {name}:{n + 1}: {line.strip()}: {k[1]} exited {k[0]}"
+                          + "".join("\n  " + said for said in k[2]), flush=True)
             mine = [f"survivor {name}:{n + 1}: {line.strip()}" for (n, line), k in zip(found, killed) if k is False]
             survivors += mine
             if not mine and None not in killed and not again:
