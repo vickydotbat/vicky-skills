@@ -20,7 +20,9 @@
 # with the worktree's path for a landed branch. git worktree remove leaves
 # untracked files behind, and files a container owns. A script that fails
 # leaves the worktree and branch, and the agent is told its output.
+# shellcheck disable=SC1091,SC2154 # git-hook-lib.sh, sourced below, sets payload, command and code
 GUARD=worktree-place
+# shellcheck disable=SC2034 # read by git-hook-lib.sh
 OPTION=${CLAUDE_PLUGIN_OPTION_GUARD_WORKTREE_PLACE:-}
 # shellcheck source=git-hook-lib.sh
 . "$(dirname "$0")/git-hook-lib.sh"
@@ -76,6 +78,7 @@ check_add() {
 }
 
 check_merge() {
+  # shellcheck disable=SC2206 # the merge's own words, split as the shell will
   local words=(${1#*merge}) i branch wt left dirty drop out how
   drop=$(drop_script "$main")
   [ -e "$(git rev-parse --git-dir)/MERGE_HEAD" ] && return 0

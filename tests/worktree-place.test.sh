@@ -2,6 +2,8 @@
 # worktree-place's decisions beyond its approved examples: every way a
 # command names its repo and its path, the ignore line, and every merge that
 # must leave a worktree alone.
+# shellcheck disable=SC2034 # exclude and said are read inside the yes checks' eval strings
+# shellcheck disable=SC2016 # each case is a command the hook reads, so $ stays literal
 set -u
 hook="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/scripts/worktree-place.sh"
 scratch=$(mktemp -d)
@@ -53,7 +55,7 @@ expect "a later segment is checked too" 2 "echo hi; git worktree add ../out"
 expect "worktree list passes" 0 "git worktree list"
 expect "a command with no git passes" 0 "ls ../out"
 expect "outside a repository nothing is checked" 0 "git worktree add ../out" "$scratch"
-CLAUDE_PLUGIN_OPTION_GUARD_WORKTREE_PLACE= expect "the option off passes" 0 "git worktree add ../out"
+CLAUDE_PLUGIN_OPTION_GUARD_WORKTREE_PLACE='' expect "the option off passes" 0 "git worktree add ../out"
 CLAUDE_PLUGIN_OPTION_GUARD_WORKTREE_PLACE=false expect "the option at false passes" 0 "git worktree add ../out"
 CLAUDE_PLUGIN_OPTION_GUARD_WORKTREE_PLACE=1 expect "the option at 1 refuses" 2 "git worktree add ../out"
 expect "after the command, an add is not judged again" 0 "git worktree add ../out" "" PostToolUse
