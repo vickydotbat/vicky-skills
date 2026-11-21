@@ -47,7 +47,9 @@ worktree_of() {
 }
 
 check_add() {
-  local words=($1) i=0 path="" name="" abs
+  local words i=0 path="" name="" abs
+  # Read the words as the shell will, so a quoted path keeps its text.
+  mapfile -t words < <(xargs -n1 printf '%s\n' <<<"$1" 2>/dev/null) || read -ra words <<<"$1"
   while ((i < ${#words[@]})) && [ "${words[i]}" != add ]; do i=$((i + 1)); done
   for ((i = i + 1; i < ${#words[@]}; i++)); do
     case "${words[i]}" in
@@ -116,11 +118,19 @@ Land them, then remove the worktree with $how."
   done
 }
 
+add_re='(^|[[:space:]])git([[:space:]]+-[^[:space:]]+([[:space:]]+[^-[:space:]][^[:space:]]*)?)*[[:space:]]+worktree[[:space:]]+add([[:space:]]|$)'
 while IFS= read -r segment; do
   if [ "$event" = PostToolUse ]; then
     grep -Eq '(^|[[:space:]])git([[:space:]]+-[^[:space:]]+([[:space:]]+[^-[:space:]][^[:space:]]*)?)*[[:space:]]+merge([[:space:]]|$)' <<<"$segment" && check_merge "$segment"
   else
-    grep -Eq '(^|[[:space:]])git([[:space:]]+-[^[:space:]]+([[:space:]]+[^-[:space:]][^[:space:]]*)?)*[[:space:]]+worktree[[:space:]]+add([[:space:]]|$)' <<<"$segment" && check_add "$segment"
+    grep -Eq "$add_re" <<<"$segment" && adds=1
   fi
 done < <(tr ';&|\n' '\n' <<<"$code")
+# The code above has its quoted text cut out, so each add's path is read from
+# the command as written.
+if [ -n "${adds:-}" ]; then
+  while IFS= read -r segment; do
+    grep -Eq "$add_re" <<<"$(sed -E "s/'[^']*'/q/g; s/\"[^\"]*\"/q/g" <<<"$segment")" && check_add "$segment"
+  done < <(tr ';&|\n' '\n' <<<"$command")
+fi
 exit 0 # mutant-ok delete: the loop above leaves status 0
