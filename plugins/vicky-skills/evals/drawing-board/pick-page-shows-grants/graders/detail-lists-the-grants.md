@@ -1,6 +1,6 @@
 ---
 type: regex
 target: { source: file, path: design.md }
-pattern: '^\s*[-*|]\s[^\n]*\d+,\d+[^\n]*\b(skills?|grants?|swim|lore|heal|rope use|pick pocket|hide)\b'
+pattern: '^(?![^\n]*\b(no|not|never|without|skip|skips|ignore|ignores)\b)\s*[-*|]\s[^\n]*\d+,\d+[^\n]*\b(swim|rope use|lore|heal|pick pocket)\b'
 flags: mi
 ---
