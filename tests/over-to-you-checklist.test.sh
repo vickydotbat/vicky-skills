@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # checklist.py writes the over-to-you checklist from a spec in the one form the
 # page reads, and refuses a spec it can't write without breaking that form.
+# shellcheck disable=SC2016,SC2034,SC2329
+# check runs each condition with eval, so the single quotes, the variables and the
+# helpers they name are used there, out of shellcheck's sight.
 set -u
 export VISUAL=false EDITOR=false
 root="$(cd "$(dirname "$0")/.." && pwd)"
