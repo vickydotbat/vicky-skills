@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2016,SC2034,SC2069,SC2329 # check() evals its single-quoted condition later, which reads these names; a hook's stderr alone is read on purpose
+# shellcheck disable=SC2016 # check() evals its single-quoted condition later
+# shellcheck disable=SC2034 # names set here are read inside check()'s eval
 # approved-spec: the examples approved on the note "LC-3 Three identical calls
 # get a steer". repeat-call-hint.sh runs on PostToolUse for Bash, which fires
 # for each call inside a REPL script too (LC-AT2).

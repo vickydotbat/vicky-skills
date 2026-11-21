@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2016,SC2034,SC2069,SC2329 # check() evals its single-quoted condition later, which reads these names; a hook's stderr alone is read on purpose
+# shellcheck disable=SC2016 # check() evals its single-quoted condition later
+# shellcheck disable=SC2034 # names set here are read inside check()'s eval
+# shellcheck disable=SC2329 # helpers are called inside check()'s eval
 # approved-spec: the examples approved on the notes "LC-1 A Stop hook runs the
 # repo's check before done" and "LC-2 A subagent's done is checked too".
 # done-check.sh records the tree's state on UserPromptSubmit and SubagentStart,

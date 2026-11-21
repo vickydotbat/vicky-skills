@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2016,SC2034,SC2069,SC2329 # check() evals its single-quoted condition later, which reads these names; a hook's stderr alone is read on purpose
+# shellcheck disable=SC2016 # check() evals its single-quoted condition later
+# shellcheck disable=SC2034 # names set here are read inside check()'s eval
+# shellcheck disable=SC2069 # only the hook's stderr is read, on purpose
 # approved-spec: the examples approved on the note "LC-5 pr-guard decides from
 # state". A deathmatch run leaves its record at
 # <git common dir>/vicky-skills/deathmatch/<branch>, holding the session id;

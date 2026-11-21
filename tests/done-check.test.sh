@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2016,SC2034 # check() evals its single-quoted condition later, which reads these names
+# shellcheck disable=SC2016 # check() evals its single-quoted condition later
+# shellcheck disable=SC2034 # names set here are read inside check()'s eval
 # done-check's decisions beyond its approved examples: every path that lets the
 # stop through exits 0, and bad input, a folder outside git, a missing jq and an
 # unwritable state folder let it through too.

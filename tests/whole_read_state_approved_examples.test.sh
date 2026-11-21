@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2016,SC2034,SC2069,SC2329 # check() evals its single-quoted condition later, which reads these names; a hook's stderr alone is read on purpose
+# shellcheck disable=SC2016 # check() evals its single-quoted condition later
+# shellcheck disable=SC2069 # only the hook's stderr is read, on purpose
+# shellcheck disable=SC2329 # helpers are called inside check()'s eval
 # approved-spec: the examples approved on the note "LC-6 whole-read-guard
 # decides from state". The guard reads the session transcript for an earlier
 # whole read of the same ticket. Its example "the session transcript can't be
