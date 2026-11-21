@@ -447,6 +447,10 @@ jobs:
         run: tests/outside-text-guard.test.sh
       - name: Deathmatch scripts' exit codes
         run: tests/deathmatch-scripts.test.sh
+      - name: Sealed-copy check catches what an opponent left changed
+        run: tests/sealed_copy_approved_examples.test.sh
+      - name: Sealed-copy check refuses bad input and resets only a temp copy
+        run: tests/sealed-check.test.sh
       - name: Eval runners give the agent a writable shell, and graders compile
         run: tests/eval-runner-env.test.sh
       - name: The planted-cause grader fails a verdict that names 4.1 ms as the cause
