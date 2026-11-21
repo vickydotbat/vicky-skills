@@ -283,7 +283,7 @@
     "guard_approved_test_lock": {
       "type": "boolean",
       "title": "An approved test changes only with its change record",
-      "description": "Refuse an edit, write or delete that changes the Given, When or Then lines of an approved-examples test the default branch holds, until the branch holds its ticked red-pen change record, as examples' CHANGING.md says. On unless you turn it off.",
+      "description": "Refuse an edit, write or delete that changes the Given, When or Then lines of an approved-examples test the default branch holds, until the branch holds its ticked red-pen change record, as examples' CHANGING.md says. A shell command that changes one anyway gets the default branch's copy put back. On unless you turn it off.",
       "default": true
     },
     "guard_repeat_call": {
