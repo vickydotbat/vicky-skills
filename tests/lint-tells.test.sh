@@ -55,4 +55,8 @@ check "one rule before a heading is not" '[ -z "$(run "$(printf -- '"'"'---\n# A
 check "the wrong number of arguments prints the usage" '[ "$(python3 -I "$lint" 2>&1)" = "Usage: lint-tells.py <draft>" ]'
 check "a fence line ends a paragraph" 'run "$(printf '"'"'One. Two.\n```\n```\nThree. Four.\n\nFive. Six.'"'"')" | grep -q "every paragraph has 2 sentences"'
 check "a closing fence line's own text is skipped" '[ -z "$(run "$(printf '"'"'```\ncode\n``` robust\nPlain words.'"'"')")" ]'
+check "a present-tense word that goes stale gets the dated-or-lasting move" 'run "The cache is currently off." | grep -q "^1: currently: Date it in the past tense"'
+check "a present-tense count gets the count move" 'run "40 of 90 windows match." | grep -q "^1: 40 of 90: Report the count as a dated run"'
+check "a dated count passes" '[ -z "$(run "On 2026-11-21 the run matched 40 of 90 windows, and 3 of 3 are green.")" ]'
+check "a past-tense count passes" '[ -z "$(run "The run matched 40 of 90 windows.")" ]'
 exit $fail

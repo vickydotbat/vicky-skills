@@ -59,6 +59,7 @@ Most of a writer's edits to an agent draft are cuts.
 **Every sentence changes what the reader does.** Ask of each sentence whether the reader acts differently, or understands a rule they must follow, because of it. Cut a sentence that fails:
 
 - history on a page about the present ("new as of October 2026"), which belongs in the commit or the ticket;
+- a claim that goes stale: STANDARDS.md's "Dated or lasting" law says what replaces it;
 - mechanism the reader can't act on, which belongs in a code comment or a runbook;
 - attribution and reassurance ("that's the forge's rule, not ours");
 - a summary of material written down elsewhere, where a pointer does the job;
@@ -74,7 +75,7 @@ Keep one reason when it motivates the reader's action, in its own short sentence
 
 **The user's voice wins, then the house style.** Their writing beats every rule here. A document's own conventions (heading case, callout style, a declared voice) beat your defaults.
 
-**Content beats voice.** A sentence with a version, a command or a measured result in it is hard to mistake for filler. Where a sentence feels empty, find the specific thing the writer knows and say it.
+**Content beats voice.** A sentence with a command, or a measured result dated in the past tense, is hard to mistake for filler. Where a sentence feels empty, find the specific thing the writer knows and say it.
 
 **The human part is the thinking, never the surface.** Spell, punctuate and write grammar correctly, and invent nothing: no planted typo, no anecdote that did not happen, no doubt the user doesn't have.
 
