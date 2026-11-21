@@ -4,7 +4,9 @@
 # is approved when approved-spec.sh says so and the default branch holds it.
 # An Edit or Write that keeps every Given, When and Then comment line of the
 # default branch's copy goes through, as examples' CHANGING.md says. A shell
-# command that deletes or writes an approved test is refused. A change record
+# command whose words name an approved test as a write target is refused
+# before it runs, and on PostToolUse each approved test a command left without
+# one of its step lines is put back from the default branch. A change record
 # is a file on the branch, not on the default branch, holding the line
 # "<test path>:<line or new>" with "- [x] approve" under it: red-pen's
 # section for the changed example. Hooks fire for each call inside a REPL
@@ -45,17 +47,51 @@ locked() { # locked <absolute path>: prints its repo path when it is locked
   record "$rel" && return 1
   echo "$rel"
 }
+event=$(get .hook_event_name)
+if [ "$tool" = Bash ] && [ "$event" = PostToolUse ]; then
+  # After the command: each locked test that lost a step line is put back from the
+  # default branch. This holds for any write a command can make, read or not.
+  hit=""
+  while IFS= read -r rel; do
+    [ -n "$rel" ] || continue # mutant-ok delete: an empty name is the repo folder, which is never approved
+    p="$root/$rel"
+    if [ ! -f "$p" ]; then # a deleted test: judge the default branch's copy under its own name
+      tmp=$(mktemp -d); git show "$base:$rel" >"$tmp/${rel##*/}" 2>/dev/null
+      approved "$tmp/${rel##*/}" || { rm -rf "$tmp"; continue; }
+      rm -rf "$tmp"
+      record "$rel" && continue
+    else
+      locked "$p" >/dev/null || continue
+    fi
+    lost=0
+    while IFS= read -r l; do
+      [ -n "$l" ] || continue
+      [ -f "$p" ] && grep -qxF -- "$l" "$p" || lost=1
+    done < <(git show "$base:$rel" | steps)
+    [ "$lost" = 1 ] || continue
+    mkdir -p "$(dirname "$p")"; git show "$base:$rel" >"$p"
+    hit="$hit $rel"
+  done < <(git diff --name-only "$base" 2>/dev/null)
+  [ -n "$hit" ] || exit 0
+  echo "approved-test-lock: the command changed the Given, When or Then lines of$hit, so the default branch's copy is back." >&2
+  echo "A change to an approved example goes through examples' CHANGING.md: open its red-pen section with the new wording, and once it comes back ticked the record lets this edit through." >&2
+  exit 2
+fi
 case "$tool" in
   Edit | Write | MultiEdit)
     path=$(get .tool_input.file_path)
     case "$path" in /*) ;; *) path="$root/$path" ;; esac
     rel=$(locked "$path") || exit 0
     old=$(git show "$base:$rel" | steps)
-    case "$tool" in
-      Write) new=$(get .tool_input.content) ;;
-      Edit) o=$(get .tool_input.old_string); n=$(get .tool_input.new_string); new=$(cat "$path"); if [ "$(get .tool_input.replace_all)" = true ]; then new=${new//"$o"/"$n"}; else new=${new/"$o"/"$n"}; fi ;;
-      MultiEdit) new=$(cat "$path"); while IFS= read -r e; do o=$(jq -r .old_string <<<"$e"); n=$(jq -r .new_string <<<"$e"); new=${new/"$o"/"$n"}; done < <(jq -c '.tool_input.edits[]?' <<<"$payload") ;;
-    esac
+    swap() { if [ "$3" = true ]; then new=${new//"$1"/"$2"}; else new=${new/"$1"/"$2"}; fi; }
+    if [ "$tool" = Write ]; then
+      new=$(get .tool_input.content)
+    else
+      new=$(cat "$path")
+      while IFS= read -r e; do
+        swap "$(jq -r .old_string <<<"$e")" "$(jq -r .new_string <<<"$e")" "$(jq -r '.replace_all // false' <<<"$e")"
+      done < <(jq -c 'if .tool_input.edits then .tool_input.edits[] else .tool_input end' <<<"$payload")
+    fi
     while IFS= read -r l; do
       [ -n "$l" ] || continue
       grep -qxF -- "$l" <<<"$new" || refuse "$rel"
@@ -63,17 +99,29 @@ case "$tool" in
     exit 0 ;; # mutant-ok delete: the case ends here and the script exits 0 after it
   Bash)
     cmd=$(get .tool_input.command)
-    # shortcut: a write is read from the command's words (a redirect, rm, mv, sed -i, tee, truncate, cp onto it); a script file that writes is not read.
-    grep -Eq '(>|(^|[[:space:];&|])(rm|mv|tee|truncate|cp|git[[:space:]]+rm)[[:space:]]|sed[[:space:]]+(-[a-zA-Z]*i))' <<<"$cmd" || exit 0
-    # Each word is read as a glob, so a pattern or a tagged test named otherwise meets the lock too.
+    # Before the command: refuse a write its words name plainly, a redirect target or
+    # an operand of rm, mv, tee, truncate, cp, git rm or sed -i. Every other write
+    # meets the PostToolUse check above, which puts the test back.
+    targets() {
+      grep -oE '>>?[[:space:]]*[^[:space:]&;|<>]+' <<<"$cmd" | sed -E 's/^>>?[[:space:]]*//'
+      while IFS= read -r seg; do
+        read -ra ws <<<"$seg"
+        [ "${ws[0]:-}" = git ] && [ "${ws[1]:-}" = rm ] && ws=("${ws[@]:1}")
+        case "${ws[0]:-}" in
+          rm | mv | tee | truncate | cp) printf '%s\n' "${ws[@]:1}" ;;
+          sed) case " ${ws[*]} " in *" -i"* | *" --in-place"*) printf '%s\n' "${ws[@]:1}" ;; esac ;;
+        esac
+      done < <(tr ';&|' '\n' <<<"$cmd")
+    }
     while IFS= read -r w; do
+      w=${w//[\"\']/}
       [ -n "$w" ] || continue # mutant-ok delete: an empty word names the folder, which is never an approved test
       while IFS= read -r p; do
         [ -f "$p" ] || continue
         case "$p" in /*) ;; *) p="$PWD/$p" ;; esac
         rel=$(locked "$p") && refuse "$rel"
       done < <(compgen -G "$w" || printf '%s\n' "$w")
-    done < <(grep -oE '[^[:space:]"'"'"'<>|;&]+' <<<"$cmd")
+    done < <(targets)
     exit 0 ;; # mutant-ok delete: the case ends here and the script exits 0 after it
 esac
 exit 0 # mutant-ok delete: the last command before it, the case, exits 0
