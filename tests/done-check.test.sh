@@ -34,7 +34,7 @@ out=$(jq -nc --arg d "$repo" '{hook_event_name:"Stop",session_id:"s1",cwd:$d}' |
 check "the count starts again after the still-fails stop" 'jq -e ".decision == \"block\"" <<<"$out" >/dev/null'
 line "Check: true"; edit_turn
 check "a passing check exits 0" '[ "$(ev Stop)" = 0 ]'
-line "Check: sleep 5"; edit_turn
+line "Check: sleep 30"; edit_turn
 out=$(jq -nc --arg d "$repo" '{hook_event_name:"Stop",session_id:"s1",cwd:$d}' | DONE_CHECK_TIMEOUT=1 bash "$hook" 2>/dev/null); rc=$?
 check "a timeout blocks once, with one answer, and exits 0" '[ $rc = 0 ] && [ "$(grep -c . <<<"$out")" = 1 ]'
 check "the stop after a timeout exits 0" '[ "$(DONE_CHECK_TIMEOUT=1 ev Stop)" = 0 ]'
