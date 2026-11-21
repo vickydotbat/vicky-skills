@@ -196,9 +196,13 @@ check "a stage receipt from long before the page is refused as stale" 'out=$(wri
 receipt "$dir" down 1 "podman ps --filter name=app"
 stagespec '{"stage_ran": "down"}'
 check "a stage receipt that failed is refused" 'out=$(write); [ $? = 1 ] && grep -q "stage: receipt down exited 1" <<<"$out"'
-for c in "/usr/bin/grep READY logs/server.log" "env grep READY logs/server.log" "sh -c 'tail logs/server.log'" "pgrep app; grep READY logs/server.log" "docker logs app"; do
+for c in "tac logs/server.log" "pgrep app < logs/server.log" "timeout 5 wc -l logs/server.log" "/usr/bin/grep READY logs/server.log" "env grep READY logs/server.log" "sh -c 'tail logs/server.log'" "pgrep app; grep READY logs/server.log" "docker logs app"; do
   fresh "$dir" wrapped "$c"; stagespec '{"stage_ran": "wrapped"}'
   check "a stage receipt that reads a file inside \`$c\` is refused" 'out=$(write); [ $? = 1 ] && grep -q "reads a file" <<<"$out"'
+done
+for c in "pgrep -f tail" "curl -fs localhost:8080/cat"; do
+  fresh "$dir" live "$c"; stagespec '{"stage_ran": "live"}'
+  check "a liveness command whose argument names a reader, \`$c\`, passes" 'write >/dev/null && [ -s "$dir/out.md" ]'
 done
 jq -n '{id:"future", command:"podman ps --filter name=app", exit:0, at:"2099-01-01T00:00:00Z", head:"", cwd:"/", tail:"Up"}' > "$dir/over-to-you-receipts/future.json"
 stagespec '{"stage_ran": "future"}'
@@ -234,8 +238,17 @@ plain="$dir/plain"; git init -q "$plain"; mkdir -p "$plain/docs/agents"; echo 'T
 jq -n --arg cwd "$plain" --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '{id:"plain", command:"pgrep app", exit:0, at:$at, head:"", cwd:$cwd, tail:"1"}' > "$dir/over-to-you-receipts/plain.json"
 stagespec '{"stage_ran": "plain"}'
 check "a testing.md with no Stage check line takes any liveness command" 'write >/dev/null && [ -s "$dir/out.md" ]'
-off="$dir/off"; git init -q "$off"; mkdir -p "$off/docs/agents"; echo 'Stage check: none' > "$off/docs/agents/testing.md"
+off="$dir/off"; git init -q "$off"; mkdir -p "$off/docs/agents"; echo 'Stage check: None.' > "$off/docs/agents/testing.md"
 stagespec '{}'
 cp -r "$dir/over-to-you-receipts" "$off/"
+check "a Stage check line of none, run from the repo with the page in scratch, needs no stage receipt" 'rm -f "$dir/out.md"; (cd "$off" && python3 -I "$skill/checklist.py" "$dir/spec.json" "$dir/out.md" >/dev/null 2>&1) && [ -s "$dir/out.md" ]'
+quoted="$dir/quoted"; git init -q "$quoted"; mkdir -p "$quoted/docs/agents"; printf 'Stage check: `pgrep -f "dev server"` (the dev server)\n' > "$quoted/docs/agents/testing.md"
+jq -n --arg cwd "$quoted" --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '{id:"q", command:"pgrep -f dev server", exit:0, at:$at, head:"", cwd:$cwd, tail:"1"}' > "$dir/over-to-you-receipts/q.json"
+stagespec '{"stage_ran": "q"}'
+check "a Stage check in backticks with quoted words and a note after it matches ran.sh's record of it" 'write >/dev/null && [ -s "$dir/out.md" ]'
+odd="$dir/odd"; git init -q "$odd"; mkdir -p "$odd/docs/agents"; printf 'Stage check: pgrep -f "dev\n' > "$odd/docs/agents/testing.md"
+jq -n --arg cwd "$odd" --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '{id:"odd", command:"pgrep -f \"dev", exit:0, at:$at, head:"", cwd:$cwd, tail:"1"}' > "$dir/over-to-you-receipts/odd.json"
+stagespec '{"stage_ran": "odd"}'
+check "a Stage check with an unclosed quote still matches the same command" 'write >/dev/null && [ -s "$dir/out.md" ]'
 check "a repo whose Stage check line says none needs no stage receipt" 'rm -f "$off/out.md"; python3 -I "$skill/checklist.py" "$dir/spec.json" "$off/out.md" >/dev/null 2>&1; [ -s "$off/out.md" ]'
 exit $fail

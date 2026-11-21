@@ -35,6 +35,7 @@ matched whole, or says `none` to switch the check off.
 import json
 import os
 import re
+import shlex
 import subprocess
 import sys
 from datetime import datetime, timedelta, timezone
@@ -92,14 +93,36 @@ def receipt(item, n, out_dir, label=None):
 
 
 # Commands that read a file: a log line can come from another server writing the same log.
-READS_A_FILE = {"grep", "rg", "egrep", "fgrep", "tail", "head", "cat", "less", "awk", "sed", "journalctl", "logs"}
+READS_A_FILE = {"grep", "rg", "egrep", "fgrep", "tail", "head", "cat", "tac", "less", "more", "bat", "awk", "sed", "cut",
+                "sort", "wc", "nl", "od", "dd", "xxd", "strings", "zcat", "journalctl"}
+# Words that run the command after them, so the reader check looks past them.
+WRAPPERS = {"env", "sudo", "run0", "timeout", "nice", "nohup", "exec", "command", "sh", "bash", "-c"}
 STAGE_MINUTES = 15
 SKEW = timedelta(minutes=1)
 
 
 def reads_a_file(command):
-    """True when any word of the command, through pipes, wrappers and paths, is a file reader."""
-    return any(os.path.basename(word) in READS_A_FILE for word in re.split(r"[\s;&|()'\"`]+", command) if word)
+    """True when the command reads a file: a < redirect, a logs subcommand, or a reader that runs as a command,
+    through pipes, lists, quotes and wrappers. A reader's name as an argument (pgrep -f tail) is no read."""
+    if re.search(r"(?<![<\d])<(?![<(])", command):
+        return True
+    for segment in re.split(r"[;&|()'\"`]+", command):
+        words = segment.split()
+        if "logs" in words:
+            return True
+        while words and (os.path.basename(words[0]) in WRAPPERS or words[0].startswith("-") or words[0].isdigit() or "=" in words[0]):
+            words.pop(0)
+        if words and os.path.basename(words[0]) in READS_A_FILE:
+            return True
+    return False  # mutant-ok delete: falling off the end returns None, which reads false too
+
+
+def same_command(a, b):
+    """True when two commands hold the same words once shell quoting is gone, as ran.sh records them."""
+    try:
+        return " ".join(shlex.split(a)) == " ".join(shlex.split(b))
+    except ValueError:
+        return a.split() == b.split()
 
 
 def stage_check(directory):
@@ -115,13 +138,16 @@ def stage_check(directory):
     if not line:
         return None
     value = line.group(1).strip()
-    return "none" if value.lower() == "none" else value.strip("`")
+    if value.rstrip(".").lower() == "none":
+        return "none"
+    quoted = re.match(r"`([^`]+)`", value)
+    return quoted.group(1) if quoted else value
 
 
 def stage_problem(spec, out_dir):
     """The problem with the stage's liveness receipt, or None. A spec whose proven_by is `no server`, or a repo whose
     Stage check: line says none, needs none."""
-    if (spec.get("proven_by") or "").strip().lower() == "no server" or stage_check(out_dir) == "none":
+    if (spec.get("proven_by") or "").strip().lower() == "no server" or "none" in (stage_check(out_dir), stage_check(".")):
         return None
     rid = spec.get("stage_ran") or ""
     if not rid:
@@ -145,7 +171,7 @@ def stage_problem(spec, out_dir):
     if reads_a_file(command):
         return f"stage: receipt {rid} ran `{command}`, which reads a file: a log line can come from another server. Check the process, container or port itself"
     named = stage_check(got.get("cwd"))
-    if named and named != "none" and command.strip() != named:
+    if named and named != "none" and not same_command(command, named):
         return f"stage: receipt {rid} ran `{command}`, not the repo's Stage check `{named}`: run that through ran.sh"
     return None  # mutant-ok delete: falling off the end returns None too
 
