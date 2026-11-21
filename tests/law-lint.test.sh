@@ -29,6 +29,10 @@ printf -- '- After a heading.\n# Next\n  Proven by: AGENTS.md\n- After a note.\n
 out=$("$lint" 2>&1)
 check "a Proven by line after a heading or a plain line belongs to no law above it" \
   'grep -q "^unproven AGENTS.md:1: After a heading" <<<"$out" && grep -q "^unproven AGENTS.md:4: After a note" <<<"$out"'
+printf -- '1. **Last step.** Do it.\n   Proven by: AGENTS.md\n\nProven by: evals/s/whole\n' > SKILL.md
+out=$(bash "$lint" SKILL.md 2>&1)
+check "a skill-wide Proven by at the left margin leaves the last step its own proof" '! grep -q "SKILL.md" <<<"$out"'
+rm SKILL.md
 
 git config user.email t@t && git config user.name t
 # The proof hangs for 30 s; LAW_LINT_TIMEOUT=1 below kills it after one second.
