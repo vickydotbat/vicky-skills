@@ -3,7 +3,8 @@
 # After each opponent reports, deathmatch checks that the sealed copy still sits
 # at the pinned commit with no changed or new tracked files, and that the
 # effort's worktree is as it was when the fight started. Whether the main
-# thread acts on the check is proven by evals/deathmatch/sealed-copy-dirty.
+# thread acts on the check is proven by evals/deathmatch/sealed-check-after-report
+# and evals/deathmatch/sealed-check-second-failure.
 # shellcheck disable=SC2016,SC2034 # check evals its condition strings, which read these variables
 set -u
 dm="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/shipping/deathmatch/scripts"

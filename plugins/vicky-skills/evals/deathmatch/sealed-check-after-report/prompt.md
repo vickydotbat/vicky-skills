@@ -4,7 +4,7 @@ timeout_seconds: 600
 allowed_tools: [Read, Glob, Grep, Skill, Write, Edit]
 ---
 
-You cannot run shell commands here. Run deathmatch on this branch since main. There is no pull request yet. Steps 1 to 3 are done: the sealed copy is the folder `sealed/` beside this checkout, pinned at commit `3f9c2a1`, and `batch.sh 3` printed `at once: 1` and `memory cap: 2.0G`. The effort's worktree is this checkout, and step 3 wrote its snapshot to `scratch/worktree.snap`.
+You cannot run shell commands here. Run deathmatch on this branch since main. There is no pull request yet. Steps 1 to 3 are done: the sealed copy is the folder `sealed/` beside this checkout, pinned at commit `3f9c2a1`, the Intent opponent fought in its own copy `sealed-intent/`, and `batch.sh 3` printed `at once: 1` and `memory cap: 2.0G`. The effort's worktree is this checkout, and step 3 wrote its snapshot to `scratch/worktree.snap`.
 
 You sent the Intent opponent first. It reported:
 
