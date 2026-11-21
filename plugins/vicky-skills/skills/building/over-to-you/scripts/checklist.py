@@ -9,6 +9,7 @@ The spec:
      "open": "what to open, where, on which branch",
      "sitting": [1, 2],                      # optional: sitting 1 of 2
      "signed_off": "nothing yet", "proven_by": "`health.sh` answers ok",
+     "stage_ran": "stage",                   # the liveness receipt; not needed when proven_by is "no server"
      "sections": [{"title": "Pack", "items": [
         {"do": "Spawn the paper", "see": "the sheet shows",
          "person": "real client", "kit": "`/runscript paper` as a DM",
@@ -24,12 +25,18 @@ ran.sh into over-to-you-receipts/ beside the checklist. A receipt that is missin
 exited non-zero, was run on a commit other than HEAD, or (for an item with a kit)
 holds the kit's command in neither its command nor its output is refused: the agent runs every check before a
 person does.
+
+"stage_ran" names the receipt of a liveness command (a process or container
+running, a port answering) run within 15 minutes of the page. A command that
+reads a file is refused, since a log line can come from another server, and
+a repo's `Stage check:` line in docs/agents/testing.md names the one command.
 """
 import json
 import os
 import re
 import subprocess
 import sys
+from datetime import datetime, timedelta, timezone
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path[:0] = [HERE, os.path.join(HERE, "..", "..", "..", "writing", "interactive-page", "scripts")]
@@ -55,31 +62,71 @@ def quick_notes():
 NOOPS = {"true", "false", ":", "echo", "printf"}
 
 
-def receipt(item, n, out_dir):
+def receipt(item, n, out_dir, label=None):
     """Returns (the item's ran: line, None) or (None, the problem)."""
+    label = label or f"item {n}"
     rid = item.get("ran") or ""
     if not rid:
-        return None, f"item {n} has no ran: run it first with ran.sh <id> <command>, then name the id"
+        return None, f"{label} has no ran: run it first with ran.sh <id> <command>, then name the id"
     path = os.path.join(out_dir, "over-to-you-receipts", f"{rid}.json")
     try:
         with open(path, encoding="utf-8") as f:
             got = json.load(f)
     except (OSError, ValueError):
-        return None, f"item {n}: no receipt {rid}: run the check with ran.sh {rid} <command> in this session first"
+        return None, f"{label}: no receipt {rid}: run the check with ran.sh {rid} <command> in this session first"
     if got.get("exit") != 0:
-        return None, f"item {n}: receipt {rid} exited {got.get('exit')}: fix the check until your own run passes"
+        return None, f"{label}: receipt {rid} exited {got.get('exit')}: fix the check until your own run passes"
     command = got.get("command", "")
     if (command.split() or [""])[0] in NOOPS:
-        return None, f"item {n}: receipt {rid} ran `{command}`, which does nothing: run the check itself through ran.sh"
+        return None, f"{label}: receipt {rid} ran `{command}`, which does nothing: run the check itself through ran.sh"
     for kit in re.findall(r"`([^`]+)`", item.get("kit", "")):
         if kit not in command and kit not in got.get("tail", ""):
-            return None, f"item {n}: receipt {rid} ran `{command}`, and neither it nor its output holds the kit `{kit}`: run the kit itself through ran.sh"
+            return None, f"{label}: receipt {rid} ran `{command}`, and neither it nor its output holds the kit `{kit}`: run the kit itself through ran.sh"
     head = got.get("head") or ""
     if head:
         now = subprocess.run(["git", "-C", got.get("cwd") or ".", "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
         if now and now != head:
-            return None, f"item {n}: receipt {rid} ran on {head[:9]}, not HEAD {now[:9]}: run it again on this build"
+            return None, f"{label}: receipt {rid} ran on {head[:9]}, not HEAD {now[:9]}: run it again on this build"
     return f"   ran: `{command}` exit 0 at {got.get('at', '')}", None
+
+
+# Commands that read a file: a log line can come from another server writing the same log.
+READS_A_FILE = {"grep", "rg", "egrep", "fgrep", "tail", "head", "cat", "less", "awk", "sed", "journalctl"}
+STAGE_MINUTES = 15
+
+
+def stage_problem(spec, out_dir):
+    """The problem with the stage's liveness receipt, or None. A spec whose proven_by is `no server` needs none."""
+    if (spec.get("proven_by") or "").strip().lower() == "no server":
+        return None
+    rid = spec.get("stage_ran") or ""
+    if not rid:
+        return ("stage: proven_by names a server, so stage_ran must name the ran.sh receipt of a liveness command run "
+                "just before the page opens: a process or container running, a port answering, as the repo's "
+                "`Stage check:` line in docs/agents/testing.md names. A log line proves nothing: another server can write it.")
+    _, problem = receipt({"ran": rid}, 0, out_dir, "stage")
+    if problem:
+        return problem
+    with open(os.path.join(out_dir, "over-to-you-receipts", f"{rid}.json"), encoding="utf-8") as f:
+        got = json.load(f)
+    command = got.get("command", "")
+    try:
+        age = datetime.now(timezone.utc) - datetime.strptime(got.get("at", ""), "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+    except ValueError:
+        age = timedelta.max
+    if age > timedelta(minutes=STAGE_MINUTES):
+        return f"stage: receipt {rid} ran more than {STAGE_MINUTES} minutes ago: run the liveness check again just before the page opens"
+    if (command.split() or [""])[0] in READS_A_FILE:
+        return f"stage: receipt {rid} ran `{command}`, which reads a file: a log line can come from another server. Check the process, container or port itself"
+    top = subprocess.run(["git", "-C", got.get("cwd") or ".", "rev-parse", "--show-toplevel"], capture_output=True, text=True).stdout.strip()
+    try:
+        with open(os.path.join(top, "docs", "agents", "testing.md"), encoding="utf-8") as f:
+            named = re.search(r"^Stage check:\s*`([^`]+)`", f.read(), re.MULTILINE)
+    except OSError:
+        named = None
+    if top and named and named.group(1) not in command:
+        return f"stage: receipt {rid} ran `{command}`, not the repo's Stage check `{named.group(1)}`: run that through ran.sh"
+    return None  # mutant-ok delete: falling off the end returns None too
 
 
 def render(spec, out_dir="."):
@@ -96,6 +143,9 @@ def render(spec, out_dir="."):
         for key in ("do", "see", "person"):
             if not item.get(key):
                 problems.append(f"item {n} has no {key}")
+    problem = stage_problem(spec, out_dir)
+    if problem:
+        problems.append(problem)
     ran = {}
     for n, item in enumerate(items, 1):
         line, problem = receipt(item, n, out_dir)
