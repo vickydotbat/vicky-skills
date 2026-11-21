@@ -13,7 +13,7 @@ grep -Eq 'git[[:space:]].*commit([[:space:]]|$)' <<<"$code" || exit 0
 changes=$(git diff --cached --name-status --no-renames)
 # -z gives each path raw: the plain form quotes a path that holds a space.
 everything() {
-  local e s
+  local e s # mutant-ok delete: e and s only leak to the caller, which never reads them
   while IFS= read -r -d '' e; do
     s=${e:0:2}
     case "$s" in R* | C*) IFS= read -r -d '' _ ;; esac # mutant-ok delete: a rename is a change beside the test either way, so its second path decides nothing
