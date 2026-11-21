@@ -45,4 +45,22 @@ check "sealed snapshot refuses a missing or empty path, even from inside a check
 git clone -q "$s/w" "$s/t" && mkdir "$s/t/sub" && echo b > "$s/t/a"
 TMPDIR="$s" bash "$dm/sealed-check.sh" reset "$s/t/sub" "$spin" >/dev/null 2>&1; r=$?
 check "sealed reset refuses a folder inside a checkout, and leaves the checkout" '[ $r = 2 ] && [ "$(cat "$s/t/a")" = b ]'
+# Found in the deathmatch: git state outside the work tree hides an edit, or plants code step 5 runs.
+fresh() { rm -rf "${s:?}/$1"; git clone -q "$s/w" "$s/$1"; }
+fresh h; echo z >> "$s/h/a"; git -C "$s/h" update-index --assume-unchanged a
+out=$(bash "$dm/sealed-check.sh" check "$s/h" "$spin" 2>&1); r=$?
+check "an edit hidden by assume-unchanged fails the check" '[ $r = 1 ] && grep -q "^hidden: .* a$" <<<"$out"'
+TMPDIR="$s" bash "$dm/sealed-check.sh" reset "$s/h" "$spin"; out=$(bash "$dm/sealed-check.sh" check "$s/h" "$spin" 2>&1); r=$?
+check "a reset clears a hidden edit, and the copy passes" '[ $r = 0 ] && [ "$(cat "$s/h/a")" = a ]'
+fresh k; git -C "$s/k" update-index --skip-worktree a
+bash "$dm/sealed-check.sh" check "$s/k" "$spin" >/dev/null 2>&1; r=$?
+check "a skip-worktree mark fails the check" '[ $r = 1 ]'
+fresh g; git -C "$s/g" config core.hooksPath "$s/zz"
+out=$(bash "$dm/sealed-check.sh" check "$s/g" "$spin" 2>&1); r=$?
+check "a local git setting the clone never had fails the check" '[ $r = 1 ] && grep -q "^git: core.hookspath" <<<"$out"'
+fresh p; printf '#!/bin/sh\n' > "$s/p/.git/hooks/post-checkout"
+out=$(bash "$dm/sealed-check.sh" check "$s/p" "$spin" 2>&1); r=$?
+check "a planted git hook fails the check" '[ $r = 1 ] && grep -q "^git: hook post-checkout" <<<"$out"'
+fresh q; bash "$dm/sealed-check.sh" check "$s/q" "$spin" >/dev/null 2>&1; r=$?
+check "a fresh clone passes" '[ $r = 0 ]'
 exit $fail

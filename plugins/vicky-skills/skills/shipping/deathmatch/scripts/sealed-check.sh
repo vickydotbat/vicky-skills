@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
-# sealed-check.sh: deathmatch's check that an opponent left the evidence as it
-# found it. Opponents keep Bash, since every proof runs through cap.sh, and
-# Holds and Simplicity write in the sealed copy by design, so read-only can't
-# come from their tool list. This compares against git after each report.
+# sealed-check.sh: Holds and Simplicity write in the sealed copy by design, so it is checked against git after each report.
 #
 #   snapshot <worktree>     prints the effort worktree's state before the fight
 #   check <sealed copy> <pinned sha> [<worktree> <snapshot file>]
@@ -21,6 +18,14 @@ checkout() {
   # An empty path makes git -C read the current folder, so it never counts.
   [ -n "${1:-}" ] || return 1 # mutant-ok delete: bash refuses cd "" here too, and this keeps a shell that allows it from reading the current folder
   top=$(git -C "$1" rev-parse --show-toplevel 2>/dev/null) && [ "$top" = "$(cd "$1" && pwd -P)" ]
+}
+# Index marks that hide a file's edit from git diff, and git state that makes step 5's git
+# commands run a program: a hook, or a local setting that names a command.
+hidden() { git -C "$1" ls-files -v | grep -E '^([a-z]|S) '; }
+git_state() {
+  git -C "$1" config --local --name-only --list |
+    grep -E '^(core\.(hookspath|fsmonitor|sshcommand|pager|editor|askpass|gitproxy|attributesfile)|sequence\.editor|(alias|include|includeif|filter|pager|credential)\..*|diff\.(external|.*\.(textconv|command))|merge\..*\.driver|gpg\..*program|uploadpack\.packobjectshook)$' | sed 's/^/git: /'
+  find "$(git -C "$1" rev-parse --absolute-git-dir)/hooks" -type f ! -name '*.sample' -printf 'git: hook %f\n' 2>/dev/null
 }
 commit() { git -C "$1" rev-parse --verify -q "${2}^{commit}"; }
 # Untracked files git doesn't ignore, by name.
@@ -51,6 +56,8 @@ check)
   fi
   while IFS= read -r line; do echo "changed: $line"; dirty=1; done < <(git -C "$copy" diff --name-status "$pin")
   while IFS= read -r line; do echo "new: $line"; dirty=1; done < <(new_files "$copy")
+  while IFS= read -r line; do echo "hidden: $line"; dirty=1; done < <(hidden "$copy")
+  while IFS= read -r line; do echo "$line"; dirty=1; done < <(git_state "$copy")
   if [ -n "$worktree" ] && [ "$(state "$worktree")" != "$(cat "$snap")" ]; then
     was=$(head -n1 "$snap")
     now=$(git -C "$worktree" rev-parse HEAD)
@@ -75,6 +82,7 @@ reset)
   "$tmp"/*) ;;
   *) echo "refused: reset only touches a sealed copy under $tmp" >&2; exit 2 ;;
   esac
+  git -C "$copy" ls-files -z | git -C "$copy" update-index -z --no-assume-unchanged --no-skip-worktree --stdin
   git -C "$copy" reset -q --hard "$pin" && git -C "$copy" clean -fdq
   ;;
 *) usage ;;
