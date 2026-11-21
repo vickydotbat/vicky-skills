@@ -14,6 +14,7 @@ cat >"$scratch/bin/gh" <<'GH'
 [ "$1 $2" = "repo view" ] || exit 1
 [ "${FAIL:-}" = all ] && exit 1
 case "${3:-}" in
+  --json) echo '{"viewerPermission":"ADMIN","isFork":'"${FORK:-false}"',"parent":{"nameWithOwner":"'"${PARENT:-me/up}"'"}}' ;;
   me/*) echo '{"viewerPermission":"ADMIN","isFork":false,"parent":null}' ;;
   *) echo '{"viewerPermission":"READ","isFork":false,"parent":null}' ;;
 esac
@@ -43,4 +44,9 @@ grep -q '## Status' "$scratch/err" || { echo "FAIL the refusal names the missing
 
 # A forge that can't answer keeps the template
 check "a forge that can't answer keeps the template" "$(run "gh pr create -R stranger/up -t T --body-file $scratch/theirs.md" FAIL=all)" 2
+
+# The target with no -R is the checkout, or its parent when it is a fork
+check "a fork of a foreign repo keeps that repo's template" "$(run "gh pr create -t T --body-file $scratch/theirs.md" "FORK=true PARENT=stranger/up")" 0
+check "a fork of the user's own repo keeps the user's template" "$(run "gh pr create -t T --body-file $scratch/theirs.md" "FORK=true PARENT=me/up")" 2
+check "the user's own checkout keeps the user's template" "$(run "gh pr create -t T --body-file $scratch/theirs.md")" 2
 exit $fail

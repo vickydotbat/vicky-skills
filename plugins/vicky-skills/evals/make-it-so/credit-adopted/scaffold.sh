@@ -3,7 +3,7 @@
 set -eu
 git init -q -b main .
 mkdir -p docs/agents fonts
-printf '# Domain docs\n\nCredits: CREDITS.md\n' > docs/agents/domain.md
+printf '# Domain docs\n\nCredits: README.md\n' > docs/agents/domain.md
 printf '# Site\n\nA small static site.\n' > README.md
 printf 'body { font-family: sans-serif; }\n' > style.css
 git add -A && git -c user.name=eval -c user.email=eval@example.invalid commit -q -m start
