@@ -443,7 +443,11 @@ class Worker:
                         said = handle.read()
                     # A kill no assertion explains is reported, since a test that fails for another
                     # reason (a missing tool, a limit) would count a harmless mutant as killed.
-                    return True if any(line.startswith("FAIL") for line in said.splitlines()) else (code, test, said.strip().splitlines()[-3:])
+                    fails = [line for line in said.splitlines() if line.startswith("FAIL")]
+                    if fails and os.environ.get("MUTATE_HOOKS_SHOW_KILLS") == "1":
+                        # CI sets this where a kill it can't reproduce locally needs its reason in the log.
+                        print(f"kill {script}: {test}: {fails[0]}", flush=True)
+                    return True if fails else (code, test, said.strip().splitlines()[-3:])
             return False
         finally:
             with open(path_of(script)) as handle:
