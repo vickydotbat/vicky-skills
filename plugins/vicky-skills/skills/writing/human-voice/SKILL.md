@@ -60,6 +60,7 @@ Most of a writer's edits to an agent draft are cuts.
 
 - history on a page about the present ("new as of October 2026"), which belongs in the commit or the ticket;
 - a claim that goes stale: STANDARDS.md's "Dated or lasting" law says what replaces it;
+  Proven by: plugins/vicky-skills/evals/human-voice/dated-or-lasting
 - mechanism the reader can't act on, which belongs in a code comment or a runbook;
 - attribution and reassurance ("that's the forge's rule, not ours");
 - a summary of material written down elsewhere, where a pointer does the job;
