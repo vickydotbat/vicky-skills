@@ -6,48 +6,118 @@
 # when origin can't answer. The refusal holds
 # the move: a fresh branch from origin's default, plus the commits made after
 # the merge, found as those after the newest commit whose tree the default
-# branch holds. A branch that was never pushed is not checked. On unless the
-# plugin option guard_merged_branch is false or 0.
+# branch holds, and the heads of the user's open pull requests there.
+# SessionStart hook, and the first other command in each checkout per session:
+# tells the agent the same, without refusing, so a session that only reads and
+# edits on a merged branch hears it before its first commit. A branch that was
+# never pushed is not checked. On unless the plugin option guard_merged_branch
+# is false or 0.
 GUARD=merged-branch-guard
 OPTION=${CLAUDE_PLUGIN_OPTION_GUARD_MERGED_BRANCH:-true}
-# shellcheck source=git-hook-lib.sh
-. "$(dirname "$0")/git-hook-lib.sh"
+case "$OPTION" in true|1) ;; *) exit 0 ;; esac
+payload=$(cat)
+event=$(jq -r '.hook_event_name // ""' <<<"$payload" 2>/dev/null)
+commit_re='(^|[^[:alnum:]_-])git[[:space:]]([^;&|]*[[:space:]])?(commit|push)([[:space:]]|$)'
 
-grep -Eq '(^|[^[:alnum:]_-])git[[:space:]]([^;&|]*[[:space:]])?(commit|push)([[:space:]]|$)' <<<"$code" || exit 0
-grep -Eq -- 'push[^;&|]*(--delete|[[:space:]]-d([[:space:]]|$))' <<<"$code" && exit 0
+# gone: 0 when the branch $current has an upstream and that remote branch is gone.
+# Leaves remote and reach (0 live, 2 gone, else origin could not answer).
+gone() {
+  local upstream merge_ref # mutant-ok delete: a local declaration: no caller reads these names
+  [ -n "$current" ] || return 1 # mutant-ok delete: on a detached HEAD the upstream read below comes back empty and returns 1 the same way
+  upstream=$(git for-each-ref --format='%(upstream:short)' "refs/heads/$current")
+  [ -n "$upstream" ] || return 1 # mutant-ok delete: the remote and branch read below come back empty, so origin is asked for nothing and the record check returns 1 the same way
+  remote=$(git config "branch.$current.remote")
+  merge_ref=$(git config "branch.$current.merge")
+  GIT_TERMINAL_PROMPT=0 timeout 5 git ls-remote --exit-code "$remote" "$merge_ref" >/dev/null 2>&1
+  reach=$?
+  case $reach in
+    0) return 1 ;;
+    2) return 0 ;;
+    *) [ "$(git for-each-ref --format='%(upstream:track)' "refs/heads/$current")" = "[gone]" ] ;;
+  esac
+}
 
-[ -n "$current" ] || exit 0 # mutant-ok delete: on a detached HEAD the upstream read below comes back empty and exits 0 the same way
-upstream=$(git for-each-ref --format='%(upstream:short)' "refs/heads/$current")
-[ -n "$upstream" ] || exit 0 # mutant-ok delete: the remote and branch read below come back empty, so origin is asked for nothing and the record check exits 0 the same way
-remote=$(git config "branch.$current.remote")
-merge_ref=$(git config "branch.$current.merge")
-GIT_TERMINAL_PROMPT=0 timeout 5 git ls-remote --exit-code "$remote" "$merge_ref" >/dev/null 2>&1
-reach=$?
-case $reach in
-  0) exit 0 ;;
-  2) ;;
-  *) [ "$(git for-each-ref --format='%(upstream:track)' "refs/heads/$current")" = "[gone]" ] || exit 0 ;;
-esac
-
-default_ref=$(default_ref_of "$remote")
-[ -n "$default_ref" ] || default_ref="$remote/main"
-# Origin answered, so bring its default branch in: the merge is on it.
-[ "$reach" = 2 ] && GIT_TERMINAL_PROMPT=0 timeout 5 git fetch -q "$remote" "${default_ref#"$remote"/}" >/dev/null 2>&1
-
-# shellcheck source=merge-point.sh
-. "$(dirname "$0")/merge-point.sh"
-point=$(merge_point "$default_ref")
-
-[ -n "$point" ] && after=$(git log --reverse --format='  %h %s' "$point..HEAD")
-if [ -z "$(git rev-list "$default_ref..HEAD" 2>/dev/null)" ] || { [ -n "$point" ] && [ -z "$after" ]; }; then
-  moving="Every commit here is already in $default_ref, so nothing needs moving."
-elif [ -n "$point" ]; then
-  moving="Carry the commits made after the merge onto it with 'git cherry-pick ${point:0:12}..$current':
+# move: fills default_ref and moving, the commits to carry onto a fresh branch.
+move() {
+  local point after # mutant-ok delete: a local declaration: no caller reads these names
+  default_ref=$(default_ref_of "$remote")
+  [ -n "$default_ref" ] || default_ref="$remote/main"
+  # Origin answered, so bring its default branch in: the merge is on it.
+  [ "$reach" = 2 ] && GIT_TERMINAL_PROMPT=0 timeout 5 git fetch -q "$remote" "${default_ref#"$remote"/}" >/dev/null 2>&1
+  # shellcheck source=merge-point.sh
+  . "$(dirname "$0")/merge-point.sh"
+  point=$(merge_point "$default_ref")
+  [ -n "$point" ] && after=$(git log --reverse --format='  %h %s' "$point..HEAD")
+  if [ -z "$(git rev-list "$default_ref..HEAD" 2>/dev/null)" ] || { [ -n "$point" ] && [ -z "$after" ]; }; then
+    moving="Every commit here is already in $default_ref, so nothing needs moving."
+  elif [ -n "$point" ]; then
+    moving="Carry the commits made after the merge onto it with 'git cherry-pick ${point:0:12}..$current':
 $after"
-else
-  moving="The merge point is unknown. Compare 'git log $default_ref..HEAD' with the pull request's merged head ('gh pr view --json headRefOid') before carrying anything over."
+  else
+    moving="The merge point is unknown. Compare 'git log $default_ref..HEAD' with the pull request's merged head ('gh pr view --json headRefOid') before carrying anything over."
+  fi
+}
+
+# open_heads: the heads of the user's open pull requests here, one per line.
+# Returns 1 when the forge's tool is missing or cannot answer.
+open_heads() {
+  local url out me # mutant-ok delete: a local declaration: no caller reads these names
+  url=$(git config "remote.$remote.url")
+  if [[ $url == *github.com* ]]; then
+    out=$(timeout 4 gh pr list --author @me --state open --json headRefName </dev/null 2>/dev/null) || return 1
+    jq -r '.[].headRefName' <<<"$out" 2>/dev/null
+  else
+    me=$(timeout 4 tea api user </dev/null 2>/dev/null | jq -r '.login // ""' 2>/dev/null)
+    out=$(timeout 4 tea pulls list --state open --output json --fields index,head,author </dev/null 2>/dev/null) || return 1
+    jq -r --arg me "$me" '.[] | select(.author == $me) | .head' <<<"$out" 2>/dev/null
+  fi
+}
+
+# heads_line: what the user's open pull requests say about where to work.
+heads_line() {
+  local heads # mutant-ok delete: a local declaration: no caller reads this name
+  if ! heads=$(open_heads); then
+    echo "Ask the forge which pull request of yours is open here: gh pr list --author @me --state open (tea pulls list --state open on Gitea), and carry on in its branch."
+    return
+  fi
+  heads=$(grep -vxF -- "$current" <<<"$heads" | awk 'NF && !seen[$0]++')
+  if [ -z "$heads" ]; then
+    echo "No pull request of yours is open here."
+  else
+    echo "Your open pull requests here have the heads: $(paste -sd, <<<"$heads" | sed 's/,/, /g'). Carry on in the one this work belongs to: git switch $(head -n 1 <<<"$heads"), or its worktree."
+  fi
+}
+
+# A session start, or a first command that is no commit or push, is told, not
+# refused. The lib takes a git command in the session's folder in its place, so
+# it stands in that repository and stays quiet outside one.
+hint=0
+if [ "$event" = SessionStart ] || { [ "$event" = PreToolUse ] && ! grep -Eq "$commit_re" <<<"$(jq -r '.tool_input.command // ""' <<<"$payload")"; }; then
+  hint=1
+  session=$(jq -r '.session_id // "none"' <<<"$payload" | tr -c '[:alnum:]_.-' _)
+  payload=$(jq -c '{cwd, tool_input: {command: "git rev-parse"}}' <<<"$payload")
 fi
-refuse "$GUARD: '$current' is finished: its remote branch is gone, so its pull request merged or the branch was deleted." \
-  "Carry on from a fresh branch:" \
-  "  git fetch --prune && git switch -c <new-branch> ${default_ref}" \
-  "$moving"
+
+# shellcheck source=git-hook-lib.sh
+. "$(dirname "$0")/git-hook-lib.sh" <<<"$payload"
+
+if [ "$hint" = 1 ]; then
+  # Once per checkout per session: a session told at its start hears nothing more.
+  told="${CLAUDE_PLUGIN_DATA:-${TMPDIR:-/tmp}}/merged-branch-told/$session"
+  key=$(git rev-parse --show-toplevel | cksum | cut -d' ' -f1)
+  mkdir -p "$told" 2>/dev/null && [ ! -e "$told/$key" ] && touch "$told/$key" 2>/dev/null || exit 0
+  gone || exit 0
+  move
+  jq -nc --arg e "$event" --arg h "$GUARD: this checkout stands on '$current', and its remote branch is gone: its pull request merged, or the branch was deleted, so the branch is finished. $(heads_line) Or start fresh: git fetch --prune && git switch -c <new-branch> $default_ref. $moving" \
+    '{hookSpecificOutput:{hookEventName:$e,additionalContext:$h}}'
+else
+  grep -Eq "$commit_re" <<<"$code" || exit 0
+  grep -Eq -- 'push[^;&|]*(--delete|[[:space:]]-d([[:space:]]|$))' <<<"$code" && exit 0
+  gone || exit 0
+  move
+  refuse "$GUARD: '$current' is finished: its remote branch is gone, so its pull request merged or the branch was deleted." \
+    "$(heads_line)" \
+    "Carry on from a fresh branch:" \
+    "  git fetch --prune && git switch -c <new-branch> ${default_ref}" \
+    "$moving"
+fi

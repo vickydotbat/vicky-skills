@@ -275,6 +275,8 @@ jobs:
         run: tests/engrave_approved_examples.test.sh
       - name: Merged-branch guard
         run: tests/merged-branch-guard.test.sh
+      - name: Merged-branch hint at session start
+        run: tests/merged-branch-hint.test.sh
       - name: Merged-branch approved examples
         run: tests/merged_branch_approved_examples.test.sh
       - name: Auto-tidy hook
