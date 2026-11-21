@@ -4,7 +4,8 @@
 # shellcheck disable=SC2069 # only the hook's stderr is read, on purpose
 # approved-spec: the examples approved on the note "LC-5 pr-guard decides from
 # state". A deathmatch run leaves its record at
-# <git common dir>/vicky-skills/deathmatch/<branch>, holding the session id;
+# <git common dir>/vicky-skills/deathmatch/<branch>, holding the session id and
+# the head commit it ran at;
 # deathmatch's verdict.sh record writes it.
 set -u
 root="$(cd "$(dirname "$0")/.." && pwd)"
@@ -17,7 +18,7 @@ export HOME="$fx/home"; mkdir -p "$HOME"
 repo="$fx/repo"; mkdir -p "$repo"
 git -C "$repo" init -q -b work; git -C "$repo" config user.email t@t; git -C "$repo" config user.name t
 git -C "$repo" commit -q --allow-empty -m init
-record() { mkdir -p "$repo/.git/vicky-skills/deathmatch"; echo "$2" >"$repo/.git/vicky-skills/deathmatch/$1"; }
+record() { mkdir -p "$repo/.git/vicky-skills/deathmatch"; echo "$2 ${3:-$(git -C "$repo" rev-parse HEAD)}" >"$repo/.git/vicky-skills/deathmatch/$1"; }
 run() { jq -nc --arg c "$1" --arg d "$repo" '{hook_event_name:"PreToolUse",tool_name:"Bash",cwd:$d,session_id:"sid1",tool_input:{command:$c}}' |
   CLAUDE_PLUGIN_OPTION_GUARD_PR=true bash "$hook" 2>&1 >/dev/null; echo "exit=$?"; }
 
@@ -53,10 +54,17 @@ check "LC-5 E5 a body path the hook can't read is refused even with every sectio
 record other sid1
 check "LC-5 E6 a record for another branch does not count" 'run "gh pr ready 12" | grep -q "exit=2"'
 
-# Given deathmatch ran on this branch this session
+# Given deathmatch ran on this branch this session, at the head commit
 # When the agent marks the pull request ready with a body that says "Skipped: review"
 # Then the call goes through, since the run record decides and not the body text
 record work sid1
 check "LC-5 E3 with this branch's record, a Skipped: review body goes through" 'run "gh pr edit 12 --body '"'"'Skipped: review, see verdict'"'"' && gh pr ready 12" | grep -qx "exit=0"'
+
+# Given deathmatch ran on this branch this session, at an older commit
+# When the agent marks the pull request ready
+# Then it is refused, and the agent reads to ask the user to type /make-it-so
+git -C "$repo" commit -q --allow-empty -m after-review
+out=$(run "gh pr ready 12")
+check "LC-5 E7 a record for an older commit does not count" 'grep -q "exit=2" <<<"$out" && grep -q "/make-it-so" <<<"$out"'
 
 exit $fail
