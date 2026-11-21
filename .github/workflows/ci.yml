@@ -345,6 +345,8 @@ jobs:
         run: tests/approve_all_approved_examples.test.sh
       - name: Faster mutation runner
         run: tests/mutation_speed_approved_examples.test.sh
+        env:
+          MUTATE_HOOKS_SHOW_KILLS: "1"
       - name: Mutation runner memory limit
         run: tests/mutate-hooks-memory.test.sh
       - name: Mutation test map names each script once
