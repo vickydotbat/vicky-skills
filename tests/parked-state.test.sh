@@ -80,7 +80,7 @@ echo '- Land PR 7 (ABC-1)' > "$g/.todo"; echo MERGED > "$dir/gh-7"
 check "on GitHub gh reads the pull request" "done: - Land PR 7 (ABC-1) [!7 merged, ABC-1 done]" "$(run "$g")"
 n=$(repo none git@forge.example:o/n.git)
 out=$(run "$n"); code=$?
-[ -z "$out" ] && [ "$code" = 0 ] && echo "ok   no .todo prints nothing and exits 0" || { echo "FAIL no .todo prints nothing and exits 0: $code $out"; fail=1; }
+if [ -z "$out" ] && [ "$code" = 0 ]; then echo "ok   no .todo prints nothing and exits 0"; else echo "FAIL no .todo prints nothing and exits 0: $code $out"; fail=1; fi
 mkdir -p "$dir/plain"; out=$(run "$dir/plain"); code=$?
-[ -z "$out" ] && [ "$code" = 0 ] && echo "ok   outside a repo it prints nothing and exits 0" || { echo "FAIL outside a repo it prints nothing and exits 0: $code $out"; fail=1; }
+if [ -z "$out" ] && [ "$code" = 0 ]; then echo "ok   outside a repo it prints nothing and exits 0"; else echo "FAIL outside a repo it prints nothing and exits 0: $code $out"; fail=1; fi
 exit $fail

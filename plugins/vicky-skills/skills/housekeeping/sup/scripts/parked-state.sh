@@ -28,14 +28,14 @@ pr_state() { # pr_state <n>: merged, closed, open or unread
 ticket_state() { # ticket_state <key>: done, open or unread, from the thread's first column-0 state: or status: line
   local s # mutant-ok delete: the assignment below always sets s
   s=$(timeout "$limit" bash "$plugin/scripts/read-item.sh" "$1" </dev/null 2>/dev/null |
-    grep -m1 -iE '^(state|status):' | sed -E 's/^[^:]*:[[:space:]]*//' | tr 'A-Z' 'a-z')
-  case "$s" in "") echo unread ;; done*|closed*|completed*|cancel*|resolved*) echo done ;; *) echo open ;; esac
+    grep -m1 -iE '^(state|status):' | sed -E 's/^[^:]*:[[:space:]]*//' | tr '[:upper:]' '[:lower:]')
+  case "$s" in "") echo unread ;; "done"*|closed*|completed*|cancel*|resolved*) echo "done" ;; *) echo open ;; esac
 }
 # Each distinct ref is read once, all at once, so the run takes one lookup's time.
 cache=$(mktemp -d); trap 'rm -rf "$cache"' EXIT
 body=$(grep -vE '^(#|- Handoff:|N[0-9])' "$top/.todo")
 for p in $(grep -oE '(![0-9]+|\bPR [0-9]+)\b' <<<"$body" | tr -dc '0-9\n' | sort -u); do pr_state "$p" > "$cache/pr-$p" & done
-for k in $(grep -oE '\b[A-Z][A-Z0-9]+-[0-9]+\b' <<<"$body" | sort -u); do ticket_state "$k" > "$cache/tk-$k" & done
+while read -r k; do [ -n "$k" ] && ticket_state "$k" > "$cache/tk-$k" & done < <(grep -oE '\b[A-Z][A-Z0-9]+-[0-9]+\b' <<<"$body" | sort -u)
 wait
 while IFS= read -r line; do
   case "$line" in ""|"#"*|"- Handoff:"*|N[0-9]*) continue ;; esac
@@ -53,7 +53,7 @@ while IFS= read -r line; do
   if [ "$n" = 0 ]; then v="no ref"
   elif [ "$unread" = 1 ]; then v=unread
   elif [ "$pr_open" = 1 ]; then v=open
-  elif [ "$tk_open" = 0 ]; then v=done
+  elif [ "$tk_open" = 0 ]; then v="done"
   elif [ "${#prs[@]}" -gt 0 ]; then v=merged-ticket-open
   else v=open; fi
   st=$(printf '%s, ' "${states[@]}"); st=${st%, }
