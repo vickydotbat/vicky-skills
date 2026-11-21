@@ -53,7 +53,7 @@ case "$tool" in
     old=$(git show "$base:$rel" | steps)
     case "$tool" in
       Write) new=$(get .tool_input.content) ;;
-      Edit) o=$(get .tool_input.old_string); n=$(get .tool_input.new_string); new=$(cat "$path"); new=${new/"$o"/"$n"} ;;
+      Edit) o=$(get .tool_input.old_string); n=$(get .tool_input.new_string); new=$(cat "$path"); if [ "$(get .tool_input.replace_all)" = true ]; then new=${new//"$o"/"$n"}; else new=${new/"$o"/"$n"}; fi ;;
       MultiEdit) new=$(cat "$path"); while IFS= read -r e; do o=$(jq -r .old_string <<<"$e"); n=$(jq -r .new_string <<<"$e"); new=${new/"$o"/"$n"}; done < <(jq -c '.tool_input.edits[]?' <<<"$payload") ;;
     esac
     while IFS= read -r l; do
@@ -65,11 +65,15 @@ case "$tool" in
     cmd=$(get .tool_input.command)
     # shortcut: a write is read from the command's words (a redirect, rm, mv, sed -i, tee, truncate, cp onto it); a script file that writes is not read.
     grep -Eq '(>|(^|[[:space:];&|])(rm|mv|tee|truncate|cp|git[[:space:]]+rm)[[:space:]]|sed[[:space:]]+(-[a-zA-Z]*i))' <<<"$cmd" || exit 0
+    # Each word is read as a glob, so a pattern or a tagged test named otherwise meets the lock too.
     while IFS= read -r w; do
       [ -n "$w" ] || continue # mutant-ok delete: an empty word names the folder, which is never an approved test
-      case "$w" in /*) p=$w ;; *) p="$PWD/$w" ;; esac
-      rel=$(locked "$p") && refuse "$rel"
-    done < <(grep -oE '[^[:space:]"'"'"'<>|;&]*approved_?examples[^[:space:]"'"'"'<>|;&]*' <<<"$cmd")
+      while IFS= read -r p; do
+        [ -f "$p" ] || continue
+        case "$p" in /*) ;; *) p="$PWD/$p" ;; esac
+        rel=$(locked "$p") && refuse "$rel"
+      done < <(compgen -G "$w" || printf '%s\n' "$w")
+    done < <(grep -oE '[^[:space:]"'"'"'<>|;&]+' <<<"$cmd")
     exit 0 ;; # mutant-ok delete: the case ends here and the script exits 0 after it
 esac
 exit 0 # mutant-ok delete: the last command before it, the case, exits 0
