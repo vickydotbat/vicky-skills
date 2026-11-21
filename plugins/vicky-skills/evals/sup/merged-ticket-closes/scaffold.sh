@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# ABC-7 is still open though its pull request !12 merged, and its thread records nothing left to do. sup closes it unasked and says so. The old sup asked whether it closes.
+# ABC-7 is still open though its pull request !12 merged, and its thread records nothing left to do. sup closes it unasked and says so.
 set -eu
 git init -q -b main .
 git remote add origin https://forge.example.invalid/acme/app.git

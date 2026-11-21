@@ -3,7 +3,8 @@
 # sup's Still want never offers a line whose work already finished. One line
 # out per .todo line (format: sup/SKILL.md step 3). A ref it cannot read keeps
 # the line: only a line whose every ref was read and finished prints done.
-# PARKED_STATE_LIMIT caps the seconds one lookup may take.
+# PARKED_STATE_LIMIT caps the seconds one lookup may take. The parked-state.stub
+# git config key is for evals only: it names a file that stands in for the forge.
 set -u
 plugin=${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "$0")/../../../.." && pwd)}
 limit=${PARKED_STATE_LIMIT:-10}
@@ -16,7 +17,7 @@ pr_state() { # pr_state <n>: merged, closed, open or unread
   stub=$(git config --get parked-state.stub 2>/dev/null)
   if [ -n "$stub" ]; then
     case "$stub" in /*) ;; *) stub="$top/$stub" ;; esac
-    s=$(awk -v n="$1" '$1 == n {print toupper($2)}' "$stub" 2>/dev/null)
+    s=$(awk -v n="$1" '$1 == n {sub(/\r$/, "", $2); print toupper($2)}' "$stub" 2>/dev/null)
   elif [ "$github" = 1 ]; then
     command -v gh >/dev/null && s=$(timeout "$limit" gh pr view "$1" --json state -q .state </dev/null 2>/dev/null)
   elif command -v tea >/dev/null; then

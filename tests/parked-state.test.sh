@@ -72,6 +72,10 @@ check "a pull request the stub does not list is unread" "unread: - Unknown (!9) 
 git -C "$s" config parked-state.stub missing-file
 out=$(cd "$s" && PATH="$dir/noforge:$PATH" bash "$script" 2>&1)
 check "a stub file that is missing reads unread" "unread: - Keep going (!8) [!8 unread]" "$out"
+printf '7 merged\r\n8 open\r\n' > "$s/forge-stub"
+git -C "$s" config parked-state.stub forge-stub
+crlf=$(cd "$s" && PATH="$dir/noforge:$PATH" bash "$script" 2>&1)
+check "a stub written with CRLF lines still reads merged" "merged-ticket-open: - Port it (ABC-2, !7) [!7 merged, ABC-2 open]" "$crlf"
 if grep -qE 'springboard|N1|Handoff' <<<"$out"; then echo "FAIL springboard and Handoff lines are skipped: $out"; fail=1; else echo "ok   springboard and Handoff lines are skipped"; fi
 rm "$dir/pr-10"
 check "a pull request it cannot read keeps the line" "unread: - Ship it after !10 (ABC-1) [!10 unread, ABC-1 done]" "$(run "$r")"

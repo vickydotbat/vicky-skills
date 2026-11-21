@@ -64,7 +64,7 @@ skills/commands/lay-course/scripts/draw-chart.py	0c5de7696438df4a	c963455b75e41e
 skills/housekeeping/standing-orders/scripts/todo.sh	8b469102d3f5fa91	f6fdfdfd9ab0076e	32/32
 skills/housekeeping/summit/scripts/tracker-status.sh	6a332a8355300f2b	d075af041ac67551	25/25
 skills/housekeeping/sup/scripts/find-handoff.sh	fd054d9e6a8755c3	14223912ae92b749	84/84
-skills/housekeeping/sup/scripts/parked-state.sh	0cf404403632c5bf	64acdcad3550726f	41/41
+skills/housekeeping/sup/scripts/parked-state.sh	4d444d4d886a495c	19f7347352cffa62	41/41
 skills/planning/decision-record/scripts/check-adr.sh	57813a13ad94dad7	13883e643234ea19	93/93
 skills/planning/drawing-board/scripts/board.py	511cd6695d270424	6fd635ca7c3ae576	140/140
 skills/planning/drawing-board/scripts/fetch-drawio.sh	e69344201d3866d9	24c3bdd937c83529	24/24
