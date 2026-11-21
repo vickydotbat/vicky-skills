@@ -141,7 +141,8 @@ done < <(tr ';&|\n' '\n' <<<"$code")
 if [ -n "${adds:-}" ]; then
   masked=$(awk -f "$(dirname "$0")/quote-mask.awk" <<<"$command") || masked=$command
   while IFS= read -r segment; do
-    segment=$(tr '\001\002\003\004\005' ' ;&|\n' <<<"$segment")
+    # A quoted newline stays masked, so the path stays one word.
+    segment=$(tr '\001\002\003\004' ' ;&|' <<<"$segment")
     grep -Eq "$add_re" <<<"$(sed -E "s/'[^']*'/q/g; s/\"[^\"]*\"/q/g" <<<"$segment")" && check_add "$segment"
   done < <(tr ';&|\n' '\n' <<<"$masked")
 fi

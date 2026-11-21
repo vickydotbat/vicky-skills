@@ -50,6 +50,8 @@ expect "a quoted path outside holding a ; is refused" 2 "git worktree add '../ou
 expect "a quoted path outside holding a | is refused" 2 "git worktree add -b b '../o|ut' HEAD"
 expect "a quoted path inside holding a ; passes" 0 "git worktree add '$repo/.claude/worktrees/a;b' HEAD"
 expect "an unbalanced quote falls back to plain words" 2 'git worktree add "../out'
+expect "a quoted path inside holding a newline passes" 0 "git worktree add '$repo/.claude/worktrees/x
+y' HEAD"
 yes "the steer names a quoted path's folder as written" 'expect x 2 "git worktree add '"'"'../my out'"'"'" >/dev/null; grep -qF ".claude/worktrees/my out " "$scratch/said"'
 expect "a path that climbs out of .claude/worktrees is refused" 2 "git worktree add .claude/worktrees/../../out"
 expect "the folder itself is no worktree's place" 2 "git worktree add .claude/worktrees"
