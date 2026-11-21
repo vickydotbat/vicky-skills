@@ -37,7 +37,7 @@ two='{"kind":"drafts","effort":"x","sections":[{"what":"A","where":"docs/a.md:1"
 check "only the approved-examples section without a tick is named, by number" 'out=$(write "$two"); [ $? = 1 ] && grep -q "section 3 (C)" <<<"$out" && grep -q "needs approve true" <<<"$out" && grep -q "no tick is recorded" <<<"$out" && ! grep -q "section 2" <<<"$out" && ! grep -q "section 1" <<<"$out"'
 one='{"kind":"drafts","effort":"x","sections":[{"what":"A","where":"docs/a.md:1","text":"t"},{"what":"B","where":"tests/b_approved_examples.test.sh:new","approve":true,"text":"t"}]}'
 check "an approved-examples section with its tick is written beside a plain one, with one tick box" 'write "$one" >/dev/null && [ "$(grep -c -- "- \[ \] approve" "$dir/out.md")" = 1 ]'
-named() { printf '{"kind":"drafts","effort":"x","sections":[{"what":"A","where":"%s","text":"t"}]}' "$1" > "$dir/s.json"; python3 -I "$scripts/write-page.py" "$dir/s.json" "$dir/o.md" >/dev/null; }
+named() { rm -f "$dir/o.md"; printf '{"kind":"drafts","effort":"x","sections":[{"what":"A","where":"%s","text":"t"}]}' "$1" > "$dir/s.json"; python3 -I "$scripts/write-page.py" "$dir/s.json" "$dir/o.md" >/dev/null; }
 check "approved_examples, approved-examples, ApprovedExamples and approvedexamples all name an approved-examples file" '(for w in a_approved_examples.py a-approved-examples.sh AApprovedExamples.cs aapprovedexamples.go; do named "$w"; [ $? = 1 ] || exit 1; done)'
 check "a name that only says approved or examples is not an approved-examples file" '(for w in approved.md examples_doc.md approved_notes.md; do named "$w"; [ $? = 0 ] || exit 1; done)'
 # A page file goes in the session's scratch folder, never loose in the shared temp folder.
@@ -80,6 +80,16 @@ check "a question with no text is refused" 'refused "{\"kind\": \"question\", \"
 check "a draft file with no effort is refused" 'refused "{\"kind\": \"drafts\", \"sections\": [{\"what\": \"w\", \"where\": \"a:1\", \"text\": \"t\"}]}" "missing effort"'
 check "a draft file with no sections is refused" 'refused "{\"kind\": \"drafts\", \"effort\": \"e\"}" "no sections"'
 check "an unknown kind is refused" 'refused "{\"kind\": \"poem\"}" "kind must be one of: question, drafts"'
-check "a wrong call names its usage" 'python3 -I "$scripts/write-page.py" 2>&1 | grep -qx "usage: write-page.py <spec.json> <out.md>"'
+check "a wrong call names its usage" 'python3 -I "$scripts/write-page.py" 2>&1 | grep -qxF "usage: write-page.py [--append] <spec.json> <out.md>"'
+# A draft file holds unread text until make-it-so: a second drafts spec never writes over it.
+first='{"kind":"drafts","effort":"x","sections":[{"what":"Tooltip","where":"src/a.cs:1","text":"Kept text"}]}'
+second='{"kind":"drafts","effort":"x","sections":[{"what":"Label","where":"src/b.cs:2","text":"New text"}]}'
+dd() { printf '%s' "$1" > "$dir/spec.json"; shift; python3 -I "$scripts/write-page.py" "$@" "$dir/spec.json" "$dir/kept.md" 2>&1; }
+rm -f "$dir/kept.md"; dd "$first" >/dev/null
+check "a drafts spec written over a draft file with sections is refused, naming --append, and the file is unchanged" 'out=$(dd "$second"); [ $? = 1 ] && grep -q -- "--append" <<<"$out" && grep -q "Kept text" "$dir/kept.md" && ! grep -q "New text" "$dir/kept.md"'
+check "--append adds the new sections after the kept ones, under one title" 'dd "$second" --append >/dev/null && grep -q "Kept text" "$dir/kept.md" && grep -q "New text" "$dir/kept.md" && [ "$(grep -c "^# Drafts:" "$dir/kept.md")" = 1 ] && [ "$(grep -n "Kept text" "$dir/kept.md" | cut -d: -f1)" -lt "$(grep -n "New text" "$dir/kept.md" | cut -d: -f1)" ]'
+check "--append on a missing file writes it whole" 'rm -f "$dir/kept.md"; dd "$second" --append >/dev/null && head -1 "$dir/kept.md" | grep -qx "# Drafts: x" && grep -q "New text" "$dir/kept.md"'
+check "a question page still replaces its own file" 'q="{\"kind\": \"question\", \"questions\": [{\"q\": \"x\", \"options\": [\"a\", \"b\"]}]}"; dd "$q" >/dev/null; dd "$q" >/dev/null; [ $? = 0 ]'
+check "--append with a question spec is refused" 'dd "{\"kind\": \"question\", \"questions\": [{\"q\": \"x\", \"options\": [\"a\", \"b\"]}]}" --append > "$dir/q.out"; [ $? = 1 ] && grep -q "only for drafts" "$dir/q.out"'
 check "an unknown kind stops with no traceback" 'printf "{\"kind\": \"poem\"}" > "$dir/spec.json"; [ -z "$(python3 -I "$scripts/write-page.py" "$dir/spec.json" "$dir/out.md" 2>&1 >/dev/null)" ]'
 exit $fail
