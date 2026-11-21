@@ -19,25 +19,28 @@ repo() { # name: a clone of a remote whose main holds one clean script, on branc
   gi "$w" remote set-head origin main
   gi "$w" checkout -q -b topic
 }
+# shellcheck disable=SC2016 # the scripts under test are written out literally
 bad='#!/usr/bin/env bash\nc=$1\nout=$(moved $c)\necho "$out"\n'
 
 # A shellcheck failure stops the push
-repo fails; printf "$bad" >"$scratch/fails/move.sh"; gi "$scratch/fails" add -A; gi "$scratch/fails" commit -q -m move
+repo fails; printf '%b' "$bad" >"$scratch/fails/move.sh"; gi "$scratch/fails" add -A; gi "$scratch/fails" commit -q -m move
 check "a shellcheck failure stops the push" "$(run "$scratch/fails")" 2
 grep -q SC2086 "$scratch/out" || { echo "FAIL the refusal shows shellcheck's SC2086 line"; fail=1; }
 
 # Clean scripts push
-repo clean; printf '#!/usr/bin/env bash\nc=$1\nout=$(moved "$c")\necho "$out"\n' >"$scratch/clean/move.sh"; gi "$scratch/clean" add -A; gi "$scratch/clean" commit -q -m move
+# shellcheck disable=SC2016 # the script under test is written out literally
+repo clean
+printf '#!/usr/bin/env bash\nc=$1\nout=$(moved "$c")\necho "$out"\n' >"$scratch/clean/move.sh"; gi "$scratch/clean" add -A; gi "$scratch/clean" commit -q -m move
 check "clean scripts push" "$(run "$scratch/clean")" 0
 
 # Only the branch's own shell files count
-repo old; printf "$bad" >"$scratch/old/legacy.sh"; gi "$scratch/old" add -A; gi "$scratch/old" commit -q -m legacy
+repo old; printf '%b' "$bad" >"$scratch/old/legacy.sh"; gi "$scratch/old" add -A; gi "$scratch/old" commit -q -m legacy
 gi "$scratch/old" push -q origin topic:main; gi "$scratch/old" fetch -q origin
 printf 'notes\n' >"$scratch/old/notes.txt"; gi "$scratch/old" add -A; gi "$scratch/old" commit -q -m notes
 check "only the branch's own shell files count" "$(run "$scratch/old")" 0
 
 # A repo can switch the check off
-repo off; printf "$bad" >"$scratch/off/move.sh"; mkdir -p "$scratch/off/docs/agents"
+repo off; printf '%b' "$bad" >"$scratch/off/move.sh"; mkdir -p "$scratch/off/docs/agents"
 printf 'Shellcheck: off\n' >"$scratch/off/docs/agents/testing.md"; gi "$scratch/off" add -A; gi "$scratch/off" commit -q -m move
 check "a repo can switch the check off" "$(run "$scratch/off")" 0
 exit $fail

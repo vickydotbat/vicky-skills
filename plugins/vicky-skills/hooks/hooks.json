@@ -64,6 +64,11 @@
           },
           {
             "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/shellcheck-guard.sh\"",
+            "timeout": 20
+          },
+          {
+            "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/rebase-guard.sh\"",
             "timeout": 20
           },

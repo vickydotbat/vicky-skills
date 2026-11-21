@@ -143,6 +143,12 @@
       "description": "Refuse a push from a branch that lacks the tip of origin's default branch.",
       "default": true
     },
+    "guard_shellcheck": {
+      "type": "boolean",
+      "title": "Shellcheck before a push",
+      "description": "Refuse a push when shellcheck finds a problem in a shell file the branch changes.",
+      "default": true
+    },
     "guard_restack_origin": {
       "type": "boolean",
       "title": "No restack onto a stale main",

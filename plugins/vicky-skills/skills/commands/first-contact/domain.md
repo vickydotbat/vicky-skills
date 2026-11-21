@@ -11,6 +11,8 @@ Sketches: <the repo-relative folder for drawing-board sketches, or delete this l
 
 Credits: <the repo-relative file that credits outside tools, libraries, fonts and assets, such as README.md, or `off`>
 
+Shellcheck: on <or `off`, to stop `shellcheck-guard` checking a branch's shell files before a push>
+
 Todo file: on
 
 Chart cap: 8

@@ -92,6 +92,7 @@ TESTS = {
     "skill-started.sh": ["draft-guard", "rebase-guard", "ticket-filing-guard"],
     "pr-guard.sh": ["pr-guard", "deathmatch_approved_examples", "pr_guard_ai_credit_approved_examples", "pr_guard_one_pr_approved_examples", "pr_guard_create_approved_examples", "pr_guard_foreign_approved_examples"],
     "push-behind-guard.sh": ["push-behind-guard"],
+    "shellcheck-guard.sh": ["shellcheck_guard_approved_examples", "shellcheck-guard"],
     "rebase-guard.sh": ["rebase-guard"],
     "patch-tell-hint.sh": ["patch-tell-hint"],
     "workflow-lint.sh": ["workflow-lint"],
