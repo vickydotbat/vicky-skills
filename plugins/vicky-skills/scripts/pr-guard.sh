@@ -19,7 +19,8 @@
 #   6. A body that opens or replaces a pull request without ship-it's Status,
 #      Summary, Proof and Risk sections, and a body filled from the commits
 #      (--fill), in a repo with docs/agents/issue-tracker.md, unless that
-#      file says "PR template: off".
+#      file says "PR template: off". A gh command to a repository the user
+#      does not administer skips this rule: that repository keeps its own template.
 #   7. A body or comment with a line that starts "Skipped:" and names review
 #      or deathmatch. Deathmatch runs once per effort, and writing the skip
 #      down is no exception to it.
@@ -63,6 +64,8 @@ fi
 
 # shellcheck source=ai-credit.sh
 . "$(dirname "$0")/ai-credit.sh"
+# shellcheck source=foreign-repo.sh
+. "$(dirname "$0")/foreign-repo.sh"
 
 refuse() {
   printf 'pr-guard: refused. %s\n' "$1" >&2
@@ -135,6 +138,8 @@ if [[ $event != PostToolUse ]] && [ -f "$tracker" ] && ! grep -qix 'PR template:
   while IFS= read -r segment; do
     # A --help call reads the forge's own help and sends nothing.
     grep -Eq '(^|[[:space:]])(--help|-h)([[:space:]]|$)' <<<"$segment" && continue
+    # A repository the user does not administer keeps its own template.
+    grep -Eq '(^|[^[:alnum:]_-])gh[[:space:]]' <<<"$segment" && foreign_repo "$segment" >/dev/null && continue
     if grep -Eq '(^|[[:space:]])--fill' <<<"$segment"; then
       refuse "--fill writes the pull request body from the commits." \
         "Write the body with the ship-it skill and pass it with --body-file."

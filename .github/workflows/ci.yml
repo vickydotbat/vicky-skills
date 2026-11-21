@@ -206,6 +206,9 @@ jobs:
         run: tests/skill-descriptions.test.sh
       - name: PR guard
         run: tests/pr-guard.test.sh
+
+      - name: pr-guard defers to a foreign template
+        run: tests/pr_guard_foreign_approved_examples.test.sh
       - name: Draft guard
         run: tests/draft-guard.test.sh
       - name: Familiar watch follows a moved transcript
