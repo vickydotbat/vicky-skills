@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2016 # check() evals its single-quoted condition later
+# shellcheck disable=SC2034 # alive is read inside check()'s eval
 # Regression tests beside mutation_load_approved_examples: these held before
 # the CPU limit too, so they carry no approved-spec mark.
 set -u
