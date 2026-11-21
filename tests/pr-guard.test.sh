@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2015 # each check's || reports its failure, and the part before it never fails
+# shellcheck disable=SC2016 # commands under test hold variables the hook expands, not this shell
+# shellcheck disable=SC2069 # only the hook's stderr is read, on purpose
 # pr-guard's decisions beyond its approved examples: every way AI credit
 # reaches the forge, and every command shape that passes.
 set -u
@@ -57,6 +60,11 @@ expect "a skipped review on a tea pull request is refused" 2 "tea pr edit 7 -d '
 expect "a skipped check that isn't review passes" 0 "gh pr edit 7 --body 'Skipped: by-eye check, no page changed'"
 expect "a skipped review in a body file a non-sending command reads passes" 0 "gh pr merge 7 --squash --body-file $scratch/skip.md"
 expect "a skipped review passes with the guard off" 0 "gh pr edit 7 --body 'Skipped: review'" false
+mkdir -p "$scratch/r"; git -C "$scratch/r" init -q -b work; mkdir -p "$scratch/r/.git/vicky-skills/deathmatch"; echo other >"$scratch/r/.git/vicky-skills/deathmatch/work"
+expect "another session's deathmatch record does not let ready through" 2 "gh pr ready 3" true "$scratch/r"
+echo sid1 >>"$scratch/r/.git/vicky-skills/deathmatch/work"
+expect "this session's record lets ready through" 0 "gh pr ready 3" true "$scratch/r"
+expect "ready --undo needs no record" 0 "gh pr ready 3 --undo"
 expect "a skipped deathmatch is refused" 2 "gh pr comment 7 --body 'Skipped: deathmatch, small diff'"
 expect "a body naming the review skill as its proof is refused" 2 "gh pr edit 7 --body 'The review skill found nothing.'"
 expect "a body naming review beside deathmatch passes" 0 "gh pr edit 7 --body 'Deathmatch replaced the review skill: 0 proven findings.'"
