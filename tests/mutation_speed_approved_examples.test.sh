@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2016 # check() evals its single-quoted condition later
+# shellcheck disable=SC2034 # names set here are read inside check()'s eval
+# shellcheck disable=SC2329 # helpers are called inside check()'s eval
 # approved-spec: the examples set for a faster mutation runner, from the
 # mutation runs of an earlier session. Each check runs the runner on a copy of
 # the repo, with publickey-hint.sh as its small subject.
@@ -26,6 +29,8 @@ bash "$runner" --jobs 2 publickey-hint.sh > "$dir/first.out" 2>&1
 bash "$runner" --jobs 2 --survivors publickey-hint.sh > "$dir/again.out" 2>&1
 check "after a pass that left one survivor, --survivors mutates only that survivor's line" \
   'n=$(grep -n "^unseen=1$" "$dir/plugins/vicky-skills/scripts/publickey-hint.sh" | cut -d: -f1) && grep -q "^survivor publickey-hint.sh:$n: " "$dir/first.out" && grep -q "^script publickey-hint.sh: 0/1$" "$dir/again.out"'
+# On a miss, show what the runner printed, so a failure on a slow runner can be read from its log.
+( n=$(grep -n "^unseen=1$" "$dir/plugins/vicky-skills/scripts/publickey-hint.sh" | cut -d: -f1) && grep -q "^survivor publickey-hint.sh:$n: " "$dir/first.out" && grep -q "^script publickey-hint.sh: 0/1$" "$dir/again.out" ) || { echo "first pass:"; tail -n 8 "$dir/first.out"; echo "survivors pass:"; tail -n 8 "$dir/again.out"; }
 sed -i '/^unseen=1$/d' "$dir/plugins/vicky-skills/scripts/publickey-hint.sh"
 sed -i '/^publickey-hint.sh	/d' "$dir/tests/mutation-proof.tsv"
 bash "$runner" --jobs 2 publickey-hint.sh >/dev/null 2>&1
