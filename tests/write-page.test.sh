@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # write-page.py writes question pages and draft files from a spec, in the form
 # page.py reads, and refuses a spec it can't write in that form.
+# shellcheck disable=SC2016,SC2034,SC2329
+# check runs each condition with eval, so the single quotes, the variables and the
+# helpers they name are used there, out of shellcheck's sight.
 set -u
 export VISUAL=true EDITOR=true BROWSER=true
 root="$(cd "$(dirname "$0")/.." && pwd)"
@@ -88,6 +91,9 @@ dd() { printf '%s' "$1" > "$dir/spec.json"; shift; python3 -I "$scripts/write-pa
 rm -f "$dir/kept.md"; dd "$first" >/dev/null
 check "a drafts spec written over a draft file with sections is refused, naming --append, and the file is unchanged" 'out=$(dd "$second"); [ $? = 1 ] && grep -q -- "--append" <<<"$out" && grep -q "Kept text" "$dir/kept.md" && ! grep -q "New text" "$dir/kept.md"'
 check "--append adds the new sections after the kept ones, under one title" 'dd "$second" --append >/dev/null && grep -q "Kept text" "$dir/kept.md" && grep -q "New text" "$dir/kept.md" && [ "$(grep -c "^# Drafts:" "$dir/kept.md")" = 1 ] && [ "$(grep -n "Kept text" "$dir/kept.md" | cut -d: -f1)" -lt "$(grep -n "New text" "$dir/kept.md" | cut -d: -f1)" ]'
+both='{"kind":"drafts","effort":"x","sections":[{"what":"Tooltip","where":"src/a.cs:1","text":"Kept text"},{"what":"Label","where":"src/b.cs:2","text":"New text"}]}'
+check "--append leaves the file byte for byte as one spec holding both sections would" 'rm -f "$dir/kept.md"; dd "$first" >/dev/null; dd "$second" --append >/dev/null; cp "$dir/kept.md" "$dir/appended.md"; rm -f "$dir/kept.md"; dd "$both" >/dev/null; cmp -s "$dir/kept.md" "$dir/appended.md"'
+check "a draft file with a title and no section yet is written over without --append" 'printf "# Drafts: x\n\nDone sends it back.\n" > "$dir/kept.md"; dd "$second" >/dev/null && grep -q "New text" "$dir/kept.md"'
 check "--append on a missing file writes it whole" 'rm -f "$dir/kept.md"; dd "$second" --append >/dev/null && head -1 "$dir/kept.md" | grep -qx "# Drafts: x" && grep -q "New text" "$dir/kept.md"'
 check "a question page still replaces its own file" 'q="{\"kind\": \"question\", \"questions\": [{\"q\": \"x\", \"options\": [\"a\", \"b\"]}]}"; dd "$q" >/dev/null; dd "$q" >/dev/null; [ $? = 0 ]'
 check "--append with a question spec is refused" 'dd "{\"kind\": \"question\", \"questions\": [{\"q\": \"x\", \"options\": [\"a\", \"b\"]}]}" --append > "$dir/q.out"; [ $? = 1 ] && grep -q "only for drafts" "$dir/q.out"'
