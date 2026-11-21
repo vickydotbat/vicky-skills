@@ -57,7 +57,8 @@ def laws(path):
             skip = line.lstrip("#").strip().lower() in SKIP_HEADINGS
             continue
         m = PROOF.match(line)
-        if m and current is not None:
+        # A proof at the left margin is the whole file's, never the last item's.
+        if m and current is not None and line[:1].isspace():
             current["proof"] = m.group(1) or None
             continue
         if line and not line[0].isspace():
