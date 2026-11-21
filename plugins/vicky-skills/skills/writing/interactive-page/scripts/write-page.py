@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """Write a page file from a JSON spec, in the one form page.py reads.
 
-    python3 write-page.py <spec.json> <out.md>
+    python3 write-page.py [--append] <spec.json> <out.md>
+
+A drafts spec never writes over a draft file that holds sections, since they
+are unread text make-it-so still hands back: --append adds the new sections
+after them, and a gate page such as an examples approval goes to a second file.
 
 A question page, for a pick between options, a planning page or a council:
 
@@ -88,9 +92,21 @@ def drafts(spec):
     return lines, problems
 
 
+def held_sections(path):
+    """The draft file at path when it holds a section, else an empty string."""
+    try:
+        with open(path, encoding="utf-8") as f:
+            text = f.read()
+    except FileNotFoundError:
+        return ""
+    return text if re.search(r"^## ", text, re.MULTILINE) else ""
+
+
 def main(argv):
+    append = "--append" in argv[1:]
+    argv = [a for a in argv if a != "--append"]
     if len(argv) != 3:
-        print("usage: write-page.py <spec.json> <out.md>", file=sys.stderr)
+        print("usage: write-page.py [--append] <spec.json> <out.md>", file=sys.stderr)
         return 2
     refusal = loose_page(argv[2])
     if refusal:
@@ -102,10 +118,22 @@ def main(argv):
     if spec.get("kind") not in kinds:
         print(f"kind must be one of: {', '.join(kinds)}")
         return 1
+    if append and spec["kind"] != "drafts":
+        print("--append is only for drafts specs")
+        return 1
     lines, problems = kinds[spec["kind"]](spec)
     if problems:
         print("\n".join(problems))
         return 1
+    kept = held_sections(argv[2]) if spec["kind"] == "drafts" else ""
+    if kept and not append:
+        print(f"{argv[2]} already holds draft sections, unread text that make-it-so still hands back. "
+              "Run again with --append to add these sections after them, "
+              "or write a gate page, such as an examples approval, to a second file.")
+        return 1
+    if kept:
+        # The new file's title and Done line are already in the kept file: add only its sections.
+        lines = kept.rstrip("\n").split("\n") + [""] + lines[4:]
     with open(argv[2], "w", encoding="utf-8") as f:
         f.write("\n".join(lines).rstrip("\n") + "\n")
     return 0  # mutant-ok delete: sys.exit(None) also exits 0
