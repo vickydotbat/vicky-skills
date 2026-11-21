@@ -156,7 +156,7 @@ def reach(base):
 
 def short(law):
     # Markdown marks go, so a cut inside a code span or bold run can't leave it open in a body.
-    text = re.sub(r"\*\*|~~|[`<>|]", "", law["text"])
+    text = re.sub(r"~~|[*`<>|\[\]]", "", law["text"])
     return text if len(text) <= 60 else text[:57].rstrip() + "..."
 
 

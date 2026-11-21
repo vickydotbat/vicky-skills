@@ -52,6 +52,9 @@ echo "# y" >> tests/a.test.sh; git commit -qam touch2
 out=$("$lint" prove "$base" 2>&1); tick=$(printf '\140')
 printf -- '- run build.py <name> now\n  Proven by: tests/a.test.sh\n' > AGENTS.md; git commit -qam tag; echo "# z" >> tests/a.test.sh; git commit -qam touch3
 out2=$("$lint" prove "$base" 2>&1)
+printf -- '- a *lone mark and [a link](http://example.invalid/%s) both\n  Proven by: tests/a.test.sh\n' "$long" > AGENTS.md; git commit -qam marks; echo "# w" >> tests/a.test.sh; git commit -qam touch4
+out3=$("$lint" prove "$base" 2>&1)
+check "a Laws line keeps no lone star or link bracket a cut could leave open" '! grep -qE "[][*]" <<<"$(grep "^Laws:" <<<"$out3")"'
 check "a Laws line keeps no angle bracket a renderer would drop as a tag" 'grep -q "run build.py name now" <<<"$(grep "^Laws:" <<<"$out2")"'
 check "a Laws line keeps no backtick or bold mark from a law's text" \
   'line=$(grep "^Laws:" <<<"$out") && grep -q "Check it: run bash scripts/check.sh" <<<"$line" && ! grep -qF -e "**" -e "$tick" <<<"$line"'
