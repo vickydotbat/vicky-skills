@@ -70,6 +70,7 @@ expect "a clean body under a variable the command sets passes" 0 "S=$scratch; gh
 expect "a command that sends nothing passes with an unreadable body file" 0 'gh pr merge 7 --squash --body-file $UNSET/b.md'
 mkdir -p "$scratch/r"; git -C "$scratch/r" init -q -b work; mkdir -p "$scratch/r/.git/vicky-skills/deathmatch"; echo other >"$scratch/r/.git/vicky-skills/deathmatch/work"
 expect "another session's deathmatch record does not let ready through" 2 "gh pr ready 3" true "$scratch/r"
+expect "the GraphQL ready mutation needs a record too" 2 "gh api graphql -f query='mutation { markPullRequestReadyForReview(input:{pullRequestId:\"x\"}) { clientMutationId } }'" true "$scratch/r"
 echo sid1 >>"$scratch/r/.git/vicky-skills/deathmatch/work"
 expect "this session's record lets ready through" 0 "gh pr ready 3" true "$scratch/r"
 expect "ready --undo needs no record" 0 "gh pr ready 3 --undo"
