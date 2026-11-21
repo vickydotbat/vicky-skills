@@ -73,6 +73,7 @@ skills/shipping/deathmatch/scripts/cap.sh	e75713a9aaa8d72c	3ba49f335a640c5c	47/4
 skills/shipping/deathmatch/scripts/halfway.sh	3351844b2321b80e	3ba49f335a640c5c	9/9
 skills/shipping/deathmatch/scripts/mark-outside.sh	528410eaee9fa576	3ba49f335a640c5c	4/4
 skills/shipping/deathmatch/scripts/prefight.sh	64866a7207e5cfd5	3ba49f335a640c5c	10/10
+skills/shipping/deathmatch/scripts/sealed-check.sh	174134d1b60c381f	ed2b5b30e6e3e251	57/57
 skills/shipping/deathmatch/scripts/triggers.sh	842b516c4c958ef3	3ba49f335a640c5c	26/26
 skills/shipping/deathmatch/scripts/verdict.sh	e0a033ff1846ad05	3ba49f335a640c5c	14/14
 skills/shipping/engrave/scripts/law-lint.sh	cf2d5e6ced3dde2b	6621d63e1494ced4	181/181
