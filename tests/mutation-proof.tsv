@@ -43,7 +43,7 @@ read-item.sh	81e4d8d4ff057aba	b3538c22aea1325d	14/14
 ready-resume-hint.sh	7790bb36a9046171	b4e739af781a4cef	22/22
 rebase-guard.sh	0e11e65b1bb7219d	13db23ace696773c	45/45
 red-first-check.sh	e585449df8cf7aee	d64417f2206f21c4	20/20
-red-first-guard.sh	ec04caecb4fc2494	2136a504d9171232	44/44
+red-first-guard.sh	82f8c645439f2b90	bb5249d5995f0204	46/46
 repeat-call-hint.sh	e3192883c1fd6b62	298400f0f8a9d97e	22/22
 restack-origin-guard.sh	cb150444008a2d6b	b0aff1578e77ce0d	74/74
 review-brief-guard.sh	560dd59ae4621bd2	35d1f7542328b43e	22/22
