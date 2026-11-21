@@ -108,7 +108,7 @@ fi
 # A deathmatch run leaves its record per branch, holding the session id
 # (deathmatch's verdict.sh record). The record decides, never the body's words.
 dm_ran() {
-  local f
+  local f # mutant-ok delete: f only leaks to the caller, which never reads it
   f="$(git rev-parse --git-common-dir 2>/dev/null)/vicky-skills/deathmatch/$(git branch --show-current 2>/dev/null)"
   [ -n "$session_id" ] && grep -qxF -- "$session_id" "$f" 2>/dev/null
 }
@@ -171,8 +171,6 @@ if [[ $event != PostToolUse ]] && [ -f "$tracker" ] && ! grep -qix 'PR template:
       grep -Eq "^[[:space:]'\"]*## $section([[:space:]]|$)" <<<"$forge_text" || missing+=("## $section")
     done
     printf -v list '%s, ' "${missing[@]}"
-    [ ${#missing[@]} = 0 ] || [ -z "${unread:-}" ] || refuse "The body file $unread names a variable this command does not set, so its sections can't be read." \
-      "Pass the body with --body-file and the file's full path written out."
     [ ${#missing[@]} = 0 ] || refuse "This pull request body has no ${list%, } section." \
       "Write the body with the ship-it skill, whose template holds every section, and pass it with --body-file."
   done < <(grep -Eo '(^|[^[:alnum:]_-])(gh|tea)[[:space:]]+(pr|pulls)[[:space:]]+(create|edit)[^;&|]*' <<<"$quoted")

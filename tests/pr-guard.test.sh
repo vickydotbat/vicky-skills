@@ -60,6 +60,14 @@ expect "a skipped review on a tea pull request is refused" 2 "tea pr edit 7 -d '
 expect "a skipped check that isn't review passes" 0 "gh pr edit 7 --body 'Skipped: by-eye check, no page changed'"
 expect "a skipped review in a body file a non-sending command reads passes" 0 "gh pr merge 7 --squash --body-file $scratch/skip.md"
 expect "a skipped review passes with the guard off" 0 "gh pr edit 7 --body 'Skipped: review'" false
+printf '## Status\n\nOk.\n\n## Summary\n\nX.\n\n## Proof\n\nRan it.\n\n## Risk\n\nLow.\n' | tee "$scratch/clean.md" "$scratch/home/clean.md" "$scratch/sid1/clean.md" >/dev/null
+expect "a clean body under \$HOME passes" 0 'gh pr create --draft --body-file $HOME/clean.md'
+expect "a clean body under \${HOME} passes" 0 'gh pr create --draft --body-file ${HOME}/clean.md'
+expect "a clean body under ~ passes" 0 'gh pr create --draft --body-file ~/clean.md'
+expect "a clean body under the session variable passes" 0 "gh pr create --draft --body-file $scratch/\$CLAUDE_CODE_SESSION_ID/clean.md"
+expect "a clean body under the braced session variable passes" 0 "gh pr create --draft --body-file $scratch/\${CLAUDE_CODE_SESSION_ID}/clean.md"
+expect "a clean body under a variable the command sets passes" 0 "S=$scratch; gh pr create --draft --body-file \$S/clean.md"
+expect "a command that sends nothing passes with an unreadable body file" 0 'gh pr merge 7 --squash --body-file $UNSET/b.md'
 mkdir -p "$scratch/r"; git -C "$scratch/r" init -q -b work; mkdir -p "$scratch/r/.git/vicky-skills/deathmatch"; echo other >"$scratch/r/.git/vicky-skills/deathmatch/work"
 expect "another session's deathmatch record does not let ready through" 2 "gh pr ready 3" true "$scratch/r"
 echo sid1 >>"$scratch/r/.git/vicky-skills/deathmatch/work"
