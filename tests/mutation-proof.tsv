@@ -11,7 +11,7 @@ drop-worktree.sh	5642f9beebc9dad3	715d5243f0d151d8	1/1
 familiar-voice.sh	3128a205d08ce300	332924cc4ac536f4	18/18
 fetch-place-hint.sh	3573b2f17e94944d	4d9507bd1e4e8a08	12/12
 foreign-post-hint.sh	e4595240e7a8d340	0bd998170b80a6db	25/25
-foreign-repo.sh	0d615176ee862b67	3ef6081116444f07	14/14
+foreign-repo.sh	0d615176ee862b67	8b52685799064f63	14/14
 gate-notify.sh	7ba893f680c5d672	0b6b4ce0073c128e	25/25
 gate-state-guard.sh	71c338f183976bce	85e6bad15dbacc16	71/71
 git-guard.sh	482f159e829405f5	6e734a2b66835eaf	52/52
@@ -29,7 +29,7 @@ patch-tell-hint.sh	256a998db4051de9	5fe1d435fef9a19b	50/50
 pkill-guard.sh	b7b411516636d988	29ca7e6cb32dc5c9	7/7
 plane-block-guard.sh	a2ced0e121b33f36	c912309fd621ec7a	20/20
 plugin-data.sh	2b852e6635cec758	1eb83e986afbbf10	3/3
-pr-guard.sh	93df17205fc3579b	0631b2745177a9f3	149/149
+pr-guard.sh	93df17205fc3579b	8a9cb174cd351aa9	149/149
 promise-guard.sh	080cb078921ad99f	8b391a320412fcdd	17/17
 prose-strip.sh	4af2ac6de8168c90	c3172f3b7149b13e	95/95
 publickey-hint.sh	d3098ec01110850e	00f13591da283269	13/13
