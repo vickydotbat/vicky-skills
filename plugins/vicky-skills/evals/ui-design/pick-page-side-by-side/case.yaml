@@ -1,4 +1,4 @@
 schema_version: "1.1"
-name: optional-pick-no-default
+name: pick-page-side-by-side
 context:
   scaffold_script: scaffold.sh
