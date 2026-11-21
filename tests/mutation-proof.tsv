@@ -31,7 +31,7 @@ patch-tell-hint.sh	256a998db4051de9	5fe1d435fef9a19b	50/50
 pkill-guard.sh	b7b411516636d988	29ca7e6cb32dc5c9	7/7
 plane-block-guard.sh	a2ced0e121b33f36	c912309fd621ec7a	20/20
 plugin-data.sh	2b852e6635cec758	1eb83e986afbbf10	3/3
-pr-guard.sh	93df17205fc3579b	8a9cb174cd351aa9	149/149
+pr-guard.sh	2f34e5452619b40c	01fee4ea00a25bbe	157/157
 promise-guard.sh	080cb078921ad99f	8b391a320412fcdd	17/17
 prose-strip.sh	4af2ac6de8168c90	c3172f3b7149b13e	95/95
 publickey-hint.sh	d3098ec01110850e	00f13591da283269	13/13
@@ -77,7 +77,7 @@ skills/shipping/deathmatch/scripts/halfway.sh	3351844b2321b80e	3ba49f335a640c5c	
 skills/shipping/deathmatch/scripts/mark-outside.sh	528410eaee9fa576	3ba49f335a640c5c	4/4
 skills/shipping/deathmatch/scripts/prefight.sh	64866a7207e5cfd5	3ba49f335a640c5c	10/10
 skills/shipping/deathmatch/scripts/triggers.sh	842b516c4c958ef3	3ba49f335a640c5c	26/26
-skills/shipping/deathmatch/scripts/verdict.sh	e0a033ff1846ad05	3ba49f335a640c5c	14/14
+skills/shipping/deathmatch/scripts/verdict.sh	94dc21d517943792	1c669707cf3e786e	26/26
 skills/shipping/engrave/scripts/law-lint.sh	cf2d5e6ced3dde2b	6621d63e1494ced4	181/181
 skills/shipping/security/scripts/advisory.sh	6e69fa028a48b55b	cf9a08e211eba59e	155/155
 skills/shipping/security/scripts/kit.sh	103e8860e68b1f3f	3a55359704e54de2	11/11
