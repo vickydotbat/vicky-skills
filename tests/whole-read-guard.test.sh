@@ -22,6 +22,7 @@ check "a whole read redirected to a file passes" 'run "read-item.sh GAME-1 > /tm
 check "sed without -n passes" 'run "plane show GAME-1 | sed s/a/b/" | grep -qx "exit=0"'
 check "a pipe after a separate command is not the read" 'run "plane show GAME-1; git log | head" | grep -qx "exit=0"'
 check "an unrelated head passes" 'run "git log | head -3" | grep -qx "exit=0"'
+check "a missing transcript keeps the refusal (LC-6, holds already)" '[ "$(jq -nc --arg d "$tmp" "{tool_name:\"Bash\",tool_input:{command:\"read-item.sh 42 | head\"},cwd:\$d,transcript_path:\"$tmp/missing.jsonl\"}" | bash "$guard" >/dev/null 2>&1; echo $?)" = 2 ]'
 check "the setting off passes" '[ "$(jq -nc "{tool_input:{command:\"plane show G-1 | head\"}}" | CLAUDE_PLUGIN_OPTION_GUARD_WHOLE_READ=false bash "$guard" 2>&1; echo $?)" = 0 ]'
 check "bad input passes" '[ "$(echo notjson | bash "$guard" 2>&1; echo $?)" = 0 ]'
 check "no jq: says so and passes" 'out=$(echo "{}" | PATH=/nonexistent "$BASH" "$guard" 2>&1); [ $? = 0 ] && grep -q "jq is missing" <<<"$out"'
