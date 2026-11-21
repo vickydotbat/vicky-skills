@@ -4,6 +4,8 @@
 # to a file git doesn't track yet.
 # shellcheck disable=SC2016,SC2034 # check evals its condition strings, which read these variables
 set -u
+# A runner with no git identity still commits in the test's own clones.
+export GIT_AUTHOR_NAME=t GIT_AUTHOR_EMAIL=t@t GIT_COMMITTER_NAME=t GIT_COMMITTER_EMAIL=t@t
 dm="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/skills/shipping/deathmatch/scripts"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
