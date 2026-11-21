@@ -74,9 +74,9 @@ skills/planning/drawing-board/scripts/fetch-drawio.sh	e69344201d3866d9	24c3bdd93
 skills/shipping/deathmatch/scripts/batch.sh	b948582a2bef88ab	3ba49f335a640c5c	37/37
 skills/shipping/deathmatch/scripts/cap.sh	e75713a9aaa8d72c	3ba49f335a640c5c	47/47
 skills/shipping/deathmatch/scripts/halfway.sh	3351844b2321b80e	3ba49f335a640c5c	9/9
-skills/shipping/deathmatch/scripts/mark-outside.sh	528410eaee9fa576	3ba49f335a640c5c	4/4
-skills/shipping/deathmatch/scripts/prefight.sh	64866a7207e5cfd5	3ba49f335a640c5c	10/10
-skills/shipping/deathmatch/scripts/triggers.sh	842b516c4c958ef3	3ba49f335a640c5c	26/26
+skills/shipping/deathmatch/scripts/mark-outside.sh	528410eaee9fa576	1c669707cf3e786e	4/4
+skills/shipping/deathmatch/scripts/prefight.sh	64866a7207e5cfd5	1c669707cf3e786e	10/10
+skills/shipping/deathmatch/scripts/triggers.sh	842b516c4c958ef3	1c669707cf3e786e	26/26
 skills/shipping/deathmatch/scripts/verdict.sh	94dc21d517943792	1c669707cf3e786e	26/26
 skills/shipping/engrave/scripts/law-lint.sh	cf2d5e6ced3dde2b	6621d63e1494ced4	181/181
 skills/shipping/security/scripts/advisory.sh	6e69fa028a48b55b	cf9a08e211eba59e	155/155
