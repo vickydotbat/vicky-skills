@@ -10,7 +10,7 @@ Every deathmatch opponent works to this contract. Its own agent file holds only 
   - `patch:` a unified diff that fixes it, for the arena, when no command can show it (a deletion, a rename, a better design).
   A finding with neither is a suspicion: list it under `Suspicions`, and it never blocks.
 - **Not run.** A run stopped at its memory cap tested nothing. Report its path on the `Not run:` line, never as clean.
-- **Hands off.** Edit no file, commit nothing, push nothing, post nothing. A patch is text in the report.
+- **Hands off.** Write only inside the checkout the brief names, and restore every file you changed, a tool's output included, before you report: the main thread checks that checkout after each report and discards your findings when a file differs from the pinned commit. Commit nothing, push nothing, post nothing. A patch is text in the report.
 
 ## Report
 
