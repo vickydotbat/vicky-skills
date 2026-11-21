@@ -11,6 +11,7 @@ python3
 sed
 xargs
 shellcheck
+xargs
 convert
 identify
 pdftotext

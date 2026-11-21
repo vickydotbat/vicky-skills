@@ -36,7 +36,8 @@ id=$(grep -oE "($reads)[[:space:]]+[^[:space:]|;&)>]+" <<<"$command" | head -1 |
 # A whole read of the same ticket earlier this session: a read of this id with no cutter after it.
 if [ -n "$id" ] && [ -f "$transcript" ]; then # mutant-ok: with no id the pattern needs a read with no ticket, and with no transcript jq reads nothing, so neither half lets a read through alone
   jq -r 'select(.type == "assistant") | .message.content[]? | select(.type == "tool_use" and .name == "Bash") | .input.command // empty' "$transcript" 2>/dev/null |
-    grep -E "($reads)[[:space:]]+$(sed -E 's/[][\.*^$+?(){}|/]/\\&/g' <<<"$id")([[:space:]]|$)" |
+    sed -E 's/[0-9]*>&[0-9-]+//g' |
+    grep -E "(^|[;&|(])[[:space:]]*([^[:space:];&|()]*/)?($reads)[[:space:]]+$(sed -E 's/[][\.*^$+?(){}|/]/\\&/g' <<<"$id")([[:space:]]|$)" |
     grep -Evq "\\|[[:space:]]*$tools|>" && exit 0
 fi
 echo "whole-read-guard: a ticket's comments hold the decisions already made, and this pipe cuts them off. Read the whole thread: read-item.sh ${id:-<id>}" >&2

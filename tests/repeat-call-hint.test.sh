@@ -27,6 +27,13 @@ call d "z" "o" "e1" >/dev/null; call d "z" "o" "e2" >/dev/null; out=$(call d "z"
 check "stderr that changes is a changing output" '[ -z "$out" ]'
 for i in 1 2 3; do out=$(opt=false call e "x" "same"); rc=$?; done
 check "the setting off adds nothing and exits 0" '[ $rc = 0 ] && [ -z "$out" ]'
+for i in 1 2 3; do out=$(call f "cargo test" "running 3 tests
+test a ... FAILED"); done
+check "a repeated failing test run that prints running still steers" 'steered "$out"'
+for i in 1 2 3; do out=$(call g "gh run list" "in_progress	CI	main"); done
+check "a status column that shows a run in flight does not steer" '[ -z "$out" ]'
+err=$(jq -nc '{session_id:"fresh1",tool_name:"Bash",tool_input:{command:"q"},tool_response:{stdout:"o",stderr:""}}' | bash "$hook" 2>&1 >/dev/null)
+check "a first call writes nothing to stderr" '[ -z "$err" ]'
 check "bad input exits 0" '[ "$(echo notjson | bash "$hook" >/dev/null 2>&1; echo $?)" = 0 ]'
 check "no jq exits 0" '[ "$(echo "{}" | PATH=/nonexistent "$BASH" "$hook" >/dev/null 2>&1; echo $?)" = 0 ]'
 mkdir -p "$fx/ro"; chmod a-w "$fx/ro"

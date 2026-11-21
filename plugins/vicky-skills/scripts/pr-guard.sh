@@ -121,8 +121,8 @@ if [[ $event != PostToolUse ]] && [ -n "$sends_text" ] && [ -n "${unread:-}" ]; 
 fi
 
 # Rule 10: a pull request goes ready only after deathmatch ran on its branch this session.
-if [[ $event != PostToolUse ]] && grep -Eq '(^|[^[:alnum:]_-])gh[[:space:]]+pr[[:space:]]+ready([[:space:]]|$)|markPullRequestReadyForReview' <<<"$quoted" &&
-  ! grep -Eq 'ready[^;&|]*--undo' <<<"$quoted" && ! dm_ran; then
+if [[ $event != PostToolUse ]] && grep -Eq '(^|[^[:alnum:]_-])gh([[:space:]]+-[^[:space:]]+([[:space:]]+[^-[:space:]][^[:space:]]*)?)*[[:space:]]+pr([[:space:]]+-[^[:space:]]+([[:space:]]+[^-[:space:]][^[:space:]]*)?)*[[:space:]]+ready([[:space:]]|$)|markPullRequestReadyForReview' <<<"$quoted" &&
+  ! grep -Eq 'ready[^;&|#]*[[:space:]]--undo([[:space:]]|$)' <<<"$quoted" && ! dm_ran; then
   refuse "No deathmatch ran on this branch's head commit this session, so it can't go ready." \
     "Ask the user to type /make-it-so: it runs deathmatch and marks the pull request ready."
 fi

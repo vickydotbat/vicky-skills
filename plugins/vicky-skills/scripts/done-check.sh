@@ -19,7 +19,9 @@ state="${DONE_CHECK_STATE:-${TMPDIR:-/tmp}/vicky-skills-done-check}"
 mkdir -p "$state" || exit 0
 key=$(tr -c 'A-Za-z0-9_-' _ <<<"${session:-none}.${agent:-main}")
 sess=$(tr -c 'A-Za-z0-9_-' _ <<<"${session:-none}")
-fingerprint() { { git -C "$root" status --porcelain=v1 --untracked-files=all; git -C "$root" diff HEAD; } 2>/dev/null | cksum; }
+# Untracked files count by their content too, so an edit to one already untracked is a change.
+fingerprint() { { git -C "$root" status --porcelain=v1 --untracked-files=all; git -C "$root" diff HEAD
+  (cd "$root" && git ls-files -o --exclude-standard -z | xargs -0 -r cksum); } 2>/dev/null | cksum; }
 case "$event" in
   UserPromptSubmit | SubagentStart)
     fingerprint >"$state/$key.base"; rm -f "$state/$key.count" "$state/$key.timedout"; exit 0 ;;
@@ -46,7 +48,10 @@ if [ "$count" -ge 3 ]; then
   exit 0
 fi
 limit=${DONE_CHECK_TIMEOUT:-300}
-out=$(cd "$root" && timeout "$limit" bash -c "$cmd" 2>&1); rc=$?
+# The output goes to a file, not a pipe, so a child the check leaves running can't hold the stop.
+log=$(mktemp) || exit 0
+(cd "$root" && timeout "$limit" bash -c "$cmd" >"$log" 2>&1); rc=$?
+out=$(cat "$log"); rm -f "$log"
 if [ $rc = 0 ]; then
   rm -f "$state/$key.count"; fingerprint >"$state/$key.base"; exit 0
 fi
