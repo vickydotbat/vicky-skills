@@ -25,6 +25,13 @@ check "MUTATE_HOOKS_SHOW_KILLS names the FAIL line behind a kill" \
   'grep -q "^kill publickey-hint.sh: publickey-hint: FAIL " "$dir/a.out"'
 check "without it no kill line is printed" \
   '! bash "$runner" --jobs 2 publickey-hint.sh 2>&1 | grep -q "^kill "'
+# A later test (slower, so it runs second) that kills it with a FAIL line makes it a kill.
+printf '#!/usr/bin/env bash\nsleep 1\ngrep -q "^unseen=1$" "$(dirname "$0")/../plugins/vicky-skills/scripts/publickey-hint.sh" || { echo "FAIL unseen is gone"; exit 1; }\n' >"$dir/tests/pk-extra.test.sh"
+sed -i 's|    "publickey-hint.sh": \["publickey-hint"\],|    "publickey-hint.sh": ["publickey-hint", "pk-extra"],|' "$dir/tests/mutate-hooks.py"
+bash "$runner" --jobs 2 publickey-hint.sh >"$dir/c.out" 2>&1
+check "a later test's FAIL line still kills a mutant an earlier test failed with none" \
+  '! grep -q "^survivor publickey-hint.sh:$n: " "$dir/c.out" && grep -q "^script publickey-hint.sh: \([0-9]*\)/\1$" "$dir/c.out"'
+sed -i 's|    "publickey-hint.sh": \["publickey-hint", "pk-extra"\],|    "publickey-hint.sh": ["publickey-hint"],|' "$dir/tests/mutate-hooks.py"
 # Now the test prints 400 MB on one line before it dies, and the runner runs under a 700 MB address limit.
 sed -i '2s/|| exit 3/|| { head -c 400000000 \/dev\/zero | tr "\\0" x; exit 3; }/' "$spec"
 ( ulimit -v 700000; bash "$runner" --jobs 1 publickey-hint.sh >"$dir/b.out" 2>&1 )

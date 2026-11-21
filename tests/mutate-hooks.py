@@ -389,7 +389,8 @@ def stop(tag):
 
 def capped(test):
     """The command that runs a test with each of its processes held to MUTANT_MEMORY."""
-    return ["bash", "-c", f'ulimit -d {MUTANT_MEMORY // 1024} && exec bash "$0"', test]
+    # The file limit holds a test that prints without end to a bounded file on disk.
+    return ["bash", "-c", f'ulimit -d {MUTANT_MEMORY // 1024} -f {MUTANT_MEMORY // 1024} && exec bash "$0"', test]
 
 
 class Worker:
@@ -435,6 +436,7 @@ class Worker:
         # A new file renamed into place, since a test left running may still hold the old one open.
         replace(path, text)
         try:
+            unexplained = None
             for test, cpu_limit, ceiling in timeouts:
                 code = self.test(test, cpu_limit, ceiling)
                 if code in (HUNG, CPU):
@@ -455,8 +457,11 @@ class Worker:
                     if first and os.environ.get("MUTATE_HOOKS_SHOW_KILLS") == "1":
                         # CI sets this where a kill it can't reproduce locally needs its reason in the log.
                         print(f"kill {script}: {test}: {first}", flush=True)
-                    return True if first else (code, test, list(tail))
-            return False
+                    if first:
+                        return True
+                    # A later test may still kill it with a FAIL line.
+                    unexplained = unexplained or (code, test, list(tail))
+            return unexplained or False
         finally:
             with open(path_of(script)) as handle:
                 replace(path, handle.read())
