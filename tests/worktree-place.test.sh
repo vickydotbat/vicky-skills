@@ -46,6 +46,11 @@ expect "an absolute path inside .claude/worktrees passes" 0 "git worktree add $r
 expect "a single-quoted path inside .claude/worktrees passes" 0 "git worktree add -b sq '$repo/.claude/worktrees/sq' HEAD"
 expect "a double-quoted path inside .claude/worktrees passes" 0 "git worktree add \"$repo/.claude/worktrees/dq\" HEAD"
 expect "a quoted path outside is refused" 2 "git worktree add '../out'"
+expect "a quoted path outside holding a ; is refused" 2 "git worktree add '../out;x' HEAD"
+expect "a quoted path outside holding a | is refused" 2 "git worktree add -b b '../o|ut' HEAD"
+expect "a quoted path inside holding a ; passes" 0 "git worktree add '$repo/.claude/worktrees/a;b' HEAD"
+expect "an unbalanced quote falls back to plain words" 2 'git worktree add "../out'
+yes "the steer names a quoted path's folder as written" 'expect x 2 "git worktree add '"'"'../my out'"'"'" >/dev/null; grep -qF ".claude/worktrees/my out " "$scratch/said"'
 expect "a path that climbs out of .claude/worktrees is refused" 2 "git worktree add .claude/worktrees/../../out"
 expect "the folder itself is no worktree's place" 2 "git worktree add .claude/worktrees"
 expect "git -C names the repo, and the path is read from there" 0 "git -C $repo worktree add .claude/worktrees/viaC" "$scratch"

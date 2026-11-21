@@ -49,9 +49,14 @@ worktree_of() {
 }
 
 check_add() {
-  local words i=0 path="" name="" abs
-  # Read the words as the shell will, so a quoted path keeps its text.
-  mapfile -t words < <(xargs -n1 printf '%s\n' <<<"$1" 2>/dev/null) || read -ra words <<<"$1"
+  local words i=0 path="" name="" abs parsed
+  # Read the words as the shell will, so a quoted path keeps its text. Quotes
+  # that never close fall back to plain word splitting.
+  if parsed=$(xargs -n1 printf '%s\n' <<<"$1" 2>/dev/null); then
+    mapfile -t words <<<"$parsed"
+  else
+    read -ra words <<<"$1"
+  fi
   while ((i < ${#words[@]})) && [ "${words[i]}" != add ]; do i=$((i + 1)); done
   for ((i = i + 1; i < ${#words[@]}; i++)); do
     case "${words[i]}" in
@@ -130,10 +135,14 @@ while IFS= read -r segment; do
   fi
 done < <(tr ';&|\n' '\n' <<<"$code")
 # The code above has its quoted text cut out, so each add's path is read from
-# the command as written.
+# the command as written. quote-mask.awk hides a quoted ; & | or newline, so a
+# quoted path is never cut in two; it exits 1 on a quote that never closes, and
+# the command is then split as it stands.
 if [ -n "${adds:-}" ]; then
+  masked=$(awk -f "$(dirname "$0")/quote-mask.awk" <<<"$command") || masked=$command
   while IFS= read -r segment; do
+    segment=$(tr '\001\002\003\004\005' ' ;&|\n' <<<"$segment")
     grep -Eq "$add_re" <<<"$(sed -E "s/'[^']*'/q/g; s/\"[^\"]*\"/q/g" <<<"$segment")" && check_add "$segment"
-  done < <(tr ';&|\n' '\n' <<<"$command")
+  done < <(tr ';&|\n' '\n' <<<"$masked")
 fi
 exit 0 # mutant-ok delete: the loop above leaves status 0
