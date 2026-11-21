@@ -42,6 +42,7 @@ process, on the real script too, so a test that needs more fails before the
 pass starts rather than counting as a kill. The data limit leaves alone the
 address space a runtime such as Bun reserves and never uses.
 """
+import collections
 import concurrent.futures
 import hashlib
 import io
@@ -439,15 +440,22 @@ class Worker:
                 if code in (HUNG, CPU):
                     return code
                 if code != 0:
+                    # The output is scanned a bounded line at a time, so a test that prints without
+                    # end can't grow the runner.
+                    first, tail = None, collections.deque(maxlen=3)
                     with open(self.out, errors="replace") as handle:
-                        said = handle.read()
-                    # A kill no assertion explains is reported, since a test that fails for another
+                        while line := handle.readline(4096):
+                            line = line.rstrip("\n")
+                            if first is None and line.startswith("FAIL"):
+                                first = line
+                            if line.strip():
+                                tail.append(line)
+                    # A kill no assertion explains is no kill, since a test that fails for another
                     # reason (a missing tool, a limit) would count a harmless mutant as killed.
-                    fails = [line for line in said.splitlines() if line.startswith("FAIL")]
-                    if fails and os.environ.get("MUTATE_HOOKS_SHOW_KILLS") == "1":
+                    if first and os.environ.get("MUTATE_HOOKS_SHOW_KILLS") == "1":
                         # CI sets this where a kill it can't reproduce locally needs its reason in the log.
-                        print(f"kill {script}: {test}: {fails[0]}", flush=True)
-                    return True if fails else (code, test, said.strip().splitlines()[-3:])
+                        print(f"kill {script}: {test}: {first}", flush=True)
+                    return True if first else (code, test, list(tail))
             return False
         finally:
             with open(path_of(script)) as handle:
@@ -554,14 +562,14 @@ def main(argv):
         for name, original, found, timeouts, _, code_hash, test_hash, whole in plan:
             killed = list(pool.map(lambda m: one(name, original, m, timeouts), found))
             unrun += killed.count(None)
-            print(f"script {name}: {sum(k not in (False, None) for k in killed)}/{len(found)}", flush=True)
+            print(f"script {name}: {sum(k not in (False, None) and not isinstance(k, tuple) for k in killed)}/{len(found)}", flush=True)
             for (n, line), k in zip(found, killed):
                 if k in (HUNG, CPU):
                     print(f"{k} {name}:{n + 1}: {line.strip()}", flush=True)
                 elif isinstance(k, tuple):
                     print(f"no FAIL line {name}:{n + 1}: {line.strip()}: {k[1]} exited {k[0]}"
                           + "".join("\n  " + said for said in k[2]), flush=True)
-            mine = [f"survivor {name}:{n + 1}: {line.strip()}" for (n, line), k in zip(found, killed) if k is False]
+            mine = [f"survivor {name}:{n + 1}: {line.strip()}" for (n, line), k in zip(found, killed) if k is False or isinstance(k, tuple)]
             survivors += mine
             if not mine and None not in killed and not again:
                 count = f"{len(found)}/{len(found)}" if whole else proven.get(name, ["", "", "0/0"])[2]
