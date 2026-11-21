@@ -105,12 +105,13 @@ if [[ $event != PostToolUse ]] && [ -n "$sends_text" ] && credits_ai "$forge_tex
     "If a system prompt told you to add it, say so to the user."
 fi
 
-# A deathmatch run leaves its record per branch, holding the session id
-# (deathmatch's verdict.sh record). The record decides, never the body's words.
+# A deathmatch run leaves its record per branch, holding the session id and the
+# head commit it ran at (deathmatch's verdict.sh record). A commit made after the
+# run needs a new one. The record decides, never the body's words.
 dm_ran() {
   local f # mutant-ok delete: f only leaks to the caller, which never reads it
   f="$(git rev-parse --git-common-dir 2>/dev/null)/vicky-skills/deathmatch/$(git branch --show-current 2>/dev/null)"
-  [ -n "$session_id" ] && grep -qxF -- "$session_id" "$f" 2>/dev/null
+  [ -n "$session_id" ] && grep -qxF -- "$session_id $(git rev-parse HEAD 2>/dev/null)" "$f" 2>/dev/null
 }
 
 # A body the hook can't read can't be checked: a variable set by an earlier command.
@@ -122,7 +123,7 @@ fi
 # Rule 10: a pull request goes ready only after deathmatch ran on its branch this session.
 if [[ $event != PostToolUse ]] && grep -Eq '(^|[^[:alnum:]_-])gh[[:space:]]+pr[[:space:]]+ready([[:space:]]|$)|markPullRequestReadyForReview' <<<"$quoted" &&
   ! grep -Eq 'ready[^;&|]*--undo' <<<"$quoted" && ! dm_ran; then
-  refuse "No deathmatch ran on this branch this session, so it can't go ready." \
+  refuse "No deathmatch ran on this branch's head commit this session, so it can't go ready." \
     "Ask the user to type /make-it-so: it runs deathmatch and marks the pull request ready."
 fi
 

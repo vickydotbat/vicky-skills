@@ -72,7 +72,10 @@ mkdir -p "$scratch/r"; git -C "$scratch/r" init -q -b work; mkdir -p "$scratch/r
 expect "another session's deathmatch record does not let ready through" 2 "gh pr ready 3" true "$scratch/r"
 expect "the GraphQL ready mutation needs a record too" 2 "gh api graphql -f query='mutation { markPullRequestReadyForReview(input:{pullRequestId:\"x\"}) { clientMutationId } }'" true "$scratch/r"
 echo sid1 >>"$scratch/r/.git/vicky-skills/deathmatch/work"
-expect "this session's record lets ready through" 0 "gh pr ready 3" true "$scratch/r"
+expect "this session's record for an older commit does not let ready through" 2 "gh pr ready 3" true "$scratch/r"
+git -C "$scratch/r" -c user.email=t@t -c user.name=t commit -q --allow-empty -m head
+echo "sid1 $(git -C "$scratch/r" rev-parse HEAD)" >>"$scratch/r/.git/vicky-skills/deathmatch/work"
+expect "this session's record for the head commit lets ready through" 0 "gh pr ready 3" true "$scratch/r"
 expect "ready --undo needs no record" 0 "gh pr ready 3 --undo"
 expect "a skipped deathmatch is refused" 2 "gh pr comment 7 --body 'Skipped: deathmatch, small diff'"
 expect "a body naming the review skill as its proof is refused" 2 "gh pr edit 7 --body 'The review skill found nothing.'"

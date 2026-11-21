@@ -121,7 +121,8 @@ mkdir "$t/v" && git -C "$t/v" init -qb feat && git -C "$t/v" -c user.email=t@t -
 (cd "$t/v" && bash "$dm/verdict.sh" record) >/dev/null 2>&1; r=$?
 check "record without a session id refuses" '[ $r = 2 ] && [ ! -e "$t/v/.git/vicky-skills" ]'
 (cd "$t/v" && bash "$dm/verdict.sh" record s1 && bash "$dm/verdict.sh" record s2); r=$?
-check "record writes each session id for the branch" '[ $r = 0 ] && [ "$(cat "$t/v/.git/vicky-skills/deathmatch/feat")" = "$(printf "s1\ns2")" ]'
+h=$(git -C "$t/v" rev-parse HEAD)
+check "record writes each session id with the head commit for the branch" '[ $r = 0 ] && [ "$(cat "$t/v/.git/vicky-skills/deathmatch/feat")" = "$(printf "s1 %s\ns2 %s" "$h" "$h")" ]'
 git -C "$t/v" checkout -q --detach
 (cd "$t/v" && bash "$dm/verdict.sh" record s3) >/dev/null 2>&1; r=$?
 check "record off a branch refuses and writes nothing" '[ $r = 2 ] && ! grep -q s3 -r "$t/v/.git/vicky-skills"'
