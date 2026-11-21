@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2016 # check() evals its single-quoted condition later
+# shellcheck disable=SC2329 # helpers are called inside check()'s eval
+# shellcheck disable=SC2069 # only the hook's stderr is read, on purpose
 # whole-read-guard refuses a ticket read piped into a cutter, and passes a
 # whole read, other commands, the setting off and bad input.
 set -u
