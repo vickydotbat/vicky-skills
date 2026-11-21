@@ -7,4 +7,6 @@ Read these before exploring the code, when they exist:
 
 ADR format: `decision-record`
 
+Credits: README.md
+
 Use the glossary's words in tickets, tests and names. A word the glossary lacks is either invented (pick the glossary's word) or a gap (raise it with the user, and write the settled word into the glossary). When your work contradicts a decision record, say so and name it before you go on.

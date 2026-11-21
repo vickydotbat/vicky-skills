@@ -9,6 +9,8 @@ ADR format: <`decision-record`, or the repo-relative path of this repo's own rec
 
 Sketches: <the repo-relative folder for drawing-board sketches, or delete this line to keep each sketch beside the code it designs>
 
+Credits: <the repo-relative file that credits outside tools, libraries, fonts and assets, such as README.md, or `off`>
+
 Todo file: on
 
 Chart cap: 8
