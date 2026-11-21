@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2016 # check() evals its single-quoted condition later
+# shellcheck disable=SC2034 # names set here are read inside check()'s eval
 # law-lint.sh beyond its approved examples: a user's diff settings never
 # change which laws count as added, and a bad call says what it needs.
 set -u
