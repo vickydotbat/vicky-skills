@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2016 # check() evals its single-quoted condition later
+# shellcheck disable=SC2034 # names set here are read inside check()'s eval
+# shellcheck disable=SC2164 # a failed cd fails the checks after it, which is the report
 # The deathmatch scripts' decisions beyond their approved examples: cap.sh's
 # exit codes and argument forms, and the usage errors of halfway.sh and
 # verdict.sh.
