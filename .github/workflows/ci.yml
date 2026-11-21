@@ -172,6 +172,8 @@ jobs:
         run: tests/repeat-call-hint.test.sh
       - name: Whole-read guard from state
         run: tests/whole_read_state_approved_examples.test.sh
+      - name: Red-first guard from state
+        run: tests/red_first_state_approved_examples.test.sh
       - name: Done check
         run: tests/done_check_approved_examples.test.sh
       - name: Done check decisions
