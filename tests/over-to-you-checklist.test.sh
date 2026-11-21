@@ -13,9 +13,12 @@ item='{"do": "Open the pack", "see": "the slots show", "person": "look"}'
 # receipt <dir> <id> <exit> <command>: a receipt as ran.sh writes it, on HEAD of no repo.
 receipt() { mkdir -p "$1/over-to-you-receipts"; jq -n --arg id "$2" --argjson e "$3" --arg c "$4" '{id:$id, command:$c, exit:$e, at:"2026-01-01T00:00:00Z", head:"", cwd:"/", tail:""}' > "$1/over-to-you-receipts/$2.json"; }
 receipt "$dir" r 0 "harness.sh --chat '/runscript paper'"
+# fresh <dir> <id> <command>: a stage receipt as ran.sh writes it a moment ago.
+fresh() { mkdir -p "$1/over-to-you-receipts"; jq -n --arg id "$2" --arg c "$3" --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '{id:$id, command:$c, exit:0, at:$at, head:"", cwd:"/", tail:"app Up 2 minutes"}' > "$1/over-to-you-receipts/$2.json"; }
+fresh "$dir" stage "podman ps --filter name=app"
 spec() { # items json -> spec file; an item with no ran names the receipt r
   jq -n --argjson items "$(jq 'map(.ran //= "r")' <<<"$1")" '{name: "Bob", brief: ["One sitting for the pack."], open: "Open the client on the branch.",
-    signed_off: "nothing yet", proven_by: "`health.sh` answers ok", sections: [{title: "Pack", items: $items}]}' > "$dir/spec.json"
+    signed_off: "nothing yet", proven_by: "`health.sh` answers ok", stage_ran: "stage", sections: [{title: "Pack", items: $items}]}' > "$dir/spec.json"
 }
 write() { rm -f "$dir/out.md"; python3 -I "$skill/checklist.py" "$dir/spec.json" "$dir/out.md"; }
 
@@ -35,19 +38,19 @@ spec '[{"do": "Spawn the paper", "see": "the sheet shows", "person": "look"}]'
 check "an item that reaches a thing with no kit is refused by the lint" 'out=$(write); [ $? = 1 ] && grep -q "kit" <<<"$out" && [ ! -e "$dir/out.md" ]'
 jq -n --argjson i '[{"do": "Open the pack", "see": "the slots show", "person": "look", "ran": "r"}]' '{name: "Bob", open: "x", signed_off: "nothing yet", sections: [{title: "P", items: $i}]}' > "$dir/spec.json"
 check "a spec with no proven by is refused" 'out=$(write); [ $? = 1 ] && grep -q "missing proven_by" <<<"$out"'
-jq -n --argjson i '[{"do": "Open the pack", "see": "the slots show", "person": "look", "ran": "r"}]' '{name: "Bob", open: "x", signed_off: "n", proven_by: "p", sitting: [2, 3], sections: [{title: "P", items: $i}]}' > "$dir/spec.json"
+jq -n --argjson i '[{"do": "Open the pack", "see": "the slots show", "person": "look", "ran": "r"}]' '{name: "Bob", open: "x", signed_off: "n", proven_by: "p", stage_ran: "stage", sitting: [2, 3], sections: [{title: "P", items: $i}]}' > "$dir/spec.json"
 check "a numbered sitting says which one it is" 'write >/dev/null && grep -qx "Sitting 2 of 3." "$dir/out.md"'
 check "a wrong call prints its usage and exits 2" 'python3 -I "$skill/checklist.py" 2>/dev/null; [ $? = 2 ]'
 mkdir -p "$dir/tmp/s1"
-receipt "$dir/tmp/s1" r 0 "harness.sh"
-receipt "$dir/tmp" r 0 "harness.sh" # so only the loose-folder rule stops the next write
+receipt "$dir/tmp/s1" r 0 "harness.sh"; fresh "$dir/tmp/s1" stage "podman ps"
+receipt "$dir/tmp" r 0 "harness.sh"; fresh "$dir/tmp" stage "podman ps" # so only the loose-folder rule stops the next write
 spec "[$item]"
 out=$(env TMPDIR="$dir/tmp" CLAUDE_CODE_SESSION_ID=s1 python3 -I "$skill/checklist.py" "$dir/spec.json" "$dir/tmp/over-to-you-x.md" 2>&1); rc=$?
 check "a checklist loose in the shared temp folder is refused, naming the session folder" '[ $rc = 1 ] && grep -q "tmp/s1" <<<"$out" && [ ! -e "$dir/tmp/over-to-you-x.md" ]'
 env TMPDIR="$dir/tmp" CLAUDE_CODE_SESSION_ID=s1 python3 -I "$skill/checklist.py" "$dir/spec.json" "$dir/tmp/s1/over-to-you-x.md" >/dev/null
 check "a checklist in the session folder is written" '[ -s "$dir/tmp/s1/over-to-you-x.md" ]'
 # The whole file for a full spec: a one-line brief, two sections, a kit and its source, and extra tests.
-jq -n '{name: "Bob", brief: "One sitting.", open: "Open the client.", signed_off: "nothing yet", proven_by: "`health.sh` answers ok", extra: "Try the bank too.", sections: [{title: "Pack", items: [{do: "Open the pack", see: "the slots show", person: "look", ran: "r"}]}, {title: "Paper", items: [{do: "Spawn the paper", see: "the sheet shows", person: "real client", kit: "`/runscript paper` in the game chat", source: "the module scripts", ran: "r"}]}]}' > "$dir/spec.json"
+jq -n '{name: "Bob", brief: "One sitting.", open: "Open the client.", signed_off: "nothing yet", proven_by: "`health.sh` answers ok", stage_ran: "stage", extra: "Try the bank too.", sections: [{title: "Pack", items: [{do: "Open the pack", see: "the slots show", person: "look", ran: "r"}]}, {title: "Paper", items: [{do: "Spawn the paper", see: "the sheet shows", person: "real client", kit: "`/runscript paper` in the game chat", source: "the module scripts", ran: "r"}]}]}' > "$dir/spec.json"
 cat > "$dir/want.md" <<'WANT'
 # Over to you, Bob!
 
@@ -151,7 +154,7 @@ mkdir -p "$dir/nojq"; for t in bash timeout tee git date mktemp tail mkdir rm py
 check "ran.sh writes its receipt with no jq on the machine" 'env PATH="$dir/nojq" TMPDIR="$dir/rt" CLAUDE_CODE_SESSION_ID=s2 bash "$skill/ran.sh" nj bash -c "exit 0" 2>/dev/null && [ "$(python3 -c "import json,sys; print(json.load(open(sys.argv[1]))[\"exit\"])" "$dir/rt/s2/over-to-you-receipts/nj.json")" = 0 ]'
 check "ran.sh refuses with no session id" 'env -u CLAUDE_CODE_SESSION_ID bash "$skill/ran.sh" x true 2>/dev/null; [ $? = 2 ]'
 check "ran.sh with too few arguments prints its usage and exits 2" 'out=$(bash "$skill/ran.sh" x 2>&1); [ $? = 2 ] && grep -q "^usage: ran.sh" <<<"$out"'
-mkdir -p "$dir/rt/s2"; jq -n '{name: "Bob", open: "x", signed_off: "n", proven_by: "p", sections: [{title: "P", items: [{do: "Open the pack", see: "the slots show", person: "look", ran: "ok"}]}]}' > "$dir/spec.json"
+mkdir -p "$dir/rt/s2"; fresh "$dir/rt/s2" stage "podman ps"; jq -n '{name: "Bob", open: "x", signed_off: "n", proven_by: "p", stage_ran: "stage", sections: [{title: "P", items: [{do: "Open the pack", see: "the slots show", person: "look", ran: "ok"}]}]}' > "$dir/spec.json"
 check "a receipt ran.sh wrote opens the way to the checklist" 'env TMPDIR="$dir/rt" CLAUDE_CODE_SESSION_ID=s2 python3 -I "$skill/checklist.py" "$dir/spec.json" "$dir/rt/s2/over-to-you-ok.md" && grep -q "^   ran: .bash -c echo hello; exit 0. exit 0" "$dir/rt/s2/over-to-you-ok.md"'
 # The page opener refuses a checklist typed by hand.
 printf '# Over to you, Bob!\nproven by: p\n1. [ ] Open the pack → the slots show\n   person: look\n' > "$dir/rt/s2/over-to-you-hand.md"
@@ -176,4 +179,39 @@ check "a command that leaves a child holding its output still ends at RAN_TIMEOU
 check "a command that ignores TERM is killed after the grace" 's=$SECONDS; RAN_TIMEOUT=1 RAN_GRACE=1 ran term bash -c "trap \"\" TERM; sleep 30" >/dev/null 2>&1; r=$?; [ $(( SECONDS - s )) -lt 10 ] && [ $r = 137 ]'
 check "a noisy command's log stops at RAN_MAX_BYTES" 'RAN_TIMEOUT=3 RAN_MAX_BYTES=4096 ran noisy yes >/dev/null 2>&1; [ -f "$dir/rt/s2/over-to-you-receipts/noisy.json" ] && [ -z "$(find "$dir/rt/s2/over-to-you-receipts" -name ".*" -type f)" ]'
 check "the output of a noisy command passes through only up to RAN_MAX_BYTES" '[ "$(RAN_TIMEOUT=3 RAN_MAX_BYTES=4096 ran noisy2 yes 2>/dev/null | wc -c)" -le 4096 ]'
+# The stage: proven_by names a server, so a fresh liveness receipt must stand behind it.
+# A log line can come from another server writing the same log.
+stagespec() { jq -n --argjson extra "$1" '{name: "Bob", open: "x", signed_off: "n", proven_by: "dev stack up", sections: [{title: "P", items: [{"do": "Open the pack", "see": "the slots show", "person": "look", "ran": "r"}]}]} + $extra' > "$dir/spec.json"; }
+stagespec '{}'
+check "a server named with no stage receipt is refused, naming stage_ran" 'out=$(write); [ $? = 1 ] && grep -q "stage_ran" <<<"$out" && [ ! -e "$dir/out.md" ]'
+fresh "$dir" logline "grep -q 'ALL SERVICES READY' logs/server.log"
+stagespec '{"stage_ran": "logline"}'
+check "a stage receipt that only reads a log is refused" 'out=$(write); [ $? = 1 ] && grep -q "reads a file" <<<"$out"'
+receipt "$dir" old 0 "podman ps --filter name=app"
+stagespec '{"stage_ran": "old"}'
+check "a stage receipt from long before the page is refused as stale" 'out=$(write); [ $? = 1 ] && grep -q "minutes" <<<"$out"'
+receipt "$dir" down 1 "podman ps --filter name=app"
+stagespec '{"stage_ran": "down"}'
+check "a stage receipt that failed is refused" 'out=$(write); [ $? = 1 ] && grep -q "stage: receipt down exited 1" <<<"$out"'
+stagespec '{"stage_ran": "stage"}'
+check "a fresh liveness receipt lets the page write" 'write >/dev/null && [ -s "$dir/out.md" ]'
+stagespec '{"proven_by": "no server"}'
+check "no server needs no stage receipt" 'write >/dev/null && [ -s "$dir/out.md" ]'
+# A repo's Stage check: line names the one liveness command.
+repo="$dir/repo"; git init -q "$repo"; mkdir -p "$repo/docs/agents"
+echo 'Stage check: `podman ps --filter name=app-dev`' > "$repo/docs/agents/testing.md"
+mkdir -p "$dir/over-to-you-receipts"
+jq -n --arg cwd "$repo" --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '{id:"other", command:"curl -fs localhost:8080/health", exit:0, at:$at, head:"", cwd:$cwd, tail:"ok"}' > "$dir/over-to-you-receipts/other.json"
+jq -n --arg cwd "$repo" --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '{id:"named", command:"podman ps --filter name=app-dev", exit:0, at:$at, head:"", cwd:$cwd, tail:"Up"}' > "$dir/over-to-you-receipts/named.json"
+stagespec '{"stage_ran": "other"}'
+check "a stage receipt that skips the repo's Stage check command is refused, naming it" 'out=$(write); [ $? = 1 ] && grep -qF "podman ps --filter name=app-dev" <<<"$out"'
+stagespec '{"stage_ran": "named"}'
+check "the repo's Stage check command passes" 'write >/dev/null && [ -s "$dir/out.md" ]'
+jq -n --arg at "not a time" '{id:"badtime", command:"podman ps", exit:0, at:$at, head:"", cwd:"/", tail:"Up"}' > "$dir/over-to-you-receipts/badtime.json"
+stagespec '{"stage_ran": "badtime"}'
+check "a stage receipt whose time cannot be read is refused as stale" 'out=$(write); [ $? = 1 ] && grep -q "minutes ago" <<<"$out"'
+bare="$dir/bare"; git init -q "$bare"
+jq -n --arg cwd "$bare" --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '{id:"bare", command:"podman ps", exit:0, at:$at, head:"", cwd:$cwd, tail:"Up"}' > "$dir/over-to-you-receipts/bare.json"
+stagespec '{"stage_ran": "bare"}'
+check "a repo with no testing.md takes any liveness command" 'write >/dev/null && [ -s "$dir/out.md" ]'
 exit $fail
