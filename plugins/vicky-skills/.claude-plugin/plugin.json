@@ -286,6 +286,12 @@
       "description": "Refuse an edit, write or delete that changes the Given, When or Then lines of an approved-examples test the default branch holds, until the branch holds its ticked red-pen change record, as examples' CHANGING.md says. On unless you turn it off.",
       "default": true
     },
+    "guard_repeat_call": {
+      "type": "boolean",
+      "title": "Three identical calls get a steer",
+      "description": "When the agent runs the same shell command 3 times in a row with the same output, tell it once to change approach or ask. A status poll whose output changes, or still shows a run pending, gets nothing. On unless you turn it off.",
+      "default": true
+    },
     "guard_done_check": {
       "type": "boolean",
       "title": "A turn that changed files ends only when the repo's check passes",

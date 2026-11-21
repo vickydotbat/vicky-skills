@@ -7,7 +7,7 @@ approved-test-lock.sh	c8c1132c2aef88c1	4d46e1a300c08c7f	64/64
 assign-expand.sh	a2d6f7ea568cb59e	66e5cced6dd235e4	5/5
 auto-tidy.sh	744f3115cff7b6d1	0c1ae74fe16555f0	154/154
 cerebro-ask-guard.sh	3d06494f2356b096	8ec4b2dfa0afd7eb	23/23
-done-check.sh	2873bba31cbc4d0b	1d0b0c52c54eabab	57/57
+done-check.sh	2873bba31cbc4d0b	af90f5a416fbdae6	57/57
 draft-guard.sh	d8080cb94b59072d	e751bde952207ebd	61/61
 drop-worktree.sh	5642f9beebc9dad3	715d5243f0d151d8	1/1
 familiar-voice.sh	3128a205d08ce300	332924cc4ac536f4	18/18
@@ -44,6 +44,7 @@ ready-resume-hint.sh	7790bb36a9046171	b4e739af781a4cef	22/22
 rebase-guard.sh	0e11e65b1bb7219d	13db23ace696773c	45/45
 red-first-check.sh	e585449df8cf7aee	d64417f2206f21c4	20/20
 red-first-guard.sh	ec04caecb4fc2494	2136a504d9171232	44/44
+repeat-call-hint.sh	e3192883c1fd6b62	298400f0f8a9d97e	22/22
 restack-origin-guard.sh	cb150444008a2d6b	b0aff1578e77ce0d	74/74
 review-brief-guard.sh	560dd59ae4621bd2	35d1f7542328b43e	22/22
 shellcheck-guard.sh	4a1cd489a882b91c	500ead1978c8e431	31/31

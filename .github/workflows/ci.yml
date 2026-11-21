@@ -166,6 +166,10 @@ jobs:
         run: tests/approved_test_lock_approved_examples.test.sh
       - name: Approved test lock decisions
         run: tests/approved-test-lock.test.sh
+      - name: Repeat-call steer
+        run: tests/repeat_call_approved_examples.test.sh
+      - name: Repeat-call steer decisions
+        run: tests/repeat-call-hint.test.sh
       - name: Done check
         run: tests/done_check_approved_examples.test.sh
       - name: Done check decisions
