@@ -95,7 +95,8 @@ hint=0
 if [ "$event" = SessionStart ] || { [ "$event" = PreToolUse ] && ! grep -Eq "$commit_re" <<<"$(jq -r '.tool_input.command // ""' <<<"$payload")"; }; then
   hint=1
   session=$(jq -r '.session_id // "none"' <<<"$payload" | tr -c '[:alnum:]_.-' _)
-  payload=$(jq -c '{cwd, tool_input: {command: "git rev-parse"}}' <<<"$payload")
+    # The command keeps its leading cd or git -C, so the lib finds the checkout it aims at.
+  payload=$(jq -c '{cwd, tool_input: {command: ((.tool_input.command // "") + "\ngit rev-parse")}}' <<<"$payload")
 fi
 
 # shellcheck source=git-hook-lib.sh

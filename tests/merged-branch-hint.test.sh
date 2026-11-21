@@ -82,6 +82,10 @@ first "$w" 'ls' s2
 check "another session's first command is told" 'told "warp/next-effort"'
 session "$w" s3; first "$w" 'ls' s3
 check "a session told at start is not told again on its first command" 'silent'
+first "$scratch" "cd $w && ls" s20
+check "a first command that cds into a merged checkout from elsewhere is told" 'told "warp/next-effort"'
+first "$scratch" "git -C $w status" s21
+check "a first git -C at a merged checkout from elsewhere is told" 'told "warp/next-effort"'
 
 # The commit and push refusal names the open heads too.
 first "$w" 'git commit -m x' s4; code=$?
