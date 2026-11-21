@@ -120,7 +120,7 @@ $(cat -- "$file")"
   # Rule 5: a commit message is dated or lasting.
   if hits=$(stale_hits "$message"); then
     say "this commit message goes stale: $(awk -F': ' '{print $2}' <<<"$hits" | paste -sd, -)." \
-      "Report each count as a dated run in the past tense, or say what stays true, as STANDARDS.md's 'Dated or lasting' law says." \
+      "Report each count as a dated run in the past tense, or say what stays true, as STANDARDS.md's 'Dated or lasting' law says. A word quoted as an example goes in backticks, which the check skips." \
       "Then commit again."
   fi
 fi

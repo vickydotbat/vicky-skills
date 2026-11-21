@@ -57,7 +57,7 @@ WORDS = [
     ("Fill it in, or cut the sentence.", r"\[(citation needed|TODO)\]|\bturn\d+search\d+\b"),
     (STALE_MOVE,
      r"\b(currently|at the moment|at present|right now|as of (now|today|this writing)|for now|nowadays|"
-     r"these days|so far|to date|as yet|recently|newly|brand-new)\b"),
+     r"these days|(?<!up )to date|so far(?! as\b|-)|as yet|recently(?!-)|brand-new|(is|are) now)\b"),
     ("Use words. Emoji go only where the house style uses them.", "[\U0001F300-\U0001FAFF☀-➿]"),
     ("Use straight quotes.", "[‘’“”]"),
     ("Use the plain word: use, help, many, to, because, if.",
@@ -74,8 +74,8 @@ BOLD_MOVE = "Bold only the one word a reader must not miss."
 RHYTHM_MOVE = "Size each paragraph to its content: short for one point, longer where the reasoning runs."
 RULE_MOVE = "Let headings separate the sections, with no rule above them."
 # A count in the present tense goes stale. One with a date or a past verb reports a run.
-COUNT = r"\b\d+ (of|out of) \d+\b"
-PRESENT = r"\b(is|are|has|have|match(es)?|pass(es)?|fail(s)?|show(s)?|cover(s)?|hold(s)?|work(s)?)\b"
+COUNT = r"\b\d+ (of|out of) \d+\b|\b\d+(\.\d+)?%(?! (smaller|larger|faster|slower|fewer|more|less)\b)|\b(has|have|holds?|contains?|there (is|are)|all) \d+\b"
+PRESENT = r"\b(is|are|has|have|match(es)?|pass(es)?|fail(s)?|show(s)?|cover(s)?|hold(s)?|work(s)?|handle(s)?|need(s)?|use(s)?|keep(s)?)\b"
 DATED = r"\b\d{4}-\d{2}-\d{2}\b"
 
 
@@ -109,9 +109,11 @@ def lint(text):
             for match in re.finditer(pattern, line.strip(), re.IGNORECASE | re.MULTILINE):
                 hits.append((number, match.group(0), move))
         for sentence in re.split(r"(?<=[.!?])\s+", line):
-            if (re.search(COUNT, sentence) and re.search(PRESENT, sentence, re.IGNORECASE)
-                    and not re.search(DATED, sentence)):
-                hits.append((number, re.search(COUNT, sentence).group(0), COUNT_MOVE))
+            # A date covers only its own clause.
+            for clause in re.split(r",\s+|;\s+|\s+and\s+|\s+but\s+", sentence):
+                count = re.search(COUNT, clause, re.IGNORECASE)
+                if count and re.search(PRESENT, clause, re.IGNORECASE) and not re.search(DATED, clause):
+                    hits.append((number, count.group(0), COUNT_MOVE))
             if len(re.findall(HEDGES, sentence, re.IGNORECASE)) >= 2:
                 # A colon in the match would split the line's fields.
                 hits.append((number, sentence.strip()[:60].replace(":", ""), HEDGE_MOVE))

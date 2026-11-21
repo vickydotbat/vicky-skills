@@ -126,7 +126,7 @@ fi
 if [[ $event != PostToolUse ]] && [ -n "$sends_text" ] && hits=$(stale_hits "$forge_text"); then
   refuse "This text goes stale: $(awk -F': ' '{print $2}' <<<"$hits" | paste -sd, -)." \
     "Report each count as a dated run in the past tense (on 2026-11-21 the run matched 4 of 9), or say what stays true." \
-    "STANDARDS.md's 'Dated or lasting' law says what replaces each one. Then run the command again."
+    "STANDARDS.md's 'Dated or lasting' law says what replaces each one. A word quoted as an example goes in backticks, which the check skips. Then run the command again."
 fi
 
 # Rule 6, in each gh or tea segment that creates a pull request or edits its body.

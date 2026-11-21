@@ -57,9 +57,15 @@ check "a fence line ends a paragraph" 'run "$(printf '"'"'One. Two.\n```\n```\nT
 check "a closing fence line's own text is skipped" '[ -z "$(run "$(printf '"'"'```\ncode\n``` robust\nPlain words.'"'"')")" ]'
 check "a present-tense word that goes stale gets the dated-or-lasting move" 'run "The cache is currently off." | grep -q "^1: currently: Date it in the past tense"'
 check "a present-tense count gets the count move" 'run "40 of 90 windows match." | grep -q "^1: 40 of 90: Report the count as a dated run"'
-check "a dated count passes" '[ -z "$(run "On 2026-11-21 the run matched 40 of 90 windows, and 3 of 3 are green.")" ]'
+check "a dated count passes" '[ -z "$(run "On 2026-11-21 the run matched 40 of 90 windows and 3 of 3 checks.")" ]'
 check "a past-tense count passes" '[ -z "$(run "The run matched 40 of 90 windows.")" ]'
 stale() { printf '%s\n' "$1" > "$scratch/d.md"; python3 -I "$lint" --stale "$scratch/d.md"; }
 check "--stale reports a stale word and a present count" '[ "$(stale "It is robust and currently 4 of 9 pass." | cut -d: -f2 | tr -d " " | sort | tr "\n" ,)" = "4of9,currently," ]'
 check "--stale passes text whose only tell is another kind" '[ -z "$(stale "It is robust.")" ]'
+for ok in "Keep the cache up to date." "So far as the parser allows, it holds." "Fix the so far-reaching bug." "Add the newly created user." "Ship the recently-used list."; do
+  check "durable text passes: $ok" '[ -z "$(stale "$ok")" ]'
+done
+for bad in "The suite has 12 tests." "There are 5 skills in the repo." "Coverage is 85%." "The cache is now empty." "The hook handles 7 of 9 shapes." "Matches 4 of 9 on 2026-11-21 and fails 5 of 9 today."; do
+  check "stale text is caught: $bad" '[ -n "$(stale "$bad")" ]'
+done
 exit $fail
