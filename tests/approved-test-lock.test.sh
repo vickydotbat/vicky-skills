@@ -40,6 +40,10 @@ post() { jq -nc --arg d "$repo" '{hook_event_name:"PostToolUse",tool_name:"Bash"
 cp "$f" "$fx/keep"
 check "a write the pre-check cannot read is reverted after it runs" '[ "$(perl -pi -e "s/# Then it works/# Then no/" "$f"; post)" = 2 ] && cmp -s "$f" "$fx/keep"'
 check "a deleted approved test is restored after the command" '[ "$(rm "$f"; post)" = 2 ] && cmp -s "$f" "$fx/keep"'
+check "a quoted rm target is refused" '[ "$(bash_rc "rm \\\"tests/foo_approved_examples.test.sh\\\"")" = 2 ]'
+check "a command that only prints rm and an approved test goes through" '[ "$(bash_rc "echo rm tests/foo_approved_examples.test.sh")" = 0 ]'
+check "git rm of an approved test is refused" '[ "$(bash_rc "git rm tests/foo_approved_examples.test.sh")" = 2 ]'
+check "a Write that keeps every step line goes through" '[ "$(rc "{tool_name:\"Write\",cwd:\$d,tool_input:{file_path:\"$f\",content:\"# Given a thing\\n# When it runs\\n# Then it works\\nnew\\n\"}}")" = 0 ]'
 check "a command that keeps every step line is left alone" '[ "$(printf "check more\n" >>"$f"; post)" = 0 ] && grep -q "check more" "$f"'
 cp "$fx/keep" "$f"
 check "a MultiEdit entry with replace_all that drops a repeated step line is refused" '[ "$(printf "# Then it works\n" >>"$f"; r=$(rc "{tool_name:\"MultiEdit\",cwd:\$d,tool_input:{file_path:\"$f\",edits:[{old_string:\"# Then it works\",new_string:\"# Then no\",replace_all:true}]}}"); cp "$fx/keep" "$f"; echo "$r")" = 2 ]'
@@ -56,6 +60,12 @@ git -C "$repo" switch -q work; git -C "$repo" rebase -q main
 check "a record already on main keeps the lock" '[ "$(edit "$f" "# Then it works" "# Then no")" = 2 ]'
 printf '\ntests/foo_approved_examples.test.sh:2\n- [x] approve\n' >>"$repo/docs/old.md"; git -C "$repo" commit -qam add-to-old
 check "a record a branch adds to a file main holds counts" '[ "$(edit "$f" "# When it runs" "# When no")" = 0 ]'
+check "a shell change to a plain test on main is left alone" '[ "$(sed -i "/# Given plain/d" "$repo/tests/p.test.sh"; post)" = 0 ] && ! grep -q "Given plain" "$repo/tests/p.test.sh"'
+git -C "$repo" checkout -q -- tests/p.test.sh
+check "a deleted plain test stays deleted" '[ "$(rm "$repo/tests/p.test.sh"; post)" = 0 ] && [ ! -e "$repo/tests/p.test.sh" ]'
+git -C "$repo" checkout -q -- tests/p.test.sh
+check "a deleted approved test with its record stays deleted" '[ "$(rm "$f"; post)" = 0 ] && [ ! -e "$f" ]'
+git -C "$repo" checkout -q -- "$f"
 check "a plain test on main may drop a step-shaped line" '[ "$(edit "$repo/tests/p.test.sh" "# Given plain" "")" = 0 ]'
 check "an approved file with no step lines may be edited" '[ "$(edit "$repo/tests/bare_approved_examples.test.sh" "echo x" "echo y")" = 0 ]'
 check "deleting a new approved file main lacks goes through" '[ "$(rc "{tool_name:\"Bash\",cwd:\$d,tool_input:{command:\"rm tests/new_approved_examples.test.sh\"}}")" = 0 ]'
