@@ -8,11 +8,11 @@ set -u
 hook="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/scripts/pr-guard.sh"
 scratch=$(mktemp -d)
 trap 'rm -rf "$scratch"' EXIT
-mkdir -p "$scratch/home" "$scratch/sid1"
-export HOME="$scratch/home"
+mkdir -p "$scratch/fakehome" "$scratch/sid1"
+export HOME="$scratch/fakehome"
 credit='Co-Authored-By: Claude <noreply@anthropic.com>'
 printf 'Body.\n\n%s\n' "$credit" >"$scratch/body.md"
-printf 'Body.\n\n%s\n' "$credit" >"$scratch/home/body.md"
+printf 'Body.\n\n%s\n' "$credit" >"$scratch/fakehome/body.md"
 printf 'Body.\n\n%s\n' "$credit" >"$scratch/sid1/body.md"
 printf 'Body.\n\nGenerated with [Claude Code](https://claude.com)\n' >"$scratch/footer.md"
 printf 'Plain body.\n' >"$scratch/plain.md"
@@ -60,7 +60,7 @@ expect "a skipped review on a tea pull request is refused" 2 "tea pr edit 7 -d '
 expect "a skipped check that isn't review passes" 0 "gh pr edit 7 --body 'Skipped: by-eye check, no page changed'"
 expect "a skipped review in a body file a non-sending command reads passes" 0 "gh pr merge 7 --squash --body-file $scratch/skip.md"
 expect "a skipped review passes with the guard off" 0 "gh pr edit 7 --body 'Skipped: review'" false
-printf '## Status\n\nOk.\n\n## Summary\n\nX.\n\n## Proof\n\nRan it.\n\n## Risk\n\nLow.\n' | tee "$scratch/clean.md" "$scratch/home/clean.md" "$scratch/sid1/clean.md" >/dev/null
+printf '## Status\n\nOk.\n\n## Summary\n\nX.\n\n## Proof\n\nRan it.\n\n## Risk\n\nLow.\n' | tee "$scratch/clean.md" "$scratch/fakehome/clean.md" "$scratch/sid1/clean.md" >/dev/null
 expect "a clean body under \$HOME passes" 0 'gh pr create --draft --body-file $HOME/clean.md'
 expect "a clean body under \${HOME} passes" 0 'gh pr create --draft --body-file ${HOME}/clean.md'
 expect "a clean body under ~ passes" 0 'gh pr create --draft --body-file ~/clean.md'
@@ -194,7 +194,7 @@ same "gh stack submit needs no label on a big base" "$(one big "gh stack submit"
 same "a git-spice submit without the label is refused" "$(one big "gs branch submit")" 2
 same "without git the command runs" "$(mkdir -p "$scratch/nogit"; for t in bash jq awk grep sed cat tr env dirname head tail mkdir timeout; do ln -sf "$(command -v $t)" "$scratch/nogit/$t"; done
   jq -nc --arg c "gh pr create --body x" --arg d "$scratch/hub" '{tool_name: "Bash", cwd: $d, session_id: "s-hub", tool_input: {command: $c}}' |
-  env -i HOME="$scratch/home" PATH="$scratch/nogit" CLAUDE_PLUGIN_OPTION_GUARD_PR=true "$scratch/nogit/bash" "$hook" >/dev/null 2>&1; echo $?)" 0
+  env -i HOME="$scratch/fakehome" PATH="$scratch/nogit" CLAUDE_PLUGIN_OPTION_GUARD_PR=true "$scratch/nogit/bash" "$hook" >/dev/null 2>&1; echo $?)" 0
 same "outside a repository with an origin the command runs" "$(one . "gh pr create --body x")" 0
 
 # After a create: the branch is recorded only when the forge printed the new
