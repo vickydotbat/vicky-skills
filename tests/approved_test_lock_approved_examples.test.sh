@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2016,SC2034,SC2069,SC2329 # check() evals its single-quoted condition later, which reads these names; a hook's stderr alone is read on purpose
 # approved-spec: the examples approved on the note "LC-4 An approved test is
 # locked". approved-test-lock.sh runs on PreToolUse for Edit, Write, MultiEdit
 # and Bash. A test is approved when its file name holds approved_examples and

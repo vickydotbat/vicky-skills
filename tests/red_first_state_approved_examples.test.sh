@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2016,SC2034,SC2069,SC2329 # check() evals its single-quoted condition later, which reads these names; a hook's stderr alone is read on purpose
 # approved-spec: the examples approved on the note "LC-7 red-first-guard
 # decides from state". The guard judges the files the commit holds.
 set -u
