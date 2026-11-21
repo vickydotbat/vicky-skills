@@ -29,7 +29,8 @@ person does.
 "stage_ran" names the receipt of a liveness command (a process or container
 running, a port answering) run within 15 minutes of the page. A command that
 reads a file is refused, since a log line can come from another server, and
-a repo's `Stage check:` line in docs/agents/testing.md names the one command.
+a repo's `Stage check:` line in docs/agents/testing.md names the one command,
+matched whole, or says `none` to switch the check off.
 """
 import json
 import os
@@ -91,13 +92,36 @@ def receipt(item, n, out_dir, label=None):
 
 
 # Commands that read a file: a log line can come from another server writing the same log.
-READS_A_FILE = {"grep", "rg", "egrep", "fgrep", "tail", "head", "cat", "less", "awk", "sed", "journalctl"}
+READS_A_FILE = {"grep", "rg", "egrep", "fgrep", "tail", "head", "cat", "less", "awk", "sed", "journalctl", "logs"}
 STAGE_MINUTES = 15
+SKEW = timedelta(minutes=1)
+
+
+def reads_a_file(command):
+    """True when any word of the command, through pipes, wrappers and paths, is a file reader."""
+    return any(os.path.basename(word) in READS_A_FILE for word in re.split(r"[\s;&|()'\"`]+", command) if word)
+
+
+def stage_check(directory):
+    """The command the repo's Stage check: line names in docs/agents/testing.md, "none", or None with no line."""
+    top = subprocess.run(["git", "-C", directory or ".", "rev-parse", "--show-toplevel"], capture_output=True, text=True).stdout.strip()
+    if not top:
+        return None
+    try:
+        with open(os.path.join(top, "docs", "agents", "testing.md"), encoding="utf-8") as f:
+            line = re.search(r"^Stage check:\s*(\S.*)$", f.read(), re.MULTILINE)
+    except OSError:
+        return None
+    if not line:
+        return None
+    value = line.group(1).strip()
+    return "none" if value.lower() == "none" else value.strip("`")
 
 
 def stage_problem(spec, out_dir):
-    """The problem with the stage's liveness receipt, or None. A spec whose proven_by is `no server` needs none."""
-    if (spec.get("proven_by") or "").strip().lower() == "no server":
+    """The problem with the stage's liveness receipt, or None. A spec whose proven_by is `no server`, or a repo whose
+    Stage check: line says none, needs none."""
+    if (spec.get("proven_by") or "").strip().lower() == "no server" or stage_check(out_dir) == "none":
         return None
     rid = spec.get("stage_ran") or ""
     if not rid:
@@ -114,18 +138,15 @@ def stage_problem(spec, out_dir):
         age = datetime.now(timezone.utc) - datetime.strptime(got.get("at", ""), "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
     except ValueError:
         age = timedelta.max
+    if age < -SKEW:
+        return f"stage: receipt {rid} is dated in the future: run the liveness check again through ran.sh"
     if age > timedelta(minutes=STAGE_MINUTES):
         return f"stage: receipt {rid} ran more than {STAGE_MINUTES} minutes ago: run the liveness check again just before the page opens"
-    if (command.split() or [""])[0] in READS_A_FILE:
+    if reads_a_file(command):
         return f"stage: receipt {rid} ran `{command}`, which reads a file: a log line can come from another server. Check the process, container or port itself"
-    top = subprocess.run(["git", "-C", got.get("cwd") or ".", "rev-parse", "--show-toplevel"], capture_output=True, text=True).stdout.strip()
-    try:
-        with open(os.path.join(top, "docs", "agents", "testing.md"), encoding="utf-8") as f:
-            named = re.search(r"^Stage check:\s*`([^`]+)`", f.read(), re.MULTILINE)
-    except OSError:
-        named = None
-    if top and named and named.group(1) not in command:
-        return f"stage: receipt {rid} ran `{command}`, not the repo's Stage check `{named.group(1)}`: run that through ran.sh"
+    named = stage_check(got.get("cwd"))
+    if named and named != "none" and command.strip() != named:
+        return f"stage: receipt {rid} ran `{command}`, not the repo's Stage check `{named}`: run that through ran.sh"
     return None  # mutant-ok delete: falling off the end returns None too
 
 
