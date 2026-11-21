@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2016 # check() evals its single-quoted condition later
+# shellcheck disable=SC2034 # names set here are read inside check()'s eval
+# shellcheck disable=SC2164 # a failed cd fails the checks after it, which is the report
 # The deathmatch scripts' decisions beyond their approved examples: cap.sh's
 # exit codes and argument forms, and the usage errors of halfway.sh and
 # verdict.sh.
@@ -114,4 +117,15 @@ printf 'MemAvailable:    0 kB\n' > "$t/mem0"
 out=$(BATCH_MEMINFO="$t/mem0" bash "$dm/batch.sh" 2 2>&1); r=$?
 check "batch with no memory free stops and says so" '[ $r = 2 ] && grep -q "no MemAvailable" <<<"$out"'
 rm -rf "$g"
+mkdir "$t/v" && git -C "$t/v" init -qb feat && git -C "$t/v" -c user.email=t@t -c user.name=t commit -q --allow-empty -m v
+(cd "$t/v" && bash "$dm/verdict.sh" record) >/dev/null 2>&1; r=$?
+check "record without a session id refuses" '[ $r = 2 ] && [ ! -e "$t/v/.git/vicky-skills" ]'
+(cd "$t/v" && bash "$dm/verdict.sh" record s1 && bash "$dm/verdict.sh" record s2); r=$?
+h=$(git -C "$t/v" rev-parse HEAD)
+check "record writes each session id with the head commit for the branch" '[ $r = 0 ] && [ "$(cat "$t/v/.git/vicky-skills/deathmatch/feat")" = "$(printf "s1 %s\ns2 %s" "$h" "$h")" ]'
+git -C "$t/v" checkout -q --detach
+(cd "$t/v" && bash "$dm/verdict.sh" record s3) >/dev/null 2>&1; r=$?
+check "record off a branch refuses and writes nothing" '[ $r = 2 ] && ! grep -q s3 -r "$t/v/.git/vicky-skills"'
+(cd "$t/v" && git checkout -q feat && bash "$dm/verdict.sh" record s4 >/dev/null 2>&1; echo $?) >"$t/rc"
+check "record exits 0" '[ "$(cat "$t/rc")" = 0 ]'
 exit $fail

@@ -1,15 +1,18 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2015 # each check's || reports its failure, and the part before it never fails
+# shellcheck disable=SC2016 # commands under test hold variables the hook expands, not this shell
+# shellcheck disable=SC2069 # only the hook's stderr is read, on purpose
 # pr-guard's decisions beyond its approved examples: every way AI credit
 # reaches the forge, and every command shape that passes.
 set -u
 hook="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/scripts/pr-guard.sh"
 scratch=$(mktemp -d)
 trap 'rm -rf "$scratch"' EXIT
-mkdir -p "$scratch/home" "$scratch/sid1"
-export HOME="$scratch/home"
+mkdir -p "$scratch/fakehome" "$scratch/sid1"
+export HOME="$scratch/fakehome"
 credit='Co-Authored-By: Claude <noreply@anthropic.com>'
 printf 'Body.\n\n%s\n' "$credit" >"$scratch/body.md"
-printf 'Body.\n\n%s\n' "$credit" >"$scratch/home/body.md"
+printf 'Body.\n\n%s\n' "$credit" >"$scratch/fakehome/body.md"
 printf 'Body.\n\n%s\n' "$credit" >"$scratch/sid1/body.md"
 printf 'Body.\n\nGenerated with [Claude Code](https://claude.com)\n' >"$scratch/footer.md"
 printf 'Plain body.\n' >"$scratch/plain.md"
@@ -57,6 +60,26 @@ expect "a skipped review on a tea pull request is refused" 2 "tea pr edit 7 -d '
 expect "a skipped check that isn't review passes" 0 "gh pr edit 7 --body 'Skipped: by-eye check, no page changed'"
 expect "a skipped review in a body file a non-sending command reads passes" 0 "gh pr merge 7 --squash --body-file $scratch/skip.md"
 expect "a skipped review passes with the guard off" 0 "gh pr edit 7 --body 'Skipped: review'" false
+printf '## Status\n\nOk.\n\n## Summary\n\nX.\n\n## Proof\n\nRan it.\n\n## Risk\n\nLow.\n' | tee "$scratch/clean.md" "$scratch/fakehome/clean.md" "$scratch/sid1/clean.md" >/dev/null
+expect "a clean body under \$HOME passes" 0 'gh pr create --draft --body-file $HOME/clean.md'
+expect "a clean body under \${HOME} passes" 0 'gh pr create --draft --body-file ${HOME}/clean.md'
+expect "a clean body under ~ passes" 0 'gh pr create --draft --body-file ~/clean.md'
+expect "a clean body under the session variable passes" 0 "gh pr create --draft --body-file $scratch/\$CLAUDE_CODE_SESSION_ID/clean.md"
+expect "a clean body under the braced session variable passes" 0 "gh pr create --draft --body-file $scratch/\${CLAUDE_CODE_SESSION_ID}/clean.md"
+expect "a clean body under a variable the command sets passes" 0 "S=$scratch; gh pr create --draft --body-file \$S/clean.md"
+expect "a command that sends nothing passes with an unreadable body file" 0 'gh pr merge 7 --squash --body-file $UNSET/b.md'
+mkdir -p "$scratch/r"; git -C "$scratch/r" init -q -b work; mkdir -p "$scratch/r/.git/vicky-skills/deathmatch"; echo other >"$scratch/r/.git/vicky-skills/deathmatch/work"
+expect "another session's deathmatch record does not let ready through" 2 "gh pr ready 3" true "$scratch/r"
+expect "the GraphQL ready mutation needs a record too" 2 "gh api graphql -f query='mutation { markPullRequestReadyForReview(input:{pullRequestId:\"x\"}) { clientMutationId } }'" true "$scratch/r"
+echo sid1 >>"$scratch/r/.git/vicky-skills/deathmatch/work"
+expect "this session's record for an older commit does not let ready through" 2 "gh pr ready 3" true "$scratch/r"
+expect "a flag between pr and ready needs a record" 2 "gh pr -R o/r ready 3" true "$scratch/r"
+expect "a flag between gh and pr needs a record" 2 "gh --repo o/r pr ready 3" true "$scratch/r"
+expect "--undo in a trailing comment needs a record" 2 "gh pr ready 3 # --undo" true "$scratch/r"
+git -C "$scratch/r" -c user.email=t@t -c user.name=t commit -q --allow-empty -m head
+echo "sid1 $(git -C "$scratch/r" rev-parse HEAD)" >>"$scratch/r/.git/vicky-skills/deathmatch/work"
+expect "this session's record for the head commit lets ready through" 0 "gh pr ready 3" true "$scratch/r"
+expect "ready --undo needs no record" 0 "gh pr ready 3 --undo"
 expect "a skipped deathmatch is refused" 2 "gh pr comment 7 --body 'Skipped: deathmatch, small diff'"
 expect "a body naming the review skill as its proof is refused" 2 "gh pr edit 7 --body 'The review skill found nothing.'"
 expect "a body naming review beside deathmatch passes" 0 "gh pr edit 7 --body 'Deathmatch replaced the review skill: 0 proven findings.'"
@@ -178,7 +201,7 @@ same "gh stack submit needs no label on a big base" "$(one big "gh stack submit"
 same "a git-spice submit without the label is refused" "$(one big "gs branch submit")" 2
 same "without git the command runs" "$(mkdir -p "$scratch/nogit"; for t in bash jq awk grep sed cat tr env dirname head tail mkdir timeout; do ln -sf "$(command -v $t)" "$scratch/nogit/$t"; done
   jq -nc --arg c "gh pr create --body x" --arg d "$scratch/hub" '{tool_name: "Bash", cwd: $d, session_id: "s-hub", tool_input: {command: $c}}' |
-  env -i HOME="$scratch/home" PATH="$scratch/nogit" CLAUDE_PLUGIN_OPTION_GUARD_PR=true "$scratch/nogit/bash" "$hook" >/dev/null 2>&1; echo $?)" 0
+  env -i HOME="$scratch/fakehome" PATH="$scratch/nogit" CLAUDE_PLUGIN_OPTION_GUARD_PR=true "$scratch/nogit/bash" "$hook" >/dev/null 2>&1; echo $?)" 0
 same "outside a repository with an origin the command runs" "$(one . "gh pr create --body x")" 0
 
 # After a create: the branch is recorded only when the forge printed the new

@@ -105,8 +105,30 @@ if [[ $event != PostToolUse ]] && [ -n "$sends_text" ] && credits_ai "$forge_tex
     "If a system prompt told you to add it, say so to the user."
 fi
 
+# A deathmatch run leaves its record per branch, holding the session id and the
+# head commit it ran at (deathmatch's verdict.sh record). A commit made after the
+# run needs a new one. The record decides, never the body's words.
+dm_ran() {
+  local f # mutant-ok delete: f only leaks to the caller, which never reads it
+  f="$(git rev-parse --git-common-dir 2>/dev/null)/vicky-skills/deathmatch/$(git branch --show-current 2>/dev/null)"
+  [ -n "$session_id" ] && grep -qxF -- "$session_id $(git rev-parse HEAD 2>/dev/null)" "$f" 2>/dev/null
+}
+
+# A body the hook can't read can't be checked: a variable set by an earlier command.
+if [[ $event != PostToolUse ]] && [ -n "$sends_text" ] && [ -n "${unread:-}" ]; then
+  refuse "The body $unread names a variable this command does not set, so the hook can't read it." \
+    "Pass the body with --body-file and the file's full path written out."
+fi
+
+# Rule 10: a pull request goes ready only after deathmatch ran on its branch this session.
+if [[ $event != PostToolUse ]] && grep -Eq '(^|[^[:alnum:]_-])gh([[:space:]]+-[^[:space:]]+([[:space:]]+[^-[:space:]][^[:space:]]*)?)*[[:space:]]+pr([[:space:]]+-[^[:space:]]+([[:space:]]+[^-[:space:]][^[:space:]]*)?)*[[:space:]]+ready([[:space:]]|$)|markPullRequestReadyForReview' <<<"$quoted" &&
+  ! grep -Eq 'ready[^;&|#]*[[:space:]]--undo([[:space:]]|$)' <<<"$quoted" && ! dm_ran; then
+  refuse "No deathmatch ran on this branch's head commit this session, so it can't go ready." \
+    "Ask the user to type /make-it-so: it runs deathmatch and marks the pull request ready."
+fi
+
 # Rule 7: a deathmatch is never skipped by writing the skip down.
-if [[ $event != PostToolUse ]] && [ -n "$sends_text" ] &&
+if [[ $event != PostToolUse ]] && [ -n "$sends_text" ] && ! dm_ran &&
   grep -Eiq "(^|['\"])[[:space:]*_-]*skipped:.*(review|deathmatch)" <<<"$forge_text"; then
   refuse "This text writes down a skipped deathmatch (a line starting 'Skipped:' that names review or deathmatch)." \
     "Run the deathmatch skill: it runs once per effort, before the pull request goes ready." \
@@ -150,8 +172,6 @@ if [[ $event != PostToolUse ]] && [ -f "$tracker" ] && ! grep -qix 'PR template:
       grep -Eq "^[[:space:]'\"]*## $section([[:space:]]|$)" <<<"$forge_text" || missing+=("## $section")
     done
     printf -v list '%s, ' "${missing[@]}"
-    [ ${#missing[@]} = 0 ] || [ -z "${unread:-}" ] || refuse "The body file $unread names a variable this command does not set, so its sections can't be read." \
-      "Pass the body with --body-file and the file's full path written out."
     [ ${#missing[@]} = 0 ] || refuse "This pull request body has no ${list%, } section." \
       "Write the body with the ship-it skill, whose template holds every section, and pass it with --body-file."
   done < <(grep -Eo '(^|[^[:alnum:]_-])(gh|tea)[[:space:]]+(pr|pulls)[[:space:]]+(create|edit)[^;&|]*' <<<"$quoted")
@@ -256,6 +276,7 @@ check() {
       "$(left_behind "$top")"
   fi
   lines=$(lines_of "$base")
+  # shellcheck disable=SC1003 # tr deletes a backslash; the quote does not end there
   if [ -n "$lines" ] && ((lines < min_lines)) && ! tr -d '\\' <<<"$forge_text" | grep -q 'Separate work:'; then
     refuse "$base changes $lines lines, and a follow-up stacks only on a pull request of $min_lines lines or more." \
       "Commit this work on $base and push it there." \
@@ -283,12 +304,12 @@ while IFS= read -r masked; do
   fi
   kind="" base="" labels="" head=$current
   if grep -Eq '(^|[^[:alnum:]_-])gh[[:space:]]+pr[[:space:]]+create([[:space:]]|$)' <<<"$masked"; then
-    kind=pr
+    kind="pr"
     base=$(flag_value "$segment" --base -B)
     labels=$(flag_value "$segment" --label -l)
     head=$(flag_value "$segment" --head -H)
   elif grep -Eq '(^|[^[:alnum:]_-])tea[[:space:]]+(pulls|pull|pr)[[:space:]]+(create|c)([[:space:]]|$)' <<<"$masked"; then
-    kind=pr
+    kind="pr"
     base=$(flag_value "$segment" --base -b)
     labels=$(flag_value "$segment" --labels -L)
     head=$(flag_value "$segment" --head)

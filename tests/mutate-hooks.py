@@ -90,7 +90,7 @@ TESTS = {
     "local-path-guard.sh": ["local-path-guard"],
     "draft-guard.sh": ["draft-guard"],
     "skill-started.sh": ["draft-guard", "rebase-guard", "ticket-filing-guard"],
-    "pr-guard.sh": ["pr-guard", "deathmatch_approved_examples", "pr_guard_ai_credit_approved_examples", "pr_guard_one_pr_approved_examples", "pr_guard_create_approved_examples", "pr_guard_foreign_approved_examples"],
+    "pr-guard.sh": ["pr-guard", "deathmatch_approved_examples", "pr_guard_ai_credit_approved_examples", "pr_guard_one_pr_approved_examples", "pr_guard_create_approved_examples", "pr_guard_foreign_approved_examples", "pr_guard_state_approved_examples"],
     "push-behind-guard.sh": ["push-behind-guard"],
     "shellcheck-guard.sh": ["shellcheck_guard_approved_examples", "shellcheck-guard"],
     "rebase-guard.sh": ["rebase-guard"],
@@ -115,7 +115,10 @@ TESTS = {
     "skills/shipping/security/scripts/levels.sh": ["security_levels_approved_examples", "security-kit"],
     "skills/shipping/security/scripts/review.sh": ["security_levels_approved_examples", "security-kit"],
     "skills/shipping/engrave/scripts/law-lint.sh": ["law-lint", "law_lint_approved_examples", "laws_line_approved_examples"],
-    "red-first-guard.sh": ["red-first", "red-first-paths", "red_first_approved_examples"],
+    "red-first-guard.sh": ["red-first", "red-first-paths", "red_first_approved_examples", "red_first_state_approved_examples"],
+    "done-check.sh": ["done_check_approved_examples", "done-check"],
+    "repeat-call-hint.sh": ["repeat_call_approved_examples", "repeat-call-hint"],
+    "approved-test-lock.sh": ["approved_test_lock_approved_examples", "approved-test-lock"],
     "skill-ledger.sh": ["skill_ledger_approved_examples"],
     "tea-stdin.awk": ["tea-stdin"],
     "tea-stdin.sh": ["tea-stdin", "refusal-note"],
@@ -127,7 +130,7 @@ TESTS = {
     "read-item.sh": ["read_item_approved_examples", "read-item"],
     "gate-state-guard.sh": ["gate-state-guard"],
     "plane-block-guard.sh": ["plane_block_approved_examples", "plane-block-guard", "refusal-note"],
-    "whole-read-guard.sh": ["whole-read-guard"],
+    "whole-read-guard.sh": ["whole-read-guard", "whole_read_state_approved_examples"],
     "watch.sh": ["watch", "watch_approved_examples"],
     "assign-expand.sh": ["pr-guard", "worktree-place"],
     "worktree-place.sh": ["worktree-place", "worktree_place_approved_examples", "worktree_cleanup_approved_examples", "worktree_drop_approved_examples"],
@@ -404,9 +407,12 @@ class Worker:
         neither works nor ends is left to the clock."""
         # A tag in its environment finds every process it starts, so all are counted and stopped.
         tag = f"{os.getpid()}-{next(RUNS)}"
-        proc = subprocess.Popen(capped(os.path.join(self.root, "tests", test + ".test.sh")),
-                                env=dict(os.environ, MUTATE_HOOKS_INNER="1", MUTATE_HOOKS_RUN=tag),
-                                stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        # The output goes to a file, so a kill with no FAIL line in it can be named in the report.
+        self.out = os.path.join(self.root, ".mutant.out")
+        with open(self.out, "wb") as sink:
+            proc = subprocess.Popen(capped(os.path.join(self.root, "tests", test + ".test.sh")),
+                                    env=dict(os.environ, MUTATE_HOOKS_INNER="1", MUTATE_HOOKS_RUN=tag),
+                                    stdin=subprocess.DEVNULL, stdout=sink, stderr=subprocess.STDOUT)
         start = time.monotonic()
         try:
             while True:
@@ -430,10 +436,18 @@ class Worker:
         try:
             for test, cpu_limit, ceiling in timeouts:
                 code = self.test(test, cpu_limit, ceiling)
-                if code == HUNG:
-                    return HUNG
+                if code in (HUNG, CPU):
+                    return code
                 if code != 0:
-                    return True
+                    with open(self.out, errors="replace") as handle:
+                        said = handle.read()
+                    # A kill no assertion explains is reported, since a test that fails for another
+                    # reason (a missing tool, a limit) would count a harmless mutant as killed.
+                    fails = [line for line in said.splitlines() if line.startswith("FAIL")]
+                    if fails and os.environ.get("MUTATE_HOOKS_SHOW_KILLS") == "1":
+                        # CI sets this where a kill it can't reproduce locally needs its reason in the log.
+                        print(f"kill {script}: {test}: {fails[0]}", flush=True)
+                    return True if fails else (code, test, said.strip().splitlines()[-3:])
             return False
         finally:
             with open(path_of(script)) as handle:
@@ -540,10 +554,13 @@ def main(argv):
         for name, original, found, timeouts, _, code_hash, test_hash, whole in plan:
             killed = list(pool.map(lambda m: one(name, original, m, timeouts), found))
             unrun += killed.count(None)
-            print(f"script {name}: {killed.count(True) + killed.count(HUNG)}/{len(found)}", flush=True)
+            print(f"script {name}: {sum(k not in (False, None) for k in killed)}/{len(found)}", flush=True)
             for (n, line), k in zip(found, killed):
-                if k == HUNG:
-                    print(f"hung {name}:{n + 1}: {line.strip()}", flush=True)
+                if k in (HUNG, CPU):
+                    print(f"{k} {name}:{n + 1}: {line.strip()}", flush=True)
+                elif isinstance(k, tuple):
+                    print(f"no FAIL line {name}:{n + 1}: {line.strip()}: {k[1]} exited {k[0]}"
+                          + "".join("\n  " + said for said in k[2]), flush=True)
             mine = [f"survivor {name}:{n + 1}: {line.strip()}" for (n, line), k in zip(found, killed) if k is False]
             survivors += mine
             if not mine and None not in killed and not again:
