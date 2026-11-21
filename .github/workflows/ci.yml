@@ -162,6 +162,10 @@ jobs:
         run: tests/sendusermessage-mode.test.sh
       - name: Read before asking
         run: tests/read-before-asking.test.sh
+      - name: Approved test lock
+        run: tests/approved_test_lock_approved_examples.test.sh
+      - name: Approved test lock decisions
+        run: tests/approved-test-lock.test.sh
       - name: Done check
         run: tests/done_check_approved_examples.test.sh
       - name: Done check decisions

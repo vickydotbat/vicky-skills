@@ -1,0 +1,3 @@
+# Sourced helpers sit beside the script that sources them.
+source-path=SCRIPTDIR
+external-sources=true

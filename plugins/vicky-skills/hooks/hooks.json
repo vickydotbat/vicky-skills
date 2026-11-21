@@ -26,6 +26,11 @@
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/worktree-place.sh\"",
             "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/approved-test-lock.sh\"",
+            "timeout": 10
           }
         ]
       },
@@ -131,6 +136,11 @@
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/patch-tell-hint.sh\"",
             "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/approved-test-lock.sh\"",
+            "timeout": 10
           }
         ]
       },
