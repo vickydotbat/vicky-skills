@@ -79,7 +79,7 @@ Each skill starts on its own when its trigger fits, except the ones marked "When
 
 | Skill | When it's used | What it does |
 | --- | --- | --- |
-| **`human-voice`** | When writing prose a person reads, and when text sounds like AI | Writes anything a person reads in a register picked by its audience: showcase for the public, plain for everything else. A lint script catches the habits it can. A draft over about 400 words also goes to a panel of readers who list the questions it leaves. `reader_panel` picks `one agent` playing every seat (the default) or `agent per seat`. Each draft also gets a proofread from a second model. By default that's Gemini 4 Hydrogen on your own `GEMINI_API_KEY`, which is free, but free-tier prompts may train Google's models. `proofread_model`, `proofread_endpoint` and `proofread_key_env` point it at any OpenAI-compatible API (set all three, so your Gemini key stays with Google), and `session` keeps the proofread on the model you're running. With no key, or when the call fails, your session's model proofreads instead. |
+| **`human-voice`** | When writing prose a person reads, and when text sounds like AI | Writes anything a person reads in a register picked by its audience: showcase for the public, plain for everything else. A lint script catches the habits it can. A draft over about 400 words also goes to a panel of readers who list the questions it leaves. `reader_panel` picks `one agent` playing every seat (the default) or `agent per seat`. Each draft also gets a proofread from a second model, as [Proofreading](#proofreading) says. |
 | **`red-pen`** | When writing meets an audience (players, customers, the public), or examples need your approval | Opens drafts in your browser and writes back what you leave. Specs, tickets, pull request bodies and internal docs skip it. |
 | **`interactive-page`** | When a skill hands you a draft file or a checklist, or has a question with options for you | Shows the file as a page with text to edit, boxes to tick, comment boxes and options to click, and writes your answers back. With no browser, the file opens in your editor. |
 | **`robot-voice`** | When creating or editing a skill, agent file or prompt, or when an agent misreads one | Writes skills, agent files and prompts for maximum agentic ergonomics. |
@@ -192,6 +192,22 @@ claude plugin marketplace add vickydotbat/vicky-skills --scope project
 ```
 
 Turn on auto-update under `/plugin`, then **Marketplaces**. The plugin has no version number, so every commit to `main` is an update.
+
+## Proofreading
+
+`human-voice` sends each draft to a second model for a proofread, then weighs its notes. The second model reports spelling, grammar, punctuation and unclear sentences. It leaves your voice and structure alone.
+
+By default the proofread goes to Gemini 4 Hydrogen, which Google's free tier serves. Get a key from Google AI Studio and export it as `GEMINI_API_KEY` where Claude Code starts. Prompts on the free tier may be used to train Google's models, so keep private drafts off it.
+
+Change it in the plugin's settings under `/plugin`:
+
+- `proofread_model`: the model id. `session` keeps the proofread on the model you run Claude Code on.
+- `proofread_endpoint`: any OpenAI-compatible API, such as OpenRouter or a local Ollama.
+- `proofread_key_env`: the variable that holds that endpoint's key, or `none` for a server that needs no key.
+
+A custom endpoint needs all three set, so your Gemini key never goes to another provider. With no key, or when the call fails, your session's model proofreads instead. The reply names the model that did the proofread, and the reason for any fallback.
+
+The script needs `curl` and `jq`.
 
 ## Approved examples
 
