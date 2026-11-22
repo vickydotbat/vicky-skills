@@ -18,7 +18,10 @@ OPTION=${CLAUDE_PLUGIN_OPTION_GUARD_MERGED_BRANCH:-true}
 case "$OPTION" in true|1) ;; *) exit 0 ;; esac
 payload=$(cat)
 event=$(jq -r '.hook_event_name // ""' <<<"$payload" 2>/dev/null)
-commit_re='(^|[^[:alnum:]_-])git[[:space:]]([^;&|]*[[:space:]])?(commit|push)([[:space:]]|$)'
+# shellcheck source=git-subcommand.sh
+. "$(dirname "$0")/git-subcommand.sh"
+# commits_or_pushes <text>: 0 when a git command in <text> is a commit or push.
+commits_or_pushes() { git_subcommands "$1" | grep -qxE 'commit|push'; }
 
 # gone: 0 when the branch $current has an upstream and that remote branch is gone.
 # Leaves remote and reach (0 live, 2 gone, else origin could not answer).
@@ -81,7 +84,7 @@ heads_line() {
 # refused. The lib takes a git command in the session's folder in its place, so
 # it stands in that repository and stays quiet outside one.
 hint=0
-if [ "$event" = SessionStart ] || { [ "$event" = PreToolUse ] && ! grep -Eq "$commit_re" <<<"$(jq -r '.tool_input.command // ""' <<<"$payload")"; }; then
+if [ "$event" = SessionStart ] || { [ "$event" = PreToolUse ] && ! commits_or_pushes "$(jq -r '.tool_input.command // ""' <<<"$payload")"; }; then
   hint=1
   # tr also turns jq's closing newline into _, so no id can name . or ..
   session=$(jq -r '.session_id // "none"' <<<"$payload" | tr -c '[:alnum:]_.-' _)
@@ -107,7 +110,8 @@ if [ "$hint" = 1 ]; then
   jq -nc --arg e "$event" --arg h "$GUARD: this checkout stands on '$current', and its remote branch is gone: its pull request merged, or the branch was deleted, so the branch is finished. $(heads_line) Or start fresh: git fetch --prune && git switch -c <new-branch> $default_ref. $moving" \
     '{hookSpecificOutput:{hookEventName:$e,additionalContext:$h}}'
 else
-  grep -Eq "$commit_re" <<<"$code" || exit 0
+  # shortcut: $code drops quoted words, so git -c "k=v" push reads as git push's option; read the raw command if that misses a real push.
+  commits_or_pushes "$code" || exit 0
   grep -Eq -- 'push[^;&|]*(--delete|[[:space:]]-d([[:space:]]|$))' <<<"$code" && exit 0
   gone || exit 0
   move

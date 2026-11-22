@@ -62,12 +62,14 @@ default_ref_of() {
 # The branch checked out, or empty on a detached HEAD.
 # shellcheck disable=SC2034 # read by the guard that sources this
 current=$(git symbolic-ref --short -q HEAD) || current=""
+# shellcheck source=git-subcommand.sh
+. "$(dirname "${BASH_SOURCE[0]}")/git-subcommand.sh"
 # push_args_of <segment>: when the segment runs git push, fill push_args with
 # the words after `push`, flags included, and return 0. Return 1 otherwise.
 push_args_of() {
   local word words seen=0 # mutant-ok delete: a local declaration: no caller reads these names
   push_args=()
-  grep -Eq '(^|[[:space:]])git([[:space:]]|$)' <<<"$1" || return 1
+  [ "$(git_subcommands "$1" | head -n 1)" = push ] || return 1
   read -ra words <<<"$1"
   for word in ${words[@]+"${words[@]}"}; do
     if [ "$seen" = 1 ]; then push_args+=("$word"); elif [ "$word" = push ]; then seen=1; fi
