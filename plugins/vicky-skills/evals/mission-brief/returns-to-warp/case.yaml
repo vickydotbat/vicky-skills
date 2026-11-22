@@ -1,0 +1,5 @@
+schema_version: "1.1"
+name: returns-to-warp
+description: mission-brief called by a warp files its star and returns to the warp's next step in the same response, with no report and no ask.
+context:
+  scaffold_script: scaffold.sh
