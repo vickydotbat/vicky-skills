@@ -8,9 +8,10 @@
 # the newest commit whose tree the default branch holds, and the heads of the
 # user's open pull requests there.
 #
-# SessionStart hook, and the first other command in each checkout per session:
-# tells the agent the same, without refusing, so a session that only reads and
-# edits on a merged branch hears it before its first commit. A branch that was
+# SessionStart hook, and any other command in a checkout once 10 minutes have
+# passed since its last check there: tells the agent the same, once per checkout
+# per session, without refusing, so a session that only reads and edits on a
+# merged branch hears it before its first commit, even when it merges mid-session. A branch that was
 # never pushed is not checked. On unless the plugin option guard_merged_branch
 # is false or 0.
 GUARD=merged-branch-guard
