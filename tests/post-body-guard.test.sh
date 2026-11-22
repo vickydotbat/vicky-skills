@@ -81,6 +81,42 @@ check 'written earlier' "the refusal says the file is written in the same comman
 expect 2 "$(run "echo x | tee $scratch/clean.md; gh pr edit 3 --body-file $scratch/clean.md")" "a body file written by tee in the same command is refused"
 expect 0 "$(run "cat $scratch/clean.md && gh pr edit 3 --body-file $scratch/clean.md")" "a body file only read in the same command passes"
 expect 0 "$(rin "gh pr edit 3 --body-file host.md" forge)" "a checkout's own host passes with no --repo, as gh posts to that checkout"
+expect 0 "$(run "tea comment 3 \"\$(cat $scratch/clean.md)\"")" "tea comment with a clean cat of a file passes"
+expect 2 "$(run "tea comment 3 \"\$(cat $scratch/leak.md)\"")" "tea comment with a leaking cat of a file is refused"
+check 'names a path' "a cat of a file is read as the body"
+expect 2 "$(run "gh pr edit 3 --body \"\$(<$scratch/leak.md)\"")" "a body read with \$(<file) is checked"
+expect 2 "$(run "tea comment 3 \"\$(cat $scratch/leak.md | head)\"")" "a substitution that is more than a cat is refused"
+check 'command substitution' "the refusal names the substitution"
+expect 2 "$(run "cat > $scratch/hd.md <<'EOF'
+Built /$ns/x
+EOF
+gh pr edit 3 --body-file $scratch/hd.md")" "a here-doc written then posted is checked as the body"
+check 'names a path' "the here-doc text is what is checked"
+expect 0 "$(run "cat > $scratch/hd.md <<'EOF'
+All clear
+EOF
+gh pr edit 3 --body-file $scratch/hd.md")" "a clean here-doc written then posted passes"
+expect 2 "$(run "cat > $scratch/hd.md <<EOF
+Built \$X
+EOF
+gh pr edit 3 --body-file $scratch/hd.md")" "an unquoted here-doc that expands is refused"
+check 'written earlier' "an expanding here-doc is never read as text"
+expect 2 "$(run "cat >> $scratch/clean.md <<'EOF'
+more
+EOF
+gh pr edit 3 --body-file $scratch/clean.md")" "a here-doc appended to a body file is refused"
+expect 2 "$(run "x=\"\$(echo y)\" gh pr edit 3 --body \"\$(cat <<'EOF'
+hi
+EOF
+)\"; cat > $scratch/hd.md <<'EOF'
+All clear
+EOF
+gh pr edit 3 --body-file $scratch/hd.md")" "a here-doc inside quotes trusts no here-doc text"
+expect 0 "$(run "S=$scratch; gh pr edit 3 --body-file \$S/clean.md")" "a body file under a variable set in the command is read"
+expect 2 "$(run "S=\$(mktemp -d); gh pr edit 3 --body-file \$S/clean.md")" "a variable set from a substitution is refused"
+expect 0 "$(run "S=$scratch && cd \$S/r && gh pr edit 3 --body-file ../clean.md")" "a cd under a set variable moves the checkout"
+expect 2 "$(run "tea comment 3 \"\$(cat \$NO_SUCH_VAR/x.md)\"")" "a cat of a path under an unset variable is refused"
+check 'cat FILE' "the steer names tea's file route"
 mkdir -p "$scratch/nogit"; for t in bash cat jq env python3; do ln -s "$(command -v $t)" "$scratch/nogit/$t"; done
 expect 0 "$(run "gh pr comment 3 --body hi" PATH="$scratch/nogit")" "without git a clean post still passes"
 printf 'not json' | "$hook" >/dev/null 2>&1; rc=$?

@@ -31,7 +31,9 @@ GH_VALUE_FLAGS = {"-R", "--repo", "-t", "--title", "-B", "--base", "-H", "--head
                   "--assignee", "-l", "--label", "-m", "--milestone", "-p", "--project",
                   "-r", "--reviewer", "--add-label", "--remove-label", "--add-assignee",
                   "--remove-assignee", "--add-reviewer", "--remove-reviewer", "-T", "--template"}
-STEER = "Write the body to a file and pass it with --body-file (tea: --description-file or -d with the text inline), so this guard reads what goes out."
+STEER = "Write the body to a file in an earlier call and pass it with --body-file FILE (tea: -d \"$(cat FILE)\"), so this guard reads what goes out."
+CAT_SUBST = re.compile(r"^\$\((?:cat\s+|<\s*)([^\s$()`;|&<>'\"]+)\s*\)$")
+ASSIGN = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*)=(.*)$", re.S)
 
 
 HEREDOC = re.compile(r"<<-?[ \t]*(['\"]?)([A-Za-z_][A-Za-z0-9_]*)\1[^\n]*\n(.*?)(?:\n[ \t]*\2[ \t]*(?=\n|$)|$)", re.S)
@@ -39,15 +41,43 @@ WRITERS = {"tee", "cp", "mv", "install", "ln", "dd", "sed", "perl"}
 
 
 def strip_heredocs(command):
-    """Drop each here-doc's text, which is data, not commands; keep its opening line."""
-    return HEREDOC.sub(lambda m: m.group(0).split("\n", 1)[0] + "\n", command)
+    """Drop each here-doc's text, which is data, not commands; keep its opening line.
+
+    Return the command and the texts, in order. A text whose delimiter is
+    unquoted and that holds $ or a backtick is None: the shell expands it.
+    """
+    texts = []
+
+    def keep(m):
+        quoted = bool(m.group(1))
+        texts.append(m.group(3) + "\n" if quoted or not re.search(r"[$`]", m.group(3)) else None)
+        return m.group(0).split("\n", 1)[0] + "\n"
+
+    return HEREDOC.sub(keep, command), texts
 
 
-def written(seg):
-    """Return the words a command segment may write to."""
-    out = {seg[j + 1] for j, t in enumerate(seg[:-1]) if t in {">", ">>", ">|"}}
+def expand(word, env):
+    """Expand $NAME and ${NAME} from env, then the hook's own environment; None when one is unset."""
+    def sub(m):
+        name = m.group(1) or m.group(2)
+        return env[name] if name in env else os.environ.get(name, m.group(0))
+    out = re.sub(r"\$\{([A-Za-z_][A-Za-z0-9_]*)\}|\$([A-Za-z_][A-Za-z0-9_]*)", sub, word)
+    return None if "$" in out else out
+
+
+def written(seg, env, heredoc):
+    """Return {path: text or None} for what a command segment may write.
+
+    The text is known only for cat > FILE fed by a here-doc whose text is literal.
+    """
+    out = {}
+    for j, t in enumerate(seg[:-1]):
+        if t in {">", ">>", ">|"}:
+            path = expand(seg[j + 1], env) or seg[j + 1]
+            whole = t != ">>" and seg[0] == "cat" and "<<" in seg and heredoc is not None
+            out[path] = heredoc if whole else None
     if os.path.basename(seg[0]) in WRITERS:
-        out |= set(seg[1:])
+        out.update({expand(w, env) or w: None for w in seg[1:]})
     return out
 
 
@@ -61,7 +91,7 @@ def tokens(command):
 def segments(toks):
     seg = []
     for t in toks:
-        if t in SEPARATORS:
+        if t in SEPARATORS or (t and set(t) <= set(";&|()\n")):
             if seg:
                 yield seg
             seg = []
@@ -161,14 +191,21 @@ def leak_lines(text, hosts):
     return found
 
 
-def body_text(kind, val, cwd):
+def body_text(kind, val, cwd, env, fresh):
     """Return (text, None), or (None, why the body can't be read)."""
     if val is None:
         return None, "a body flag has no value. " + STEER
+    m = CAT_SUBST.match(val) if kind != "file" else None
+    if m:
+        kind, val = "file", m.group(1)
     if kind == "file":
-        val = os.path.expandvars(val)
-        if "$" in val:
-            return None, f"the body file {val} holds a variable this guard can't expand. Pass the file's literal path."
+        raw, val = val, expand(val, env)
+        if val is None:
+            return None, f"the body file {raw} holds a variable this guard can't expand. Pass the file's literal path."
+        if val in fresh:
+            if fresh[val] is None:
+                return None, f"the body file {val} is written earlier in this same command, so this guard would read the old file. Write it in one call, then post in the next."
+            return fresh[val], None
     if kind != "file":
         if "$(" in val or "`" in val:
             return None, "the body comes from a command substitution, which this guard can't check. " + STEER
@@ -180,7 +217,7 @@ def body_text(kind, val, cwd):
         return None, f"the body file {val} can't be read. " + STEER
 
 
-def check_post(tool, args, cwd, listed, fresh=frozenset()):
+def check_post(tool, args, cwd, listed, env, fresh):
     """Return the problems in one post's bodies."""
     problems = []
     bodies, number, repo = read_args(tool, args)
@@ -189,10 +226,7 @@ def check_post(tool, args, cwd, listed, fresh=frozenset()):
         target = host_of(repo if "://" in repo else "https://" + repo) if repo.count("/") >= 2 else os.environ.get("GH_HOST", "github.com").lower()
         hosts |= {h for h in checkout_hosts(cwd) if h != target}
     for kind, val in bodies:
-        if kind == "file" and val in fresh:
-            problems.append(f"the body file {val} is written earlier in this same command, so this guard would read the old file. Write it in one call, then post in the next.")
-            continue
-        text, why = body_text(kind, val, cwd)
+        text, why = body_text(kind, val, cwd, env, fresh)
         if why:
             problems.append(why)
             continue
@@ -212,7 +246,10 @@ def main():
     command = (payload.get("tool_input") or {}).get("command") or ""
     cwd = payload.get("cwd") or os.getcwd()
     try:
-        toks = tokens(strip_heredocs(command))
+        stripped, texts = strip_heredocs(command)
+        toks = tokens(stripped)
+        if toks.count("<<") != len(texts):
+            texts = [None] * toks.count("<<")  # a here-doc inside quotes: no text is trusted
     except ValueError:
         if re.search(r"\b(gh\s+(pr|issue|api)|tea\s+\S+\s+(create|edit|c|e)|tea\s+comment)\b", command):
             print("post-body-guard: refused, this command's quoting does not parse, so its body can't be read. " + STEER + " Nothing ran.", file=sys.stderr)
@@ -220,12 +257,19 @@ def main():
         return 0
     listed = {h.lower() for h in re.split(r"[\s,]+", os.environ.get("CLAUDE_PLUGIN_OPTION_POST_GUARD_HOSTS", "")) if h}
     problems = []
-    fresh = set()
+    fresh, env = {}, {}
     for seg in segments(toks):
+        while seg and ASSIGN.match(seg[0]):
+            name, value = ASSIGN.match(seg.pop(0)).groups()
+            env[name] = expand(value, env) if "$(" not in value and "`" not in value else "$unknown"
+        if not seg:
+            continue
+        heredoc = texts.pop(0) if "<<" in seg and texts else None
         if seg[0] == "cd" and len(seg) > 1:
-            cwd = os.path.join(cwd, os.path.expanduser(seg[1]))
+            cwd = os.path.join(cwd, os.path.expanduser(expand(seg[1], env) or seg[1]))
         post = parse_post(seg)
-        written_before, fresh = fresh, fresh | written(seg)
+        written_before = dict(fresh)
+        fresh.update(written(seg, env, heredoc))
         if not post:
             continue
         tool, args = post
@@ -233,7 +277,7 @@ def main():
             if "--input" in args or any(re.match(r"^(--(raw-)?field=|-[fF])?body=", a) for a in args):
                 problems.append("gh api sends a body this guard can't check. " + STEER)
         else:
-            problems += check_post(tool, args, cwd, listed, written_before)
+            problems += check_post(tool, args, cwd, listed, env, written_before)
     if not problems:
         return 0
     print("post-body-guard: refused, this post would publish what it must not:", file=sys.stderr)
