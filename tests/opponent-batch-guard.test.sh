@@ -91,7 +91,16 @@ check "a notification matched by its task id frees a slot" 0 "$(try p3 ${o}cause
 for i in 1 2 3 4 5 6; do try c$i ${o}intent-opponent s8 > "$tmp/c$i" & done; wait
 check "six launches at once pass three" 3 "$(cat "$tmp"/c[1-6] | grep -cx 0)"
 try c7 general-purpose s8 >/dev/null; try c8 ${o}claims-opponent s8 >/dev/null; try c9 ${o}claims-opponent s8 >/dev/null
-check "no lock is left behind" no "$( [ -e "$CLAUDE_PLUGIN_DATA/opponent-batch/s8.lock" ] && echo yes || echo no)"
+# A lock whose owner still runs is never taken over, and one whose owner is gone is.
+: > "$t"; batch 3; mkdir -p "$CLAUDE_PLUGIN_DATA/opponent-batch"
+sleep 60 & owner=$!; mkdir "$CLAUDE_PLUGIN_DATA/opponent-batch/s9_.lock"; echo $owner > "$CLAUDE_PLUGIN_DATA/opponent-batch/s9_.lock/pid"
+started=$SECONDS
+waited=$(jq -nc --arg t "$t" '{session_id:"s9",tool_use_id:"l1",transcript_path:$t,tool_input:{subagent_type:"vicky-skills:intent-opponent",prompt:"p"}}' | timeout 25 bash "$guard" >/dev/null 2>&1; echo $?)
+check "a launch is refused, never passed unlocked, while a live owner holds the lock" 2 "$waited"
+check "it waits its ten seconds for the lock first" yes "$([ $((SECONDS - started)) -ge 8 ] && echo yes || echo no)"
+kill $owner; wait $owner 2>/dev/null
+check "a lock whose owner is gone is taken over" 0 "$(try l2 ${o}intent-opponent s9)"
+check "no lock is left behind" no "$( [ -e "$CLAUDE_PLUGIN_DATA/opponent-batch/s8_.lock" ] && echo yes || echo no)"
 
 # Holds fights alone.
 : > "$t"; batch 3
