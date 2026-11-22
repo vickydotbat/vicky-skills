@@ -14,18 +14,29 @@
 # Always on, with no setting: batch.sh's limit is the desktop's memory share.
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without jq the reads below come back empty and nothing is refused
 input=$(cat)
-type=$(jq -r '.tool_input.subagent_type // ""' <<<"$input" 2>/dev/null)
+# One read of every field, so no field falls back to a default on its own. A read that
+# fails refuses a launch whose input names an opponent, and passes anything else.
+# The fields are split on the unit separator: a tab is whitespace, and read merges empty fields.
+fields=$(jq -r '[.tool_input.subagent_type, .tool_use_id, .session_id, .transcript_path] | map(. // "" | tostring) | join("\u001f")' <<<"$input" 2>/dev/null) \
+  || { grep -q 'opponent' <<<"$input" || exit 0; echo "opponent-batch-guard: its read of this launch failed, so the launch is refused, never passed uncounted. Send it again. Nothing was dispatched." >&2; exit 2; }
+IFS=$'\x1f' read -r type id session transcript <<<"$fields"
 [[ "$type" == *opponent ]] || exit 0
-id=$(jq -r '.tool_use_id // ""' <<<"$input")
-session=$(jq -r '.session_id // "none"' <<<"$input" | tr -c '[:alnum:]_.-' _)
-transcript=$(jq -r '.transcript_path // ""' <<<"$input")
+# Each session counts in its own record; a launch with no session would count in none.
+[ -n "$session" ] || { echo "opponent-batch-guard: this launch names no session, so it can't be counted, and it is refused. Nothing was dispatched." >&2; exit 2; }
+session=$(printf '%s\n' "$session" | tr -c '[:alnum:]_.-' _)
 dir="${CLAUDE_PLUGIN_DATA:-${TMPDIR:-/tmp}}/opponent-batch"
 mkdir -p "$dir" 2>/dev/null || exit 0 # mutant-ok delete: with no folder for the record every later read and write fails, and nothing is refused
 record="$dir/$session.tsv"
 lock="$dir/$session.lock"
-# Concurrent hooks of one burst take turns: twenty seconds at most, then the lock counts as stale.
-for _ in $(seq 400); do mkdir "$lock" 2>/dev/null && break; sleep 0.05; done
-mkdir "$lock" 2>/dev/null # mutant-ok delete: takes a stale lock over; the rmdir below and this mkdir leave it held either way
+# Concurrent hooks of one burst take turns, ten seconds at most. A launch that never gets the
+# lock is refused, never run unlocked. A lock older than the hook's own 30-second timeout was
+# left by a killed hook: the refused launch clears it, so the next one can take it.
+held=
+for _ in $(seq 200); do mkdir "$lock" 2>/dev/null && { held=1; break; }; sleep 0.05; done
+if [ -z "$held" ]; then
+  find "$lock" -maxdepth 0 -mmin +0.5 -exec rmdir {} \; 2>/dev/null
+  echo "opponent-batch-guard: another launch held the lock for ten seconds, so this one is refused. Send it again. Nothing was dispatched." >&2; exit 2
+fi
 trap 'rmdir "$lock" 2>/dev/null' EXIT
 touch "$record"
 # A record row lives this many seconds, long enough for its receipt to land; batch.sh never sends more than ceiling.

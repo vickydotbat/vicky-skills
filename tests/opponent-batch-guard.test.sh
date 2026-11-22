@@ -88,8 +88,13 @@ check "a notification matched by its task id frees a slot" 0 "$(try p3 ${o}cause
 
 # Concurrent hooks of one burst take turns, and a hook holds no lock after it ends.
 : > "$t"; batch 3
-for i in 1 2 3 4 5 6; do try c$i ${o}intent-opponent s8 > "$tmp/c$i" & done; wait
+for i in 1 2 3 4 5 6; do
+  (jq -nc --arg i "c$i" --arg t "$t" '{session_id:"s8",tool_use_id:$i,transcript_path:$t,tool_input:{subagent_type:"vicky-skills:intent-opponent",prompt:"p"}}' \
+    | bash "$guard" >/dev/null 2>"$tmp/c$i.err"; echo $? > "$tmp/c$i") &
+done; wait
 check "six launches at once pass three" 3 "$(cat "$tmp"/c[1-6] | grep -cx 0)"
+# On a failure, each launch's exit and words show which path let it through.
+[ "$(cat "$tmp"/c[1-6] | grep -cx 0)" = 3 ] || for i in 1 2 3 4 5 6; do echo "  c$i exit $(cat "$tmp/c$i"): $(cat "$tmp/c$i.err")"; done
 try c7 general-purpose s8 >/dev/null; try c8 ${o}claims-opponent s8 >/dev/null; try c9 ${o}claims-opponent s8 >/dev/null
 check "no lock is left behind" no "$( [ -e "$CLAUDE_PLUGIN_DATA/opponent-batch/s8_.lock" ] && echo yes || echo no)"
 
@@ -98,6 +103,17 @@ mkdir -p "$tmp/badjq"; real=$(command -v jq)
 printf '#!/usr/bin/env bash\ncase "$*" in *--rawfile*) exit 1;; esac\nexec %q "$@"\n' "$real" > "$tmp/badjq/jq"; chmod +x "$tmp/badjq/jq"
 : > "$t"; batch 3
 check "a launch whose read of the running opponents fails is refused" 2 "$(PATH="$tmp/badjq:$PATH" try f1 ${o}intent-opponent s10)"
+printf '#!/usr/bin/env bash\ncase "$*" in *session_id*) exit 1;; esac\nexec %q "$@"\n' "$real" > "$tmp/badjq/jq"
+check "a launch whose read of its own fields fails is refused" 2 "$(jq -nc --arg t "$t" '{session_id:"s10",tool_use_id:"f2",transcript_path:$t,tool_input:{subagent_type:"vicky-skills:intent-opponent"}}' | PATH="$tmp/badjq:$PATH" bash "$guard" >/dev/null 2>&1; echo $?)"
+check "a launch that names no session is refused" 2 "$(jq -nc --arg t "$t" '{tool_use_id:"f3",transcript_path:$t,tool_input:{subagent_type:"vicky-skills:intent-opponent"}}' | bash "$guard" >/dev/null 2>&1; echo $?)"
+
+# A held lock refuses the launch, never runs it unlocked; a lock past the hook's timeout is cleared.
+mkdir -p "$CLAUDE_PLUGIN_DATA/opponent-batch/s11_.lock"
+check "a launch that can't take the lock is refused" 2 "$(try k1 ${o}intent-opponent s11)"
+check "a fresh lock it could not take stays" yes "$([ -d "$CLAUDE_PLUGIN_DATA/opponent-batch/s11_.lock" ] && echo yes || echo no)"
+touch -d '-1 minute' "$CLAUDE_PLUGIN_DATA/opponent-batch/s11_.lock"
+check "a lock left by a killed hook refuses that launch" 2 "$(try k2 ${o}intent-opponent s11)"
+check "and the next launch takes it" 0 "$(try k3 ${o}intent-opponent s11)"
 
 # Holds fights alone.
 : > "$t"; batch 3
