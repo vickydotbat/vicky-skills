@@ -114,18 +114,16 @@ def read_args(tool, args):
             bodies.append(("file", val))
         elif flag in {"-R", "--repo", "-r"}:
             repo = val or ""
-        elif a.startswith("-") and (flag in (GH_VALUE_FLAGS if tool == "gh" else TEA_VALUE_FLAGS)):
-            pass
         elif a.startswith("-"):
-            step = 1
+            step = step if flag in (GH_VALUE_FLAGS if tool == "gh" else TEA_VALUE_FLAGS) else 1
         else:
             positional.append(a)
             step = 1
         i += step
     if positional:
         number = number_of(positional[0])
-    if tool == "tea-comment" and len(positional) > 1:
-        bodies.append(("comment", " ".join(positional[1:])))
+    if tool == "tea-comment":
+        bodies += [("comment", word) for word in positional[1:]]
     return bodies, number, repo
 
 

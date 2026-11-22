@@ -60,6 +60,8 @@ expect 0 "$(rin "cd forge && cd .. && gh pr edit 3 -R acme/widgets --body-file $
 expect 0 "$(run "cd && gh pr comment 3 --body hi")" "a bare cd is no crash"
 expect 2 "$(rin "gh pr edit < /dev/null 306 -F $scratch/other.md" r)" "a redirect before the number leaves the number read"
 expect 0 "$(rin "gh pr edit -B 1641 306 -F $scratch/own306.md" r)" "a gh-only value flag is never read as the number"
+expect 0 "$(rin "tea pr list --state all '/$ns/x'" forge)" "tea pr list is no post, whatever its words"
+expect 0 "$(run "gh pr comment 3 '/$ns/x' --body hi")" "gh takes no body from a second word, so it is not read"
 mkdir -p "$scratch/nogit"; for t in bash cat jq env python3; do ln -s "$(command -v $t)" "$scratch/nogit/$t"; done
 expect 0 "$(run "gh pr comment 3 --body hi" PATH="$scratch/nogit")" "without git a clean post still passes"
 out=$(printf 'not json' | "$hook" 2>&1); rc=$?
