@@ -379,7 +379,7 @@
     "proofread_endpoint": {
       "type": "string",
       "title": "Proofread endpoint",
-      "description": "The OpenAI-compatible API base URL for the proofread model. Blank means Gemini's own, https://generativelanguage.googleapis.com/v1beta/openai/.",
+      "description": "The OpenAI-compatible API base URL for the proofread model. Blank means Gemini's own, https://generativelanguage.googleapis.com/v1beta/openai/. Another endpoint also needs the proofread model and key variable set, so your Gemini key never goes to it.",
       "default": ""
     },
     "proofread_key_env": {

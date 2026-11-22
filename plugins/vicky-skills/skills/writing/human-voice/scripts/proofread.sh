@@ -14,6 +14,11 @@ model="${PROOFREAD_MODEL:-gemini-4-hydrogen}"
 endpoint="${PROOFREAD_ENDPOINT:-https://generativelanguage.googleapis.com/v1beta/openai/}"
 key_env="${PROOFREAD_KEY_ENV:-GEMINI_API_KEY}"
 fallback() { echo "proofread: session model, because $1"; exit 0; }
+# A custom endpoint takes no Gemini default, so a Gemini key never leaves for it.
+if [ -n "${PROOFREAD_ENDPOINT:-}" ]; then
+  [ -n "${PROOFREAD_KEY_ENV:-}" ] || fallback "the endpoint is set but its key variable is blank: name the variable, or none"
+  [ -n "${PROOFREAD_MODEL:-}" ] || fallback "the endpoint is set but its model is blank"
+fi
 
 [ "$model" = session ] && fallback "the proofread model setting is session"
 { command -v curl && command -v jq; } >/dev/null || fallback "curl or jq is missing"
@@ -32,9 +37,8 @@ resp=$(jq -n --arg m "$model" --arg p "$prompt" --arg d "$draft" \
     '{model: $m, messages: [{role: "system", content: $p}, {role: "user", content: $d}]}' |
   curl -sS --fail-with-body --max-time 60 -H "@$hdr" -H 'Content-Type: application/json' \
     --data-binary @- "${endpoint%/}/chat/completions" 2>&1)
-rc=$?
 notes=$(jq -r '.choices[0].message.content // empty' <<<"$resp" 2>/dev/null)
-if [ $rc -ne 0 ] || [ -z "$notes" ]; then
+if [ -z "$notes" ]; then
   err=$(jq -r '.error.message // empty' <<<"$resp" 2>/dev/null)
   [ -n "$err" ] || err=$(tail -n 1 <<<"$resp")
   fallback "$model at $endpoint failed: ${err:-no answer}"

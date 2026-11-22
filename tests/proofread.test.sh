@@ -38,6 +38,12 @@ mkdir -p "$dir/nojq"; for t in bash awk mktemp chmod rm tail cat env; do ln -sf 
 out=$(env -i PATH="$dir/nojq" GEMINI_API_KEY=k STUB_DIR="$dir" "$dir/nojq/bash" "$pr" "$dir/draft.md" 2>&1); rc=$?
 check "a missing jq falls back" '[ $rc -eq 0 ] && grep -q "curl or jq is missing" <<<"$out"'
 
+# A key set for Gemini never travels to another provider by default.
+run GEMINI_API_KEY=k-gem PROOFREAD_MODEL=llama3 PROOFREAD_ENDPOINT=http://third-party.example/v1 PROOFREAD_KEY_ENV=
+check "a custom endpoint with no key variable sends nothing" '[ $rc -eq 0 ] && [ ! -e "$dir/sent" ] && grep -q "^proofread: session model, because .*key variable" <<<"$out"'
+run GEMINI_API_KEY=k-gem OTHER=k PROOFREAD_MODEL= PROOFREAD_ENDPOINT=http://third-party.example/v1 PROOFREAD_KEY_ENV=OTHER
+check "a custom endpoint with no model sends nothing" '[ $rc -eq 0 ] && [ ! -e "$dir/sent" ] && grep -q "^proofread: session model, because .*model" <<<"$out"'
+
 out=$(bash "$pr" "$dir/nothing-here.md" 2>&1); rc=$?
 check "a missing draft file is bad usage" '[ $rc -eq 2 ] && grep -q usage <<<"$out"'
 

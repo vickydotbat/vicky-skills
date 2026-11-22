@@ -1,6 +1,6 @@
 # Moves
 
-Make each move while you draft. Step 6 of `SKILL.md` walks the draft against every one.
+Make each move while you draft. Step 7 of `SKILL.md` walks the draft against every one.
 
 **Words**
 
