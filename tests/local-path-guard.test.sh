@@ -78,4 +78,12 @@ else echo "FAIL thousands of untracked files took ${took}s, over 5"; fail=1; fi
 printf 'see /home/someone/x\n' >"$repo/many/f1500.txt" # local-path-ok
 expect 2 "a path in one of thousands of untracked files is refused" 'git add -A && git commit -m add'
 rm -r "$repo/many"
+
+printf 'see /home/someone/x\n' >"$repo/local-path-ok.txt" # local-path-ok
+expect 2 "a file named for the marker is still scanned" 'git add -A && git commit -m add'
+rm "$repo/local-path-ok.txt"
+printf 'ignored.txt\n' >"$repo/.gitignore"
+printf 'see /home/someone/x\n' >"$repo/ignored.txt" # local-path-ok
+expect 0 "an ignored file is not scanned" 'git add -A && git commit -m add'
+rm "$repo/ignored.txt" "$repo/.gitignore"
 exit $fail

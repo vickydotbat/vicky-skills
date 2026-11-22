@@ -45,10 +45,10 @@ hits=$(grep -n -E -- "$pattern" <<<"$added" | grep -v 'local-path-ok' | cut -c1-
 if [ -z "$hits" ] && [ "$untracked" = yes ]; then
   # One grep over every untracked text file, never a loop: a workbench holds
   # thousands, and a loop that read each into a string ran past the timeout.
-  # -I skips binary files.
+  # -I skips binary files. The marker is read in the line, never the file name.
   hits=$(git ls-files -z --others --exclude-standard |
     xargs -0 -r grep -I -H -n -E -- "$pattern" 2>/dev/null |
-    grep -v 'local-path-ok' | cut -c1-160 | head -5 || true)
+    awk '{ t = $0; sub(/^[^:]*:[0-9]+:/, "", t) } t !~ /local-path-ok/' | cut -c1-160 | head -5 || true)
 fi
 [ -n "$hits" ] || exit 0
 refuse "local-path-guard: this commit adds a path into this machine:" \
