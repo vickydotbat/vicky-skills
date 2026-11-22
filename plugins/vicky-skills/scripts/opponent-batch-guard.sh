@@ -31,7 +31,7 @@ lock="$dir/$session.lock"
 # Concurrent hooks of one burst take turns, ten seconds at most. A launch that never gets the
 # lock is refused, never run unlocked. A lock older than the hook's own 30-second timeout was
 # left by a killed hook: the refused launch clears it, so the next one can take it.
-held=
+held= # mutant-ok delete: held starts unset in a hook, so the reset only guards a caller that exported it
 for _ in $(seq 200); do mkdir "$lock" 2>/dev/null && { held=1; break; }; sleep 0.05; done
 if [ -z "$held" ]; then
   find "$lock" -maxdepth 0 -mmin +0.5 -exec rmdir {} \; 2>/dev/null
