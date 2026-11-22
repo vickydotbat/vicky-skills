@@ -56,7 +56,7 @@ opt=off; expect 0 "option off passes" "$w" 'git commit -m x'; opt=1
 expect 2 "option 1 counts as on" "$w" 'git commit -m x'; opt=true
 echo b > "$w/b"; gi "$w" add b; gi "$w" commit -q -m after-one
 expect 2 "commits after the merge are listed with the pick range" "$w" 'git commit -m x' "git cherry-pick"
-grep -q "after-one" "$scratch/err" && echo "ok   the listed commit is after-one" || { echo "FAIL after-one not listed"; fail=1; }
+if grep -q "after-one" "$scratch/err"; then echo "ok   the listed commit is after-one"; else echo "FAIL after-one not listed"; fail=1; fi
 # Origin unreachable: the last fetch's record decides.
 gi "$w" fetch -q --prune origin
 gi "$w" remote set-url origin "$scratch/nowhere"
@@ -100,7 +100,14 @@ expect 2 "an unknown default falls back to origin/main" "$w" 'git commit -m x' "
 
 mkdir "$scratch/bin"; for t in bash cat git dirname; do ln -s "$(command -v $t)" "$scratch/bin/$t"; done
 jq -n --arg c 'git commit -m x' --arg d "$w" '{cwd:$d,tool_input:{command:$c}}' > "$scratch/payload"
-PATH="$scratch/bin" CLAUDE_PLUGIN_OPTION_GUARD_MERGED_BRANCH=true "$(command -v bash)" "$hook" <"$scratch/payload" >/dev/null 2>&1
-[ $? = 0 ] && echo "ok   without jq it lets the command run" || { echo "FAIL without jq"; fail=1; }
+if PATH="$scratch/bin" CLAUDE_PLUGIN_OPTION_GUARD_MERGED_BRANCH=true "$(command -v bash)" "$hook" <"$scratch/payload" >/dev/null 2>&1; then
+  echo "ok   without jq it lets the command run"; else echo "FAIL without jq"; fail=1; fi
 expect 0 "input that is not JSON passes" "$w" ''
+# Found in the #304 deathmatch: a wrapper word or a quoted option value must
+# not hide a real commit or push, and a quoted word is never a subcommand.
+setup wrap; gi "$w" push -q -u origin topic 2>/dev/null; squash wrap; gi "$w" fetch -q --prune origin
+for c in 'sudo git push' 'env FOO=1 git push' 'timeout 5 git commit -m x' 'if true; then git push; fi' "git -C \"$w\" push" 'git -c "k=v" push'; do
+  expect 2 "a merged branch refuses: $c" "$w" "$c"
+done
+expect 0 "a quoted git push is not one" "$w" 'echo "git push"'
 exit $fail
