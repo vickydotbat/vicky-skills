@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2016 # the commands are literal text the hook reads, never run
 # Approved examples for post-body-guard, ticked on the drafts page. The hook
-# refuses a pull request or issue post whose body leaks a host or a path into
+# refuses a pull request or issue post whose body leaks a path into
 # this machine, or carries another item's text, and never asks.
 # The history fixture holds every body and comment posted to this repository
 # before the hook; refresh it with gh pr list and gh issue list --state all
@@ -16,12 +16,12 @@ mkdir -p "$HOME"
 mkrepo() { git init -q -b main "$scratch/$1"; git -C "$scratch/$1" remote add origin "$2"; }
 mkrepo gh git@github.com:acme/widgets.git
 mkrepo forge git@forge.example.org:team/app.git
-opt=true hosts=""
+opt=true
 # expect <exit> <label> <repo> <command>
 expect() {
   local want=$1 label=$2 dir=$scratch/$3 cmd=$4 got
   got=$(jq -n --arg c "$cmd" --arg d "$dir" '{cwd:$d,tool_input:{command:$c}}' |
-    CLAUDE_PLUGIN_OPTION_GUARD_POST_BODY=$opt CLAUDE_PLUGIN_OPTION_POST_GUARD_HOSTS=$hosts "$hook" 2>"$scratch/err" >/dev/null; echo $?)
+    CLAUDE_PLUGIN_OPTION_GUARD_POST_BODY=$opt "$hook" 2>"$scratch/err" >/dev/null; echo $?)
   if [ "$got" = "$want" ]; then echo "ok   $label"; else echo "FAIL $label: want $want, got $got: $(head -3 "$scratch/err")"; fail=1; fi
 }
 says() { if grep -qF -- "$1" "$scratch/err"; then echo "ok   $2"; else echo "FAIL $2: stderr lacks $1"; fail=1; fi; }
@@ -58,15 +58,6 @@ expect 0 "E4 its own number passes" gh "gh pr edit 306 --body-file $bf"
 body '## Status\n\nFixes the cap, as #1641 once did.\n'
 expect 0 "E4 a body with no heading number passes" gh "gh pr edit 306 --body-file $bf"
 
-# Given a checkout whose origin is on forge.example.org
-# When the agent posts to a GitHub repository, through --repo, a body naming forge.example.org
-# Then the command is refused, naming the host
-body '## Status\n\nSee https://forge.example.org/team/app/pulls/3\n'
-expect 2 "E5 the checkout's forge host posted to GitHub is refused" forge "gh pr edit 306 --repo acme/widgets --body-file $bf"
-says "forge.example.org" "E5 names the host"
-body '## Status\n\nThe runner on FORGE.EXAMPLE.ORG was down.\n'
-expect 2 "E5 the host in capitals is refused" forge "gh pr comment 306 -R acme/widgets --body-file $bf"
-
 # Given the same checkout
 # When the agent posts to its own repository on forge.example.org a body naming forge.example.org
 # Then it posts
@@ -74,17 +65,6 @@ body '## Status\n\nSee https://forge.example.org/team/app/pulls/3\n'
 expect 0 "E6 the same forge passes" forge "tea pr edit 3 --description-file $bf"
 expect 0 "E6 tea's inline description on the same forge passes" forge "tea pr edit 3 -d 'See forge.example.org/team/app'"
 
-# Given the setting post_guard_hosts names forge.example.org
-# When the agent posts to any repository a body naming forge.example.org, from any folder
-# Then the command is refused, naming the host
-hosts="other.example.net forge.example.org"
-body '## Status\n\nMirrors forge.example.org nightly.\n'
-expect 2 "E7 a listed host is refused from a GitHub checkout" gh "gh pr edit 306 --body-file $bf"
-says "forge.example.org" "E7 names the host"
-mkdir -p "$scratch/plain"
-expect 2 "E7 a listed host is refused outside any checkout" plain "gh pr edit 306 -R acme/widgets --body-file $bf"
-expect 2 "E7 a listed host is refused on its own forge too" forge "tea pr edit 3 -d 'Mirrors forge.example.org'"
-hosts=""
 
 # Given a body naming the home folder, another user's home or the Nix store
 # When the agent posts it to a pull request or issue
