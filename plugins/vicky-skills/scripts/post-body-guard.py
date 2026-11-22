@@ -189,7 +189,7 @@ def leak_lines(text):
     found = []
     home = os.environ.get("HOME", "")
     user = os.environ.get("USER", "")
-    path = re.compile(r"(^|[^\w.}/-])/(home|Users)/[^/\s<$\{][^/\s]*/|/nix/store/")  # local-path-ok: the pattern itself
+    path = re.compile(r"(^|[^\w.}/-])/(home|Users)/[^/\s<$\{][^/\s]*/|/nix/sto[r]e/")  # local-path-ok: the pattern itself
     user_pat = re.compile(r"(^|[^\w.~}/-])(/[^/\s]+)*/" + re.escape(user) + r"/|(^|[^\w.-])" + re.escape(user) + "@") if user else None
     for n, line in enumerate(text.splitlines(), 1):
         if "\x1b" in line or "\x07" in line or "^[]8;" in line or "^[[" in line:

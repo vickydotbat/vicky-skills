@@ -35,7 +35,7 @@ patch-tell-hint.sh	256a998db4051de9	5fe1d435fef9a19b	50/50
 pkill-guard.sh	b7b411516636d988	29ca7e6cb32dc5c9	7/7
 plane-block-guard.sh	a2ced0e121b33f36	c912309fd621ec7a	20/20
 plugin-data.sh	2b852e6635cec758	1eb83e986afbbf10	3/3
-post-body-guard.py	690135f7170e9645	12408ed81f3bc960	237/237
+post-body-guard.py	c8d0431f13b916b7	12408ed81f3bc960	237/237
 post-body-guard.sh	218b762a4149dd59	12408ed81f3bc960	10/10
 pr-guard.sh	70eaa3009f51a514	e6c5726d88da16b0	157/157
 promise-guard.sh	080cb078921ad99f	8b391a320412fcdd	17/17
