@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2016 # single quotes keep $VARS for the hook to expand
 # post-body-guard.sh: the decisions the approved examples leave out: a missing
 # python3, bad input, a command that is no post, gh api --input, and the
 # setting off in the shell wrapper itself.
