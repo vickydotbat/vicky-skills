@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2016 # the commands under test are literal text, so their $ must not expand
 # opponent-wait-guard refuses a ready mark or a merge while a deathmatch
 # opponent this session launched has not sent its final notification.
 set -u
