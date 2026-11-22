@@ -290,7 +290,7 @@ def main():
     for seg in segments(toks):
         while seg and ASSIGN.match(seg[0]):
             name, value = ASSIGN.match(seg.pop(0)).groups()
-            env[name] = expand(value, env) if "$(" not in value and "`" not in value else "$unknown"
+            env[name] = (None if "`" in value else expand(value, env)) or "$unknown"
         if not seg:
             continue
         heredoc = texts.pop(0) if "<<" in seg and texts else None

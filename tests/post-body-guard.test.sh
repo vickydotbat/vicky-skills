@@ -12,6 +12,7 @@ run() { jq -n --arg c "$1" --arg d "$scratch/r" '{cwd:$d,tool_input:{command:$c}
 check() { if grep -qF -- "$1" "$scratch/err"; then echo "ok   $2"; else echo "FAIL $2"; fail=1; fi; }
 expect() { if [ "$1" = "$2" ]; then echo "ok   $3"; else echo "FAIL $3: want $1, got $2: $(head -2 "$scratch/err")"; fail=1; fi; }
 ns=nix/store
+hm=home
 expect 0 "$(run 'ls -la')" "a command with no gh or tea passes"
 expect 0 "$(run 'git log --oneline')" "git passes"
 expect 0 "$(run 'gh pr list --state all')" "gh pr list is no post"
@@ -126,8 +127,44 @@ expect 2 "$(run "tea comment 3 \"\$(cat '$scratch/leak.md')\"")" "a cat of a quo
 check 'names a path' "the quoted path's file is what is checked"
 expect 2 "$(run "tea comment 3 \"\$(cat '$scratch'/leak.md)\"")" "a cat of a partly quoted path is read as the body"
 check 'names a path' "the partly quoted path's file is what is checked"
+expect 0 "$(run "cat > $scratch/hd2.md <<'EOF'
+Costs \$5
+EOF
+gh pr edit 3 --body-file $scratch/hd2.md")" "a quoted here-doc holding a dollar is read as text"
+expect 0 "$(run "S=$scratch; cat > \$S/hd3.md <<'EOF'
+All clear
+EOF
+gh pr edit 3 --body-file \$S/hd3.md")" "a here-doc written under a set variable is read as the body"
+expect 2 "$(run "S=$scratch; sed -i s/a/b/ \$S/clean.md; gh pr edit 3 --body-file \$S/clean.md")" "a body file edited under a set variable in the same command is refused"
+check 'written earlier' "the edit under a variable is seen"
+expect 2 "$(run "gh pr edit 3 --title 'x' --body \"\$(date)\"")" "a substitution after a closed single quote is refused"
+expect 2 "$(run "gh pr comment 3 --body x \\")" "a command ending in a backslash is refused as broken quoting"
+check 'quoting' "the trailing backslash gets the quoting refusal"
+expect 0 "$(run "gh pr comment 3 --body \"see /$hm/\\\$USER/x\"")" "an escaped dollar stays a dollar"
+expect 2 "$(run "gh pr comment 3 --body \"at /$hm/\\\`u\\\`/x\"")" "an escaped backtick stays a backtick"
+expect 2 "$(run "gh pr comment 3 --body \"it's \`date\`\"")" "an apostrophe inside double quotes opens no single quote"
+expect 0 "$(run "gh pr edit 3 --title \"a\" --body 'Run \`make\`'")" "single quotes after a closed double quote still hold text"
+printf 'clean\n' > "$scratch/d\$x.md"
+expect 0 "$(run "gh pr edit 3 --body-file '$scratch/d\$x.md'")" "a body file whose name holds a dollar is read"
+expect 2 "$(run "echo \"\$(cat <<'EOF'
+hi
+EOF
+)\"; cat > $scratch/hd4.md <<'EOF'
+Built /$ns/x
+EOF
+gh pr edit 3 --body-file $scratch/hd4.md")" "after a here-doc inside quotes, no here-doc text is trusted"
+expect 2 "$(run "S=\$(mktemp -d); gh pr edit 3 --body-file \$S/clean.md")" "a variable set from a substitution is refused for the variable"
+check 'expand' "the refusal names the variable"
+expect 2 "$(run "S=\"\$(mktemp -d)\"; gh pr edit 3 --body-file \$S/clean.md")" "a variable set from a quoted substitution is refused"
+check 'expand' "the quoted substitution's variable is named"
+expect 2 "$(run "S=\`mktemp -d\`; gh pr edit 3 --body-file \$S/clean.md")" "a variable set from backticks is refused"
+check 'expand' "the backtick variable is named"
+printf '/%s/a\n' "$ns" "$ns" "$ns" "$ns" "$ns" "$ns" "$ns" "$ns" > "$scratch/many.md"
+expect 2 "$(run "gh pr edit 3 --body-file $scratch/many.md")" "a body with eight leaks is refused"
+check 'and 2 more' "the refusal shows six problems and counts the rest"
 mkdir -p "$scratch/nogit"; for t in bash cat jq env python3; do ln -s "$(command -v $t)" "$scratch/nogit/$t"; done
 expect 0 "$(run "gh pr comment 3 --body hi" PATH="$scratch/nogit")" "without git a clean post still passes"
+expect 0 "$(run "gh pr comment 3 --repo acme/w --body hi" PATH="$scratch/nogit")" "without git a post with --repo still passes"
 printf 'not json' | "$hook" >/dev/null 2>&1; rc=$?
 expect 0 "$rc" "bad input passes without a traceback"
 exit $fail
