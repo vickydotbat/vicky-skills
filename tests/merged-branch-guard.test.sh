@@ -111,6 +111,7 @@ for c in 'sudo git push' 'env FOO=1 git push' 'timeout 5 git commit -m x' 'if tr
 done
 expect 0 "a quoted git push is not one" "$w" 'echo "git push"'
 expect 0 "a separator inside quotes splits nothing" "$w" 'echo "x; git push"'
+# shellcheck disable=SC2016 # the backticks are the command under test, not an expansion
 for c in 'git "push"' "git 'commit' -m x" '\git push' 'echo `git push`'; do
   expect 2 "a merged branch refuses: $c" "$w" "$c"
 done
