@@ -548,7 +548,11 @@ PY
 check "after Done the page serves nothing more" '[ "$(timeout 30 python3 -I "$scratch/late.py" "$dir" 2>/dev/null)" = "silent after Done True" ]'
 # EVAL_PAGE_DISPLAY=1 opens the page with no display, so an eval can read its link; unset, the editor opens.
 printf '# Drafts\n\n## Tip\n\ntext\n' > "$scratch/evalpage.md"
-timeout 15 env -u DISPLAY -u WAYLAND_DISPLAY -u BROWSER EVAL_PAGE_DISPLAY=1 bash "$dir/open-page.sh" "$scratch/evalpage.md" > "$scratch/evalpage.on" 2>&1
+# The page waits for Done, so stop it once its link is out.
+timeout 15 env -u DISPLAY -u WAYLAND_DISPLAY -u BROWSER EVAL_PAGE_DISPLAY=1 bash "$dir/open-page.sh" "$scratch/evalpage.md" > "$scratch/evalpage.on" 2>&1 &
+onpid=$!
+for _ in $(seq 50); do grep -q "page: open" "$scratch/evalpage.on" && break; sleep 0.2; done
+kill "$onpid" 2>/dev/null; wait "$onpid" 2>/dev/null
 timeout 15 env -u DISPLAY -u WAYLAND_DISPLAY -u EVAL_PAGE_DISPLAY VISUAL=true bash "$dir/open-page.sh" "$scratch/evalpage.md" > "$scratch/evalpage.off" 2>&1
 timeout 15 env -u DISPLAY -u WAYLAND_DISPLAY EVAL_PAGE_DISPLAY=0 VISUAL=true bash "$dir/open-page.sh" "$scratch/evalpage.md" > "$scratch/evalpage.zero" 2>&1
 check "EVAL_PAGE_DISPLAY=0 opens the editor, not the page" 'grep -q "draft: wait with watch.sh" "$scratch/evalpage.zero" && ! grep -q "page: open" "$scratch/evalpage.zero"'
