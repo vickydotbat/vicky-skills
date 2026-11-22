@@ -110,8 +110,9 @@ if [ "$hint" = 1 ]; then
   jq -nc --arg e "$event" --arg h "$GUARD: this checkout stands on '$current', and its remote branch is gone: its pull request merged, or the branch was deleted, so the branch is finished. $(heads_line) Or start fresh: git fetch --prune && git switch -c <new-branch> $default_ref. $moving" \
     '{hookSpecificOutput:{hookEventName:$e,additionalContext:$h}}'
 else
-  # shortcut: $code drops quoted words, so git -c "k=v" push reads as git push's option; read the raw command if that misses a real push.
-  commits_or_pushes "$code" || exit 0
+  # The raw command, not $code: $code drops a quoted option value, so the
+  # reader would take the subcommand for it. Heredoc bodies stay out.
+  commits_or_pushes "$(awk -f "$(dirname "$0")/heredoc-strip.awk" <<<"$command")" || exit 0
   grep -Eq -- 'push[^;&|]*(--delete|[[:space:]]-d([[:space:]]|$))' <<<"$code" && exit 0
   gone || exit 0
   move
