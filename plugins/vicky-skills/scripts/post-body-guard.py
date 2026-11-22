@@ -34,6 +34,23 @@ GH_VALUE_FLAGS = {"-R", "--repo", "-t", "--title", "-B", "--base", "-H", "--head
 STEER = "Write the body to a file and pass it with --body-file (tea: --description-file or -d with the text inline), so this guard reads what goes out."
 
 
+HEREDOC = re.compile(r"<<-?[ \t]*(['\"]?)([A-Za-z_][A-Za-z0-9_]*)\1[^\n]*\n(.*?)(?:\n[ \t]*\2[ \t]*(?=\n|$)|$)", re.S)
+WRITERS = {"tee", "cp", "mv", "install", "ln", "dd", "sed", "perl"}
+
+
+def strip_heredocs(command):
+    """Drop each here-doc's text, which is data, not commands; keep its opening line."""
+    return HEREDOC.sub(lambda m: m.group(0).split("\n", 1)[0] + "\n", command)
+
+
+def written(seg):
+    """Return the words a command segment may write to."""
+    out = {seg[j + 1] for j, t in enumerate(seg[:-1]) if t in {">", ">>", ">|"}}
+    if os.path.basename(seg[0]) in WRITERS:
+        out |= set(seg[1:])
+    return out
+
+
 def tokens(command):
     lex = shlex.shlex(command, posix=True, punctuation_chars="();<>|&\n")
     lex.whitespace = " \t\r"
@@ -148,6 +165,10 @@ def body_text(kind, val, cwd):
     """Return (text, None), or (None, why the body can't be read)."""
     if val is None:
         return None, "a body flag has no value. " + STEER
+    if kind == "file":
+        val = os.path.expandvars(val)
+        if "$" in val:
+            return None, f"the body file {val} holds a variable this guard can't expand. Pass the file's literal path."
     if kind != "file":
         if "$(" in val or "`" in val:
             return None, "the body comes from a command substitution, which this guard can't check. " + STEER
@@ -159,15 +180,18 @@ def body_text(kind, val, cwd):
         return None, f"the body file {val} can't be read. " + STEER
 
 
-def check_post(tool, args, cwd, listed):
+def check_post(tool, args, cwd, listed, fresh=frozenset()):
     """Return the problems in one post's bodies."""
     problems = []
     bodies, number, repo = read_args(tool, args)
     hosts = set(listed)
-    if tool == "gh":
+    if tool == "gh" and repo:
         target = host_of(repo if "://" in repo else "https://" + repo) if repo.count("/") >= 2 else os.environ.get("GH_HOST", "github.com").lower()
         hosts |= {h for h in checkout_hosts(cwd) if h != target}
     for kind, val in bodies:
+        if kind == "file" and val in fresh:
+            problems.append(f"the body file {val} is written earlier in this same command, so this guard would read the old file. Write it in one call, then post in the next.")
+            continue
         text, why = body_text(kind, val, cwd)
         if why:
             problems.append(why)
@@ -188,7 +212,7 @@ def main():
     command = (payload.get("tool_input") or {}).get("command") or ""
     cwd = payload.get("cwd") or os.getcwd()
     try:
-        toks = tokens(command)
+        toks = tokens(strip_heredocs(command))
     except ValueError:
         if re.search(r"\b(gh\s+(pr|issue|api)|tea\s+\S+\s+(create|edit|c|e)|tea\s+comment)\b", command):
             print("post-body-guard: refused, this command's quoting does not parse, so its body can't be read. " + STEER + " Nothing ran.", file=sys.stderr)
@@ -196,10 +220,12 @@ def main():
         return 0
     listed = {h.lower() for h in re.split(r"[\s,]+", os.environ.get("CLAUDE_PLUGIN_OPTION_POST_GUARD_HOSTS", "")) if h}
     problems = []
+    fresh = set()
     for seg in segments(toks):
         if seg[0] == "cd" and len(seg) > 1:
             cwd = os.path.join(cwd, os.path.expanduser(seg[1]))
         post = parse_post(seg)
+        written_before, fresh = fresh, fresh | written(seg)
         if not post:
             continue
         tool, args = post
@@ -207,12 +233,15 @@ def main():
             if "--input" in args or any(re.match(r"^(--(raw-)?field=|-[fF])?body=", a) for a in args):
                 problems.append("gh api sends a body this guard can't check. " + STEER)
         else:
-            problems += check_post(tool, args, cwd, listed)
+            problems += check_post(tool, args, cwd, listed, written_before)
     if not problems:
         return 0
     print("post-body-guard: refused, this post would publish what it must not:", file=sys.stderr)
-    for p in dict.fromkeys(problems):
+    shown = list(dict.fromkeys(problems))
+    for p in shown[:6]:
         print("  " + p, file=sys.stderr)
+    if len(shown) > 6:
+        print(f"  and {len(shown) - 6} more.", file=sys.stderr)
     print("Rewrite the body by role (\"the team's forge\", a repo-relative path), or post the right item's text. Nothing in this command ran, not even its other steps.", file=sys.stderr)
     return 2
 

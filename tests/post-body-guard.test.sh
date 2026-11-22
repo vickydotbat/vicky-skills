@@ -65,6 +65,22 @@ expect 2 "$(rin "gh pr edit < /dev/null 306 -F $scratch/other.md" r)" "a redirec
 expect 0 "$(rin "gh pr edit -B 1641 306 -F $scratch/own306.md" r)" "a gh-only value flag is never read as the number"
 expect 0 "$(rin "tea pr list --state all '/$ns/x'" forge)" "tea pr list is no post, whatever its words"
 expect 0 "$(run "gh pr comment 3 '/$ns/x' --body hi")" "gh takes no body from a second word, so it is not read"
+expect 0 "$(run "cat > $scratch/notes.md <<'EOF'
+Don't run gh pr view, run gh pr edit 3 --body \"\$(cat y)\" from /$ns/x
+EOF")" "here-doc text is data, never a post"
+expect 2 "$(run "cat > $scratch/notes.md <<'EOF'
+plain
+EOF
+gh pr edit 3 --body '/$ns/x'")" "a post after a here-doc is still read"
+printf 'clean\n' > "$scratch/clean.md"
+expect 0 "$(run 'gh pr edit 3 --body-file $SCRATCH_DIR/clean.md' SCRATCH_DIR="$scratch")" "a body file under a set variable is read"
+expect 2 "$(run 'gh pr edit 3 --body-file $NO_SUCH_VAR/clean.md')" "a body file under an unset variable is refused"
+check 'literal path' "the refusal asks for the literal path"
+expect 2 "$(run "printf x > $scratch/clean.md && gh pr edit 3 --body-file $scratch/clean.md")" "a body file written in the same command is refused"
+check 'written earlier' "the refusal says the file is written in the same command"
+expect 2 "$(run "echo x | tee $scratch/clean.md; gh pr edit 3 --body-file $scratch/clean.md")" "a body file written by tee in the same command is refused"
+expect 0 "$(run "cat $scratch/clean.md && gh pr edit 3 --body-file $scratch/clean.md")" "a body file only read in the same command passes"
+expect 0 "$(rin "gh pr edit 3 --body-file host.md" forge)" "a checkout's own host passes with no --repo, as gh posts to that checkout"
 mkdir -p "$scratch/nogit"; for t in bash cat jq env python3; do ln -s "$(command -v $t)" "$scratch/nogit/$t"; done
 expect 0 "$(run "gh pr comment 3 --body hi" PATH="$scratch/nogit")" "without git a clean post still passes"
 printf 'not json' | "$hook" >/dev/null 2>&1; rc=$?
