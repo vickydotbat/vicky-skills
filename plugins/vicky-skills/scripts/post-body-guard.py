@@ -32,7 +32,7 @@ GH_VALUE_FLAGS = {"-R", "--repo", "-t", "--title", "-B", "--base", "-H", "--head
                   "-r", "--reviewer", "--add-label", "--remove-label", "--add-assignee",
                   "--remove-assignee", "--add-reviewer", "--remove-reviewer", "-T", "--template"}
 STEER = "Write the body to a file in an earlier call and pass it with --body-file FILE (tea: -d \"$(cat FILE)\"), so this guard reads what goes out."
-CAT_SUBST = re.compile(r"^\$\((?:cat\s+|<\s*)(['\"]?)((?:[^\s$()`;|&<>'\"]|\$\{?[A-Za-z_][A-Za-z0-9_]*\}?)+)\1\s*\)$")
+CAT_SUBST = re.compile(r"^\$\((?:cat\s+|<\s*)((?:'[^']*'|\"[^\"$`]*\"|[^\s$()`;|&<>'\"]|\$\{?[A-Za-z_][A-Za-z0-9_]*\}?)+)\s*\)$")
 ASSIGN = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*)=(.*)$", re.S)
 
 
@@ -225,7 +225,7 @@ def body_text(kind, val, cwd, env, fresh):
         return None, "a body flag has no value. " + STEER
     m = CAT_SUBST.match(val) if kind != "file" else None
     if m:
-        kind, val = "file", m.group(2)
+        kind, val = "file", re.sub(r"['\"]", "", m.group(1))
     if kind == "file":
         raw, val = val, expand(val, env)
         if val is None:
