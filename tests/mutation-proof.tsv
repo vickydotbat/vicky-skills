@@ -23,7 +23,7 @@ heredoc-strip.awk	f4f00a43ef2fd634	baf789d92123317f	6/6
 keep-awake.sh	d64200a28b3c6e54	bf8816b3639cfd45	31/31
 lesson-hint.sh	7a82ca13330f28fd	7783cb6645b1d121	11/11
 lesson-ledger.sh	4c88dc2d0aebcfe6	1c3b836542cb0487	18/18
-local-path-guard.sh	6250febeeda4bb1c	7a1c8c2b96c6670c	29/29
+local-path-guard.sh	53128744fd526443	1f3c01524472e42e	30/30
 merge-point.sh	a19dbe9167831b34	fc64871b4e62cca4	2/2
 merged-branch-guard.sh	82af13fe1be3f462	984491ccbaffecd5	79/79
 open-heads.sh	b15397c66d1e2bd6	aed5400e318a30c4	11/11

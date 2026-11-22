@@ -53,6 +53,10 @@ g rm -q pathfile
 expect 0 "removing a path is fine" 'git commit -m "drop it"'
 g reset -q --hard
 
+printf 'clean\n' >"$repo/tracked"; g add tracked; g commit -q -m tracked
+printf 'see /home/someone/x\n' >>"$repo/tracked" # local-path-ok
+expect 2 "a path in a tracked change the same command adds" 'git add -u && git commit -m add'
+g reset -q --hard
 printf 'see /home/someone/x\n' >"$repo/fresh"
 expect 2 "path in a file the same command adds" 'git add -A && git commit -m add'
 expect 0 "nothing staged passes" 'git status && git commit -m "nothing staged"'
@@ -82,6 +86,9 @@ rm -r "$repo/many"
 printf 'see /home/someone/x\n' >"$repo/local-path-ok.txt" # local-path-ok
 expect 2 "a file named for the marker is still scanned" 'git add -A && git commit -m add'
 rm "$repo/local-path-ok.txt"
+printf 'fixture /home/someone/x # local-path-ok\n' >"$repo/marked.txt" # local-path-ok
+expect 0 "a marked line in an untracked file passes" 'git add -A && git commit -m add'
+rm "$repo/marked.txt"
 printf 'ignored.txt\n' >"$repo/.gitignore"
 printf 'see /home/someone/x\n' >"$repo/ignored.txt" # local-path-ok
 expect 0 "an ignored file is not scanned" 'git add -A && git commit -m add'
