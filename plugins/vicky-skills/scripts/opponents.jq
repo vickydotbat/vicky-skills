@@ -8,6 +8,9 @@ def opponent_launches($r):
             and ((.input.subagent_type // "") | endswith("opponent")))
    | {id, type: .input.subagent_type}];
 
+# The text of the first <$n> element in the input string, or null.
+def tag($n): [capture("<" + $n + ">(?<v>[^<]*)</" + $n + ">")][0].v;
+
 # Each launch in $launches ({id, ...}) still fighting, with its agent id added
 # as .agent (null before its receipt lands). A launch is done when its result
 # is an error, its agent was stopped with TaskStop, or its last task
@@ -19,14 +22,15 @@ def fighting($r; $launches):
    | select(.type == "tool_result" and .is_error == true) | .tool_use_id] as $errors
   | [$r[] | select((.toolUseResult | type) == "object" and .toolUseResult.agentId != null)
      | {id: (.message.content[0].tool_use_id // ""), agent: .toolUseResult.agentId}] as $agents
-  # One string can carry several notices, and a report inside one can quote anything:
-  # each notice is read alone, by its own header fields. The agent's own text holds none.
-  | [range(0; $r | length) as $i | $r[$i] | select(.type != "assistant")
-     | [.. | strings | scan("<task-notification>[\\s\\S]*?</task-notification>")][]
-     | {i: $i,
-        task: ([capture("<task-id>(?<v>[^<]*)</task-id>")][0].v),
-        use: ([capture("<tool-use-id>(?<v>[^<]*)</tool-use-id>")][0].v),
-        interim: (([capture("<summary>(?<v>[^<]*)</summary>")][0].v // "") | contains("waiting on its own background work"))}] as $notes
+  # The harness delivers a notice only through its queue. Everywhere else (a tool
+  # result, a file shown, a summary, a request copy) a notice is quoted, and a quote
+  # would free an opponent that still runs. One queued string can carry several
+  # notices, and a report inside one can quote anything, so each notice is read
+  # alone, by its own header fields.
+  | [range(0; $r | length) as $i | $r[$i] | select(.type == "queue-operation" and .operation == "enqueue")
+     | .content | strings | scan("<task-notification>[\\s\\S]*?</task-notification>")
+     | {i: $i, task: tag("task-id"), use: tag("tool-use-id"),
+        interim: ((tag("summary") // "") | contains("waiting on its own background work"))}] as $notes
   | [range(0; $r | length) as $i | $r[$i] | select(.type == "assistant") | .message.content[]? | objects
      | select(.type == "tool_use" and .name == "SendMessage") | {i: $i, to: (.input.to // "")}] as $sends
   | [$r[] | select(.type == "assistant") | .message.content[]? | objects
