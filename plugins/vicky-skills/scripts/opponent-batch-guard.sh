@@ -28,16 +28,18 @@ dir="${CLAUDE_PLUGIN_DATA:-${TMPDIR:-/tmp}}/opponent-batch"
 mkdir -p "$dir" 2>/dev/null || exit 0 # mutant-ok delete: with no folder for the record every later read and write fails, and nothing is refused
 record="$dir/$session.tsv"
 lock="$dir/$session.lock"
-# Concurrent hooks of one burst take turns, ten seconds at most. A launch that never gets the
+# Concurrent hooks of one burst take turns, ten seconds at most. The lock is a file bash creates
+# with noclobber, an exclusive open: some mkdir builds report success to two racing callers.
+# A launch that never gets the
 # lock is refused, never run unlocked. A lock older than the hook's own 30-second timeout was
 # left by a killed hook: the refused launch clears it, so the next one can take it.
 held= # mutant-ok delete: held starts unset in a hook, so the reset only guards a caller that exported it
-for _ in $(seq 200); do mkdir "$lock" 2>/dev/null && { held=1; break; }; sleep 0.05; done
+for _ in $(seq 200); do (set -o noclobber; : > "$lock") 2>/dev/null && { held=1; break; }; sleep 0.05; done
 if [ -z "$held" ]; then
-  find "$lock" -maxdepth 0 -mmin +0.5 -exec rmdir {} \; 2>/dev/null
+  find "$lock" -maxdepth 0 -mmin +0.5 -exec rm -f {} \; 2>/dev/null
   echo "opponent-batch-guard: another launch held the lock for ten seconds, so this one is refused. Send it again. Nothing was dispatched." >&2; exit 2
 fi
-trap 'rmdir "$lock" 2>/dev/null' EXIT
+trap 'rm -f "$lock"' EXIT
 touch "$record" 2>/dev/null && [ -w "$record" ] || { echo "opponent-batch-guard: it can't write its record of launches, so this launch is refused, never passed uncounted. Nothing was dispatched." >&2; exit 2; }
 # A record row lives this many seconds, long enough for its receipt to land; batch.sh never sends more than ceiling.
 window=30 ceiling=3

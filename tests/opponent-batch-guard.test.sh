@@ -131,9 +131,9 @@ check "a launch whose read of its own fields fails is refused" 2 "$(jq -nc --arg
 check "a launch that names no session is refused" 2 "$(jq -nc --arg t "$t" '{tool_use_id:"f3",transcript_path:$t,tool_input:{subagent_type:"vicky-skills:intent-opponent"}}' | bash "$guard" >/dev/null 2>&1; echo $?)"
 
 # A held lock refuses the launch, never runs it unlocked; a lock past the hook's timeout is cleared.
-mkdir -p "$CLAUDE_PLUGIN_DATA/opponent-batch/s11_.lock"
+: > "$CLAUDE_PLUGIN_DATA/opponent-batch/s11_.lock"
 check "a launch that can't take the lock is refused" 2 "$(try k1 ${o}intent-opponent s11)"
-check "a fresh lock it could not take stays" yes "$([ -d "$CLAUDE_PLUGIN_DATA/opponent-batch/s11_.lock" ] && echo yes || echo no)"
+check "a fresh lock it could not take stays" yes "$([ -f "$CLAUDE_PLUGIN_DATA/opponent-batch/s11_.lock" ] && echo yes || echo no)"
 touch -d '-1 minute' "$CLAUDE_PLUGIN_DATA/opponent-batch/s11_.lock"
 check "a lock left by a killed hook refuses that launch" 2 "$(try k2 ${o}intent-opponent s11)"
 check "and the next launch takes it" 0 "$(try k3 ${o}intent-opponent s11)"
