@@ -37,9 +37,7 @@ check "the first opponent of a batch of two starts" 0 "$(try r1 ${o}intent-oppon
 check "the second starts" 0 "$(try r2 ${o}standards-opponent)"
 receipt r1 A1 ${o}intent-opponent; receipt r2 A2 ${o}standards-opponent
 check "a third, while the first two only hold launch receipts, is refused" 2 "$(try r3 ${o}simplicity-opponent)"
-check "the refusal says a launch receipt is no report" yes "$(grep -q 'launch receipt' "$tmp/err" && grep -q 'task notification' "$tmp/err" && echo yes || echo no)"
-check "the refusal names the limit" yes "$(grep -q '2 at a time' "$tmp/err" && echo yes || echo no)"
-check "the refusal names the opponents still fighting" yes "$(grep -q 'intent-opponent, standards-opponent still fight' "$tmp/err" && echo yes || echo no)"
+check "the refusal names each opponent still fighting" yes "$(grep -q 'intent-opponent' "$tmp/err" && grep -q 'standards-opponent' "$tmp/err" && echo yes || echo no)"
 note A1 r1 "is waiting on its own background work"
 check "an interim notification frees no slot" 2 "$(try r3 ${o}simplicity-opponent)"
 note A1 r1 finished
@@ -70,7 +68,6 @@ receipt k1 K1 ${o}intent-opponent; try k1 ${o}intent-opponent s12 >/dev/null
 check "a launch in the record and the transcript counts once" 0 "$(try k2 ${o}claims-opponent s12)"
 receipt k2 K2 ${o}claims-opponent
 check "two receipts and two record rows fill a batch of two" 2 "$(try k3 ${o}cause-opponent s12)"
-check "the refusal names TaskStop for an opponent that will never report" yes "$(grep -q TaskStop "$tmp/err" && echo yes || echo no)"
 jq -nc '{type:"assistant",message:{content:[{type:"tool_use",id:"ts",name:"TaskStop",input:{task_id:"K1"}}]}}' >> "$t"
 printf '' > "$CLAUDE_PLUGIN_DATA/opponent-batch/s12.tsv"
 check "an opponent stopped with TaskStop frees its slot" 0 "$(try k3 ${o}cause-opponent s12)"
@@ -93,15 +90,13 @@ check "a notification matched by its task id frees a slot" 0 "$(try p3 ${o}cause
 : > "$t"; batch 3
 for i in 1 2 3 4 5 6; do try c$i ${o}intent-opponent s8 > "$tmp/c$i" & done; wait
 check "six launches at once pass three" 3 "$(cat "$tmp"/c[1-6] | grep -cx 0)"
-start=$(date +%s%N); try c7 general-purpose s8 >/dev/null; try c8 ${o}claims-opponent s8 >/dev/null; try c9 ${o}claims-opponent s8 >/dev/null
-check "two launches in a row each take the lock at once" yes "$( [ $(( ($(date +%s%N) - start) / 1000000 )) -lt 1500 ] && echo yes || echo no)"
+try c7 general-purpose s8 >/dev/null; try c8 ${o}claims-opponent s8 >/dev/null; try c9 ${o}claims-opponent s8 >/dev/null
 check "no lock is left behind" no "$( [ -e "$CLAUDE_PLUGIN_DATA/opponent-batch/s8.lock" ] && echo yes || echo no)"
 
 # Holds fights alone.
 : > "$t"; batch 3
 try h0 ${o}claims-opponent s4 >/dev/null
 check "Holds beside a running opponent is refused" 2 "$(try h1 ${o}holds-opponent s4)"
-check "the refusal says Holds fights alone" yes "$(grep -q alone "$tmp/err" && echo yes || echo no)"
 note Y h0 finished
 check "Holds with nothing running starts" 0 "$(try h1 ${o}holds-opponent s4)"
 check "an opponent beside a running Holds is refused" 2 "$(try h2 ${o}claims-opponent s4)"

@@ -28,40 +28,22 @@ for _ in $(seq 400); do mkdir "$lock" 2>/dev/null && break; sleep 0.05; done
 mkdir "$lock" 2>/dev/null # mutant-ok delete: takes a stale lock over; the rmdir below and this mkdir leave it held either way
 trap 'rmdir "$lock" 2>/dev/null' EXIT
 touch "$record"
+# A record row lives this many seconds, long enough for its receipt to land; batch.sh never sends more than ceiling.
+window=30 ceiling=3
 now=$(date +%s)
 limit=$(grep -oE 'at once: [0-9]+' "$transcript" 2>/dev/null | tail -n 1 | grep -oE '[0-9]+$')
-[[ "$limit" =~ ^[1-9][0-9]*$ ]] || limit=3
+[[ "$limit" =~ ^[1-9][0-9]*$ ]] || limit=$ceiling
 # Each launch still fighting, as <tool use id><tab><type>: in the record or the transcript, with no
 # final notification after its launch or its last message, and no error result.
 # Only lines that can name a launch, its result, a notification, a message or a stop reach jq.
 running=$(grep -E 'opponent|<task-notification>|"(SendMessage|TaskStop)"|"is_error":true|"agentId"' "$transcript" 2>/dev/null \
-  | jq -Rrn --rawfile rec "$record" --argjson now "$now" '
+  | jq -Rrn -L "$(dirname "$0")" --rawfile rec "$record" --argjson now "$now" --argjson window "$window" '
+  include "opponents";
   [inputs | fromjson? | objects] as $r
   | [$rec | split("\n")[] | select(length > 0) | split("\t")
-     | select(($now - (.[2] | tonumber? // 0)) < 30) | {id: .[0], type: .[1], from: "record"}] as $recorded
-  | [$r[] | select(.type == "assistant") | .message.content[]? | objects
-      | select(.type == "tool_use" and (.name == "Agent" or .name == "Task")
-               and ((.input.subagent_type // "") | endswith("opponent")))
-      | {id, type: .input.subagent_type, from: "transcript"}] as $seen
-  | ($recorded + $seen) as $launches
-  | [$r[] | select(.type == "user") | .message.content[]? | objects
-      | select(.type == "tool_result" and .is_error == true) | .tool_use_id] as $errors
-  | [$r[] | select((.toolUseResult | type) == "object" and .toolUseResult.agentId != null)
-      | {id: (.message.content[0].tool_use_id // ""), agent: .toolUseResult.agentId}] as $agents
-  | [range(0; $r | length) as $i | $r[$i] | [.. | strings | select(contains("<task-notification>"))][]
-      | {i: $i, t: .}] as $notes
-  | [range(0; $r | length) as $i | $r[$i] | select(.type == "assistant") | .message.content[]? | objects
-      | select(.type == "tool_use" and .name == "SendMessage") | {i: $i, to: (.input.to // "")}] as $sends
-  | [$r[] | select(.type == "assistant") | .message.content[]? | objects
-      | select(.type == "tool_use" and .name == "TaskStop") | (.input.task_id // .input.shell_id // "")] as $stops
-  | $launches[] | . as $l
-  | select(($errors | index($l.id)) | not)
-  | ([$agents[] | select(.id == $l.id) | .agent] | first) as $a
-  | ([$notes[] | select((.t | contains("<tool-use-id>" + $l.id + "</tool-use-id>"))
-                        or ($a != null and (.t | contains("<task-id>" + $a + "</task-id>"))))] | last) as $n
-  | ([$sends[] | select($a != null and .to == $a) | .i] | max) as $s
-  | select($a == null or (($stops | index($a)) | not))
-  | select($n == null or ($n.t | contains("waiting on its own background work")) or ($s != null and $s > $n.i))
+     | select(($now - (.[2] | tonumber? // 0)) < $window) | {id: .[0], type: .[1], from: "record"}] as $recorded
+  | (opponent_launches($r) | map(. + {from: "transcript"})) as $seen
+  | fighting($r; $recorded + $seen)
   | "\(.from)\t\(.id)\t\(.type)"' 2>/dev/null)
 # A launch the record and the transcript both hold counts once: the larger count wins.
 count=$(awk -F '\t' 'NF { n[$1]++ } END { print (n["record"] > n["transcript"] ? n["record"] : n["transcript"]) + 0 }' <<<"$running")

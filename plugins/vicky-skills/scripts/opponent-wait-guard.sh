@@ -23,25 +23,12 @@ while IFS= read -r seg; do
 done < <(prose_strip "$cmd" | sed "s/\\$'/'/g" | tr -d "\"'\\\\" | tr ';&|\n' '\n\n\n\n')
 [ "$gated" = 1 ] || exit 0
 transcript=$(jq -r '.transcript_path // empty' <<<"$input" 2>/dev/null)
-# Each opponent launched in this session whose last task notification is
-# missing or says it still waits on its own background work.
-waiting=$(jq -Rrn '
+# Each opponent launched in this session that still fights, as opponents.jq
+# reads it: its last task notification missing or interim.
+waiting=$(jq -Rrn -L "$(dirname "$0")" '
+  include "opponents";
   [inputs | fromjson? | objects] as $r
-  | [$r[] | select(.type == "assistant") | .message.content[]? | objects
-      | select(.type == "tool_use" and (.name == "Agent" or .name == "Task")
-               and ((.input.subagent_type // "") | endswith("opponent"))) | .id] as $ids
-  | [$r[] | select((.toolUseResult | type) == "object" and .toolUseResult.agentId != null)
-      | select((.message.content[0].tool_use_id // "") as $u | $ids | index($u)) | .toolUseResult.agentId] as $agents
-  | [range(0; $r | length) as $i | $r[$i] | [.content, .message.content]
-      | map(select(type == "string")) | .[] | select(contains("<task-notification>")) | {i: $i, t: .}] as $notes
-  | [range(0; $r | length) as $i | $r[$i] | select(.type == "assistant") | .message.content[]? | objects
-      | select(.type == "tool_use" and .name == "SendMessage") | {i: $i, to: (.input.to // "")}] as $sends
-  | $agents[] | . as $a
-  | ([$notes[] | select(.t | contains("<task-id>" + $a + "</task-id>"))] | last) as $n
-  | ([$sends[] | select(.to == $a) | .i] | max) as $s
-  # A message sent to an opponent after its last notification sets it working again.
-  | select($n == null or ($n.t | contains("waiting on its own background work")) or ($s != null and $s > $n.i))
-  | $a' "$transcript" 2>/dev/null | tr '\n' ' ')
+  | fighting($r; opponent_launches($r)) | .agent // empty' "$transcript" 2>/dev/null | tr '\n' ' ')
 [ -n "$waiting" ] || exit 0
 echo "opponent-wait-guard: the deathmatch opponents ${waiting% } have not finished: an interim report is not a verdict. Wait for each one's task notification that says it finished, then fix what it proves and run this again. Nothing ran." >&2
 exit 2
