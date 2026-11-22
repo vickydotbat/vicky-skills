@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # user-test-guard sends back a reply, and refuses a SendUserMessage, that hands
 # the user a test in chat, unless the turn opened an over-to-you checklist.
+# shellcheck disable=SC2016,SC2181,SC2329 # each check is a string check() evals, so its functions and its \$ signs look unused
 set -u
 export VISUAL=false EDITOR=false
 # The opener names below are fixture text in a transcript; no page opens.
@@ -125,6 +126,18 @@ for d in "${door_green[@]}"; do
   { user "go"; text "$d"; } > "$fx/t.jsonl"
   check "a door line that asks for an answer goes through: $d" 'passes'
 done
+for d in "🚪 Waiting on you: say \"go\" to draft the examples and open the page." \
+         "🚪 Waiting on you: paste this to mark it ready. I'll close and reopen it to start the run." \
+         "🚪 Waiting on you: reopen the ticket as a prototype, yes or no? My pick is yes." \
+         "🚪 Waiting on you: open the drafts page at http://127.0.0.1:1/ and press Done when you're finished." \
+         "🚪 Waiting on you: sitting 2 is open in your editor. Close it and I'll record your verdicts."; do
+  { user "go"; text "$d"; } > "$fx/t.jsonl"
+  check "a door line for an answer, the agent's own step or a page gate goes through: $d" 'passes'
+done
+{ user "go"; text "🚪 Waiting on you: reopen the window and look."; text "🚪 Waiting on you: nothing. I ran each check myself."; } > "$fx/t.jsonl"
+check "a corrected door line later in the turn goes through" 'passes'
+{ user "go"; text "🚪 Waiting on you: say go."; text "🚪 Waiting on you: reopen the window and look."; } > "$fx/t.jsonl"
+check "the last door line is the one read" 'sent_back'
 { user "go"; text "I had to reopen the file and look at line 5. Fixed and pushed."; } > "$fx/t.jsonl"
 check "the same words outside the door line go through" 'passes'
 

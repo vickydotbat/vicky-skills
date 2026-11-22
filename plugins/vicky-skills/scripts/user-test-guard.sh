@@ -25,6 +25,7 @@ raw=$(cat)
 event=$(jq -r '.hook_event_name // ""' <<<"$raw" 2>/dev/null)
 if [ "$event" = PreToolUse ]; then
   [ "$(jq -r '.tool_name // ""' <<<"$raw" 2>/dev/null)" = SendUserMessage ] || exit 0
+  # shellcheck disable=SC2016 # the backticks are the text the sed drops, never a command
   words=$(jq -r '.tool_input.message // ""' <<<"$raw" 2>/dev/null | sed 's/`[^`]*`//g')
   transcript=$(jq -r '.transcript_path // ""' <<<"$raw" 2>/dev/null)
 else
@@ -39,8 +40,14 @@ handoff=$(grep -oiE "\b(test|try) (it|this|that|them)( out)? (like this|yourself
 # The door line is the reply's one ask, so an order there to open, load or look
 # at something is a hand-off whatever else the reply says. Words in quotes are
 # an answer the user may type, never an order.
-[ -n "$handoff" ] || handoff=$(grep -m1 '🚪' <<<"$mine" | tr -d '*' | sed -E 's/"[^"]*"//g' |
-  grep -oiE "(^|[.:,] |\band |\bthen )(re-?open|open|load|reload|relog|look at|walk|watch)\b[^.]*|\bready to (look at|check|test|try|see)\b[^.]*" | head -1 | sed -E 's/^[.:,] //')
+# The reply's last door line counts, so a corrected reply is read on its own.
+# A door line that names a page to close ("press Done") is a gate a skill
+# opened, and a sentence that tells the user what to say, paste or type is an
+# answer, and the agent's own next step ("I'll reopen it") is no order. A sentence that ends in a question mark asks for a pick.
+door=$(grep '🚪' <<<"$mine" | tail -1 | tr -d '*' | sed -E 's/"[^"]*"//g; s/^.*Waiting on you[:,]? *//')
+grep -qiE 'press Done|in your (editor|browser)' <<<"$door" && door=
+[ -n "$handoff" ] || handoff=$(sed -E 's/([.?!]) +/\1\n/g' <<<"$door" | grep -viE '^(say|reply|answer|paste|type|run|press)\b|\?$' | sed -E "s/\bI('ll|'d| will)?\b.*//" |
+  grep -oiE "(^|, |\band |\bthen )(re-?open|open|load|reload|relog|look at|walk|watch)\b.*|\bready to (look at|check|test|try|see)\b.*" | head -1 | sed -E 's/^, //')
 [ -n "$handoff" ] || exit 0
 # The last typed message's time keys the cap and dates the turn.
 sid=$(jq -r '.session_id // "none"' <<<"$raw" 2>/dev/null)
