@@ -58,7 +58,10 @@ running=$(grep -E 'opponent|<task-notification>|"(SendMessage|TaskStop)"|"is_err
   | "\(.from)\t\(.id)\t\(.type)"' 2>/dev/null) || { echo "opponent-batch-guard: the read of running opponents failed, so this launch is refused, never passed uncounted. Send it again. Nothing was dispatched." >&2; exit 2; }
 # A launch the record and the transcript both hold counts once: every record row counts, and
 # so does each transcript launch whose id the record lacks.
-running=$(awk -F '\t' 'NF && $1 == "record" { seen[$2] = 1; print $2 "\t" $3; next } NF { later[++n] = $0 }
+running=$(awk -F '\t' 'NF && $1 == "record" {
+    seen[$2] = 1 # mutant-ok: reading seen[$2] in awk creates it, so every mutant of this line is the same program
+    print $2 "\t" $3; next }
+  NF { later[++n] = $0 }
   END { for (i = 1; i <= n; i++) { split(later[i], f, "\t"); if (!(f[2] in seen)) print f[2] "\t" f[3] } }' <<<"$running")
 count=$(grep -c . <<<"$running")
 refuse() { echo "opponent-batch-guard: $1 A launch from a script resolves at once with a launch receipt, not the report, so awaiting it holds nothing. Wait for each running opponent's task notification that says it finished, then send the next. An opponent that will never report (its session was stopped or resumed) frees its place once you stop it with TaskStop. Nothing was dispatched." >&2; exit 2; }
