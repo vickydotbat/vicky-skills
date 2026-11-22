@@ -137,6 +137,10 @@ check "a fresh lock it could not take stays" yes "$([ -f "$CLAUDE_PLUGIN_DATA/op
 touch -d '-1 minute' "$CLAUDE_PLUGIN_DATA/opponent-batch/s11_.lock"
 check "a lock left by a killed hook refuses that launch" 2 "$(try k2 ${o}intent-opponent s11)"
 check "and the next launch takes it" 0 "$(try k3 ${o}intent-opponent s11)"
+# A lock directory left by the older mkdir lock clears the same way.
+mkdir -p "$CLAUDE_PLUGIN_DATA/opponent-batch/s18_.lock"; touch -d '-1 minute' "$CLAUDE_PLUGIN_DATA/opponent-batch/s18_.lock"
+try k4 ${o}intent-opponent s18 >/dev/null
+check "a stale lock directory from the older lock is cleared for the next launch" 0 "$(try k5 ${o}intent-opponent s18)"
 
 # Holds fights alone.
 : > "$t"; batch 3

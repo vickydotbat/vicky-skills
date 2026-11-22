@@ -30,13 +30,13 @@ record="$dir/$session.tsv"
 lock="$dir/$session.lock"
 # Concurrent hooks of one burst take turns, ten seconds at most. The lock is a file bash creates
 # with noclobber, an exclusive open: some mkdir builds report success to two racing callers.
-# A launch that never gets the
-# lock is refused, never run unlocked. A lock older than the hook's own 30-second timeout was
-# left by a killed hook: the refused launch clears it, so the next one can take it.
+# A launch that never gets the lock is refused, never run unlocked. A lock older than the hook's
+# own 30-second timeout was left by a killed hook, or is a directory from the older mkdir lock:
+# the refused launch clears it, so the next one can take it.
 held= # mutant-ok delete: held starts unset in a hook, so the reset only guards a caller that exported it
 for _ in $(seq 200); do (set -o noclobber; : > "$lock") 2>/dev/null && { held=1; break; }; sleep 0.05; done
 if [ -z "$held" ]; then
-  find "$lock" -maxdepth 0 -mmin +0.5 -exec rm -f {} \; 2>/dev/null
+  find "$lock" -maxdepth 0 -mmin +0.5 -exec rm -rf {} \; 2>/dev/null
   echo "opponent-batch-guard: another launch held the lock for ten seconds, so this one is refused. Send it again. Nothing was dispatched." >&2; exit 2
 fi
 trap 'rm -f "$lock"' EXIT
