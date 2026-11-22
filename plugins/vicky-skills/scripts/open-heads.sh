@@ -10,6 +10,7 @@ open_heads() {
     jq -r '.[].headRefName' <<<"$out" 2>/dev/null
   else
     me=$(timeout "$2" tea api user </dev/null 2>/dev/null | jq -r '.login // ""' 2>/dev/null)
+    [ -n "$me" ] || return 1
     out=$(timeout "$2" tea pulls list --state open --output json --fields index,head,author </dev/null 2>/dev/null) || return 1
     jq -r --arg me "$me" '.[] | select(.author == $me) | .head' <<<"$out" 2>/dev/null
   fi
