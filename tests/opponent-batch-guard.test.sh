@@ -104,6 +104,14 @@ receipt u1 U1 ${o}intent-opponent
 check "beside one receipted launch, one more starts" 0 "$(try u2 ${o}standards-opponent s13)"
 check "and a third is refused" 2 "$(try u3 ${o}claims-opponent s13)"
 
+# A launch in both counts once, and two launches under one id count twice.
+: > "$t"; batch 2
+receipt y1 Y1 ${o}intent-opponent; try y1 ${o}intent-opponent s16 >/dev/null
+check "a launch the record and its receipt both hold leaves a slot of two" 0 "$(try y2 ${o}claims-opponent s16)"
+: > "$t"; batch 2
+receipt x1 X1 ${o}intent-opponent; try x1 ${o}intent-opponent s17 >/dev/null; try x1 ${o}intent-opponent s17 >/dev/null
+check "two launches under one receipted id fill a batch of two" 2 "$(try x2 ${o}claims-opponent s17)"
+
 # A quoted batch.sh answer above its ceiling raises nothing.
 : > "$t"; batch 9
 for i in 1 2 3; do try v$i ${o}intent-opponent s14 >/dev/null; done
