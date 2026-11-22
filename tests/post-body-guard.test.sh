@@ -125,6 +125,7 @@ expect 2 "$(run "tea comment 3 'Built /$ns/x in \`make\`'")" "a leak beside a co
 expect 2 "$(run "tea comment 3 \"\$(cat '$scratch/leak.md')\"")" "a cat of a quoted path is read as the body"
 check 'names a path' "the quoted path's file is what is checked"
 expect 2 "$(run "tea comment 3 \"\$(cat '$scratch'/leak.md)\"")" "a cat of a partly quoted path is read as the body"
+check 'names a path' "the partly quoted path's file is what is checked"
 mkdir -p "$scratch/nogit"; for t in bash cat jq env python3; do ln -s "$(command -v $t)" "$scratch/nogit/$t"; done
 expect 0 "$(run "gh pr comment 3 --body hi" PATH="$scratch/nogit")" "without git a clean post still passes"
 printf 'not json' | "$hook" >/dev/null 2>&1; rc=$?
