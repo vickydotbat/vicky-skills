@@ -17,9 +17,9 @@ foreign-repo.sh	0d615176ee862b67	8b52685799064f63	14/14
 gate-notify.sh	7ba893f680c5d672	0b6b4ce0073c128e	25/25
 gate-state-guard.sh	71c338f183976bce	85e6bad15dbacc16	71/71
 git-guard.sh	482f159e829405f5	6e734a2b66835eaf	52/52
-git-hook-lib.sh	c211844e0ecf798b	b5b505492f3b0aa5	51/51
-git-subcommand.sh	34fb86b1eb17b68c	2bbd3b5735123dbb	33/33
-heredoc-strip.awk	f4f00a43ef2fd634	baf789d92123317f	6/6
+git-hook-lib.sh	c211844e0ecf798b	e293978d608d5e5b	51/51
+git-subcommand.sh	34fb86b1eb17b68c	3f2acc13cdf99c88	33/33
+heredoc-strip.awk	f4f00a43ef2fd634	89e31a20a973d2a4	6/6
 keep-awake.sh	d64200a28b3c6e54	bf8816b3639cfd45	31/31
 lesson-hint.sh	7a82ca13330f28fd	7783cb6645b1d121	11/11
 lesson-ledger.sh	4c88dc2d0aebcfe6	1c3b836542cb0487	18/18
