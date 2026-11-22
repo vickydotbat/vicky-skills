@@ -24,6 +24,8 @@ IFS=$'\x1f' read -r type id session transcript <<<"$fields"
 # Each session counts in its own record; a launch with no session would count in none.
 [ -n "$session" ] || { echo "opponent-batch-guard: this launch names no session, so it can't be counted, and it is refused. Nothing was dispatched." >&2; exit 2; }
 session=$(printf '%s\n' "$session" | tr -c '[:alnum:]_.-' _)
+# A file name holds 255 bytes; a longer id would make every lock fail. Cutting it only merges counts.
+session=${session:0:200}
 dir="${CLAUDE_PLUGIN_DATA:-${TMPDIR:-/tmp}}/opponent-batch"
 mkdir -p "$dir" 2>/dev/null || exit 0 # mutant-ok delete: with no folder for the record every later read and write fails, and nothing is refused
 record="$dir/$session.tsv"

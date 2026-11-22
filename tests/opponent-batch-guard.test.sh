@@ -137,6 +137,8 @@ check "a fresh lock it could not take stays" yes "$([ -f "$CLAUDE_PLUGIN_DATA/op
 touch -d '-1 minute' "$CLAUDE_PLUGIN_DATA/opponent-batch/s11_.lock"
 check "a lock left by a killed hook refuses that launch" 2 "$(try k2 ${o}intent-opponent s11)"
 check "and the next launch takes it" 0 "$(try k3 ${o}intent-opponent s11)"
+# A session id too long for a file name still gets a lock.
+check "a launch under a 300-character session id passes" 0 "$(try L1 ${o}intent-opponent "$(printf 'q%.0s' $(seq 300))")"
 # A lock directory left by the older mkdir lock clears the same way.
 mkdir -p "$CLAUDE_PLUGIN_DATA/opponent-batch/s18_.lock"; touch -d '-1 minute' "$CLAUDE_PLUGIN_DATA/opponent-batch/s18_.lock"
 try k4 ${o}intent-opponent s18 >/dev/null
