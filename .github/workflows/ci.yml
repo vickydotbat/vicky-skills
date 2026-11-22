@@ -279,6 +279,8 @@ jobs:
         run: tests/merged-branch-hint.test.sh
       - name: Merged-branch approved examples
         run: tests/merged_branch_approved_examples.test.sh
+      - name: Merged-branch guard after 302 approved examples
+        run: tests/mbg_after_302_approved_examples.test.sh
       - name: Auto-tidy hook
         run: tests/auto-tidy.test.sh
       - name: Auto-tidy hands a merged clone back to main
