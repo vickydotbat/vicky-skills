@@ -548,6 +548,8 @@ check "after Done the page serves nothing more" '[ "$(timeout 30 python3 -I "$sc
 printf '# Drafts\n\n## Tip\n\ntext\n' > "$scratch/evalpage.md"
 timeout 15 env -u DISPLAY -u WAYLAND_DISPLAY -u BROWSER EVAL_PAGE_DISPLAY=1 bash "$dir/open-page.sh" "$scratch/evalpage.md" > "$scratch/evalpage.on" 2>&1
 timeout 15 env -u DISPLAY -u WAYLAND_DISPLAY -u EVAL_PAGE_DISPLAY VISUAL=true bash "$dir/open-page.sh" "$scratch/evalpage.md" > "$scratch/evalpage.off" 2>&1
+timeout 15 env -u DISPLAY -u WAYLAND_DISPLAY EVAL_PAGE_DISPLAY=0 VISUAL=true bash "$dir/open-page.sh" "$scratch/evalpage.md" > "$scratch/evalpage.zero" 2>&1
+check "EVAL_PAGE_DISPLAY=0 opens the editor, not the page" 'grep -q "draft: wait with watch.sh" "$scratch/evalpage.zero" && ! grep -q "page: open" "$scratch/evalpage.zero"'
 check "EVAL_PAGE_DISPLAY=1 prints the page link" 'grep -q "page: open http://127.0.0.1:" "$scratch/evalpage.on"'
 check "without EVAL_PAGE_DISPLAY the editor opens, not the page" 'grep -q "draft: wait with watch.sh" "$scratch/evalpage.off" && ! grep -q "page: open" "$scratch/evalpage.off"'
 exit $fail
