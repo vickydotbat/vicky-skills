@@ -14,9 +14,10 @@
 # Its output goes through head -c into a file, which stops at RAN_MAX_BYTES,
 # 50 MiB by default. The cap sits on the pipe, never on the command: a ulimit
 # -f is inherited, and it killed every server a check started once that
-# server's own files passed the cap. The reader is stopped a moment after the
-# command ends, so a child it leaves running holds nothing open. The output is
-# printed once the command ends.
+# server's own files passed the cap. Past the cap the reader drains the rest to
+# /dev/null and is never stopped, since a writer whose pipe closes dies of
+# SIGPIPE: a child the command leaves running keeps a live sink until it ends.
+# The output is printed once the command ends.
 set -u
 [ $# -ge 2 ] || { echo "usage: ran.sh <id> <command> [args...]" >&2; exit 2; }
 id=$1; shift
@@ -34,10 +35,9 @@ reader=$!
 timeout -k "${RAN_GRACE:-5}" "${RAN_TIMEOUT:-600}" "$@" >&3 2>&1 3>&-
 status=$?
 exec 3>&-
-# The reader drains what is left, then ends; a child still holding the pipe
-# keeps it open, so it is stopped after a short wait.
-timeout 1 tail --pid="$reader" -f /dev/null # mutant-ok: the wait only gives head time to flush; no test can time a flush without a race
-pkill -P "$reader" 2>/dev/null; kill "$reader" 2>/dev/null
+# The reader ends at end of input, unless a child still holds the pipe; the
+# wait is bounded so that child never holds ran.sh open.
+timeout 1 tail --pid="$reader" -f /dev/null # mutant-ok: head flushes in well under the bound, so only a stalled disk would show the wait missing
 cat "$log"
 head=$(git rev-parse HEAD 2>/dev/null || true)
 # python3, which checklist.py needs anyway, writes the receipt.

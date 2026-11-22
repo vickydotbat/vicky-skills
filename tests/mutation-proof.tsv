@@ -58,9 +58,9 @@ since-user.sh	7be3c1c933152abd	86d6a8cd389726ce	14/14
 skill-change-proven.sh	2a77ba5faffc92ea	0d52c550be388664	13/13
 skill-ledger.sh	5a29eb7f617f6f60	ff7ccbbd36194ae4	17/17
 skill-started.sh	fcfb07feca5ca217	d9fcf255178afd0f	13/13
-skills/building/over-to-you/scripts/checklist.py	806870c8d014c247	ddeafb3e55fae4af	147/147
+skills/building/over-to-you/scripts/checklist.py	806870c8d014c247	09a6f91db018ebcd	147/147
 skills/building/over-to-you/scripts/lint-checklist.py	80e5765a76b4cf46	530598300fdf49e4	61/61
-skills/building/over-to-you/scripts/ran.sh	a3428930a08d1730	ddeafb3e55fae4af	38/38
+skills/building/over-to-you/scripts/ran.sh	102533e46c3b56c2	09a6f91db018ebcd	37/37
 skills/building/video-captions/scripts/flatten-captions.sh	415082ac283f9808	37d767511d6f2968	6/6
 skills/commands/captains-log/scripts/hook-audit.py	486062a3faf327d6	974c7fd10d2960e2	64/64
 skills/commands/captains-log/scripts/idle-skills.py	a2b8bf6588ba88a3	5106d5763b5a3fd3	29/29
@@ -95,7 +95,7 @@ skills/writing/case-file/scripts/build.py	76a62b1655794a4f	3124f0bf1e59b078	228/
 skills/writing/case-file/scripts/bundle.py	0e0e30370bf3f162	8fde6aac976e9f3d	29/29
 skills/writing/case-file/scripts/check.py	78212f7c26b74114	3124f0bf1e59b078	73/73
 skills/writing/human-voice/scripts/lint-tells.py	57a14dabf05b04ae	458344786895c318	59/59
-skills/writing/interactive-page/scripts/open-draft.sh	2ffde8abe91f0601	d754f073044ee3e8	56/56
+skills/writing/interactive-page/scripts/open-draft.sh	2ffde8abe91f0601	d05acbc444007141	56/56
 skills/writing/interactive-page/scripts/open-page.sh	9da7be591b0eb684	5253f46f12411d94	9/9
 skills/writing/interactive-page/scripts/page.py	68278b952f5d4620	bfc0e44905f727aa	334/334
 skills/writing/interactive-page/scripts/write-page.py	ab52c27368db667a	77e1516fbbf15497	84/84
