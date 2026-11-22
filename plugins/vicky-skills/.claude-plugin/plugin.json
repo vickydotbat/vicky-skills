@@ -117,14 +117,8 @@
     "guard_post_body": {
       "type": "boolean",
       "title": "No leaks in pull request and issue posts",
-      "description": "Refuse a gh or tea post whose body names a path into this machine, a listed host, the checkout's own forge on another forge, terminal codes, or another item's heading.",
+      "description": "Refuse a gh or tea post whose body names a path into this machine, holds terminal codes, or opens with another item's heading.",
       "default": true
-    },
-    "post_guard_hosts": {
-      "type": "string",
-      "title": "Hosts no post may name",
-      "description": "Space- or comma-separated host names, such as a private forge, that the post-body guard refuses in any pull request or issue body.",
-      "default": ""
     },
     "local_path_exempt_repos": {
       "type": "string",

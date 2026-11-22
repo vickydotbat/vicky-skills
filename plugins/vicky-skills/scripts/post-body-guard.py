@@ -4,9 +4,8 @@
 Read by post-body-guard.sh, which hands it the hook payload on stdin. A post is
 gh pr/issue create, edit, comment or review, tea pr/issue create or edit, and
 tea comment. Its body is refused when it holds terminal codes (a pasted
-`gh` or `tea` view), opens with another item's heading number, names a
-host from the post_guard_hosts setting or the checkout's own forge when the
-post goes to another one, or names a path into this machine. A body the hook
+`gh` or `tea` view), opens with another item's heading number, or names a
+path into this machine. A body the hook
 cannot read ($(...), backticks, stdin, a here-doc, gh api body fields) is
 refused with a steer to --body-file. No marker in the body or the command lets
 a post through: only the guard_post_body setting does.
@@ -16,7 +15,6 @@ import json
 import os
 import re
 import shlex
-import subprocess
 import sys
 
 SEPARATORS = {";", "&&", "||", "|", "&", "(", ")", "\n", "|&"}
@@ -129,19 +127,6 @@ def segments(toks):
         yield seg
 
 
-def host_of(url):
-    m = re.match(r"^[a-z+]+://(?:[^@/]+@)?([^/:]+)", url) or re.match(r"^(?:[^@/]+@)?([^/:]+):", url)
-    return m.group(1).lower() if m else ""
-
-
-def checkout_hosts(cwd):
-    try:
-        out = subprocess.run(["git", "-C", cwd, "remote", "-v"], capture_output=True, text=True, timeout=10).stdout
-    except (OSError, subprocess.SubprocessError):
-        return set()
-    return {h for h in (host_of(line.split()[1]) for line in out.splitlines() if len(line.split()) > 1) if h}
-
-
 def number_of(word):
     m = re.fullmatch(r"#?(\d+)", word) or re.search(r"/(?:pull|pulls|issues)/(\d+)/?$", word)
     return m.group(1) if m else None
@@ -162,12 +147,12 @@ def parse_post(seg):
 
 
 def read_args(tool, args):
-    """Return (bodies as (kind, value or None), number, repo).
+    """Return (bodies as (kind, value or None), number).
 
     A redirect's target is skipped: gh and tea read a body from stdin only
     through --body-file - or --description-file -, which check_body refuses.
     """
-    bodies, number, repo = [], None, ""
+    bodies, number = [], None
     positional = []
     i = 0
     while i < len(args):
@@ -187,8 +172,6 @@ def read_args(tool, args):
             bodies.append(("--description", val))
         elif tool in {"tea", "tea-comment"} and flag == "--description-file":
             bodies.append(("file", val))
-        elif flag in {"-R", "--repo", "-r"}:
-            repo = val or ""
         elif a.startswith("-"):
             step = step if flag in (GH_VALUE_FLAGS if tool == "gh" else TEA_VALUE_FLAGS) else 1
         else:
@@ -199,10 +182,10 @@ def read_args(tool, args):
         number = number_of(positional[0])
     if tool == "tea-comment":
         bodies += [("comment", word) for word in positional[1:]]
-    return bodies, number, repo
+    return bodies, number
 
 
-def leak_lines(text, hosts):
+def leak_lines(text):
     found = []
     home = os.environ.get("HOME", "")
     user = os.environ.get("USER", "")
@@ -211,9 +194,6 @@ def leak_lines(text, hosts):
     for n, line in enumerate(text.splitlines(), 1):
         if "\x1b" in line or "\x07" in line or "^[]8;" in line or "^[[" in line:
             found.append(f"line {n}: terminal codes, as a pasted gh or tea view holds")
-        for h in sorted(hosts):
-            if re.search(r"(?<![\w.-])" + re.escape(h) + r"(?![\w-])", line, re.IGNORECASE):
-                found.append(f"line {n}: names the host {h}")
         if path.search(line) or (len(home) > 1 and home in line) or (user_pat and user_pat.search(line)):
             found.append(f"line {n}: names a path into this machine")
     return found
@@ -246,14 +226,10 @@ def body_text(kind, val, cwd, env, fresh):
         return None, f"the body file {val} can't be read. " + STEER
 
 
-def check_post(tool, args, cwd, listed, env, fresh):
+def check_post(tool, args, cwd, env, fresh):
     """Return the problems in one post's bodies."""
     problems = []
-    bodies, number, repo = read_args(tool, args)
-    hosts = set(listed)
-    if tool == "gh" and repo:
-        target = host_of(repo if "://" in repo else "https://" + repo) if repo.count("/") >= 2 else os.environ.get("GH_HOST", "github.com").lower()
-        hosts |= {h for h in checkout_hosts(cwd) if h != target}
+    bodies, number = read_args(tool, args)
     for kind, val in bodies:
         text, why = body_text(kind, val, cwd, env, fresh)
         if why:
@@ -263,7 +239,7 @@ def check_post(tool, args, cwd, listed, env, fresh):
         m = re.match(r"^\s*#\s+#(\d+)\b", first)
         if m and number and m.group(1) != number:
             problems.append(f"the body opens with the heading of #{m.group(1)}, but it posts to #{number}: it is another item's text.")
-        problems += leak_lines(text, hosts)
+        problems += leak_lines(text)
     return problems
 
 
@@ -284,7 +260,6 @@ def main():
             print("post-body-guard: refused, this command's quoting does not parse, so its body can't be read. " + STEER + " Nothing ran.", file=sys.stderr)
             return 2
         return 0
-    listed = {h.lower() for h in re.split(r"[\s,]+", os.environ.get("CLAUDE_PLUGIN_OPTION_POST_GUARD_HOSTS", "")) if h}
     problems = []
     fresh, env = {}, {}
     for seg in segments(toks):
@@ -306,7 +281,7 @@ def main():
             if "--input" in args or any(re.match(r"^(--(raw-)?field=|-[fF])?body=", a) for a in args):
                 problems.append("gh api sends a body this guard can't check. " + STEER)
         else:
-            problems += check_post(tool, args, cwd, listed, env, written_before)
+            problems += check_post(tool, args, cwd, env, written_before)
     if not problems:
         return 0
     print("post-body-guard: refused, this post would publish what it must not:", file=sys.stderr)
@@ -315,7 +290,7 @@ def main():
         print("  " + p, file=sys.stderr)
     if len(shown) > 6:
         print(f"  and {len(shown) - 6} more.", file=sys.stderr)
-    print("Rewrite the body by role (\"the team's forge\", a repo-relative path), or post the right item's text. Nothing in this command ran, not even its other steps.", file=sys.stderr)
+    print("Rewrite the body with repo-relative paths, or post the right item's text. Nothing in this command ran, not even its other steps.", file=sys.stderr)
     return 2
 
 

@@ -28,13 +28,12 @@ expect 2 "$(run "gh pr edit 3 --body hi" PATH="$scratch/bin")" "without python3 
 check python3 "the refusal names python3"
 expect 0 "$(run "ls" PATH="$scratch/bin")" "without python3 a command that is no post passes"
 git init -q -b main "$scratch/forge"; git -C "$scratch/forge" remote add origin git@forge.example.org:team/app.git
-printf 'See forge.example.org/team/app\n' > "$scratch/forge/host.md"
+printf 'Built /%s/x\n' "$ns" > "$scratch/forge/host.md"; printf 'clean\n' > "$scratch/host.md"
 printf '# #1641 Other\n' > "$scratch/other.md"
 rin() { jq -n --arg c "$1" --arg d "$scratch/$2" '{cwd:$d,tool_input:{command:$c}}' | "$hook" >/dev/null 2>"$scratch/err"; echo $?; }
-expect 0 "$(rin "gh pr edit 3 -R forge.example.org/team/app --body-file host.md" forge)" "gh posting to its own forge by full repo name passes"
-expect 2 "$(rin "cd forge && gh pr edit 3 -R acme/widgets --body-file host.md" .)" "a cd moves the checkout and the body file with it"
+expect 2 "$(rin "cd forge && gh pr edit 3 -R acme/widgets --body-file host.md" .)" "a cd moves the body file with it"
 expect 2 "$(rin "cd forge
-gh pr edit 3 -R acme/widgets --body-file host.md" .)" "a cd on its own line moves the checkout too"
+gh pr edit 3 -R acme/widgets --body-file host.md" .)" "a cd on its own line moves the body file too"
 expect 2 "$(rin "gh pr edit --unknown 306 -F $scratch/other.md" r)" "a boolean flag before the number leaves the number read"
 printf '# #306 Own\n' > "$scratch/own306.md"
 expect 0 "$(rin "gh pr edit -t 1641 306 -F $scratch/own306.md" r)" "a title value is never read as the number"
@@ -54,14 +53,13 @@ expect 0 "$(run 'echo comment x; command -v tea')" "tea as the last word is no p
 expect 0 "$(run "echo \"gh 'x")" "a broken command that names gh and is no post passes"
 expect 2 "$(run "gh pr edit 3 --body '/$ns/x'")" "a leak gets the refusal header"
 check 'post-body-guard: refused' "the refusal opens with the guard's name"
-check 'Rewrite the body by role' "the refusal says what to do"
+check 'Rewrite the body with repo-relative paths' "the refusal says what to do"
 expect 2 "$(run "gh pr edit 3 --body 'x")" "a post with broken quoting is refused"
 check '--body-file' "a quoting refusal steers to --body-file"
-expect 2 "$(rin "cd forge && gh pr edit 3 -R acme/widgets --body-file $scratch/forge/host.md" .)" "a cd moves the checkout for an absolute body file"
 expect 0 "$(rin "cd forge
 cd ..
-gh pr edit 3 -R acme/widgets --body-file $scratch/forge/host.md" .)" "a cd back out on its own line leaves the checkout"
-expect 0 "$(rin "cd forge && cd .. && gh pr edit 3 -R acme/widgets --body-file $scratch/forge/host.md" .)" "a cd back out after && leaves the checkout"
+gh pr edit 3 -R acme/widgets --body-file host.md" .)" "a cd back out on its own line moves the body file back"
+expect 0 "$(rin "cd forge && cd .. && gh pr edit 3 -R acme/widgets --body-file host.md" .)" "a cd back out after && moves the body file back"
 expect 0 "$(run "cd && gh pr comment 3 --body hi")" "a bare cd is no crash"
 expect 2 "$(rin "gh pr edit < /dev/null 306 -F $scratch/other.md" r)" "a redirect before the number leaves the number read"
 expect 0 "$(rin "gh pr edit -B 1641 306 -F $scratch/own306.md" r)" "a gh-only value flag is never read as the number"
@@ -82,7 +80,6 @@ expect 2 "$(run "printf x > $scratch/clean.md && gh pr edit 3 --body-file $scrat
 check 'written earlier' "the refusal says the file is written in the same command"
 expect 2 "$(run "echo x | tee $scratch/clean.md; gh pr edit 3 --body-file $scratch/clean.md")" "a body file written by tee in the same command is refused"
 expect 0 "$(run "cat $scratch/clean.md && gh pr edit 3 --body-file $scratch/clean.md")" "a body file only read in the same command passes"
-expect 0 "$(rin "gh pr edit 3 --body-file host.md" forge)" "a checkout's own host passes with no --repo, as gh posts to that checkout"
 expect 0 "$(run "tea comment 3 \"\$(cat $scratch/clean.md)\"")" "tea comment with a clean cat of a file passes"
 expect 2 "$(run "tea comment 3 \"\$(cat $scratch/leak.md)\"")" "tea comment with a leaking cat of a file is refused"
 check 'names a path' "a cat of a file is read as the body"

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # PreToolUse hook (Bash; guard_post_body, on by default): refuses a pull
-# request or issue post whose body leaks a host, a path into this machine or
+# request or issue post whose body leaks a path into this machine or
 # terminal codes, or carries another item's text. The checks live in
 # post-body-guard.py. Without python3 a post is refused, since an unread body
 # is the gap this guard closes.
