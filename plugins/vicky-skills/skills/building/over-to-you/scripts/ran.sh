@@ -11,7 +11,7 @@
 # output passes through, and ran.sh exits with the command's status.
 # A hung command is stopped at RAN_TIMEOUT seconds, 600 by default, and
 # killed RAN_GRACE seconds later, 5 by default, when it ignores the stop.
-# Its output goes through head -c into a file, which stops at RAN_MAX_BYTES,
+# Its output goes through dd into a file, which stops at RAN_MAX_BYTES,
 # 50 MiB by default. The cap sits on the pipe, never on the command: a ulimit
 # -f is inherited, and it killed every server a check started once that
 # server's own files passed the cap. Past the cap the reader drains the rest to
@@ -30,14 +30,18 @@ log=$(mktemp "$dir/.$id.XXXXXX") || exit 2 # mutant-ok: mkdir -p made the folder
 trap 'rm -f "$log"' EXIT
 at=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 max=${RAN_MAX_BYTES:-52428800}
-exec 3> >(head -c "$max" > "$log"; cat > /dev/null)
+# The reader lets go of ran.sh's own output, so a lingering child never holds
+# open the pipe of a caller that captures ran.sh.
+# dd writes each block as it comes; head holds its output until end of input,
+# which a lingering child delays.
+exec 3> >(exec > /dev/null 2>&1; dd of="$log" bs=64K count="$max" iflag=count_bytes status=none; cat)
 reader=$!
 timeout -k "${RAN_GRACE:-5}" "${RAN_TIMEOUT:-600}" "$@" >&3 2>&1 3>&-
 status=$?
 exec 3>&-
 # The reader ends at end of input, unless a child still holds the pipe; the
 # wait is bounded so that child never holds ran.sh open.
-timeout 1 tail --pid="$reader" -f /dev/null # mutant-ok: head flushes in well under the bound, so only a stalled disk would show the wait missing
+timeout 1 tail -s 0.05 --pid="$reader" -f /dev/null # mutant-ok: head flushes in well under the bound, so only a stalled disk would show the wait missing
 cat "$log"
 head=$(git rev-parse HEAD 2>/dev/null || true)
 # python3, which checklist.py needs anyway, writes the receipt.
