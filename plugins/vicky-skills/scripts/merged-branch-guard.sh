@@ -93,11 +93,16 @@ fi
 . "$(dirname "$0")/git-hook-lib.sh" <<<"$payload"
 
 if [ "$hint" = 1 ]; then
-  # Once per checkout per session: a session told at its start hears nothing more.
+  # Told once per checkout per session. Until then, $key's time is the last
+  # check, and a later command checks again once 10 minutes have passed, so a
+  # branch that merges mid-session is told too.
   told="${CLAUDE_PLUGIN_DATA:-${TMPDIR:-/tmp}}/merged-branch-told/$session"
   key=$(git rev-parse --show-toplevel | cksum | cut -d' ' -f1)
-  mkdir -p "$told" 2>/dev/null && [ ! -e "$told/$key" ] && touch "$told/$key" 2>/dev/null || exit 0
+  mkdir -p "$told" 2>/dev/null && [ ! -e "$told/$key.told" ] || exit 0
+  [ -n "$(find "$told/$key" -mmin -10 2>/dev/null)" ] && exit 0
+  touch "$told/$key" 2>/dev/null || exit 0
   gone || exit 0
+  touch "$told/$key.told"
   move
   jq -nc --arg e "$event" --arg h "$GUARD: this checkout stands on '$current', and its remote branch is gone: its pull request merged, or the branch was deleted, so the branch is finished. $(heads_line) Or start fresh: git fetch --prune && git switch -c <new-branch> $default_ref. $moving" \
     '{hookSpecificOutput:{hookEventName:$e,additionalContext:$h}}'
