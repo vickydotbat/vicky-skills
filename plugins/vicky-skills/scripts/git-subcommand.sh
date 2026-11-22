@@ -3,13 +3,21 @@
 # the subcommand of each git command in <text>, one per line: the first word
 # after git and its options, in each segment split at ; & | ( ) and newlines,
 # with a # comment dropped. A word commit or push anywhere else is not one. A
-# quoted run becomes one word, so it is never a subcommand and still fills an
+# quoted run loses its quote marks and stays one word, so it still fills an
 # option's value, and wrapper words before git (sudo, env, timeout 5, then) are
 # skipped.
 git_subcommands() {
   awk '{
-    gsub(/\047[^\047]*\047/, "Q"); gsub(/"([^"\\]|\\.)*"/, "Q")
-    n = split($0, segs, /[;&|(){}]/)
+    s = $0; $0 = ""; q = ""
+    for (k = 1; k <= length(s); k++) {
+      c = substr(s, k, 1)
+      if (q == "" && c == "\\") { k++; $0 = $0 substr(s, k, 1); continue }
+      if (q == "" && (c == "\047" || c == "\"")) { q = c; continue }
+      if (c == q) { q = ""; continue }
+      if (q != "" && c ~ /[[:space:];&|(){}`]/) c = "_"
+      $0 = $0 c
+    }
+    n = split($0, segs, /[;&|(){}`]/)
     for (s = 1; s <= n; s++) { # mutant-ok: s != 1 or s == 1 leaves s at 0, and segs[0] is empty, so it is skipped the same way
       seg = segs[s]; sub(/(^|[[:space:]])#.*/, "", seg)
       w = split(seg, words, /[[:space:]]+/); i = 1
