@@ -103,7 +103,7 @@ if [ "$hint" = 1 ]; then
   key=$(git rev-parse --show-toplevel | cksum | cut -d' ' -f1)
   mkdir -p "$told" 2>/dev/null && [ ! -e "$told/$key.told" ] || exit 0
   [ -n "$(find "$told/$key" -mmin -10 2>/dev/null)" ] && exit 0
-  touch "$told/$key" 2>/dev/null || exit 0
+  touch "$told/$key" 2>/dev/null || exit 0 # mutant-ok: touch fails only in a folder mkdir -p just made, and either exit lets the command run silently
   gone || exit 0
   touch "$told/$key.told"
   move

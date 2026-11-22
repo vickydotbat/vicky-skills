@@ -76,8 +76,8 @@ check "with no gh the hint says how to look, and claims no answer" 'told "gh pr 
 # The first command in a checkout, once per session.
 first "$w" 'ls'; code=$?
 check "the first command in a merged checkout tells the agent, and the command runs" '[ $code = 0 ] && told "warp/next-effort" && jq -e ".hookSpecificOutput.hookEventName == \"PreToolUse\"" "$scratch/out" >/dev/null'
-first "$w" 'ls'
-check "the second command in it is not told again" 'silent'
+first "$w" 'ls'; code=$?
+check "the second command in it is not told again, and runs" '[ $code = 0 ] && silent'
 first "$w" 'ls' s2
 check "another session's first command is told" 'told "warp/next-effort"'
 session "$w" s3; first "$w" 'ls' s3
