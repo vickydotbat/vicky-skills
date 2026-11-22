@@ -17,7 +17,7 @@ foreign-repo.sh	0d615176ee862b67	8b52685799064f63	14/14
 gate-notify.sh	7ba893f680c5d672	0b6b4ce0073c128e	25/25
 gate-state-guard.sh	71c338f183976bce	85e6bad15dbacc16	71/71
 git-guard.sh	482f159e829405f5	6e734a2b66835eaf	52/52
-git-hook-lib.sh	fdbc68d98dcfa55e	7f7cb23590b8a6df	51/51
+git-hook-lib.sh	c211844e0ecf798b	e7c305c60954c14c	51/51
 git-subcommand.sh	7e5ab4629223fcbd	771d1f51a350baee	15/15
 heredoc-strip.awk	f4f00a43ef2fd634	aebafce73c1a9db2	6/6
 keep-awake.sh	d64200a28b3c6e54	bf8816b3639cfd45	31/31
