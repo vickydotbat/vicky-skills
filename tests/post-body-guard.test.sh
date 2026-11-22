@@ -186,6 +186,7 @@ expect 2 "$(run "B='$lk'; gh pr comment 1 --body \"\$B\"")" "a body from a set v
 expect 2 "$(run "gh pr comment 1 --body \"\$UNSET_X\"")" "a body from an unknown variable is refused"
 expect 2 "$(run "gh pr comment 1 -b \"\$HOME/x\"")" "a body naming HOME through a variable is refused"
 expect 0 "$(run "gh pr comment 1 -b 'costs \$5'")" "a single-quoted dollar is text"
+expect 2 "$(run 'gh pr comment 1 --body $'\''/ho\155e/zed/x/'\''')" "an ANSI-C quoted body is refused as unreadable"
 expect 2 "$(run "gh pr comment 1 -b'$lk'")" "a short body flag with its value glued on is read"
 expect 2 "$(run "gh pr comment 1 -F$scratch/many.md")" "a short body-file flag with its value glued on is read"
 expect 2 "$(run "gh -R a/b pr comment 1 --body '$lk'")" "a gh global flag before the verb hides no post"
