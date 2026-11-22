@@ -9,6 +9,7 @@ scratch=$(mktemp -d); trap 'rm -rf "$scratch"' EXIT
 fail=0
 git init -q -b main "$scratch/r"; git -C "$scratch/r" remote add origin git@github.com:acme/widgets.git
 run() { jq -n --arg c "$1" --arg d "$scratch/r" '{cwd:$d,tool_input:{command:$c}}' | env "${@:2}" "$hook" >/dev/null 2>"$scratch/err"; echo $?; }
+check() { if grep -qF -- "$1" "$scratch/err"; then echo "ok   $2"; else echo "FAIL $2"; fail=1; fi; }
 expect() { if [ "$1" = "$2" ]; then echo "ok   $3"; else echo "FAIL $3: want $1, got $2: $(head -2 "$scratch/err")"; fail=1; fi; }
 ns=nix/store
 expect 0 "$(run 'ls -la')" "a command with no gh or tea passes"
@@ -22,7 +23,7 @@ expect 0 "$(run "echo 'unterminated")" "a broken command that is no post passes"
 expect 0 "$(run "gh pr edit 3 --body '/$ns/x'" CLAUDE_PLUGIN_OPTION_GUARD_POST_BODY=false)" "the setting off passes in the wrapper"
 mkdir -p "$scratch/bin"; for t in bash cat grep jq env; do ln -s "$(command -v $t)" "$scratch/bin/$t"; done
 expect 2 "$(run "gh pr edit 3 --body hi" PATH="$scratch/bin")" "without python3 a post is refused"
-grep -qF python3 "$scratch/err" && echo "ok   the refusal names python3" || { echo "FAIL the refusal names python3"; fail=1; }
+check python3 "the refusal names python3"
 expect 0 "$(run "ls" PATH="$scratch/bin")" "without python3 a command that is no post passes"
 git init -q -b main "$scratch/forge"; git -C "$scratch/forge" remote add origin git@forge.example.org:team/app.git
 printf 'See forge.example.org/team/app\n' > "$scratch/forge/host.md"
@@ -50,8 +51,10 @@ expect 0 "$(run 'command -v gh')" "gh as the last word is no post"
 expect 0 "$(run 'echo comment x; command -v tea')" "tea as the last word is no post"
 expect 0 "$(run "echo \"gh 'x")" "a broken command that names gh and is no post passes"
 expect 2 "$(run "gh pr edit 3 --body '/$ns/x'")" "a leak gets the refusal header"
-grep -qF 'post-body-guard: refused' "$scratch/err" && grep -qF 'Rewrite the body by role' "$scratch/err" && echo "ok   the refusal says what to do" || { echo "FAIL the refusal says what to do"; fail=1; }
-expect 2 "$(run "gh pr edit 3 --body 'x")" "a post with broken quoting is refused"; grep -qF -- '--body-file' "$scratch/err" && echo "ok   a quoting refusal steers to --body-file" || { echo "FAIL a quoting refusal steers to --body-file"; fail=1; }
+check 'post-body-guard: refused' "the refusal opens with the guard's name"
+check 'Rewrite the body by role' "the refusal says what to do"
+expect 2 "$(run "gh pr edit 3 --body 'x")" "a post with broken quoting is refused"
+check '--body-file' "a quoting refusal steers to --body-file"
 expect 2 "$(rin "cd forge && gh pr edit 3 -R acme/widgets --body-file $scratch/forge/host.md" .)" "a cd moves the checkout for an absolute body file"
 expect 0 "$(rin "cd forge
 cd ..
@@ -64,6 +67,6 @@ expect 0 "$(rin "tea pr list --state all '/$ns/x'" forge)" "tea pr list is no po
 expect 0 "$(run "gh pr comment 3 '/$ns/x' --body hi")" "gh takes no body from a second word, so it is not read"
 mkdir -p "$scratch/nogit"; for t in bash cat jq env python3; do ln -s "$(command -v $t)" "$scratch/nogit/$t"; done
 expect 0 "$(run "gh pr comment 3 --body hi" PATH="$scratch/nogit")" "without git a clean post still passes"
-out=$(printf 'not json' | "$hook" 2>&1); rc=$?
+printf 'not json' | "$hook" >/dev/null 2>&1; rc=$?
 expect 0 "$rc" "bad input passes without a traceback"
 exit $fail

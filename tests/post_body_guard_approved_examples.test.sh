@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2016 # the commands are literal text the hook reads, never run
 # Approved examples for post-body-guard, ticked on the drafts page. The hook
 # refuses a pull request or issue post whose body leaks a host or a path into
 # this machine, or carries another item's text, and never asks.
