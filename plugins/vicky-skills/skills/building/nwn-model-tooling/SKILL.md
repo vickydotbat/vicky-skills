@@ -26,6 +26,10 @@ Stock game resources, unpacked one folder per BIF, are in `${user_config.nwn_ref
 - `cleanmodels check <input>...` reports and writes nothing. With `--fix`, its last argument is the output.
 - Output is flat: subfolders are not mirrored.
 - With one input file, name an output file. An output folder fails.
+- A decompile and compile round trip is not lossless. It rewelds or drops vertices on meshes (18 to 14 on a body node, 164 to 70 on a hidden head) and nudges key floats. A Neverblender re-export splits every shared vertex per face, so the mesh shades in facets (a dog's skin went from 879 vertices to 3,726).
+  - To change one number (a node position, a key), patch that float in place in the original binary and leave the rest of its bytes alone. Then decompile the result and diff it against the original's decompile: one changed line is the proof.
+  - When a mesh edit needs a compile, decompile your output and diff each node against the original's decompile, beside a control: the original compiled unchanged. A vertex or face count the edit did not mean to change is a defect. Fix it before anyone looks at the model in game.
+  Proven by: plugins/vicky-skills/evals/nwn-model-tooling/roundtrip-audit
 
 ## Packing
 
