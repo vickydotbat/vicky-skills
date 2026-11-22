@@ -74,5 +74,4 @@ push_args_of() {
   for word in ${words[@]+"${words[@]}"}; do
     if [ "$seen" = 1 ]; then push_args+=("$word"); elif [ "$word" = push ]; then seen=1; fi
   done
-  [ "$seen" = 1 ]
 }
