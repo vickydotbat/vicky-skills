@@ -29,6 +29,7 @@ else
   added=$({ git diff --cached 2>/dev/null || true; } | grep -E '^\+' | grep -Ev '^\+\+\+ ' || true)
 fi
 
+# shellcheck disable=SC2001 # one sed escapes every regex character; ${var//} takes one at a time
 esc() { sed 's/[][\.*^$+?(){}|]/\\&/g' <<<"$1"; }
 user=${USER:-$(id -un 2>/dev/null || true)}
 # A /home/ or /Users/ that follows a variable or a folder name is inside that
