@@ -64,4 +64,18 @@ rm "$repo/fresh"
 printf 'bin\0 /home/someone/x\n' >"$repo/blob" # local-path-ok
 expect 0 "a binary untracked file is not scanned" 'git add -A && git commit -m add'
 rm "$repo/blob"
+
+# A repo with thousands of untracked files (a workbench's renders) finishes
+# well inside the hook's timeout. The old scan built one string from every
+# file and passed 120 s on 6,315 of them.
+mkdir "$repo/many"
+for i in $(seq 3000); do printf 'line %s\n' "$i" >"$repo/many/f$i.txt"; done
+start=$SECONDS
+expect 0 "thousands of clean untracked files pass" 'git add -A && git commit -m add'
+took=$((SECONDS - start))
+if [ "$took" -le 5 ]; then echo "ok   thousands of untracked files scan in ${took}s"
+else echo "FAIL thousands of untracked files took ${took}s, over 5"; fail=1; fi
+printf 'see /home/someone/x\n' >"$repo/many/f1500.txt" # local-path-ok
+expect 2 "a path in one of thousands of untracked files is refused" 'git add -A && git commit -m add'
+rm -r "$repo/many"
 exit $fail
