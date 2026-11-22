@@ -24,7 +24,8 @@ lesson-hint.sh	7a82ca13330f28fd	7783cb6645b1d121	11/11
 lesson-ledger.sh	4c88dc2d0aebcfe6	1c3b836542cb0487	18/18
 local-path-guard.sh	6250febeeda4bb1c	7a1c8c2b96c6670c	29/29
 merge-point.sh	a19dbe9167831b34	bdb7b61b80c0c3d4	2/2
-merged-branch-guard.sh	67f99ecb9bda5168	51cedb198679b641	81/81
+merged-branch-guard.sh	75280a6b7af7f583	4cc753a1fb34035b	72/72
+open-heads.sh	d274dc8aa114c12a	532688fb9c531e02	9/9
 opponent-batch-guard.sh	7571fc54370d05f2	f9d50d5d41d2be23	48/48
 opponent-wait-guard.sh	b0571c4bacf65987	1e3050b9384000f4	32/32
 opponents.jq	ef5b0de61c7fac0b	2d26486f2a061116	47/47
@@ -33,7 +34,7 @@ patch-tell-hint.sh	256a998db4051de9	5fe1d435fef9a19b	50/50
 pkill-guard.sh	b7b411516636d988	29ca7e6cb32dc5c9	7/7
 plane-block-guard.sh	a2ced0e121b33f36	c912309fd621ec7a	20/20
 plugin-data.sh	2b852e6635cec758	1eb83e986afbbf10	3/3
-pr-guard.sh	71da09532322a942	e6c5726d88da16b0	157/157
+pr-guard.sh	70eaa3009f51a514	e6c5726d88da16b0	157/157
 promise-guard.sh	080cb078921ad99f	8b391a320412fcdd	17/17
 prose-strip.sh	4af2ac6de8168c90	f38a51df643790ee	95/95
 publickey-hint.sh	d3098ec01110850e	00f13591da283269	13/13

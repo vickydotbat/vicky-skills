@@ -3,10 +3,11 @@
 # branch is gone, because its pull request merged and the branch is finished.
 # It asks origin whether the branch still exists (5 seconds at most), fetches
 # origin's default when it is gone, and falls back to the last fetch's record
-# when origin can't answer. The refusal holds
-# the move: a fresh branch from origin's default, plus the commits made after
-# the merge, found as those after the newest commit whose tree the default
-# branch holds, and the heads of the user's open pull requests there.
+# when origin can't answer. The refusal holds the move: a fresh branch from
+# origin's default, plus the commits made after the merge, found as those after
+# the newest commit whose tree the default branch holds, and the heads of the
+# user's open pull requests there.
+#
 # SessionStart hook, and the first other command in each checkout per session:
 # tells the agent the same, without refusing, so a session that only reads and
 # edits on a merged branch hears it before its first commit. A branch that was
@@ -58,25 +59,13 @@ $after"
   fi
 }
 
-# open_heads: the heads of the user's open pull requests here, one per line.
-# Returns 1 when the forge's tool is missing or cannot answer.
-open_heads() {
-  local url out me # mutant-ok delete: a local declaration: no caller reads these names
-  url=$(git config "remote.$remote.url")
-  if [[ $url == *github.com* ]]; then
-    out=$(timeout 4 gh pr list --author @me --state open --json headRefName </dev/null 2>/dev/null) || return 1
-    jq -r '.[].headRefName' <<<"$out" 2>/dev/null
-  else
-    me=$(timeout 4 tea api user </dev/null 2>/dev/null | jq -r '.login // ""' 2>/dev/null)
-    out=$(timeout 4 tea pulls list --state open --output json --fields index,head,author </dev/null 2>/dev/null) || return 1
-    jq -r --arg me "$me" '.[] | select(.author == $me) | .head' <<<"$out" 2>/dev/null
-  fi
-}
+# shellcheck source=open-heads.sh
+. "$(dirname "$0")/open-heads.sh"
 
 # heads_line: what the user's open pull requests say about where to work.
 heads_line() {
   local heads # mutant-ok delete: a local declaration: no caller reads this name
-  if ! heads=$(open_heads); then
+  if ! heads=$(open_heads "$(git config "remote.$remote.url")" 4); then
     echo "Ask the forge which pull request of yours is open here: gh pr list --author @me --state open (tea pulls list --state open on Gitea), and carry on in its branch."
     return
   fi
@@ -94,8 +83,9 @@ heads_line() {
 hint=0
 if [ "$event" = SessionStart ] || { [ "$event" = PreToolUse ] && ! grep -Eq "$commit_re" <<<"$(jq -r '.tool_input.command // ""' <<<"$payload")"; }; then
   hint=1
+  # tr also turns jq's closing newline into _, so no id can name . or ..
   session=$(jq -r '.session_id // "none"' <<<"$payload" | tr -c '[:alnum:]_.-' _)
-    # The command keeps its leading cd or git -C, so the lib finds the checkout it aims at.
+  # The command keeps its leading cd or git -C, so the lib finds the checkout it aims at.
   payload=$(jq -c '{cwd, tool_input: {command: ((.tool_input.command // "") + "\ngit rev-parse")}}' <<<"$payload")
 fi
 

@@ -116,4 +116,6 @@ opt=false first "$w" 'ls' s7; check "option off: the first command hears nothing
 session "$scratch" s8; check "outside a repository: nothing is said" 'silent'
 echo 'not json' | CLAUDE_PLUGIN_OPTION_GUARD_MERGED_BRANCH=true "$hook" >"$scratch/out" 2>&1; code=$?
 check "bad input passes" '[ $code = 0 ]'
+session "$w" ..; code=$?
+check "a session id of .. keeps its marker inside the marker folder" '[ $code = 0 ] && told "is finished" && [ -z "$(find "$CLAUDE_PLUGIN_DATA" -maxdepth 1 -type f)" ]'
 exit $fail

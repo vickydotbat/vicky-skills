@@ -202,24 +202,15 @@ flag_value() {
   done
 }
 
-# The heads of the user's open pull requests here, one per line.
-open_heads() {
-  if [[ $repo == *github.com* ]]; then
-    timeout 30 gh pr list --author @me --state open --json headRefName </dev/null 2>/dev/null | jq -r '.[].headRefName' 2>/dev/null
-  else
-    local me # mutant-ok delete: a local declaration: no caller reads this name
-    me=$(timeout 30 tea api user </dev/null 2>/dev/null | jq -r '.login // ""' 2>/dev/null)
-    timeout 30 tea pulls list --state open --output json --fields index,head,author </dev/null 2>/dev/null |
-      jq -r --arg me "$me" '.[] | select(.author == $me) | .head' 2>/dev/null
-  fi
-}
+# shellcheck source=open-heads.sh
+. "$(dirname "$0")/open-heads.sh"
 
 # This session's open pull requests here, oldest first: the branches it
 # recorded that the forge still lists as open.
 session_heads() {
   [ -r "$record" ] || return 0 # mutant-ok delete: awk reads a missing record as empty, and finds no branch the same way
   local open # mutant-ok delete: a local declaration: no caller reads this name
-  open=$(open_heads)
+  open=$(open_heads "$repo" 30)
   awk -v r="$repo" '$1 == r { print $2 }' "$record" | while read -r head; do
     grep -qxF -- "$head" <<<"$open" && printf '%s\n' "$head"
   done | awk '!seen[$0]++'
