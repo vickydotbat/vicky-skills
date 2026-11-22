@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2016 # each check is a string check() evals
+# shellcheck disable=SC2016,SC2034,SC2329 # each check is a string check() evals: it reads code, a, b, c1-c3, told and silent there
 # approved-spec: the examples approved for the chart "Merged-branch-guard after
 # 302", stars M1, M2 and M3. Each check is named after its example. The guard
 # runs on real repositories, merged the way a forge squash-merges and deletes
