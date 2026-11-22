@@ -23,18 +23,10 @@ dir="${CLAUDE_PLUGIN_DATA:-${TMPDIR:-/tmp}}/opponent-batch"
 mkdir -p "$dir" 2>/dev/null || exit 0 # mutant-ok delete: with no folder for the record every later read and write fails, and nothing is refused
 record="$dir/$session.tsv"
 lock="$dir/$session.lock"
-# Concurrent hooks of one burst take turns. The lock holds its owner's pid, and only a
-# lock whose owner is gone counts as stale: a slow owner keeps it, however long it takes.
-# A launch that never gets the lock is refused, never passed unlocked.
-held= # mutant-ok delete: held starts unset in a hook, so the reset only guards a caller that exported it
-for _ in $(seq 200); do
-  if mkdir "$lock" 2>/dev/null; then echo $$ > "$lock/pid"; held=1; break; fi
-  owner=$(cat "$lock/pid" 2>/dev/null)
-  if [ -n "$owner" ] && ! kill -0 "$owner" 2>/dev/null; then rm -f "$lock/pid"; rmdir "$lock" 2>/dev/null; continue; fi
-  sleep 0.05
-done
-[ -n "$held" ] || { echo "opponent-batch-guard: another launch held the lock for ten seconds. Send this launch again. Nothing was dispatched." >&2; exit 2; }
-trap 'rm -f "$lock/pid"; rmdir "$lock" 2>/dev/null' EXIT
+# Concurrent hooks of one burst take turns: twenty seconds at most, then the lock counts as stale.
+for _ in $(seq 400); do mkdir "$lock" 2>/dev/null && break; sleep 0.05; done
+mkdir "$lock" 2>/dev/null # mutant-ok delete: takes a stale lock over; the rmdir below and this mkdir leave it held either way
+trap 'rmdir "$lock" 2>/dev/null' EXIT
 touch "$record"
 # A record row lives this many seconds, long enough for its receipt to land; batch.sh never sends more than ceiling.
 window=30 ceiling=3
@@ -52,7 +44,7 @@ running=$(grep -E 'opponent|<task-notification>|"(SendMessage|TaskStop)"|"is_err
      | select(($now - (.[2] | tonumber? // 0)) < $window) | {id: .[0], type: .[1], from: "record"}] as $recorded
   | (opponent_launches($r) | map(. + {from: "transcript"})) as $seen
   | fighting($r; $recorded + $seen)
-  | "\(.from)\t\(.id)\t\(.type)"' 2>/dev/null)
+  | "\(.from)\t\(.id)\t\(.type)"' 2>/dev/null) || { echo "opponent-batch-guard: the read of running opponents failed, so this launch is refused, never passed uncounted. Send it again. Nothing was dispatched." >&2; exit 2; }
 # A launch the record and the transcript both hold counts once: the larger count wins.
 count=$(awk -F '\t' 'NF { n[$1]++ } END { print (n["record"] > n["transcript"] ? n["record"] : n["transcript"]) + 0 }' <<<"$running")
 running=$(awk -F '\t' -v pick="$(awk -F '\t' 'NF { n[$1]++ } END { print (n["record"] > n["transcript"] ? "record" : "transcript") }' <<<"$running")" '$1 == pick { print $2 "\t" $3 }' <<<"$running")
