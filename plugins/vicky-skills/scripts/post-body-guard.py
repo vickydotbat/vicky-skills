@@ -32,7 +32,7 @@ GH_VALUE_FLAGS = {"-R", "--repo", "-t", "--title", "-B", "--base", "-H", "--head
                   "-r", "--reviewer", "--add-label", "--remove-label", "--add-assignee",
                   "--remove-assignee", "--add-reviewer", "--remove-reviewer", "-T", "--template"}
 STEER = "Write the body to a file in an earlier call and pass it with --body-file FILE (tea: -d \"$(cat FILE)\"), so this guard reads what goes out."
-CAT_SUBST = re.compile(r"^\$\((?:cat\s+|<\s*)((?:[^\s$()`;|&<>'\"]|\$\{?[A-Za-z_][A-Za-z0-9_]*\}?)+)\s*\)$")
+CAT_SUBST = re.compile(r"^\$\((?:cat\s+|<\s*)(['\"]?)((?:[^\s$()`;|&<>'\"]|\$\{?[A-Za-z_][A-Za-z0-9_]*\}?)+)\1\s*\)$")
 ASSIGN = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*)=(.*)$", re.S)
 
 
@@ -79,6 +79,34 @@ def written(seg, env, heredoc):
     if os.path.basename(seg[0]) in WRITERS:
         out.update({expand(w, env) or w: None for w in seg[1:]})
     return out
+
+
+LIT_TICK, LIT_DOLLAR = "\x01", "\x02"
+
+
+def protect(command):
+    """Mark each backtick and $ the shell takes literally: in single quotes, or escaped."""
+    out, quote, i = [], "", 0
+    while i < len(command):
+        ch = command[i]
+        if quote == "'":
+            out.append({"`": LIT_TICK, "$": LIT_DOLLAR}.get(ch, ch))
+            quote = "" if ch == "'" else quote
+        elif ch == "\\" and i + 1 < len(command) and command[i + 1] in "`$":
+            out.append(LIT_TICK if command[i + 1] == "`" else LIT_DOLLAR)
+            i += 1
+        else:
+            if ch in "'\"" and not quote:
+                quote = ch
+            elif ch == quote:
+                quote = ""
+            out.append(ch)
+        i += 1
+    return "".join(out)
+
+
+def restore(text):
+    return text.replace(LIT_TICK, "`").replace(LIT_DOLLAR, "$")
 
 
 def tokens(command):
@@ -197,7 +225,7 @@ def body_text(kind, val, cwd, env, fresh):
         return None, "a body flag has no value. " + STEER
     m = CAT_SUBST.match(val) if kind != "file" else None
     if m:
-        kind, val = "file", m.group(1)
+        kind, val = "file", m.group(2)
     if kind == "file":
         raw, val = val, expand(val, env)
         if val is None:
@@ -209,7 +237,8 @@ def body_text(kind, val, cwd, env, fresh):
     if kind != "file":
         if "$(" in val or "`" in val:
             return None, "the body comes from a command substitution, which this guard can't check. " + STEER
-        return val, None
+        return restore(val), None
+    val = restore(val)
     try:
         with open(os.path.join(cwd, os.path.expanduser(val)), encoding="utf-8", errors="replace") as f:
             return f.read(), None
@@ -247,7 +276,7 @@ def main():
     cwd = payload.get("cwd") or os.getcwd()
     try:
         stripped, texts = strip_heredocs(command)
-        toks = tokens(stripped)
+        toks = tokens(protect(stripped))
         if toks.count("<<") != len(texts):
             texts = [None] * toks.count("<<")  # a here-doc inside quotes: no text is trusted
     except ValueError:

@@ -119,6 +119,11 @@ expect 0 "$(run "S=$scratch && cd \$S/r && gh pr edit 3 --body-file ../clean.md"
 expect 2 "$(run "tea comment 3 \"\$(cat \$NO_SUCH_VAR/x.md)\"")" "a cat of a path under an unset variable is refused"
 check 'expand' "a cat under an unset variable is refused for the variable"
 expect 0 "$(run 'tea comment 3 "$(cat ${SCRATCH_DIR}/clean.md)"' SCRATCH_DIR="$scratch")" "a cat of a path under a set variable is read"
+expect 0 "$(run "tea comment 3 'Run \`make\` and \$HOME stays as typed'")" "backticks and a dollar in single quotes are text"
+expect 0 "$(run "gh pr comment 3 --body \"Run \\\`make\\\` now\"")" "escaped backticks in double quotes are text"
+expect 2 "$(run "tea comment 3 'Built /$ns/x in \`make\`'")" "a leak beside a code span is still refused"
+expect 2 "$(run "tea comment 3 \"\$(cat '$scratch/leak.md')\"")" "a cat of a quoted path is read as the body"
+check 'names a path' "the quoted path's file is what is checked"
 mkdir -p "$scratch/nogit"; for t in bash cat jq env python3; do ln -s "$(command -v $t)" "$scratch/nogit/$t"; done
 expect 0 "$(run "gh pr comment 3 --body hi" PATH="$scratch/nogit")" "without git a clean post still passes"
 printf 'not json' | "$hook" >/dev/null 2>&1; rc=$?
