@@ -24,7 +24,7 @@ lesson-hint.sh	7a82ca13330f28fd	7783cb6645b1d121	11/11
 lesson-ledger.sh	4c88dc2d0aebcfe6	1c3b836542cb0487	18/18
 local-path-guard.sh	6250febeeda4bb1c	7a1c8c2b96c6670c	29/29
 merge-point.sh	a19dbe9167831b34	bdb7b61b80c0c3d4	2/2
-merged-branch-guard.sh	eddb14559b662ad4	46991f45e4a0d2d3	41/41
+merged-branch-guard.sh	67f99ecb9bda5168	51cedb198679b641	81/81
 opponent-batch-guard.sh	7571fc54370d05f2	f9d50d5d41d2be23	48/48
 opponent-wait-guard.sh	b0571c4bacf65987	1e3050b9384000f4	32/32
 opponents.jq	ef5b0de61c7fac0b	2d26486f2a061116	47/47
