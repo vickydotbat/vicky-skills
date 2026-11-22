@@ -96,7 +96,7 @@ skills/writing/human-voice/scripts/lint-tells.py	57a14dabf05b04ae	458344786895c3
 skills/writing/human-voice/scripts/proofread.sh	23669843174af7fc	08dbbad6c9a68c04	38/38
 skills/writing/interactive-page/scripts/open-draft.sh	2ffde8abe91f0601	004e67e970011439	56/56
 skills/writing/interactive-page/scripts/open-page.sh	85ac78db4f0a5522	5253f46f12411d94	9/9
-skills/writing/interactive-page/scripts/page.py	68278b952f5d4620	9216d9e26694de0a	334/334
+skills/writing/interactive-page/scripts/page.py	68278b952f5d4620	46fc13f1ae619f50	334/334
 skills/writing/interactive-page/scripts/write-page.py	ab52c27368db667a	77e1516fbbf15497	84/84
 springboard.sh	0fcdfc65f3050c73	645a579d6b475bf3	42/42
 stale-copy-hint.sh	6c278c5222834240	c802cfd5b779840e	27/27
