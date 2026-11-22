@@ -205,9 +205,7 @@ Change it in the plugin's settings under `/plugin`:
 - `proofread_endpoint`: any OpenAI-compatible API, such as OpenRouter or a local Ollama.
 - `proofread_key_env`: the variable that holds that endpoint's key, or `none` for a server that needs no key.
 
-A custom endpoint needs all three set, so your Gemini key never goes to another provider. With no key, or when the call fails, your session's model proofreads instead. The reply names the model that did the proofread, and the reason for any fallback.
-
-The script needs `curl` and `jq`.
+A custom endpoint needs all three set, so your Gemini key never goes to another provider. With no key, no `curl` or `jq`, or a failed call, your session's model proofreads instead. The reply names the model that did the proofread, and the reason for any fallback.
 
 ## Approved examples
 
