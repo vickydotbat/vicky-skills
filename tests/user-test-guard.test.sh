@@ -98,6 +98,36 @@ rm -f "$marker"
 { user "go"; bash_call "bash skills/writing/interactive-page/scripts/$page_opener.sh /tmp/s1/over-to-you-door.md"; text "Let me know if it works."; } > "$fx/t.jsonl"
 check "a command that only names the opener, with no marker, is sent back" 'sent_back'
 
+# The door line is the reply's one ask. Door lines seen in real sessions, retold.
+door_red=("🚪 Waiting on you: open Appearance in character creation and look at Chest. Tile 5 should show the preview."
+          "🚪 Waiting on you: connect to \`localhost:5121\`, open Appearance, and look at Chest tile 5."
+          "🚪 Waiting on you: close the dressing window and open it again with \`/dressing\`. Then look at Torso."
+          "🚪 Waiting on you: reopen \`/dressing\`. Paging back to page 1 should work now."
+          "🚪 Waiting on you: load \`the_field\` from the modules list and walk the field."
+          "🚪 **Waiting on you:** the test module is ready to look at. It holds all 79 animals."
+          "🚪 **Waiting on you:** reopen \`the_field\`. It now holds 103 animals.")
+for d in "${door_red[@]}"; do
+  { user "go"; text "$d"; } > "$fx/t.jsonl"
+  check "a door line that sends the user to look is sent back: $d" 'sent_back'
+done
+check "a door line sent with SendUserMessage is refused" 'refused "🚪 Waiting on you: reopen the window and look at the tile."'
+{ user "go"; text "🚪 Waiting on you: reopen the window. It should page back now."; } > "$fx/t.jsonl"
+check "the reason quotes the door line's order" '[[ "$(rm -rf "$fx/data"; stop)" == *"reopen the window"* ]]'
+check "the reason asks for each place quoted from the code" '[[ "$(rm -rf "$fx/data"; stop)" == *"from the code that draws it"* ]]'
+door_green=("🚪 Waiting on you: Go renderer or Blender? Answer one word in chat."
+            "🚪 Waiting on you: type \`! make up\` from the repo root."
+            "🚪 Waiting on you: say \"open it\" and I open the pull request."
+            "🚪 Waiting on you: say \"go\" when your check is done."
+            "🚪 Waiting on you: is the grey mannequin the right look? Answer in chat."
+            "🚪 Waiting on you: if it is ready for review, run \`! tea pr edit 7 -t x\`."
+            "🚪 Waiting on you: the draft is open in your browser. Close it when it reads right.")
+for d in "${door_green[@]}"; do
+  { user "go"; text "$d"; } > "$fx/t.jsonl"
+  check "a door line that asks for an answer goes through: $d" 'passes'
+done
+{ user "go"; text "I had to reopen the file and look at line 5. Fixed and pushed."; } > "$fx/t.jsonl"
+check "the same words outside the door line go through" 'passes'
+
 { user "go"; text "Let me know if it works."; } > "$fx/t.jsonl"
 check "the reason names over-to-you and ran.sh" '[[ "$(rm -rf "$fx/data"; stop)" == *over-to-you*ran.sh* ]]'
 check "the reason quotes the hand-off" '[[ "$(rm -rf "$fx/data"; stop)" == *"Let me know if it works"* ]]'
