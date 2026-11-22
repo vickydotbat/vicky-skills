@@ -87,6 +87,7 @@ check 'names a path' "a cat of a file is read as the body"
 expect 2 "$(run "gh pr edit 3 --body \"\$(<$scratch/leak.md)\"")" "a body read with \$(<file) is checked"
 expect 2 "$(run "tea comment 3 \"\$(cat $scratch/leak.md | head)\"")" "a substitution that is more than a cat is refused"
 check 'command substitution' "the refusal names the substitution"
+check 'cat FILE' "the steer names tea's file route"
 expect 2 "$(run "cat > $scratch/hd.md <<'EOF'
 Built /$ns/x
 EOF
@@ -116,7 +117,8 @@ expect 0 "$(run "S=$scratch; gh pr edit 3 --body-file \$S/clean.md")" "a body fi
 expect 2 "$(run "S=\$(mktemp -d); gh pr edit 3 --body-file \$S/clean.md")" "a variable set from a substitution is refused"
 expect 0 "$(run "S=$scratch && cd \$S/r && gh pr edit 3 --body-file ../clean.md")" "a cd under a set variable moves the checkout"
 expect 2 "$(run "tea comment 3 \"\$(cat \$NO_SUCH_VAR/x.md)\"")" "a cat of a path under an unset variable is refused"
-check 'cat FILE' "the steer names tea's file route"
+check 'expand' "a cat under an unset variable is refused for the variable"
+expect 0 "$(run 'tea comment 3 "$(cat ${SCRATCH_DIR}/clean.md)"' SCRATCH_DIR="$scratch")" "a cat of a path under a set variable is read"
 mkdir -p "$scratch/nogit"; for t in bash cat jq env python3; do ln -s "$(command -v $t)" "$scratch/nogit/$t"; done
 expect 0 "$(run "gh pr comment 3 --body hi" PATH="$scratch/nogit")" "without git a clean post still passes"
 printf 'not json' | "$hook" >/dev/null 2>&1; rc=$?
