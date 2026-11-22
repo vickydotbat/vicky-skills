@@ -11,9 +11,12 @@
 # output passes through, and ran.sh exits with the command's status.
 # A hung command is stopped at RAN_TIMEOUT seconds, 600 by default, and
 # killed RAN_GRACE seconds later, 5 by default, when it ignores the stop.
-# Its output goes to a file, not a pipe, so a child it leaves running holds
-# nothing open, and the file stops at RAN_MAX_BYTES, 50 MiB by default. The
-# output is printed once the command ends.
+# Its output goes through head -c into a file, which stops at RAN_MAX_BYTES,
+# 50 MiB by default. The cap sits on the pipe, never on the command: a ulimit
+# -f is inherited, and it killed every server a check started once that
+# server's own files passed the cap. The reader is stopped a moment after the
+# command ends, so a child it leaves running holds nothing open. The output is
+# printed once the command ends.
 set -u
 [ $# -ge 2 ] || { echo "usage: ran.sh <id> <command> [args...]" >&2; exit 2; }
 id=$1; shift
@@ -25,9 +28,16 @@ mkdir -p "$dir" || exit 2
 log=$(mktemp "$dir/.$id.XXXXXX") || exit 2 # mutant-ok: mkdir -p made the folder a line above, so mktemp fails here only on a full disk
 trap 'rm -f "$log"' EXIT
 at=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-blocks=$(( ${RAN_MAX_BYTES:-52428800} / 1024 ))
-( ulimit -f "$(( blocks > 0 ? blocks : 1 ))"; exec timeout -k "${RAN_GRACE:-5}" "${RAN_TIMEOUT:-600}" "$@" ) > "$log" 2>&1
+max=${RAN_MAX_BYTES:-52428800}
+exec 3> >(head -c "$max" > "$log"; cat > /dev/null)
+reader=$!
+timeout -k "${RAN_GRACE:-5}" "${RAN_TIMEOUT:-600}" "$@" >&3 2>&1 3>&-
 status=$?
+exec 3>&-
+# The reader drains what is left, then ends; a child still holding the pipe
+# keeps it open, so it is stopped after a short wait.
+timeout 1 tail --pid="$reader" -f /dev/null # mutant-ok: the wait only gives head time to flush; no test can time a flush without a race
+pkill -P "$reader" 2>/dev/null; kill "$reader" 2>/dev/null
 cat "$log"
 head=$(git rev-parse HEAD 2>/dev/null || true)
 # python3, which checklist.py needs anyway, writes the receipt.

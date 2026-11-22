@@ -17,3 +17,5 @@ identify
 pdftotext
 chromium
 gzip
+pgrep
+pkill

@@ -179,8 +179,11 @@ done
 spec "[$item]"
 # ran.sh stays inside its time and size bounds.
 check "a command that leaves a child holding its output still ends at RAN_TIMEOUT" 's=$SECONDS; RAN_TIMEOUT=1 ran bg bash -c "sleep 30 & echo hi" >/dev/null 2>&1; [ $(( SECONDS - s )) -lt 10 ]'
+check "a child left holding the output leaves no reader running after ran.sh ends" 'RAN_MAX_BYTES=4097 ran bgr bash -c "sleep 5 & echo hi" >/dev/null 2>&1; ! pgrep -fx "head -c 4097" >/dev/null'
 check "a command that ignores TERM is killed after the grace" 's=$SECONDS; RAN_TIMEOUT=1 RAN_GRACE=1 ran term bash -c "trap \"\" TERM; sleep 30" >/dev/null 2>&1; r=$?; [ $(( SECONDS - s )) -lt 10 ] && [ $r = 137 ]'
 check "a noisy command's log stops at RAN_MAX_BYTES" 'RAN_TIMEOUT=3 RAN_MAX_BYTES=4096 ran noisy yes >/dev/null 2>&1; [ -f "$dir/rt/s2/over-to-you-receipts/noisy.json" ] && [ -z "$(find "$dir/rt/s2/over-to-you-receipts" -name ".*" -type f)" ]'
+check "a command ran.sh starts keeps its caller's file-size limit, so a server it starts can write its own files" '[ "$(ran fsize bash -c "ulimit -f" 2>/dev/null)" = "$(ulimit -f)" ]'
+check "a command writes a file bigger than RAN_MAX_BYTES outside its log" 'RAN_MAX_BYTES=4096 ran bigfile bash -c "head -c 8192 /dev/zero > \"\$1\"" _ "$dir/bigfile" >/dev/null 2>&1; [ "$(wc -c < "$dir/bigfile")" = 8192 ]'
 check "the output of a noisy command passes through only up to RAN_MAX_BYTES" '[ "$(RAN_TIMEOUT=3 RAN_MAX_BYTES=4096 ran noisy2 yes 2>/dev/null | wc -c)" -le 4096 ]'
 # The stage: proven_by names a server, so a fresh liveness receipt must stand behind it.
 # A log line can come from another server writing the same log.
