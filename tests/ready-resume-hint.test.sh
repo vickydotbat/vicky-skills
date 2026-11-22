@@ -19,6 +19,8 @@ a() { jq -nc '{type:"assistant",message:{role:"assistant",content:[{type:"text",
 out=$(run "$(p "$(b 'gh pr ready 12')")")
 has "gh pr ready in the prompt resumes make-it-so" "make-it-so goes on" "$out"
 has "the hint names the command" 'gh pr ready 12' "$out"
+has "the hint names the currency check" "git fetch origin" "$out"
+has "the hint names the rebase" "rebase it with history-monks" "$out"
 has "the hint names the run check" "close and reopen the pull request" "$out"
 has "the hint names the CI watch" "watch every required check" "$out"
 has "the hint names the settling" "settle the tickets and the body" "$out"

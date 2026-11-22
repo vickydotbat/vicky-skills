@@ -36,4 +36,4 @@ while IFS= read -r c; do
   fi
 done <<<"$cmds"
 [ -n "$ready" ] || exit 0
-jq -nc --arg c "$ready" '{hookSpecificOutput:{hookEventName:"UserPromptSubmit",additionalContext:("The user marked a pull request ready (`" + $c + "`). make-it-so goes on from there, unasked: check that a run started for the head commit, and when none did (a Gitea title edit often starts none), close and reopen the pull request (step 5). Then watch every required check to a final state and fix red (step 6), settle the tickets and the body, and report (step 7).")}}'
+jq -nc --arg c "$ready" '{hookSpecificOutput:{hookEventName:"UserPromptSubmit",additionalContext:("The user marked a pull request ready (`" + $c + "`). make-it-so goes on from there, unasked: run `git fetch origin`, and when the branch is behind its base, rebase it with history-monks and push it (a ready pull request takes a rebase-only push). Then check that a run started for the head commit, and when none did (a Gitea title edit often starts none), close and reopen the pull request (step 5). Then watch every required check to a final state and fix red (step 6), settle the tickets and the body, and report (step 7).")}}'
