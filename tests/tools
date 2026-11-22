@@ -16,3 +16,4 @@ convert
 identify
 pdftotext
 chromium
+gzip

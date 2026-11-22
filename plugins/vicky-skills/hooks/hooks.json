@@ -64,6 +64,11 @@
           },
           {
             "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/post-body-guard.sh\"",
+            "timeout": 15
+          },
+          {
+            "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/push-behind-guard.sh\"",
             "timeout": 20
           },
