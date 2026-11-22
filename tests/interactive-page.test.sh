@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2016 # check() evals its single-quoted condition later
+# shellcheck disable=SC2034 # names set here are read inside check()'s eval
 # page.py's decisions beyond the approved examples: comments, odd answers,
 # a second Done, the timeout and bad arguments. Runs the page with a
 # stand-in browser that records its address.
@@ -488,18 +490,18 @@ check "a live drawing change is kept at once in its own block, answers Kept. onc
 printf '# Sketch\n\n```drawio\n<mxfile>a</mxfile>```\n\n## Two\n\n```drawio\n<mxfile>b</mxfile>\n```\n' >"$scratch/gl.md"
 cp "$scratch/gl.md" "$scratch/gl2.md"
 fixed_text=$(printf '# Sketch\n\n```drawio\n<mxfile>a</mxfile>\n```\n\n## Two\n\n```drawio\n<mxfile>b</mxfile>\n```\n')
-DRAWIO_HOME= start "$scratch/gl.md"
+DRAWIO_HOME="" start "$scratch/gl.md"
 html=$(curl -s "$url")
 post /done "drawing_xml.0=<mxfile>a</mxfile>" "drawing_xml.1=<mxfile>b</mxfile>" >/dev/null
 finish
-DRAWIO_HOME= start "$scratch/gl2.md" 1
+DRAWIO_HOME="" start "$scratch/gl2.md" 1
 finish
 check "a glued fence is split in the file, even with no answer, and the page shows each sketch on its own" \
   '[ "$(grep -c "name=\"drawing_xml\." <<<"$html")" = 2 ] && [ "$(cat "$scratch/gl.md")" = "$fixed_text" ] && [ "$status" = 2 ] && [ "$(cat "$scratch/gl2.md")" = "$fixed_text" ]'
 
 # A drawing's picture is saved beside the file and named after its closing fence.
 printf '```drawio\n<a/>\n```\n\n```text\nt\n```\n' >"$scratch/png.md"
-DRAWIO_HOME= start "$scratch/png.md"
+DRAWIO_HOME="" start "$scratch/png.md"
 post /done drawing_xml.0='<a/>' drawing_png.0='data:image/png;base64,aGk=' text.0=t comment.0= >/dev/null
 finish
 check "a drawing's PNG is saved as <file>.drawing-<n>.png and named once, after its closing fence" \
