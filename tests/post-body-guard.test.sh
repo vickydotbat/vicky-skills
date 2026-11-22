@@ -52,6 +52,14 @@ expect 0 "$(run "echo \"gh 'x")" "a broken command that names gh and is no post 
 expect 2 "$(run "gh pr edit 3 --body '/$ns/x'")" "a leak gets the refusal header"
 grep -qF 'post-body-guard: refused' "$scratch/err" && grep -qF 'Rewrite the body by role' "$scratch/err" && echo "ok   the refusal says what to do" || { echo "FAIL the refusal says what to do"; fail=1; }
 expect 2 "$(run "gh pr edit 3 --body 'x")" "a post with broken quoting is refused"; grep -qF -- '--body-file' "$scratch/err" && echo "ok   a quoting refusal steers to --body-file" || { echo "FAIL a quoting refusal steers to --body-file"; fail=1; }
+expect 2 "$(rin "cd forge && gh pr edit 3 -R acme/widgets --body-file $scratch/forge/host.md" .)" "a cd moves the checkout for an absolute body file"
+expect 0 "$(rin "cd forge
+cd ..
+gh pr edit 3 -R acme/widgets --body-file $scratch/forge/host.md" .)" "a cd back out on its own line leaves the checkout"
+expect 0 "$(rin "cd forge && cd .. && gh pr edit 3 -R acme/widgets --body-file $scratch/forge/host.md" .)" "a cd back out after && leaves the checkout"
+expect 0 "$(run "cd && gh pr comment 3 --body hi")" "a bare cd is no crash"
+expect 2 "$(rin "gh pr edit < /dev/null 306 -F $scratch/other.md" r)" "a redirect before the number leaves the number read"
+expect 0 "$(rin "gh pr edit -B 1641 306 -F $scratch/own306.md" r)" "a gh-only value flag is never read as the number"
 mkdir -p "$scratch/nogit"; for t in bash cat jq env python3; do ln -s "$(command -v $t)" "$scratch/nogit/$t"; done
 expect 0 "$(run "gh pr comment 3 --body hi" PATH="$scratch/nogit")" "without git a clean post still passes"
 out=$(printf 'not json' | "$hook" 2>&1); rc=$?

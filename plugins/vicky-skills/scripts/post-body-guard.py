@@ -154,13 +154,32 @@ def body_text(kind, val, cwd):
         if "$(" in val or "`" in val:
             return None, "the body comes from a command substitution, which this guard can't check. " + STEER
         return val, None
-    if val == "-":
-        return None, "the body file - reads stdin, which this guard can't check. " + STEER
     try:
         with open(os.path.join(cwd, os.path.expanduser(val)), encoding="utf-8", errors="replace") as f:
             return f.read(), None
     except OSError:
         return None, f"the body file {val} can't be read. " + STEER
+
+
+def check_post(tool, args, cwd, listed):
+    """Return the problems in one post's bodies."""
+    problems = []
+    bodies, number, repo = read_args(tool, args)
+    hosts = set(listed)
+    if tool == "gh":
+        target = host_of(repo if "://" in repo else "https://" + repo) if repo.count("/") >= 2 else os.environ.get("GH_HOST", "github.com").lower()
+        hosts |= {h for h in checkout_hosts(cwd) if h != target}
+    for kind, val in bodies:
+        text, why = body_text(kind, val, cwd)
+        if why:
+            problems.append(why)
+            continue
+        first = next((l for l in text.splitlines() if l.strip()), "")
+        m = re.match(r"^\s*#\s+#(\d+)\b", first)
+        if m and number and m.group(1) != number:
+            problems.append(f"the body opens with the heading of #{m.group(1)}, but it posts to #{number}: it is another item's text.")
+        problems += leak_lines(text, hosts)
+    return problems
 
 
 def main():
@@ -189,22 +208,8 @@ def main():
         if tool == "gh-api":
             if "--input" in args or any(re.match(r"^(--(raw-)?field=|-[fF])?body=", a) for a in args):
                 problems.append("gh api sends a body this guard can't check. " + STEER)
-            continue
-        bodies, number, repo = read_args(tool, args)
-        hosts = set(listed)
-        if tool == "gh":
-            target = host_of(repo if "://" in repo else "https://" + repo) if repo.count("/") >= 2 else os.environ.get("GH_HOST", "github.com").lower()
-            hosts |= {h for h in checkout_hosts(cwd) if h != target}
-        for kind, val in bodies:
-            text, why = body_text(kind, val, cwd)
-            if why:
-                problems.append(why)
-                continue
-            first = next((l for l in text.splitlines() if l.strip()), "")
-            m = re.match(r"^\s*#\s+#(\d+)\b", first)
-            if m and number and m.group(1) != number:
-                problems.append(f"the body opens with the heading of #{m.group(1)}, but it posts to #{number}: it is another item's text.")
-            problems += leak_lines(text, hosts)
+        else:
+            problems += check_post(tool, args, cwd, listed)
     if not problems:
         return 0
     print("post-body-guard: refused, this post would publish what it must not:", file=sys.stderr)
