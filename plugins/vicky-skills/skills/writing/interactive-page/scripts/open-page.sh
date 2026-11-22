@@ -8,7 +8,9 @@
 # path holds a space falls back to the editor; pass the page as an argument
 # array if that ever happens.
 here=$(cd "$(dirname "$0")" && pwd)
-if { [ -n "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ] || [ "$(uname)" = Darwin ]; } && [[ $here != *" "* ]]; then
+# EVAL_PAGE_DISPLAY=1 stands in for a display: the eval sandbox clears DISPLAY
+# and lets a case set only EVAL_* variables, and the red-pen eval checks the link.
+if { [ -n "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ] || [ "${EVAL_PAGE_DISPLAY:-}" = 1 ] || [ "$(uname)" = Darwin ]; } && [[ $here != *" "* ]]; then
   export VISUAL="python3 -I $here/page.py"
   export DRAFT_PAGE=1
 fi

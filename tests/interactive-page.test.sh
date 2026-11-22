@@ -544,4 +544,10 @@ except OSError:
     print("silent after Done", got)
 PY
 check "after Done the page serves nothing more" '[ "$(timeout 30 python3 -I "$scratch/late.py" "$dir" 2>/dev/null)" = "silent after Done True" ]'
+# EVAL_PAGE_DISPLAY=1 opens the page with no display, so an eval can read its link; unset, the editor opens.
+printf '# Drafts\n\n## Tip\n\ntext\n' > "$scratch/evalpage.md"
+timeout 6 env -u DISPLAY -u WAYLAND_DISPLAY -u BROWSER EVAL_PAGE_DISPLAY=1 bash "$dir/open-page.sh" "$scratch/evalpage.md" > "$scratch/evalpage.on" 2>&1
+timeout 6 env -u DISPLAY -u WAYLAND_DISPLAY -u EVAL_PAGE_DISPLAY VISUAL=true bash "$dir/open-page.sh" "$scratch/evalpage.md" > "$scratch/evalpage.off" 2>&1
+check "EVAL_PAGE_DISPLAY=1 prints the page link" 'grep -q "page: open http://127.0.0.1:" "$scratch/evalpage.on"'
+check "without EVAL_PAGE_DISPLAY no page opens" '! grep -q "page: open" "$scratch/evalpage.off"'
 exit $fail
