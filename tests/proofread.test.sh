@@ -2,6 +2,8 @@
 # Edges of human-voice's proofread script past its approved examples: a server
 # that needs no key, a bad key variable name, a missing tool, an empty answer,
 # and bad usage. A stub curl on PATH stands in for the network.
+# shellcheck disable=SC2016 # check evals its condition later, so single quotes keep it unexpanded
+# shellcheck disable=SC2034 # the variables run sets are read inside check's eval
 set -u
 here="$(cd "$(dirname "$0")" && pwd)"
 pr="$here/../plugins/vicky-skills/skills/writing/human-voice/scripts/proofread.sh"

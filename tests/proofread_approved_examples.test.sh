@@ -2,6 +2,8 @@
 # approved-spec: the examples ticked on the proofread-step drafts page. Each runs
 # human-voice's proofread script with a stub curl on PATH, so no request leaves
 # the machine, and reads what the script prints and what it sent.
+# shellcheck disable=SC2016 # check evals its condition later, so single quotes keep it unexpanded
+# shellcheck disable=SC2034 # the variables run sets are read inside check's eval
 set -u
 here="$(cd "$(dirname "$0")" && pwd)"
 pr="$here/../plugins/vicky-skills/skills/writing/human-voice/scripts/proofread.sh"
