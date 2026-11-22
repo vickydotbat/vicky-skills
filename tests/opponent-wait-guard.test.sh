@@ -75,4 +75,22 @@ check "no transcript passes" 0 "$(jq -nc '{tool_input:{command:"gh pr merge 5"}}
 check "bad input passes" 0 "$(echo nope | bash "$guard" >/dev/null 2>&1; echo $?)"
 echo 'not json' >> "$t"; launch tu4 D1 vicky-skills:intent-opponent
 check "a broken transcript line is skipped, and the rest still counts" 2 "$(code 'gh pr merge 5')"
+# The snag: one delivery holds two notices, and the first opponent's report quotes the interim words.
+: > "$t"; launch tu7 A7 vicky-skills:standards-opponent; launch tu8 A8 vicky-skills:simplicity-opponent
+jq -nc --arg c "<task-notification>
+<task-id>A7</task-id>
+<status>completed</status>
+<summary>Agent \"x\" finished</summary>
+<result>both hooks test contains(\"waiting on its own background work\")</result>
+</task-notification>
+<task-notification>
+<task-id>A8</task-id>
+<status>completed</status>
+<summary>Agent \"y\" finished</summary>
+</task-notification>" '{type:"queue-operation",operation:"enqueue",content:$c}' >> "$t"
+check "two final notices in one delivery free both, whatever a report quotes" 0 "$(code 'gh pr merge 5 --squash')"
+jq -nc '{type:"assistant",message:{content:[{type:"text",text:"<task-notification>\n<task-id>A8</task-id>\n<summary>Agent is waiting on its own background work</summary>\n</task-notification>"}]}}' >> "$t"
+check "a notice the agent quotes in its own text is no notice" 0 "$(code 'gh pr merge 5 --squash')"
+note A8 "is waiting on its own background work"
+check "a later interim notice in its own delivery still holds the merge" 2 "$(code 'gh pr merge 5 --squash')"
 exit $fail

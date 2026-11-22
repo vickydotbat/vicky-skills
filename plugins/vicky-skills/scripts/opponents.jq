@@ -19,8 +19,14 @@ def fighting($r; $launches):
    | select(.type == "tool_result" and .is_error == true) | .tool_use_id] as $errors
   | [$r[] | select((.toolUseResult | type) == "object" and .toolUseResult.agentId != null)
      | {id: (.message.content[0].tool_use_id // ""), agent: .toolUseResult.agentId}] as $agents
-  | [range(0; $r | length) as $i | $r[$i] | [.. | strings | select(contains("<task-notification>"))][]
-     | {i: $i, t: .}] as $notes
+  # One string can carry several notices, and a report inside one can quote anything:
+  # each notice is read alone, by its own header fields. The agent's own text holds none.
+  | [range(0; $r | length) as $i | $r[$i] | select(.type != "assistant")
+     | [.. | strings | scan("<task-notification>[\\s\\S]*?</task-notification>")][]
+     | {i: $i,
+        task: ([capture("<task-id>(?<v>[^<]*)</task-id>")][0].v),
+        use: ([capture("<tool-use-id>(?<v>[^<]*)</tool-use-id>")][0].v),
+        interim: (([capture("<summary>(?<v>[^<]*)</summary>")][0].v // "") | contains("waiting on its own background work"))}] as $notes
   | [range(0; $r | length) as $i | $r[$i] | select(.type == "assistant") | .message.content[]? | objects
      | select(.type == "tool_use" and .name == "SendMessage") | {i: $i, to: (.input.to // "")}] as $sends
   | [$r[] | select(.type == "assistant") | .message.content[]? | objects
@@ -29,8 +35,7 @@ def fighting($r; $launches):
   | select(($errors | index($l.id)) | not)
   | ([$agents[] | select(.id == $l.id) | .agent] | first) as $a
   | select($a == null or (($stops | index($a)) | not))
-  | ([$notes[] | select((.t | contains("<tool-use-id>" + $l.id + "</tool-use-id>"))
-                        or ($a != null and (.t | contains("<task-id>" + $a + "</task-id>"))))] | last) as $n
+  | ([$notes[] | select(.use == $l.id or ($a != null and .task == $a))] | last) as $n
   | ([$sends[] | select($a != null and .to == $a) | .i] | max) as $s
-  | select($n == null or ($n.t | contains("waiting on its own background work")) or ($s != null and $s > $n.i))
+  | select($n == null or $n.interim or ($s != null and $s > $n.i))
   | $l + {agent: $a};
