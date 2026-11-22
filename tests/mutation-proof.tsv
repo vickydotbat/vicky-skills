@@ -26,8 +26,8 @@ local-path-guard.sh	6250febeeda4bb1c	7a1c8c2b96c6670c	29/29
 merge-point.sh	a19dbe9167831b34	bdb7b61b80c0c3d4	2/2
 merged-branch-guard.sh	eddb14559b662ad4	46991f45e4a0d2d3	41/41
 opponent-batch-guard.sh	7571fc54370d05f2	f9d50d5d41d2be23	48/48
-opponent-wait-guard.sh	b0571c4bacf65987	8eccb154efc4e3aa	32/32
-opponents.jq	b40aa2b121725318	cea0a06ede874d7e	46/46
+opponent-wait-guard.sh	b0571c4bacf65987	1e3050b9384000f4	32/32
+opponents.jq	ef5b0de61c7fac0b	2d26486f2a061116	47/47
 outside-text-guard.sh	e8f015e3aada1afe	08fac32ab3bc707c	39/39
 patch-tell-hint.sh	256a998db4051de9	5fe1d435fef9a19b	50/50
 pkill-guard.sh	b7b411516636d988	29ca7e6cb32dc5c9	7/7
@@ -35,7 +35,7 @@ plane-block-guard.sh	a2ced0e121b33f36	c912309fd621ec7a	20/20
 plugin-data.sh	2b852e6635cec758	1eb83e986afbbf10	3/3
 pr-guard.sh	71da09532322a942	e6c5726d88da16b0	157/157
 promise-guard.sh	080cb078921ad99f	8b391a320412fcdd	17/17
-prose-strip.sh	4af2ac6de8168c90	f93e0cab3d640034	95/95
+prose-strip.sh	4af2ac6de8168c90	f38a51df643790ee	95/95
 publickey-hint.sh	d3098ec01110850e	00f13591da283269	13/13
 publish-guard.sh	425b226598ad0b9f	bbfcd3a6baa70e34	13/13
 push-behind-guard.sh	f04d1af3f2ed0799	25ad37e4d4878e9e	48/48

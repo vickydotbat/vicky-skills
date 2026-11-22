@@ -9,7 +9,7 @@ def opponent_launches($r):
    | {id, type: .input.subagent_type}];
 
 # The text of the first <$n> element in the input string, or null.
-def tag($n): [capture("<" + $n + ">(?<v>[^<]*)</" + $n + ">")][0].v;
+def tag($n): [capture("<" + $n + ">(?<v>[\\s\\S]*?)</" + $n + ">")][0].v;
 
 # Each launch in $launches ({id, ...}) still fighting, with its agent id added
 # as .agent (null before its receipt lands). A launch is done when its result
@@ -26,9 +26,10 @@ def fighting($r; $launches):
   # result, a file shown, a summary, a request copy) a notice is quoted, and a quote
   # would free an opponent that still runs. One queued string can carry several
   # notices, and a report inside one can quote anything, so each notice is read
-  # alone, by its own header fields.
+  # alone, by its own header fields: the text before its <result>.
   | [range(0; $r | length) as $i | $r[$i] | select(.type == "queue-operation" and .operation == "enqueue")
      | .content | strings | scan("<task-notification>[\\s\\S]*?</task-notification>")
+     | split("<result>")[0]
      | {i: $i, task: tag("task-id"), use: tag("tool-use-id"),
         interim: ((tag("summary") // "") | contains("waiting on its own background work"))}] as $notes
   | [range(0; $r | length) as $i | $r[$i] | select(.type == "assistant") | .message.content[]? | objects

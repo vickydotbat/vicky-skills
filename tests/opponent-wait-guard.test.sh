@@ -113,4 +113,16 @@ jq -nc --arg c "$q9" '{type:"queue-operation",operation:"remove",content:$c}' >>
 check "a notice taken off the queue is not a second delivery" 2 "$(code 'gh pr merge 5 --squash')"
 jq -nc --arg c "$q9" '{type:"queue-operation",operation:"enqueue",content:$c}' >> "$t"
 check "the same notice queued by the harness frees it" 0 "$(code 'gh pr merge 5 --squash')"
+# A notice's own header names whom it frees; its report can quote any id or tag.
+: > "$t"; launch tuA AA vicky-skills:intent-opponent; launch tuB AB vicky-skills:standards-opponent
+jq -nc --arg c "<task-notification>
+<task-id>AA</task-id>
+<status>completed</status>
+<summary>Agent \"a\" finished</summary>
+<result>see <tool-use-id>tuB</tool-use-id> and <task-id>AB</task-id></result>
+</task-notification>" '{type:"queue-operation",operation:"enqueue",content:$c}' >> "$t"
+msg=$(jq -nc --arg c 'gh pr merge 5' --arg t "$t" '{tool_input:{command:$c},transcript_path:$t}' | bash "$guard" 2>&1 >/dev/null)
+check "ids quoted in one opponent's report free no other" yes "$(grep -q AB <<<"$msg" && ! grep -q AA <<<"$msg" && echo yes || echo no)"
+note AB "<b> is waiting on its own background work"
+check "an interim summary with a tag in it still holds the merge" 2 "$(code 'gh pr merge 5 --squash')"
 exit $fail
