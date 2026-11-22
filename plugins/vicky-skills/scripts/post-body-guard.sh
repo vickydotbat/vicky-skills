@@ -7,7 +7,6 @@
 case "${CLAUDE_PLUGIN_OPTION_GUARD_POST_BODY:-true}" in false|0) exit 0 ;; esac
 payload=$(cat)
 if ! command -v python3 >/dev/null; then
-  grep -qE '(gh|tea)[^a-z]' <<<"$payload" || exit 0
   grep -qE '(gh[[:space:]]+(pr|issue)[[:space:]]+(create|edit|comment|review)|gh[[:space:]]+api|tea[[:space:]]+[a-z]+[[:space:]]+(create|edit)|tea[[:space:]]+comment)' <<<"$payload" || exit 0
   echo "post-body-guard: refused, python3 is missing, so this post's body can't be checked. Install python3 for the plugin. Nothing ran." >&2
   exit 2

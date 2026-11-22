@@ -38,7 +38,6 @@ def tokens(command):
     lex = shlex.shlex(command, posix=True, punctuation_chars="();<>|&\n")
     lex.whitespace = " \t\r"
     lex.whitespace_split = True
-    lex.commenters = "#"
     return list(lex)
 
 
@@ -83,24 +82,23 @@ def parse_post(seg):
             return "gh-api", seg[i + 2:]
         if base == "tea" and len(seg) > i + 2 and seg[i + 1] in TEA_KINDS and seg[i + 2] in TEA_VERBS:
             return "tea", seg[i + 3:]
-        if base == "tea" and len(seg) > i + 1 and seg[i + 1] in {"comment", "c"}:
+        if base == "tea" and len(seg) > i + 1 and seg[i + 1] in {"comment", "comments", "c"}:
             return "tea-comment", seg[i + 2:]
-    return None
 
 
 def read_args(tool, args):
-    """Return (bodies as (label, text or None for unreadable, reason), number, repo, redirects)."""
-    bodies, number, repo, stdin = [], None, "", []
+    """Return (bodies as (kind, value or None), number, repo).
+
+    A redirect's target is skipped: gh and tea read a body from stdin only
+    through --body-file - or --description-file -, which check_body refuses.
+    """
+    bodies, number, repo = [], None, ""
     positional = []
     i = 0
     while i < len(args):
         a = args[i]
-        if a in {"<<", "<<<"} or (a == "<" and (i + 1 >= len(args) or args[i + 1] != "/dev/null")):
-            stdin.append(a)
+        if a in {"<", ">", ">>", ">&", "<<", "<<<", "<&"}:
             i += 2
-            continue
-        if a in {"<", ">", ">>", ">&", "2"}:
-            i += 2 if a in {"<", ">", ">>", ">&"} else 1
             continue
         flag, eq, val = a.partition("=")
         if not eq:
@@ -110,9 +108,9 @@ def read_args(tool, args):
             bodies.append(("--body", val))
         elif tool == "gh" and flag in {"-F", "--body-file"}:
             bodies.append(("file", val))
-        elif tool == "tea" and flag in {"-d", "--description"}:
+        elif tool in {"tea", "tea-comment"} and flag in {"-d", "--description"}:
             bodies.append(("--description", val))
-        elif tool == "tea" and flag == "--description-file":
+        elif tool in {"tea", "tea-comment"} and flag == "--description-file":
             bodies.append(("file", val))
         elif flag in {"-R", "--repo", "-r"}:
             repo = val or ""
@@ -128,7 +126,7 @@ def read_args(tool, args):
         number = number_of(positional[0])
     if tool == "tea-comment" and len(positional) > 1:
         bodies.append(("comment", " ".join(positional[1:])))
-    return bodies, number, repo, stdin
+    return bodies, number, repo
 
 
 def leak_lines(text, hosts):
@@ -148,17 +146,30 @@ def leak_lines(text, hosts):
     return found
 
 
+def body_text(kind, val, cwd):
+    """Return (text, None), or (None, why the body can't be read)."""
+    if val is None:
+        return None, "a body flag has no value. " + STEER
+    if kind != "file":
+        if "$(" in val or "`" in val:
+            return None, "the body comes from a command substitution, which this guard can't check. " + STEER
+        return val, None
+    if val == "-":
+        return None, "the body file - reads stdin, which this guard can't check. " + STEER
+    try:
+        with open(os.path.join(cwd, os.path.expanduser(val)), encoding="utf-8", errors="replace") as f:
+            return f.read(), None
+    except OSError:
+        return None, f"the body file {val} can't be read. " + STEER
+
+
 def main():
-    if os.environ.get("CLAUDE_PLUGIN_OPTION_GUARD_POST_BODY", "true") in {"false", "0"}:
-        return 0
     try:
         payload = json.load(sys.stdin)
     except ValueError:
         return 0
     command = (payload.get("tool_input") or {}).get("command") or ""
     cwd = payload.get("cwd") or os.getcwd()
-    if not re.search(r"\b(gh|tea)\b", command):
-        return 0
     try:
         toks = tokens(command)
     except ValueError:
@@ -171,43 +182,24 @@ def main():
     for seg in segments(toks):
         if seg[0] == "cd" and len(seg) > 1:
             cwd = os.path.join(cwd, os.path.expanduser(seg[1]))
-            continue
         post = parse_post(seg)
         if not post:
             continue
         tool, args = post
         if tool == "gh-api":
-            if any(re.match(r"^(-f|-F|--field|--raw-field)$", a) and j + 1 < len(args) and args[j + 1].startswith("body=")
-                   or re.match(r"^(--field|--raw-field|-f|-F)=?body=", a) or a == "--input" for j, a in enumerate(args)):
+            if "--input" in args or any(re.match(r"^(--(raw-)?field=|-[fF])?body=", a) for a in args):
                 problems.append("gh api sends a body this guard can't check. " + STEER)
             continue
-        bodies, number, repo, stdin = read_args(tool, args)
-        if stdin:
-            problems.append("the post reads from " + stdin[0] + ", which this guard can't check. " + STEER)
+        bodies, number, repo = read_args(tool, args)
         hosts = set(listed)
         if tool == "gh":
             target = host_of(repo if "://" in repo else "https://" + repo) if repo.count("/") >= 2 else os.environ.get("GH_HOST", "github.com").lower()
             hosts |= {h for h in checkout_hosts(cwd) if h != target}
         for kind, val in bodies:
-            if val is None:
-                problems.append("a body flag has no value. " + STEER)
+            text, why = body_text(kind, val, cwd)
+            if why:
+                problems.append(why)
                 continue
-            if kind == "file":
-                if val == "-":
-                    problems.append("--body-file - reads stdin, which this guard can't check. " + STEER)
-                    continue
-                p = os.path.join(cwd, os.path.expanduser(val))
-                try:
-                    with open(p, encoding="utf-8", errors="replace") as f:
-                        text = f.read()
-                except OSError:
-                    problems.append(f"the body file {val} can't be read. " + STEER)
-                    continue
-            else:
-                if "$(" in val or "`" in val:
-                    problems.append("the body comes from a command substitution, which this guard can't check. " + STEER)
-                    continue
-                text = val
             first = next((l for l in text.splitlines() if l.strip()), "")
             m = re.match(r"^\s*#\s+#(\d+)\b", first)
             if m and number and m.group(1) != number:

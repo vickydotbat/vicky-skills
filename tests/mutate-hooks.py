@@ -89,6 +89,8 @@ TESTS = {
     "heredoc-strip.awk": ["heredoc-strip"] + GIT_GUARDS + ["pr-guard", "pkill_guard_approved_examples"],
     "quote-mask.awk": ["pr-guard"],
     "local-path-guard.sh": ["local-path-guard"],
+    "post-body-guard.sh": ["post-body-guard", "post_body_guard_approved_examples"],
+    "post-body-guard.py": ["post-body-guard", "post_body_guard_approved_examples"],
     "draft-guard.sh": ["draft-guard"],
     "skill-started.sh": ["draft-guard", "rebase-guard", "ticket-filing-guard"],
     "pr-guard.sh": ["pr-guard", "deathmatch_approved_examples", "pr_guard_ai_credit_approved_examples", "pr_guard_one_pr_approved_examples", "pr_guard_create_approved_examples", "pr_guard_foreign_approved_examples", "pr_guard_state_approved_examples"],
