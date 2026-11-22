@@ -2,4 +2,5 @@
 type: regex
 target: { source: file, path: notes.md }
 pattern: 'restart your shell'
+flags: i
 ---
