@@ -27,7 +27,9 @@ holds the kit's command in neither its command nor its output is refused: the ag
 person does.
 
 "stage_ran" names the receipt of a liveness command (a process or container
-running, a port answering) run within 15 minutes of the page. A command that
+running, a port answering) run within 15 minutes of the page, and passed again RAN_HOLD=60 seconds later.
+A receipt whose command runs a script from the session folder is refused: its
+last line, not the test, decides its exit. A command that
 reads a file is refused, since a log line can come from another server, and
 a repo's `Stage check:` line in docs/agents/testing.md names the one command,
 matched whole, or says `none` to switch the check off.
@@ -84,6 +86,11 @@ def receipt(item, n, out_dir, label=None):
     for kit in re.findall(r"`([^`]+)`", item.get("kit", "")):
         if kit not in command and kit not in got.get("tail", ""):
             return None, f"{label}: receipt {rid} ran `{command}`, and neither it nor its output holds the kit `{kit}`: run the kit itself through ran.sh"
+    sid = os.environ.get("CLAUDE_CODE_SESSION_ID") or "\0"
+    scratches = tuple(os.path.join(root, sid) + os.sep for root in {os.environ.get("TMPDIR") or "/tmp", "/tmp"})
+    if any(word.startswith(scratches) for word in command.split()):
+        return None, (f"{label}: receipt {rid} ran `{command}`, a script written in the session folder: its last line, "
+                      "not the test, decides its exit. Run the test command itself through ran.sh")
     head = got.get("head") or ""
     if head:
         now = subprocess.run(["git", "-C", got.get("cwd") or ".", "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
@@ -98,6 +105,8 @@ READS_A_FILE = {"grep", "rg", "egrep", "fgrep", "tail", "head", "cat", "tac", "l
 # Words that run the command after them, so the reader check looks past them.
 WRAPPERS = {"env", "sudo", "run0", "timeout", "nice", "nohup", "exec", "command", "sh", "bash", "-c"}
 STAGE_MINUTES = 15
+# A server can answer a check seconds after boot and crash a minute later.
+STAGE_HOLD = 60
 SKEW = timedelta(minutes=1)
 
 
@@ -168,6 +177,9 @@ def stage_problem(spec, out_dir):
         return f"stage: receipt {rid} is dated in the future: run the liveness check again through ran.sh"
     if age > timedelta(minutes=STAGE_MINUTES):
         return f"stage: receipt {rid} ran more than {STAGE_MINUTES} minutes ago: run the liveness check again just before the page opens"
+    if (got.get("hold") or 0) < STAGE_HOLD:
+        return (f"stage: receipt {rid} checked the server once: run it as RAN_HOLD={STAGE_HOLD} ran.sh {rid} <command>, "
+                "which checks again a minute later, since a server can answer seconds after boot and crash after")
     if reads_a_file(command):
         return f"stage: receipt {rid} ran `{command}`, which reads a file: a log line can come from another server. Check the process, container or port itself"
     named = stage_check(got.get("cwd"))

@@ -17,7 +17,7 @@ item='{"do": "Open the pack", "see": "the slots show", "person": "look"}'
 receipt() { mkdir -p "$1/over-to-you-receipts"; jq -n --arg id "$2" --argjson e "$3" --arg c "$4" '{id:$id, command:$c, exit:$e, at:"2026-01-01T00:00:00Z", head:"", cwd:"/", tail:""}' > "$1/over-to-you-receipts/$2.json"; }
 receipt "$dir" r 0 "harness.sh --chat '/runscript paper'"
 # fresh <dir> <id> <command>: a stage receipt as ran.sh writes it a moment ago.
-fresh() { mkdir -p "$1/over-to-you-receipts"; jq -n --arg id "$2" --arg c "$3" --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '{id:$id, command:$c, exit:0, at:$at, head:"", cwd:"/", tail:"app Up 2 minutes"}' > "$1/over-to-you-receipts/$2.json"; }
+fresh() { mkdir -p "$1/over-to-you-receipts"; jq -n --arg id "$2" --arg c "$3" --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '{id:$id, command:$c, exit:0, at:$at, head:"", cwd:"/", hold:60, tail:"app Up 2 minutes"}' > "$1/over-to-you-receipts/$2.json"; }
 fresh "$dir" stage "podman ps --filter name=app"
 spec() { # items json -> spec file; an item with no ran names the receipt r
   jq -n --argjson items "$(jq 'map(.ran //= "r")' <<<"$1")" '{name: "Bob", brief: ["One sitting for the pack."], open: "Open the client on the branch.",
@@ -158,6 +158,12 @@ check "ran.sh writes its receipt with no jq on the machine" 'env PATH="$dir/nojq
 check "ran.sh refuses with no session id" 'env -u CLAUDE_CODE_SESSION_ID bash "$skill/ran.sh" x true 2>/dev/null; [ $? = 2 ]'
 check "ran.sh with too few arguments prints its usage and exits 2" 'out=$(bash "$skill/ran.sh" x 2>&1); [ $? = 2 ] && grep -q "^usage: ran.sh" <<<"$out"'
 mkdir -p "$dir/rt/s2"; fresh "$dir/rt/s2" stage "podman ps"; jq -n '{name: "Bob", open: "x", signed_off: "n", proven_by: "p", stage_ran: "stage", sections: [{title: "P", items: [{do: "Open the pack", see: "the slots show", person: "look", ran: "ok"}]}]}' > "$dir/spec.json"
+mkdir -p "$dir/wr/over-to-you-receipts"; fresh "$dir/wr" stage "podman ps"; jq -n --arg c "bash $dir/rt/s2/iloop.sh" --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '{id:"w", command:$c, exit:0, at:$at, head:"", cwd:"/", hold:0, tail:"exit=1"}' > "$dir/wr/over-to-you-receipts/w.json"; jq -n '{name: "Bob", open: "x", signed_off: "n", proven_by: "p", stage_ran: "stage", sections: [{title: "P", items: [{do: "Open the pack", see: "the slots show", person: "look", ran: "w"}]}]}' > "$dir/wr/spec.json"
+check "a receipt whose command is a script written in the session folder is refused" 'out=$(env TMPDIR="$dir/rt" CLAUDE_CODE_SESSION_ID=s2 python3 -I "$skill/checklist.py" "$dir/wr/spec.json" "$dir/wr/out.md" 2>&1); [ $? = 1 ] && grep -q "session folder" <<<"$out"'
+check "ran.sh with RAN_HOLD runs the check twice and records the hold" 'rm -f "$dir/twice"; RAN_HOLD=1 ran held bash -c "echo x >> \"\$1\"" _ "$dir/twice" >/dev/null 2>&1 && [ "$(wc -l < "$dir/twice")" = 2 ] && jq -e ".hold == 1" "$dir/rt/s2/over-to-you-receipts/held.json" >/dev/null'
+check "ran.sh with RAN_HOLD waits the hold between its two runs" 's=$(date +%s%N); RAN_HOLD=1 ran heldwait true >/dev/null 2>&1; [ $(( ($(date +%s%N) - s) / 1000000 )) -ge 1000 ]'
+check "ran.sh with RAN_HOLD fails when the second check fails" 'rm -f "$dir/once"; RAN_HOLD=1 ran heldfail bash -c "[ ! -e \"\$1\" ] && touch \"\$1\"" _ "$dir/once" >/dev/null 2>&1; [ $? = 1 ] && jq -e ".exit == 1 and .hold == 0" "$dir/rt/s2/over-to-you-receipts/heldfail.json" >/dev/null'
+check "ran.sh without RAN_HOLD records no hold" 'jq -e ".hold == 0" "$dir/rt/s2/over-to-you-receipts/ok.json" >/dev/null'
 check "a receipt ran.sh wrote opens the way to the checklist" 'env TMPDIR="$dir/rt" CLAUDE_CODE_SESSION_ID=s2 python3 -I "$skill/checklist.py" "$dir/spec.json" "$dir/rt/s2/over-to-you-ok.md" && grep -q "^   ran: .bash -c echo hello; exit 0. exit 0" "$dir/rt/s2/over-to-you-ok.md"'
 # The page opener refuses a checklist typed by hand.
 printf '# Over to you, Bob!\nproven by: p\n1. [ ] Open the pack → the slots show\n   person: look\n' > "$dir/rt/s2/over-to-you-hand.md"
@@ -195,7 +201,7 @@ check "a server named with no stage receipt is refused, naming stage_ran" 'out=$
 fresh "$dir" logline "grep -q 'ALL SERVICES READY' logs/server.log"
 stagespec '{"stage_ran": "logline"}'
 check "a stage receipt that only reads a log is refused" 'out=$(write); [ $? = 1 ] && grep -q "reads a file" <<<"$out"'
-receipt "$dir" old 0 "podman ps --filter name=app"
+receipt "$dir" old 0 "podman ps --filter name=app"; jq '.hold = 60' "$dir/over-to-you-receipts/old.json" > "$dir/o.json" && mv "$dir/o.json" "$dir/over-to-you-receipts/old.json"
 stagespec '{"stage_ran": "old"}'
 check "a stage receipt from long before the page is refused as stale" 'out=$(write); [ $? = 1 ] && grep -q "minutes" <<<"$out"'
 receipt "$dir" down 1 "podman ps --filter name=app"
@@ -209,10 +215,12 @@ for c in "pgrep -f tail" "curl -fs localhost:8080/cat"; do
   fresh "$dir" live "$c"; stagespec '{"stage_ran": "live"}'
   check "a liveness command whose argument names a reader, \`$c\`, passes" 'write >/dev/null && [ -s "$dir/out.md" ]'
 done
-jq -n '{id:"future", command:"podman ps --filter name=app", exit:0, at:"2099-01-01T00:00:00Z", head:"", cwd:"/", tail:"Up"}' > "$dir/over-to-you-receipts/future.json"
+jq -n '{id:"future", command:"podman ps --filter name=app", exit:0, at:"2099-01-01T00:00:00Z", head:"", cwd:"/", hold:60, tail:"Up"}' > "$dir/over-to-you-receipts/future.json"
 stagespec '{"stage_ran": "future"}'
 check "a stage receipt dated in the future is refused" 'out=$(write); [ $? = 1 ] && grep -q "future" <<<"$out"'
 stagespec '{"stage_ran": "stage"}'
+jq '.hold = 5' "$dir/over-to-you-receipts/stage.json" > "$dir/h.json"; mkdir -p "$dir/hq/over-to-you-receipts"; cp "$dir/over-to-you-receipts/"*.json "$dir/hq/over-to-you-receipts/"; cp "$dir/h.json" "$dir/hq/over-to-you-receipts/stage.json"; cp "$dir/spec.json" "$dir/hq/spec.json"
+check "a stage receipt held under a minute is refused, naming RAN_HOLD" 'out=$(python3 -I "$skill/checklist.py" "$dir/hq/spec.json" "$dir/hq/out.md" 2>&1); [ $? = 1 ] && grep -q "RAN_HOLD=60" <<<"$out"'
 check "a fresh liveness receipt lets the page write" 'write >/dev/null && [ -s "$dir/out.md" ]'
 stagespec '{"proven_by": "no server"}'
 check "no server needs no stage receipt" 'write >/dev/null && [ -s "$dir/out.md" ]'
@@ -220,11 +228,11 @@ check "no server needs no stage receipt" 'write >/dev/null && [ -s "$dir/out.md"
 repo="$dir/repo"; git init -q "$repo"; mkdir -p "$repo/docs/agents"
 echo 'Stage check: `podman ps --filter name=app-dev`' > "$repo/docs/agents/testing.md"
 mkdir -p "$dir/over-to-you-receipts"
-jq -n --arg cwd "$repo" --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '{id:"other", command:"curl -fs localhost:8080/health", exit:0, at:$at, head:"", cwd:$cwd, tail:"ok"}' > "$dir/over-to-you-receipts/other.json"
-jq -n --arg cwd "$repo" --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '{id:"named", command:"podman ps --filter name=app-dev", exit:0, at:$at, head:"", cwd:$cwd, tail:"Up"}' > "$dir/over-to-you-receipts/named.json"
+jq -n --arg cwd "$repo" --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '{id:"other", command:"curl -fs localhost:8080/health", exit:0, at:$at, head:"", cwd:$cwd, hold:60, tail:"ok"}' > "$dir/over-to-you-receipts/other.json"
+jq -n --arg cwd "$repo" --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '{id:"named", command:"podman ps --filter name=app-dev", exit:0, at:$at, head:"", cwd:$cwd, hold:60, tail:"Up"}' > "$dir/over-to-you-receipts/named.json"
 stagespec '{"stage_ran": "other"}'
 check "a stage receipt that skips the repo's Stage check command is refused, naming it" 'out=$(write); [ $? = 1 ] && grep -qF "podman ps --filter name=app-dev" <<<"$out"'
-jq -n --arg cwd "$repo" --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '{id:"around", command:"pgrep x # podman ps --filter name=app-dev", exit:0, at:$at, head:"", cwd:$cwd, tail:"1"}' > "$dir/over-to-you-receipts/around.json"
+jq -n --arg cwd "$repo" --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '{id:"around", command:"pgrep x # podman ps --filter name=app-dev", exit:0, at:$at, head:"", cwd:$cwd, hold:60, tail:"1"}' > "$dir/over-to-you-receipts/around.json"
 stagespec '{"stage_ran": "around"}'
 check "a stage receipt that only holds the Stage check command inside another is refused" 'out=$(write); [ $? = 1 ] && grep -qF "not the repo" <<<"$out"'
 fresh "$dir" outside "pgrep app"
@@ -236,11 +244,11 @@ jq -n --arg at "not a time" '{id:"badtime", command:"podman ps", exit:0, at:$at,
 stagespec '{"stage_ran": "badtime"}'
 check "a stage receipt whose time cannot be read is refused as stale" 'out=$(write); [ $? = 1 ] && grep -q "minutes ago" <<<"$out"'
 bare="$dir/bare"; git init -q "$bare"
-jq -n --arg cwd "$bare" --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '{id:"bare", command:"podman ps", exit:0, at:$at, head:"", cwd:$cwd, tail:"Up"}' > "$dir/over-to-you-receipts/bare.json"
+jq -n --arg cwd "$bare" --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '{id:"bare", command:"podman ps", exit:0, at:$at, head:"", cwd:$cwd, hold:60, tail:"Up"}' > "$dir/over-to-you-receipts/bare.json"
 stagespec '{"stage_ran": "bare"}'
 check "a repo with no testing.md takes any liveness command" 'write >/dev/null && [ -s "$dir/out.md" ]'
 plain="$dir/plain"; git init -q "$plain"; mkdir -p "$plain/docs/agents"; echo 'Testing standards: TESTING.md' > "$plain/docs/agents/testing.md"
-jq -n --arg cwd "$plain" --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '{id:"plain", command:"pgrep app", exit:0, at:$at, head:"", cwd:$cwd, tail:"1"}' > "$dir/over-to-you-receipts/plain.json"
+jq -n --arg cwd "$plain" --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '{id:"plain", command:"pgrep app", exit:0, at:$at, head:"", cwd:$cwd, hold:60, tail:"1"}' > "$dir/over-to-you-receipts/plain.json"
 stagespec '{"stage_ran": "plain"}'
 check "a testing.md with no Stage check line takes any liveness command" 'write >/dev/null && [ -s "$dir/out.md" ]'
 off="$dir/off"; git init -q "$off"; mkdir -p "$off/docs/agents"; echo 'Stage check: None.' > "$off/docs/agents/testing.md"
@@ -248,11 +256,11 @@ stagespec '{}'
 cp -r "$dir/over-to-you-receipts" "$off/"
 check "a Stage check line of none, run from the repo with the page in scratch, needs no stage receipt" 'rm -f "$dir/out.md"; (cd "$off" && python3 -I "$skill/checklist.py" "$dir/spec.json" "$dir/out.md" >/dev/null 2>&1) && [ -s "$dir/out.md" ]'
 quoted="$dir/quoted"; git init -q "$quoted"; mkdir -p "$quoted/docs/agents"; printf 'Stage check: `pgrep -f "dev server"` (the dev server)\n' > "$quoted/docs/agents/testing.md"
-jq -n --arg cwd "$quoted" --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '{id:"q", command:"pgrep -f dev server", exit:0, at:$at, head:"", cwd:$cwd, tail:"1"}' > "$dir/over-to-you-receipts/q.json"
+jq -n --arg cwd "$quoted" --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '{id:"q", command:"pgrep -f dev server", exit:0, at:$at, head:"", cwd:$cwd, hold:60, tail:"1"}' > "$dir/over-to-you-receipts/q.json"
 stagespec '{"stage_ran": "q"}'
 check "a Stage check in backticks with quoted words and a note after it matches ran.sh's record of it" 'write >/dev/null && [ -s "$dir/out.md" ]'
 odd="$dir/odd"; git init -q "$odd"; mkdir -p "$odd/docs/agents"; printf 'Stage check: pgrep -f "dev\n' > "$odd/docs/agents/testing.md"
-jq -n --arg cwd "$odd" --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '{id:"odd", command:"pgrep -f \"dev", exit:0, at:$at, head:"", cwd:$cwd, tail:"1"}' > "$dir/over-to-you-receipts/odd.json"
+jq -n --arg cwd "$odd" --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '{id:"odd", command:"pgrep -f \"dev", exit:0, at:$at, head:"", cwd:$cwd, hold:60, tail:"1"}' > "$dir/over-to-you-receipts/odd.json"
 stagespec '{"stage_ran": "odd"}'
 check "a Stage check with an unclosed quote still matches the same command" 'write >/dev/null && [ -s "$dir/out.md" ]'
 check "a repo whose Stage check line says none needs no stage receipt" 'rm -f "$off/out.md"; python3 -I "$skill/checklist.py" "$dir/spec.json" "$off/out.md" >/dev/null 2>&1; [ -s "$off/out.md" ]'
