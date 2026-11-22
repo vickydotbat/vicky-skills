@@ -110,4 +110,7 @@ for c in 'sudo git push' 'env FOO=1 git push' 'timeout 5 git commit -m x' 'if tr
   expect 2 "a merged branch refuses: $c" "$w" "$c"
 done
 expect 0 "a quoted git push is not one" "$w" 'echo "git push"'
+for c in 'git "push"' "git 'commit' -m x" '\git push' 'echo `git push`'; do
+  expect 2 "a merged branch refuses: $c" "$w" "$c"
+done
 exit $fail
