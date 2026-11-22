@@ -69,7 +69,7 @@ check "a launch in the record and the transcript counts once" 0 "$(try k2 ${o}cl
 receipt k2 K2 ${o}claims-opponent
 check "two receipts and two record rows fill a batch of two" 2 "$(try k3 ${o}cause-opponent s12)"
 jq -nc '{type:"assistant",message:{content:[{type:"tool_use",id:"ts",name:"TaskStop",input:{task_id:"K1"}}]}}' >> "$t"
-printf '' > "$CLAUDE_PLUGIN_DATA/opponent-batch/s12.tsv"
+printf '' > "$CLAUDE_PLUGIN_DATA/opponent-batch/s12_.tsv"
 check "an opponent stopped with TaskStop frees its slot" 0 "$(try k3 ${o}cause-opponent s12)"
 
 # No batch.sh answer yet: three at a time, its ceiling.
@@ -97,6 +97,21 @@ check "six launches at once pass three" 3 "$(cat "$tmp"/c[1-6] | grep -cx 0)"
 [ "$(cat "$tmp"/c[1-6] | grep -cx 0)" = 3 ] || for i in 1 2 3 4 5 6; do echo "  c$i exit $(cat "$tmp/c$i"): $(cat "$tmp/c$i.err")"; done
 try c7 general-purpose s8 >/dev/null; try c8 ${o}claims-opponent s8 >/dev/null; try c9 ${o}claims-opponent s8 >/dev/null
 check "no lock is left behind" no "$( [ -e "$CLAUDE_PLUGIN_DATA/opponent-batch/s8_.lock" ] && echo yes || echo no)"
+
+# An old launch the transcript holds and new ones only the record holds all count.
+: > "$t"; batch 2
+receipt u1 U1 ${o}intent-opponent
+check "beside one receipted launch, one more starts" 0 "$(try u2 ${o}standards-opponent s13)"
+check "and a third is refused" 2 "$(try u3 ${o}claims-opponent s13)"
+
+# A quoted batch.sh answer above its ceiling raises nothing.
+: > "$t"; batch 9
+for i in 1 2 3; do try v$i ${o}intent-opponent s14 >/dev/null; done
+check "an answer above the ceiling of three still refuses a fourth" 2 "$(try v4 ${o}intent-opponent s14)"
+# A record it can't write refuses the launch.
+: > "$t"; batch 3; touch "$CLAUDE_PLUGIN_DATA/opponent-batch/s15_.tsv"; chmod a-w "$CLAUDE_PLUGIN_DATA/opponent-batch/s15_.tsv"
+check "a launch whose record it can't write is refused" 2 "$(try w1 ${o}intent-opponent s15)"
+chmod u+w "$CLAUDE_PLUGIN_DATA/opponent-batch/s15_.tsv"
 
 # A read that fails refuses the launch, never passes it uncounted.
 mkdir -p "$tmp/badjq"; real=$(command -v jq)

@@ -38,12 +38,12 @@ if [ -z "$held" ]; then
   echo "opponent-batch-guard: another launch held the lock for ten seconds, so this one is refused. Send it again. Nothing was dispatched." >&2; exit 2
 fi
 trap 'rmdir "$lock" 2>/dev/null' EXIT
-touch "$record"
+touch "$record" 2>/dev/null && [ -w "$record" ] || { echo "opponent-batch-guard: it can't write its record of launches, so this launch is refused, never passed uncounted. Nothing was dispatched." >&2; exit 2; }
 # A record row lives this many seconds, long enough for its receipt to land; batch.sh never sends more than ceiling.
 window=30 ceiling=3
 now=$(date +%s)
 limit=$(grep -oE 'at once: [0-9]+' "$transcript" 2>/dev/null | tail -n 1 | grep -oE '[0-9]+$')
-[[ "$limit" =~ ^[1-9][0-9]*$ ]] || limit=$ceiling
+[[ "$limit" =~ ^[1-9][0-9]*$ ]] && [ "$limit" -le "$ceiling" ] || limit=$ceiling
 # Each launch still fighting, as <tool use id><tab><type>: in the record or the transcript, with no
 # final notification after its launch or its last message, and no error result.
 # Only lines that can name a launch, its result, a notification, a message or a stop reach jq.
@@ -56,9 +56,11 @@ running=$(grep -E 'opponent|<task-notification>|"(SendMessage|TaskStop)"|"is_err
   | (opponent_launches($r) | map(. + {from: "transcript"})) as $seen
   | fighting($r; $recorded + $seen)
   | "\(.from)\t\(.id)\t\(.type)"' 2>/dev/null) || { echo "opponent-batch-guard: the read of running opponents failed, so this launch is refused, never passed uncounted. Send it again. Nothing was dispatched." >&2; exit 2; }
-# A launch the record and the transcript both hold counts once: the larger count wins.
-count=$(awk -F '\t' 'NF { n[$1]++ } END { print (n["record"] > n["transcript"] ? n["record"] : n["transcript"]) + 0 }' <<<"$running")
-running=$(awk -F '\t' -v pick="$(awk -F '\t' 'NF { n[$1]++ } END { print (n["record"] > n["transcript"] ? "record" : "transcript") }' <<<"$running")" '$1 == pick { print $2 "\t" $3 }' <<<"$running")
+# A launch the record and the transcript both hold counts once: every record row counts, and
+# so does each transcript launch whose id the record lacks.
+running=$(awk -F '\t' 'NF && $1 == "record" { seen[$2] = 1; print $2 "\t" $3; next } NF { later[++n] = $0 }
+  END { for (i = 1; i <= n; i++) { split(later[i], f, "\t"); if (!(f[2] in seen)) print f[2] "\t" f[3] } }' <<<"$running")
+count=$(grep -c . <<<"$running")
 refuse() { echo "opponent-batch-guard: $1 A launch from a script resolves at once with a launch receipt, not the report, so awaiting it holds nothing. Wait for each running opponent's task notification that says it finished, then send the next. An opponent that will never report (its session was stopped or resumed) frees its place once you stop it with TaskStop. Nothing was dispatched." >&2; exit 2; }
 names=$(cut -f2 <<<"$running" | sed 's/.*://' | sort | uniq -c | awk '{printf "%s%s", (NR > 1 ? ", " : ""), ($1 > 1 ? $1 " x " $2 : $2)}')
 if [[ "$type" == *holds-opponent ]]; then
