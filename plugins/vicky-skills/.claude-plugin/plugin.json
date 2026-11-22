@@ -369,6 +369,24 @@
       "title": "A test for you goes on a checklist page",
       "description": "When the agent's reply or message asks you to run a test in chat, and it opened no over-to-you checklist this turn, it is sent back to run each check itself and hand you the page. On unless you turn it off.",
       "default": true
+    },
+    "proofread_model": {
+      "type": "string",
+      "title": "Proofread model",
+      "description": "The model human-voice sends each draft to for a proofread, on the endpoint below. Blank means gemini-4-hydrogen. \"session\" proofreads with the model you run Claude Code on, and so does any failed call. Drafts sent to a free-tier Gemini key may be used to train Google's models.",
+      "default": ""
+    },
+    "proofread_endpoint": {
+      "type": "string",
+      "title": "Proofread endpoint",
+      "description": "The OpenAI-compatible API base URL for the proofread model. Blank means Gemini's own, https://generativelanguage.googleapis.com/v1beta/openai/.",
+      "default": ""
+    },
+    "proofread_key_env": {
+      "type": "string",
+      "title": "Proofread key variable",
+      "description": "The name of the environment variable that holds your API key for the proofread endpoint, or \"none\" for a local server that needs none. Blank means GEMINI_API_KEY. With no key set, the session model proofreads.",
+      "default": ""
     }
   }
 }

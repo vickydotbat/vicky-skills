@@ -38,15 +38,16 @@ Use the reader's words, never code names. A second outcome gets a second example
 3. **Draft** in the register's voice, making the moves in [MOVES.md](MOVES.md). Done when every fact in your notes is in the draft or cut on purpose.
 4. **Cut.** Walk the draft one sentence at a time against the cut rules. Done when every sentence adds a fact or an action no other sentence gives, and no sentence joins two independent facts.
 5. **Lint.** Write the draft to a scratch file and run `python3 <this skill's folder>/scripts/lint-tells.py <file>`. It prints `<line>: <matched words>: <move to make>` per hit. Rewrite every hit by making its move. Put a hit the text is about, such as an emoji a doc explains, in a code span. Run it again until it prints nothing. Done when it exits 0 on the draft.
-6. **Walk the moves.** Read the draft against each move in [MOVES.md](MOVES.md), one at a time. Done when every paragraph makes each move that applies to it.
-7. **Seat a reader panel** when the draft runs over about 400 words (`wc -w`). A shorter draft skips this step.
+6. **Proofread** the draft with the proofread model: `PROOFREAD_MODEL='${user_config.proofread_model}' PROOFREAD_ENDPOINT='${user_config.proofread_endpoint}' PROOFREAD_KEY_ENV='${user_config.proofread_key_env}' bash <this skill's folder>/scripts/proofread.sh <file>`. A first line `proofread: <model>` lists that model's notes: take each fix for a real error, and leave each one that changes the user's voice. A first line `proofread: session model, because <reason>` means you proofread it yourself, for spelling, grammar, punctuation and unclear sentences, and give that reason in one line of your reply. Done when every note is taken or left on purpose, and the reply names the model that proofread.
+7. **Walk the moves.** Read the draft against each move in [MOVES.md](MOVES.md), one at a time. Done when every paragraph makes each move that applies to it.
+8. **Seat a reader panel** when the draft runs over about 400 words (`wc -w`). A shorter draft skips this step.
    Pick three to five seats from its audience, the readers who will act on it. A runbook or doc gets a seat that does a dry run, following each step as written.
    Lore gets a canon keeper, who checks it against the setting's other pages. Each seat reads the draft as that reader and lists the questions it is left with.
    The `reader_panel` setting reads `${user_config.reader_panel}`, and `one agent` when it shows no value. At `one agent`, play every seat yourself, one at a time.
    At `agent per seat`, start one subagent per seat, side by side, each briefed with its seat and the draft.
    Answer each question in the draft, from the source. Keep a question the source can't answer for the user. Done when every question is answered in the draft or kept.
-8. **Read it aloud as the user.** Done when every paragraph passes "would they have written this sentence?" against their writing.
-9. **Show the draft**, with the panel's kept questions beside it. A person reads every draft a player or the public will see before it is committed or published. Done when the user has read it.
+9. **Read it aloud as the user.** Done when every paragraph passes "would they have written this sentence?" against their writing.
+10. **Show the draft**, with the panel's kept questions beside it. A person reads every draft a player or the public will see before it is committed or published. Done when the user has read it.
 
 ## Cut rules
 
