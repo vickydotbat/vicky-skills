@@ -26,7 +26,7 @@ local-path-guard.sh	6250febeeda4bb1c	7a1c8c2b96c6670c	29/29
 merge-point.sh	a19dbe9167831b34	bdb7b61b80c0c3d4	2/2
 merged-branch-guard.sh	eddb14559b662ad4	46991f45e4a0d2d3	41/41
 opponent-batch-guard.sh	7571fc54370d05f2	f9d50d5d41d2be23	48/48
-opponent-wait-guard.sh	411f35c2756903b3	bdf7b0798172bd08	54/54
+opponent-wait-guard.sh	b0571c4bacf65987	bdf7b0798172bd08	54/54
 opponents.jq	0c246fe7fa62d6c2	99cbcfd5c543d9ee	42/42
 outside-text-guard.sh	e8f015e3aada1afe	08fac32ab3bc707c	39/39
 patch-tell-hint.sh	256a998db4051de9	5fe1d435fef9a19b	50/50

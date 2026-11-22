@@ -13,6 +13,7 @@ cmd=$(jq -r '.tool_input.command // ""' <<<"$input" 2>/dev/null | sed -e ':a' -e
 . "$(dirname "$0")/prose-strip.sh"
 # Each segment is read on its own, anywhere in it, so a wrapper, a subshell or
 # flags before the subcommand still count. A title's or message's words don't.
+# shellcheck disable=SC2020 # each of ; & | and newline becomes a newline, one character at a time, as meant
 while IFS= read -r seg; do
   # gh, or a variable that may hold it, then pr, any flags, and merge or ready.
   grep -qE "(^|[^[:alnum:]_-])(gh|$shell_var_re)([^[:alnum:]_-]|\$)" <<<"$seg" &&
