@@ -9,6 +9,13 @@
 # must proofread instead. Exits 0 either way, and 2 on bad usage.
 set -u
 file="${1:-}"
+# A setting the plugin never filled in arrives as its placeholder, and one of
+# only spaces as spaces: both mean blank.
+for v in PROOFREAD_MODEL PROOFREAD_ENDPOINT PROOFREAD_KEY_ENV; do
+  val="${!v:-}"
+  case "$val" in "\${"*) val= ;; *[![:space:]]*) ;; *) val= ;; esac
+  printf -v "$v" '%s' "$val"
+done
 [ -f "$file" ] || { echo "usage: proofread.sh <draft file>" >&2; exit 2; }
 model="${PROOFREAD_MODEL:-gemini-4-hydrogen}"
 endpoint="${PROOFREAD_ENDPOINT:-https://generativelanguage.googleapis.com/v1beta/openai/}"
@@ -22,7 +29,7 @@ fi
 
 [ "$model" = session ] && fallback "the proofread model setting is session"
 { command -v curl && command -v jq; } >/dev/null || fallback "curl or jq is missing"
-hdr=$(mktemp); trap 'rm -f "$hdr"' EXIT  # mktemp makes it 0600
+hdr=$(mktemp); req=$(mktemp); trap 'rm -f "$hdr" "$req"' EXIT  # mktemp makes them 0600
 # The key goes through a header file, never the command line, where ps shows it.
 if [ "$key_env" != none ]; then
   [[ $key_env =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]] || fallback "the key variable name $key_env is not a variable name"
@@ -32,11 +39,12 @@ if [ "$key_env" != none ]; then
 fi
 
 prompt='You proofread prose. The draft comes with its line numbers. Report each spelling, grammar, punctuation or unclear-sentence error as "line N: before -> after", one per line. Keep the writer'"'"'s voice, words and structure: suggest no rewrite of style or tone. Print "no changes" when there are none.'
-draft=$(awk '{ printf "%d: %s\n", NR, $0 }' "$file")
-resp=$(jq -n --arg m "$model" --arg p "$prompt" --arg d "$draft" \
-    '{model: $m, messages: [{role: "system", content: $p}, {role: "user", content: $d}]}' |
-  curl -sS --fail-with-body --max-time 60 -H "@$hdr" -H 'Content-Type: application/json' \
-    --data-binary @- "${endpoint%/}/chat/completions" 2>&1)
+# The draft goes through a file, since a big one overflows an argument.
+awk '{ printf "%d: %s\n", NR, $0 }' "$file" |
+  jq -Rs --arg m "$model" --arg p "$prompt" \
+    '{model: $m, messages: [{role: "system", content: $p}, {role: "user", content: .}]}' > "$req"
+resp=$(curl -sS --fail-with-body --max-time 60 -H "@$hdr" -H 'Content-Type: application/json' \
+    --data-binary @- "${endpoint%/}/chat/completions" < "$req" 2>&1)
 notes=$(jq -r '.choices[0].message.content // empty' <<<"$resp" 2>/dev/null)
 if [ -z "$notes" ]; then
   err=$(jq -r '.error.message // empty' <<<"$resp" 2>/dev/null)

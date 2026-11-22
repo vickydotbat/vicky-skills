@@ -13,7 +13,7 @@ cat > "$dir/bin/curl" <<'STUB'
 #!/usr/bin/env bash
 : > "$STUB_DIR/sent"
 for a in "$@"; do case "$a" in @*) [ -f "${a#@}" ] && { cat "${a#@}"; echo; } >> "$STUB_DIR/sent" ;; esac; done
-cat > /dev/null
+cat >> "$STUB_DIR/sent"
 case "${STUB_MODE:-ok}" in
   ok) echo '{"choices":[{"message":{"content":"no changes"}}]}' ;;
   empty) echo '{"choices":[]}' ;;
@@ -43,6 +43,16 @@ run GEMINI_API_KEY=k-gem PROOFREAD_MODEL=llama3 PROOFREAD_ENDPOINT=http://third-
 check "a custom endpoint with no key variable sends nothing" '[ $rc -eq 0 ] && [ ! -e "$dir/sent" ] && grep -q "^proofread: session model, because .*key variable" <<<"$out"'
 run GEMINI_API_KEY=k-gem OTHER=k PROOFREAD_MODEL= PROOFREAD_ENDPOINT=http://third-party.example/v1 PROOFREAD_KEY_ENV=OTHER
 check "a custom endpoint with no model sends nothing" '[ $rc -eq 0 ] && [ ! -e "$dir/sent" ] && grep -q "^proofread: session model, because .*model" <<<"$out"'
+
+# A session that never filled in the plugin settings passes their placeholders.
+run GEMINI_API_KEY=k-gem PROOFREAD_MODEL='${user_config.proofread_model}' PROOFREAD_ENDPOINT='${user_config.proofread_endpoint}' PROOFREAD_KEY_ENV='${user_config.proofread_key_env}'
+check "unfilled setting placeholders mean the defaults" '[ $rc -eq 0 ] && grep -q "^proofread: gemini-4-hydrogen" <<<"$out" && grep -q "gemini-4-hydrogen" "$dir/sent"'
+
+# A draft too big for a command-line argument still reaches the model whole.
+cp "$dir/draft.md" "$dir/small.md"; awk 'BEGIN { for (i = 0; i < 4000; i++) print "A long draft line of about sixty characters, padded out here." }' > "$dir/draft.md"
+run GEMINI_API_KEY=k
+check "a draft over 200 KB is sent whole" '[ $rc -eq 0 ] && grep -q "^proofread: " <<<"$out" && grep -q "4000: A long draft" "$dir/sent"'
+cp "$dir/small.md" "$dir/draft.md"
 
 out=$(bash "$pr" "$dir/nothing-here.md" 2>&1); rc=$?
 check "a missing draft file is bad usage" '[ $rc -eq 2 ] && grep -q usage <<<"$out"'
