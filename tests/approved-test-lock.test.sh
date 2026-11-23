@@ -72,6 +72,11 @@ git -C "$repo" checkout -q -- "$f"
 check "a plain test on main may drop a step-shaped line" '[ "$(edit "$repo/tests/p.test.sh" "# Given plain" "")" = 0 ]'
 check "an approved file with no step lines may be edited" '[ "$(edit "$repo/tests/bare_approved_examples.test.sh" "echo x" "echo y")" = 0 ]'
 check "deleting a new approved file main lacks goes through" '[ "$(rc "{tool_name:\"Bash\",cwd:\$d,tool_input:{command:\"rm tests/new_approved_examples.test.sh\"}}")" = 0 ]'
+git -C "$repo" switch -q main; printf '# Given late\n# Then it lands\n' >"$repo/tests/late_approved_examples.test.sh"; git -C "$repo" add -A; git -C "$repo" commit -qm late; git -C "$repo" switch -q work
+late="$repo/tests/late_approved_examples.test.sh"
+check "an approved test only main holds stays out of a branch behind it" '[ "$(post)" = 0 ] && [ ! -e "$late" ]'
+check "removing a copy of a test only main holds goes through" '[ "$(git -C "$repo" show main:tests/late_approved_examples.test.sh >"$late"; bash_rc "rm tests/late_approved_examples.test.sh")" = 0 ]'
+rm -f "$late"
 check "another tool goes through" '[ "$(rc "{tool_name:\"Read\",cwd:\$d,tool_input:{file_path:\"$f\"}}")" = 0 ]'
 check "outside git goes through" '[ "$(jq -nc --arg d "$fx" "{tool_name:\"Edit\",cwd:\$d,tool_input:{file_path:\"$f\"}}" | bash "$hook" >/dev/null 2>&1; echo $?)" = 0 ]'
 check "the setting off goes through" '[ "$(opt=false edit "$f" "# Then it works" "# Then no")" = 0 ]'
