@@ -103,7 +103,7 @@ springboard.sh	0fcdfc65f3050c73	645a579d6b475bf3	42/42
 stale-copy-hint.sh	6c278c5222834240	c802cfd5b779840e	27/27
 stale-text.sh	a9aa585bf5548105	8bd36f3463d7f21e	11/11
 step-hint.sh	cb10e887d9978e76	55f50ee9ed87ddd1	18/18
-stop-reply.sh	e525bb25161ec89f	605c3a0cc844af14	17/17
+stop-reply.sh	e525bb25161ec89f	1f8dec4864c1ace1	17/17
 summit-obsidian.sh	549dda7dc9cbe154	a77cb004911c26a9	22/22
 summit.sh	8e6e2e361acbd473	a77cb004911c26a9	43/43
 sup-handoff-hint.sh	ca0328e26873afae	acb6527e08baa0b0	37/37
@@ -111,7 +111,7 @@ tea-stdin.awk	ddfdfc5257c31b06	3860b78ecc589fec	70/70
 tea-stdin.sh	c631fcfccdb1abf0	d1eb052256ae5a2a	15/15
 ticket-filing-guard.sh	f7cc3c46108a91cb	74f338603ccb8b76	24/24
 todo-reminder.sh	87bab188b0686e79	118f1019071f20bc	9/9
-user-test-guard.sh	9a635aaf3584a42e	b723063e930141ff	58/58
+user-test-guard.sh	b684b056550b7e16	d407cb0e230ed4d5	58/58
 watch.sh	8361b0cd96435e12	fc2f74078f28c806	33/33
 whole-read-guard.sh	780421efd6f93f78	6c5c695db0f6af1c	27/27
 workflow-lint.sh	31fd4d7feb0edf4c	f2518edb1f746b2c	26/26
