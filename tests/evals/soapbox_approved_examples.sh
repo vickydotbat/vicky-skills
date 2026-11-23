@@ -6,12 +6,6 @@ set -u
 # shellcheck source=lib.sh
 . "$(dirname "$0")/lib.sh"
 fail=0
-# run <skill>/<case> <code> <what the example says>
-run() {
-  if ! case_exists "$1"; then echo "FAIL $2 no eval case at evals/$1"; fail=1
-  elif eval_case "$evals_plugin" "$(basename "$1")" "$2"; then echo "ok   $2 $3"
-  else echo "FAIL $2 $3 (failed: $(failed_graders "$2"))"; fail=1; fi
-}
 # S1: Given the user types soapbox it after a reply that weighed options
 # When the agent answers
 # Then the reply opens with the agent's opinion in one or two plain sentences

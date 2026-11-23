@@ -1,6 +1,5 @@
 ---
 type: regex
 target: { source: file, path: soapbox.md }
-pattern: '(answer|reply|type|tell me|say)[^\n]*\s*$'
-flags: i
+pattern: '([Rr]eply|[Aa]nswer|[Tt]ype|[Ss]ay)[^\n]*\b([ABC]|yes|no|go)\b[^\n]*\s*$'
 ---

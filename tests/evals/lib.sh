@@ -55,3 +55,9 @@ case_exists() { [ -d "$evals_plugin/evals/$1" ]; }
 case_score() { jq -r '.cases[0].aggregates.score // "none"' "$evals_out/$1.json" 2>/dev/null || echo none; }
 failed_graders() { jq -r '[.cases[0].arms.with[]?.graders[]? | select(.passed == false) | .name] | unique | join(", ")' "$evals_out/$1.json" 2>/dev/null; }
 graded_red() { jq -e '.cases[0].arms.with[0].graders | length > 0' "$evals_out/$1.json" >/dev/null 2>&1 && [ "$(case_score "$1")" != 1 ]; }
+# run_case <skill>/<case> <code> <what the example says>: report one example, set fail=1 on a miss.
+run() {
+  if ! case_exists "$1"; then echo "FAIL $2 no eval case at evals/$1"; fail=1
+  elif eval_case "$evals_plugin" "$(basename "$1")" "$2"; then echo "ok   $2 $3"
+  else echo "FAIL $2 $3 (failed: $(failed_graders "$2"))"; fail=1; fi
+}
