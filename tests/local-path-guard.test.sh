@@ -91,6 +91,10 @@ rm "$repo/local-path-ok.txt"
 printf 'see %s\n' "$fake" >"$repo/x:1:local-path-ok.txt"
 expect 2 "a file whose name looks like a marked hit is still scanned" 'git add -A && git commit -m add'
 rm "$repo/x:1:local-path-ok.txt"
+mkdir -p "$repo/sub"; printf 'see %s\n' "$fake" >"$repo/rootfile.txt"
+top=$repo; repo=$top/sub
+expect 2 "an untracked file above the command's folder is scanned" 'git add -A && git commit -m add'
+repo=$top; rm -r "$repo/rootfile.txt" "$repo/sub"
 printf 'fixture %s # local-path-ok\n' "$fake" >"$repo/marked.txt"
 expect 0 "a marked line in an untracked file passes" 'git add -A && git commit -m add'
 rm "$repo/marked.txt"

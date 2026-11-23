@@ -47,7 +47,8 @@ if [ -z "$hits" ] && [ "$untracked" = yes ]; then
   # One grep over every untracked text file, never a loop: a workbench holds
   # thousands, and a loop that read each into a string ran past the timeout.
   # -I skips binary files. The marker is read in the line, never the file name.
-  hits=$(git ls-files -z --others --exclude-standard |
+  # It runs from the repo's top, since `git add -A` stages the whole tree.
+  hits=$(cd "$(git rev-parse --show-toplevel)" && git ls-files -z --others --exclude-standard |
     xargs -0 -r grep -I -H -n -Z -E -- "$pattern" 2>/dev/null | tr '\0' '\001' |
     awk -F '\001' '{ t = $2; sub(/^[0-9]+:/, "", t) } t !~ /local-path-ok/' | tr '\001' ':' | cut -c1-160 | head -5 || true)
 fi
