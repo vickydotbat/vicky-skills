@@ -22,6 +22,8 @@ tool=$(get .tool_name); cwd=$(get .cwd)
 cd "${cwd:-.}" 2>/dev/null || exit 0
 root=$(git rev-parse --show-toplevel 2>/dev/null) || exit 0
 base=origin/main; git rev-parse -q --verify "$base" >/dev/null || base=main
+# A test main gained after the branch forked is not the branch's to guard.
+fork=$(git merge-base "$base" HEAD 2>/dev/null) || fork=$base
 steps() { grep -E '^[[:space:]]*#[[:space:]]*(Given|When|Then|And)[[:space:]]' ; }
 record() { # record <repo path>: a ticked change record on the branch
   local f # mutant-ok delete: f only leaks to the caller, which never reads it
@@ -44,6 +46,7 @@ locked() { # locked <absolute path>: prints its repo path when it is locked
   local rel=${1#"$root"/}
   approved "$1" || return 1
   git cat-file -e "$base:$rel" 2>/dev/null || return 1
+  git cat-file -e "$fork:$rel" 2>/dev/null || return 1
   record "$rel" && return 1
   echo "$rel"
 }
@@ -71,7 +74,7 @@ if [ "$tool" = Bash ] && [ "$event" = PostToolUse ]; then
     [ "$lost" = 1 ] || continue
     mkdir -p "$(dirname "$p")"; git show "$base:$rel" >"$p"
     hit="$hit $rel"
-  done < <(git diff --name-only "$base" 2>/dev/null)
+  done < <(git diff --name-only "$fork" 2>/dev/null)
   [ -n "$hit" ] || exit 0
   echo "approved-test-lock: the command changed the Given, When or Then lines of$hit, so the default branch's copy is back." >&2
   echo "A change to an approved example goes through examples' CHANGING.md: open its red-pen section with the new wording, and once it comes back ticked the record lets this edit through." >&2

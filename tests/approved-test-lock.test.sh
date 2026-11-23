@@ -77,6 +77,8 @@ late="$repo/tests/late_approved_examples.test.sh"
 check "an approved test only main holds stays out of a branch behind it" '[ "$(post)" = 0 ] && [ ! -e "$late" ]'
 check "removing a copy of a test only main holds goes through" '[ "$(git -C "$repo" show main:tests/late_approved_examples.test.sh >"$late"; bash_rc "rm tests/late_approved_examples.test.sh")" = 0 ]'
 rm -f "$late"
+git -C "$repo" switch -q main; git -C "$repo" rm -q tests/tagged.test.sh; git -C "$repo" commit -qm drop; git -C "$repo" switch -q work
+check "a test main dropped after the fork is no longer locked" '[ "$(bash_rc "rm tests/tagged.test.sh")" = 0 ]'
 check "another tool goes through" '[ "$(rc "{tool_name:\"Read\",cwd:\$d,tool_input:{file_path:\"$f\"}}")" = 0 ]'
 check "outside git goes through" '[ "$(jq -nc --arg d "$fx" "{tool_name:\"Edit\",cwd:\$d,tool_input:{file_path:\"$f\"}}" | bash "$hook" >/dev/null 2>&1; echo $?)" = 0 ]'
 check "the setting off goes through" '[ "$(opt=false edit "$f" "# Then it works" "# Then no")" = 0 ]'
