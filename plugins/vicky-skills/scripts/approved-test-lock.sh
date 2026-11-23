@@ -53,12 +53,12 @@ locked() { # locked <absolute path>: prints its repo path when it is locked
 event=$(get .hook_event_name)
 if [ "$tool" = Bash ] && [ "$event" = PostToolUse ]; then
   # After the command: each locked test that lost a step line is put back from the
-  # default branch. This holds for any write a command can make, read or not.
+  # fork point. This holds for any write a command can make, read or not.
   hit=""
   while IFS= read -r rel; do
     [ -n "$rel" ] || continue # mutant-ok delete: an empty name is the repo folder, which is never approved
     p="$root/$rel"
-    if [ ! -f "$p" ]; then # a deleted test: judge the default branch's copy under its own name
+    if [ ! -f "$p" ]; then # a deleted test: judge the fork point's copy under its own name
       tmp=$(mktemp -d); git show "$fork:$rel" >"$tmp/${rel##*/}" 2>/dev/null
       approved "$tmp/${rel##*/}" || { rm -rf "$tmp"; continue; }
       rm -rf "$tmp" # mutant-ok delete: the scratch copy only leaves a file in the temp folder
