@@ -88,7 +88,7 @@ def receipt(item, n, out_dir, label=None):
             return None, f"{label}: receipt {rid} ran `{command}`, and neither it nor its output holds the kit `{kit}`: run the kit itself through ran.sh"
     sid = os.environ.get("CLAUDE_CODE_SESSION_ID") or "\0"
     scratches = tuple(os.path.join(root, sid) + os.sep for root in {os.environ.get("TMPDIR") or "/tmp", "/tmp"})
-    if any(path.startswith(scratches) for path in command_paths(command, got.get("cwd") or "/")):
+    if any((path + os.sep).startswith(scratches) for path in command_paths(command, got.get("cwd") or "/")):
         return None, (f"{label}: receipt {rid} ran `{command}`, a script written in the session folder: its last line, "
                       "not the test, decides its exit. Run the test command itself through ran.sh")
     head = got.get("head") or ""
@@ -109,7 +109,7 @@ def command_paths(command, cwd):
         if " " in word:
             yield from command_paths(word, cwd)
         elif "/" in word:
-            yield os.path.normpath(os.path.join(cwd, word)) + ("/" if word.endswith("/") else "")
+            yield os.path.normpath(os.path.join(cwd, word))
 
 
 # Commands that read a file: a log line can come from another server writing the same log.

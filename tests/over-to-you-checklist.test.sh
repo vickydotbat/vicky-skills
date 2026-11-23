@@ -160,8 +160,8 @@ check "ran.sh with too few arguments prints its usage and exits 2" 'out=$(bash "
 mkdir -p "$dir/rt/s2"; fresh "$dir/rt/s2" stage "podman ps"; jq -n '{name: "Bob", open: "x", signed_off: "n", proven_by: "p", stage_ran: "stage", sections: [{title: "P", items: [{do: "Open the pack", see: "the slots show", person: "look", ran: "ok"}]}]}' > "$dir/spec.json"
 mkdir -p "$dir/wr/over-to-you-receipts"; fresh "$dir/wr" stage "podman ps"; jq -n --arg c "bash $dir/rt/s2/iloop.sh" --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '{id:"w", command:$c, exit:0, at:$at, head:"", cwd:"/", hold:0, tail:"exit=1"}' > "$dir/wr/over-to-you-receipts/w.json"; jq -n '{name: "Bob", open: "x", signed_off: "n", proven_by: "p", stage_ran: "stage", sections: [{title: "P", items: [{do: "Open the pack", see: "the slots show", person: "look", ran: "w"}]}]}' > "$dir/wr/spec.json"
 check "a receipt whose command is a script written in the session folder is refused" 'out=$(env TMPDIR="$dir/rt" CLAUDE_CODE_SESSION_ID=s2 python3 -I "$skill/checklist.py" "$dir/wr/spec.json" "$dir/wr/out.md" 2>&1); [ $? = 1 ] && grep -q "session folder" <<<"$out"'
-for wc in 'bash "SESS/iloop.sh"' 'sh -c "SESS/iloop.sh"' 'bash ./iloop.sh'; do
-  c=${wc//SESS/$dir/rt/s2}; wcwd=/; [[ $wc = *./* ]] && wcwd="$dir/rt/s2"
+for wc in "bash -c 'cd SESS && ./iloop.sh'" 'bash "SESS/iloop.sh"' 'sh -c "SESS/iloop.sh"' 'bash ./iloop.sh'; do
+  c=${wc//SESS/$dir/rt/s2}; wcwd=/; [ "$wc" = 'bash ./iloop.sh' ] && wcwd="$dir/rt/s2"
   jq -n --arg c "$c" --arg cwd "$wcwd" --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '{id:"w", command:$c, exit:0, at:$at, head:"", cwd:$cwd, hold:0, tail:"exit=1"}' > "$dir/wr/over-to-you-receipts/w.json"
   check "a receipt that runs a session-folder script is refused: $wc" 'out=$(env TMPDIR="$dir/rt" CLAUDE_CODE_SESSION_ID=s2 python3 -I "$skill/checklist.py" "$dir/wr/spec.json" "$dir/wr/out.md" 2>&1); [ $? = 1 ] && grep -q "session folder" <<<"$out"'
 done
