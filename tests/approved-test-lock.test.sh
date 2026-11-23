@@ -85,6 +85,7 @@ check "a branch's own change to its older copy is still put back" '[ "$(sed -i "
 git -C "$repo" checkout -q -- tests; git -C "$repo" switch -q main; printf '# Given dropped\n' >"$repo/tests/drop_approved_examples.test.sh"; git -C "$repo" add tests/drop_approved_examples.test.sh; git -C "$repo" commit -qm add-drop
 git -C "$repo" switch -q work; git -C "$repo" rebase -q main; git -C "$repo" switch -q main; git -C "$repo" rm -q tests/drop_approved_examples.test.sh; git -C "$repo" commit -qm drop; git -C "$repo" switch -q work
 check "a test main dropped after the fork is no longer locked" '[ -f "$repo/tests/drop_approved_examples.test.sh" ] && [ "$(bash_rc "rm tests/drop_approved_examples.test.sh")" = 0 ]'
+check "deleting a test main dropped after the fork stays deleted" '[ "$(rm "$repo/tests/drop_approved_examples.test.sh"; post)" = 0 ] && [ ! -e "$repo/tests/drop_approved_examples.test.sh" ]'
 check "another tool goes through" '[ "$(rc "{tool_name:\"Read\",cwd:\$d,tool_input:{file_path:\"$f\"}}")" = 0 ]'
 check "outside git goes through" '[ "$(jq -nc --arg d "$fx" "{tool_name:\"Edit\",cwd:\$d,tool_input:{file_path:\"$f\"}}" | bash "$hook" >/dev/null 2>&1; echo $?)" = 0 ]'
 check "the setting off goes through" '[ "$(opt=false edit "$f" "# Then it works" "# Then no")" = 0 ]'
