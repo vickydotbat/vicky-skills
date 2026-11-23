@@ -78,6 +78,11 @@ check "an approved test only main holds stays out of a branch behind it" '[ "$(p
 check "removing a copy of a test only main holds goes through" '[ "$(git -C "$repo" show main:tests/late_approved_examples.test.sh >"$late"; bash_rc "rm tests/late_approved_examples.test.sh")" = 0 ]'
 rm -f "$late"
 git -C "$repo" switch -q main; git -C "$repo" rm -q tests/tagged.test.sh; git -C "$repo" commit -qm drop; git -C "$repo" switch -q work
+k="$repo/tests/keep_approved_examples.test.sh"
+git -C "$repo" switch -q main; printf '# Given kept\n# Then it holds\n' >"$k"; git -C "$repo" add -A; git -C "$repo" commit -qm keep; git -C "$repo" switch -q work; git -C "$repo" rebase -q main
+git -C "$repo" switch -q main; sed -i 's/# Then it holds/# Then it holds fast/' "$k"; git -C "$repo" commit -qam steps; git -C "$repo" switch -q work
+check "a branch's older copy of a test main changed is left as it was" '[ "$(post)" = 0 ] && grep -qx "# Then it holds" "$k"'
+check "a branch's own change to its older copy is still put back" '[ "$(sed -i "/# Given kept/d" "$k"; post)" = 2 ] && grep -qx "# Given kept" "$k" && grep -qx "# Then it holds" "$k"'
 check "a test main dropped after the fork is no longer locked" '[ "$(bash_rc "rm tests/tagged.test.sh")" = 0 ]'
 check "another tool goes through" '[ "$(rc "{tool_name:\"Read\",cwd:\$d,tool_input:{file_path:\"$f\"}}")" = 0 ]'
 check "outside git goes through" '[ "$(jq -nc --arg d "$fx" "{tool_name:\"Edit\",cwd:\$d,tool_input:{file_path:\"$f\"}}" | bash "$hook" >/dev/null 2>&1; echo $?)" = 0 ]'
