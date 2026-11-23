@@ -1,6 +1,6 @@
 ---
 type: regex
 target: { source: file, path: soapbox.md }
-pattern: '\bpros?\b[\s\S]*\bcons?\b|\bcons?\b[\s\S]*\bpros?\b'
-flags: i
+pattern: '^\s*[-*>]?\s*\**pros?\b[\s\S]*^\s*[-*>]?\s*\**cons?\b|^\s*[-*>]?\s*\**cons?\b[\s\S]*^\s*[-*>]?\s*\**pros?\b'
+flags: im
 ---
