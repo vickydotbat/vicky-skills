@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # PreToolUse hook (Edit, Write, MultiEdit and Bash; guard_approved_test_lock,
 # on by default): an approved test changes only with its change record. A test
-# is approved when approved-spec.sh says so and the default branch holds it.
-# An Edit or Write that keeps every Given, When and Then comment line of the
-# default branch's copy goes through, as examples' CHANGING.md says. A shell
+# is approved when approved-spec.sh says so, and both the default branch and
+# the branch's fork point hold it. An Edit or Write that keeps every Given,
+# When and Then comment line of the fork point's copy goes through, as examples' CHANGING.md says. A shell
 # command whose words name an approved test as a write target is refused
 # before it runs, and on PostToolUse each approved test a command left without
-# one of its step lines is put back from the default branch. A change record
+# one of its step lines is put back from the fork point. A change record
 # is a file on the branch, not on the default branch, holding the line
 # "<test path>:<line or new>" with "- [x] approve" under it: red-pen's
 # section for the changed example. Hooks fire for each call inside a REPL
