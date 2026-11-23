@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Two changed files and no laws: a banner with many easy decisions and fast tests,
 # and a charge retry with one decision and a slow test.
+# The printf strings are file contents, kept unexpanded on purpose.
+# shellcheck disable=SC2016
 set -eu
 git init -q -b main .
 mkdir -p src tests

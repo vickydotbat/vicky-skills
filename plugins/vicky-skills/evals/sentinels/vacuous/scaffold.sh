@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # A test whose assertion sits behind a guard that never holds, so it passes on nothing.
+# The printf strings are file contents, kept unexpanded on purpose.
+# shellcheck disable=SC2016
 set -eu
 git init -q -b main .
 printf 'allowed() { [ "$1" -lt 10 ]; }\n' > limit.sh
