@@ -59,6 +59,7 @@ if [ "$tool" = Bash ] && [ "$event" = PostToolUse ]; then
     [ -n "$rel" ] || continue # mutant-ok delete: an empty name is the repo folder, which is never approved
     p="$root/$rel"
     if [ ! -f "$p" ]; then # a deleted test: judge the fork point's copy under its own name
+      git cat-file -e "$base:$rel" 2>/dev/null || continue
       tmp=$(mktemp -d); git show "$fork:$rel" >"$tmp/${rel##*/}" 2>/dev/null
       approved "$tmp/${rel##*/}" || { rm -rf "$tmp"; continue; }
       rm -rf "$tmp" # mutant-ok delete: the scratch copy only leaves a file in the temp folder
