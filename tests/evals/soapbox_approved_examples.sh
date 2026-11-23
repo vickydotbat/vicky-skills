@@ -14,7 +14,8 @@ run() {
 }
 # S1: Given the user types soapbox it after a reply that weighed options
 # When the agent answers
-# Then the reply opens with the agent's case in one or two plain sentences
+# Then the reply opens with the agent's opinion in one or two plain sentences
+# And each option says whether the agent argues for it or against it, and why
 # And each option follows with at least one pro and one con
 # And the reply ends with the agent's pick and one way to answer
 run soapbox/pitch-case-options-pick s1 "the case, each option's pros and cons, then the pick"
@@ -33,4 +34,9 @@ run soapbox/brief-under-200 s3 "under 200 words, one short line per pro or con"
 # Then it states its one recommendation with its pros and cons
 # And it does not invent options to fill the format
 run soapbox/nothing-to-weigh s4 "one recommendation, no invented options"
+# S5: Given the user types soapbox it in the middle of a task
+# When the agent answers
+# Then it gives its soapbox and changes no file and runs no command for the task
+# And it goes on only after the user answers
+run soapbox/opinion-before-work s5 "the soapbox comes first, the task waits"
 exit $fail
