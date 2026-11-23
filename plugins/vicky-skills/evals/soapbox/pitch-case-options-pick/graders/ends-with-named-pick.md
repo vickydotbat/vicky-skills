@@ -1,6 +1,5 @@
 ---
 type: regex
 target: { source: file, path: soapbox.md }
-pattern: '(pick|recommend|go with)[^\n]*\b(A|B|C|cache|split|parallel|nightly)\b[\s\S]{0,400}$'
-flags: i
+pattern: '([Pp]ick|[Rr]ecommend|[Gg]o with)[^\n]*(\b[ABC]\b|[Cc]ache|[Ss]plit|[Pp]arallel|[Nn]ightly)[\s\S]{0,400}$'
 ---

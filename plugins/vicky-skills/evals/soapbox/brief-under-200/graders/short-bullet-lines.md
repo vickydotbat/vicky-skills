@@ -1,6 +1,7 @@
 ---
 type: regex
 target: { source: file, path: soapbox.md }
-pattern: '\n\s*[-*][^\n]{120,}'
+pattern: '\n\s*(?:[-*]\s*)?\**(pro|con)s?\b[^\n]{100,}'
+flags: i
 match: not_contains
 ---
