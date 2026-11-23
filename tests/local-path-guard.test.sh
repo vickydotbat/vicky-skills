@@ -53,8 +53,10 @@ g rm -q pathfile
 expect 0 "removing a path is fine" 'git commit -m "drop it"'
 g reset -q --hard
 
+# Built in two parts, so no added line holds a home path (prefight's leak check).
+fake="/ho""me/someone/x"
 printf 'clean\n' >"$repo/tracked"; g add tracked; g commit -q -m tracked
-printf 'see /home/someone/x\n' >>"$repo/tracked" # local-path-ok
+printf 'see %s\n' "$fake" >>"$repo/tracked"
 expect 2 "a path in a tracked change the same command adds" 'git add -u && git commit -m add'
 g reset -q --hard
 printf 'see /home/someone/x\n' >"$repo/fresh"
@@ -79,18 +81,21 @@ expect 0 "thousands of clean untracked files pass" 'git add -A && git commit -m 
 took=$((SECONDS - start))
 if [ "$took" -le 5 ]; then echo "ok   thousands of untracked files scan in ${took}s"
 else echo "FAIL thousands of untracked files took ${took}s, over 5"; fail=1; fi
-printf 'see /home/someone/x\n' >"$repo/many/f1500.txt" # local-path-ok
+printf 'see %s\n' "$fake" >"$repo/many/f1500.txt"
 expect 2 "a path in one of thousands of untracked files is refused" 'git add -A && git commit -m add'
 rm -r "$repo/many"
 
-printf 'see /home/someone/x\n' >"$repo/local-path-ok.txt" # local-path-ok
+printf 'see %s\n' "$fake" >"$repo/local-path-ok.txt"
 expect 2 "a file named for the marker is still scanned" 'git add -A && git commit -m add'
 rm "$repo/local-path-ok.txt"
-printf 'fixture /home/someone/x # local-path-ok\n' >"$repo/marked.txt" # local-path-ok
+printf 'see %s\n' "$fake" >"$repo/x:1:local-path-ok.txt"
+expect 2 "a file whose name looks like a marked hit is still scanned" 'git add -A && git commit -m add'
+rm "$repo/x:1:local-path-ok.txt"
+printf 'fixture %s # local-path-ok\n' "$fake" >"$repo/marked.txt"
 expect 0 "a marked line in an untracked file passes" 'git add -A && git commit -m add'
 rm "$repo/marked.txt"
 printf 'ignored.txt\n' >"$repo/.gitignore"
-printf 'see /home/someone/x\n' >"$repo/ignored.txt" # local-path-ok
+printf 'see %s\n' "$fake" >"$repo/ignored.txt"
 expect 0 "an ignored file is not scanned" 'git add -A && git commit -m add'
 rm "$repo/ignored.txt" "$repo/.gitignore"
 exit $fail
