@@ -102,14 +102,16 @@ def receipt(item, n, out_dir, label=None):
 def command_paths(command, cwd):
     """Every word of the command as an absolute path, quotes stripped, -c payloads opened."""
     try:
-        words = shlex.split(command)
+        lexer = shlex.shlex(command, posix=True, punctuation_chars=True)
+        lexer.whitespace_split = True
+        words = list(lexer)
     except ValueError:
         words = command.split()
     for word in words:
         if " " in word:
             yield from command_paths(word, cwd)
         elif "/" in word:
-            yield os.path.normpath(os.path.join(cwd, word))
+            yield os.path.normpath(os.path.join(cwd, os.path.expandvars(word)))
 
 
 # Commands that read a file: a log line can come from another server writing the same log.
