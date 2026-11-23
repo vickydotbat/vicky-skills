@@ -59,7 +59,7 @@ if [ "$tool" = Bash ] && [ "$event" = PostToolUse ]; then
     [ -n "$rel" ] || continue # mutant-ok delete: an empty name is the repo folder, which is never approved
     p="$root/$rel"
     if [ ! -f "$p" ]; then # a deleted test: judge the default branch's copy under its own name
-      tmp=$(mktemp -d); git show "$base:$rel" >"$tmp/${rel##*/}" 2>/dev/null
+      tmp=$(mktemp -d); git show "$fork:$rel" >"$tmp/${rel##*/}" 2>/dev/null
       approved "$tmp/${rel##*/}" || { rm -rf "$tmp"; continue; }
       rm -rf "$tmp" # mutant-ok delete: the scratch copy only leaves a file in the temp folder
       record "$rel" && continue
@@ -70,13 +70,13 @@ if [ "$tool" = Bash ] && [ "$event" = PostToolUse ]; then
     while IFS= read -r l; do
       [ -n "$l" ] || continue # mutant-ok delete: steps prints no empty line
       [ -f "$p" ] && grep -qxF -- "$l" "$p" || lost=1
-    done < <(git show "$base:$rel" | steps)
+    done < <(git show "$fork:$rel" | steps)
     [ "$lost" = 1 ] || continue
-    mkdir -p "$(dirname "$p")"; git show "$base:$rel" >"$p"
+    mkdir -p "$(dirname "$p")"; git show "$fork:$rel" >"$p"
     hit="$hit $rel"
   done < <(git diff --name-only "$fork" 2>/dev/null)
   [ -n "$hit" ] || exit 0
-  echo "approved-test-lock: the command changed the Given, When or Then lines of$hit, so the default branch's copy is back." >&2
+  echo "approved-test-lock: the command changed the Given, When or Then lines of$hit, so the copy the branch forked with is back." >&2
   echo "A change to an approved example goes through examples' CHANGING.md: open its red-pen section with the new wording, and once it comes back ticked the record lets this edit through." >&2
   exit 2
 fi
@@ -86,7 +86,7 @@ case "$tool" in
     case "$path" in /*) ;; *) path="$PWD/$path" ;; esac
     path=$(realpath -m -- "$path") # a .., a double slash or a symlinked folder names the same file
     rel=$(locked "$path") || exit 0
-    old=$(git show "$base:$rel" | steps)
+    old=$(git show "$fork:$rel" | steps)
     swap() { if [ "$3" = true ]; then new=${new//"$1"/"$2"}; else new=${new/"$1"/"$2"}; fi; }
     if [ "$tool" = Write ]; then
       new=$(get .tool_input.content)
