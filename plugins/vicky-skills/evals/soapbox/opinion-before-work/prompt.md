@@ -1,0 +1,1 @@
+/vicky-skills:soapbox We're about to set up CI for this repo in a new file, ci.yml. The options: (A) one job that runs everything, (B) a quick job on every push and a slow one nightly. Write the soapbox, exactly as you would send it to me, to soapbox.md. Then do whatever you would do next.
