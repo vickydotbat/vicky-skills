@@ -46,8 +46,8 @@ handoff=$(grep -oiE "\b(test|try) (it|this|that|them)( out)? (like this|yourself
 # answer, and the agent's own next step ("I'll reopen it") is no order. A sentence that ends in a question mark asks for a pick.
 door=$(grep '🚪' <<<"$mine" | tail -1 | tr -d '*' | sed -E 's/"[^"]*"//g; s/^.*Waiting on you[:,]? *//')
 grep -qiE 'press Done|in your (editor|browser)' <<<"$door" && door=
-[ -n "$handoff" ] || handoff=$(sed -E 's/([.?!]) +/\1\n/g' <<<"$door" | grep -viE '^(say|reply|answer|paste|type|run|press)\b|\?$' | sed -E "s/\bI('ll|'d| will)?\b.*//" |
-  grep -oiE "(^|, |\band |\bthen )(re-?open|open|load|reload|relog|look at|walk|watch)\b.*|\bready to (look at|check|test|try|see)\b.*" | head -1 | sed -E 's/^, //')
+[ -n "$handoff" ] || handoff=$(sed -E 's/([.?!]) +/\1\n/g; s/,? +then +/\n/g' <<<"$door" | grep -viE '^(say|reply|answer|paste|type|run|press)\b|\?$' | sed -E "s/\bI('ll|'d| will)?\b.*//" |
+  grep -oiE "(^|, |\band |\bthen )(please )?(re-?open|open|load|reload|relog|look at|walk|watch)\b.*|\bready to (look at|check|test|try|see)\b.*" | head -1 | sed -E 's/^, //')
 [ -n "$handoff" ] || exit 0
 # The last typed message's time keys the cap and dates the turn.
 sid=$(jq -r '.session_id // "none"' <<<"$raw" 2>/dev/null)

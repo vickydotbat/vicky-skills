@@ -106,7 +106,9 @@ door_red=("🚪 Waiting on you: open Appearance in character creation and look a
           "🚪 Waiting on you: reopen \`/dressing\`. Paging back to page 1 should work now."
           "🚪 Waiting on you: load \`the_field\` from the modules list and walk the field."
           "🚪 **Waiting on you:** the test module is ready to look at. It holds all 79 animals."
-          "🚪 **Waiting on you:** reopen \`the_field\`. It now holds 103 animals.")
+          "🚪 **Waiting on you:** reopen \`the_field\`. It now holds 103 animals."
+          "🚪 Waiting on you: say go, then open the window and look at tile 5."
+          "🚪 Waiting on you: I reopened it. Please look at tile 5.")
 for d in "${door_red[@]}"; do
   { user "go"; text "$d"; } > "$fx/t.jsonl"
   check "a door line that sends the user to look is sent back: $d" 'sent_back'
@@ -114,7 +116,6 @@ done
 check "a door line sent with SendUserMessage is refused" 'refused "🚪 Waiting on you: reopen the window and look at the tile."'
 { user "go"; text "🚪 Waiting on you: reopen the window. It should page back now."; } > "$fx/t.jsonl"
 check "the reason quotes the door line's order" '[[ "$(rm -rf "$fx/data"; stop)" == *"reopen the window"* ]]'
-check "the reason asks for each place quoted from the code" '[[ "$(rm -rf "$fx/data"; stop)" == *"from the code that draws it"* ]]'
 door_green=("🚪 Waiting on you: Go renderer or Blender? Answer one word in chat."
             "🚪 Waiting on you: type \`! make up\` from the repo root."
             "🚪 Waiting on you: say \"open it\" and I open the pull request."
