@@ -1,6 +1,6 @@
 ---
 type: regex
 target: { source: file, path: plan.md }
-pattern: 'plane (state|claim)[^\n]*WEB-200|WEB-200[^\n]*Todo'
-flags: i
+pattern: '^[^\n#]*plane state\s+WEB-200\s+"?Todo"?\s*`?\s*$'
+flags: im
 ---
