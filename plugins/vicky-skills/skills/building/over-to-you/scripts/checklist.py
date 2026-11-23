@@ -88,7 +88,7 @@ def receipt(item, n, out_dir, label=None):
             return None, f"{label}: receipt {rid} ran `{command}`, and neither it nor its output holds the kit `{kit}`: run the kit itself through ran.sh"
     sid = os.environ.get("CLAUDE_CODE_SESSION_ID") or "\0"
     scratches = tuple(os.path.join(root, sid) + os.sep for root in {os.environ.get("TMPDIR") or "/tmp", "/tmp"})
-    if any(word.startswith(scratches) for word in command.split()):
+    if any(path.startswith(scratches) for path in command_paths(command, got.get("cwd") or "/")):
         return None, (f"{label}: receipt {rid} ran `{command}`, a script written in the session folder: its last line, "
                       "not the test, decides its exit. Run the test command itself through ran.sh")
     head = got.get("head") or ""
@@ -97,6 +97,19 @@ def receipt(item, n, out_dir, label=None):
         if now and now != head:
             return None, f"{label}: receipt {rid} ran on {head[:9]}, not HEAD {now[:9]}: run it again on this build"
     return f"   ran: `{command}` exit 0 at {got.get('at', '')}", None
+
+
+def command_paths(command, cwd):
+    """Every word of the command as an absolute path, quotes stripped, -c payloads opened."""
+    try:
+        words = shlex.split(command)
+    except ValueError:
+        words = command.split()
+    for word in words:
+        if " " in word:
+            yield from command_paths(word, cwd)
+        elif "/" in word:
+            yield os.path.normpath(os.path.join(cwd, word)) + ("/" if word.endswith("/") else "")
 
 
 # Commands that read a file: a log line can come from another server writing the same log.

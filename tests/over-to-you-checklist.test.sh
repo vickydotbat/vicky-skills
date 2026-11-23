@@ -160,6 +160,14 @@ check "ran.sh with too few arguments prints its usage and exits 2" 'out=$(bash "
 mkdir -p "$dir/rt/s2"; fresh "$dir/rt/s2" stage "podman ps"; jq -n '{name: "Bob", open: "x", signed_off: "n", proven_by: "p", stage_ran: "stage", sections: [{title: "P", items: [{do: "Open the pack", see: "the slots show", person: "look", ran: "ok"}]}]}' > "$dir/spec.json"
 mkdir -p "$dir/wr/over-to-you-receipts"; fresh "$dir/wr" stage "podman ps"; jq -n --arg c "bash $dir/rt/s2/iloop.sh" --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '{id:"w", command:$c, exit:0, at:$at, head:"", cwd:"/", hold:0, tail:"exit=1"}' > "$dir/wr/over-to-you-receipts/w.json"; jq -n '{name: "Bob", open: "x", signed_off: "n", proven_by: "p", stage_ran: "stage", sections: [{title: "P", items: [{do: "Open the pack", see: "the slots show", person: "look", ran: "w"}]}]}' > "$dir/wr/spec.json"
 check "a receipt whose command is a script written in the session folder is refused" 'out=$(env TMPDIR="$dir/rt" CLAUDE_CODE_SESSION_ID=s2 python3 -I "$skill/checklist.py" "$dir/wr/spec.json" "$dir/wr/out.md" 2>&1); [ $? = 1 ] && grep -q "session folder" <<<"$out"'
+for wc in 'bash "SESS/iloop.sh"' 'sh -c "SESS/iloop.sh"' 'bash ./iloop.sh'; do
+  c=${wc//SESS/$dir/rt/s2}; wcwd=/; [[ $wc = *./* ]] && wcwd="$dir/rt/s2"
+  jq -n --arg c "$c" --arg cwd "$wcwd" --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '{id:"w", command:$c, exit:0, at:$at, head:"", cwd:$cwd, hold:0, tail:"exit=1"}' > "$dir/wr/over-to-you-receipts/w.json"
+  check "a receipt that runs a session-folder script is refused: $wc" 'out=$(env TMPDIR="$dir/rt" CLAUDE_CODE_SESSION_ID=s2 python3 -I "$skill/checklist.py" "$dir/wr/spec.json" "$dir/wr/out.md" 2>&1); [ $? = 1 ] && grep -q "session folder" <<<"$out"'
+done
+for bad in abc 60s -5; do
+  check "ran.sh refuses RAN_HOLD=$bad before it runs the command" 'rm -f "$dir/badhold"; RAN_HOLD=$bad ran badhold bash -c "touch \"\$1\"" _ "$dir/badhold" 2>/dev/null; [ $? = 2 ] && [ ! -e "$dir/badhold" ]'
+done
 check "ran.sh with RAN_HOLD runs the check twice and records the hold" 'rm -f "$dir/twice"; RAN_HOLD=1 ran held bash -c "echo x >> \"\$1\"" _ "$dir/twice" >/dev/null 2>&1 && [ "$(wc -l < "$dir/twice")" = 2 ] && jq -e ".hold == 1" "$dir/rt/s2/over-to-you-receipts/held.json" >/dev/null'
 check "ran.sh with RAN_HOLD waits the hold between its two runs" 's=$(date +%s%N); RAN_HOLD=1 ran heldwait true >/dev/null 2>&1; [ $(( ($(date +%s%N) - s) / 1000000 )) -ge 1000 ]'
 check "ran.sh with RAN_HOLD fails when the second check fails" 'rm -f "$dir/once"; RAN_HOLD=1 ran heldfail bash -c "[ ! -e \"\$1\" ] && touch \"\$1\"" _ "$dir/once" >/dev/null 2>&1; [ $? = 1 ] && jq -e ".exit == 1 and .hold == 0" "$dir/rt/s2/over-to-you-receipts/heldfail.json" >/dev/null'
@@ -185,7 +193,7 @@ done
 spec "[$item]"
 # ran.sh stays inside its time and size bounds.
 check "a command that leaves a child holding its output still ends at RAN_TIMEOUT" 's=$SECONDS; RAN_TIMEOUT=1 ran bg bash -c "sleep 30 & echo hi" >/dev/null 2>&1; [ $(( SECONDS - s )) -lt 10 ]'
-check "a child that outlives the command never holds open the output of a caller capturing ran.sh" 's=$SECONDS; x=$(ran capt bash -c "sleep 8 & echo hi" 2>&1); [ $(( SECONDS - s )) -lt 5 ] && grep -q "^hi$" <<<"$x"'
+check "a child that outlives the command never holds open the output of a caller capturing ran.sh" 's=$SECONDS; x=$(ran capt bash -c "sleep 30 & echo hi" 2>&1); [ $(( SECONDS - s )) -lt 10 ] && grep -q "^hi$" <<<"$x"'
 check "a command with no child left running ends ran.sh without the reader's one-second wait" 's=$(date +%s%N); ran quick true >/dev/null 2>&1; [ $(( ($(date +%s%N) - s) / 1000000 )) -lt 900 ]'
 check "a child that outlives the command still writes to its output after ran.sh ends" 'rm -f "$dir/alive"; ran late bash -c "(sleep 2; echo late; echo survived > \"\$1\") & echo hi" _ "$dir/alive" >/dev/null 2>&1; sleep 3; [ "$(cat "$dir/alive" 2>/dev/null)" = survived ]'
 check "a command that ignores TERM is killed after the grace" 's=$SECONDS; RAN_TIMEOUT=1 RAN_GRACE=1 ran term bash -c "trap \"\" TERM; sleep 30" >/dev/null 2>&1; r=$?; [ $(( SECONDS - s )) -lt 10 ] && [ $r = 137 ]'
