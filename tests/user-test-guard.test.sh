@@ -109,7 +109,8 @@ door_red=("🚪 Waiting on you: open Appearance in character creation and look a
           "🚪 **Waiting on you:** reopen \`the_field\`. It now holds 103 animals."
           "🚪 Waiting on you: say go, then open the window and look at tile 5."
           "🚪 Waiting on you: I reopened it. Please look at tile 5."
-          "🚪 Waiting on you: open it in your browser and look at it.")
+          "🚪 Waiting on you: open it in your browser and look at it."
+          "🚪 Open the window.")
 for d in "${door_red[@]}"; do
   { user "go"; text "$d"; } > "$fx/t.jsonl"
   check "a door line that sends the user to look is sent back: $d" 'sent_back'
