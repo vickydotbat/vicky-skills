@@ -108,7 +108,8 @@ door_red=("🚪 Waiting on you: open Appearance in character creation and look a
           "🚪 **Waiting on you:** the test module is ready to look at. It holds all 79 animals."
           "🚪 **Waiting on you:** reopen \`the_field\`. It now holds 103 animals."
           "🚪 Waiting on you: say go, then open the window and look at tile 5."
-          "🚪 Waiting on you: I reopened it. Please look at tile 5.")
+          "🚪 Waiting on you: I reopened it. Please look at tile 5."
+          "🚪 Waiting on you: open it in your browser and look at it.")
 for d in "${door_red[@]}"; do
   { user "go"; text "$d"; } > "$fx/t.jsonl"
   check "a door line that sends the user to look is sent back: $d" 'sent_back'
@@ -122,7 +123,8 @@ door_green=("🚪 Waiting on you: Go renderer or Blender? Answer one word in cha
             "🚪 Waiting on you: say \"go\" when your check is done."
             "🚪 Waiting on you: is the grey mannequin the right look? Answer in chat."
             "🚪 Waiting on you: if it is ready for review, run \`! tea pr edit 7 -t x\`."
-            "🚪 Waiting on you: the draft is open in your browser. Close it when it reads right.")
+            "🚪 Waiting on you: the draft is open in your browser. Close it when it reads right."
+            "🚪 Waiting on you: nothing. Open items: none.")
 for d in "${door_green[@]}"; do
   { user "go"; text "$d"; } > "$fx/t.jsonl"
   check "a door line that asks for an answer goes through: $d" 'passes'
