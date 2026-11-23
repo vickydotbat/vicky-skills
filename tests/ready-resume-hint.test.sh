@@ -10,6 +10,7 @@ dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 fail=0
 run() { CLAUDE_PLUGIN_OPTION_READY_RESUME_HINT="${opt-}" bash "$hook" <<<"$1" 2>&1; }
 has() { if grep -qF -- "$2" <<<"$3"; then echo "ok   $1"; else echo "FAIL $1: got '$3'"; fail=1; fi; }
+lacks() { if grep -qF -- "$2" <<<"$3"; then echo "FAIL $1: got '$3'"; fail=1; else echo "ok   $1"; fi; }
 none() { if [ -z "$2" ] && [ "${code:-0}" = 0 ]; then echo "ok   $1"; else echo "FAIL $1: got '$2'"; fail=1; fi; }
 p() { jq -nc --arg p "$1" --arg t "${2:-}" '{hook_event_name:"UserPromptSubmit",prompt:$p,transcript_path:$t}'; }
 b() { printf '<bash-input>%s</bash-input>' "$1"; }
@@ -20,7 +21,8 @@ out=$(run "$(p "$(b 'gh pr ready 12')")")
 has "gh pr ready in the prompt resumes make-it-so" "make-it-so goes on" "$out"
 has "the hint names the command" 'gh pr ready 12' "$out"
 has "the hint names the currency check" "git fetch origin" "$out"
-has "the hint names the rebase" "rebase it with history-monks" "$out"
+has "the hint points at step 1 for the rebase" "as step 1 says" "$out"
+lacks "the hint keeps no rule of its own on the push" "rebase-only" "$out"
 has "the hint names the run check" "close and reopen the pull request" "$out"
 has "the hint names the CI watch" "watch every required check" "$out"
 has "the hint names the settling" "settle the tickets and the body" "$out"
