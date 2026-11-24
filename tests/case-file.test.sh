@@ -11,6 +11,7 @@ fx="$scratch/.case-files"; mkdir -p "$fx"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 page() { printf '<p>%s</p>\n' "$1" > "$fx/p.html"; }
+as_zip() { HOME=/srv/rin USER=rin python3 "$check_py" "$fx/$1.zip" >/dev/null 2>&1; }
 as_rin() { HOME=/srv/rin USER=rin python3 "$check_py" "$fx/p.html" >/dev/null 2>&1; }
 
 page "Kept in /srv/rin/notes."
@@ -68,4 +69,39 @@ check "an image bomb stops the build within 30 seconds" '[ "$status" -ne 0 ] && 
 truncate -s 30M "$fx/t/big.bin"; printf '<!-- BIN big.bin -->\n' > "$fx/t/g.html"
 out=$(python3 "$root/plugins/vicky-skills/skills/writing/case-file/scripts/build.py" "$fx/t/g.html" "$fx/t/g.out" 2>&1); status=$?
 check "a file over the size cap stops the build and names it" '[ "$status" -ne 0 ] && grep -q "big.bin" <<<"$out" && grep -qi "too big" <<<"$out"'
+# Found by a session whose case folder landed in a worktree: a worktree goes when its effort ends.
+kit="$root/plugins/vicky-skills/skills/writing/case-file/scripts"
+g() { git -C "$fx/repo" -c user.name=t -c user.email=t@example.invalid "$@"; }
+mkdir -p "$fx/repo" && git -C "$fx/repo" init -q -b main && g commit -q --allow-empty -m start && g worktree add -q "$fx/repo/.claude/worktrees/w" 2>/dev/null
+for at in "$fx/repo" "$fx/repo/.claude/worktrees/w"; do mkdir -p "$at/.case-files/c/sections"; printf '<!-- KIND research -->\n<h1>C</h1>\n' > "$at/.case-files/c/sections/1.html"; done
+out=$(python3 "$kit/build.py" "$fx/repo/.case-files/c" "$fx/repo/.case-files/c/out/c.html" 2>&1); status=$?
+check "a case folder at the main checkout's root builds" '[ "$status" -eq 0 ]'
+out=$(python3 "$kit/build.py" "$fx/repo/.claude/worktrees/w/.case-files/c" "$fx/wt.html" 2>&1); status=$?
+check "a case folder in a linked worktree stops the build and names the main checkout" '[ "$status" -ne 0 ] && grep -q "worktree" <<<"$out" && grep -qF "$fx/repo," <<<"$out" && [ ! -e "$fx/wt.html" ]'
+out=$(cd "$fx/repo/.claude/worktrees/w" && python3 "$kit/build.py" .case-files/c "$fx/wt2.html" 2>&1); status=$?
+check "a relative case folder in a worktree stops the build too" '[ "$status" -ne 0 ] && [ ! -e "$fx/wt2.html" ]'
+mkdir -p "$fx/norepo/.case-files/c/sections"; cp "$fx/repo/.case-files/c/sections/1.html" "$fx/norepo/.case-files/c/sections/"
+out=$(GIT_CEILING_DIRECTORIES="$fx" python3 "$kit/build.py" "$fx/norepo/.case-files/c" "$fx/nr.html" 2>&1); status=$?
+check "a case folder outside any repo builds" '[ "$status" -eq 0 ]'
+out=$(PATH=/nonexistent "$(command -v python3)" "$kit/build.py" "$fx/repo/.case-files/c" "$fx/ng.html" 2>&1); status=$?
+check "with no git on PATH the build goes on" '[ "$status" -eq 0 ]'
+# Found by a session whose zip held a PNG with "~/" in its pixel bytes.
+python3 - "$fx/z.zip" <<'ZIP'
+import struct, sys, zipfile, zlib
+def chunk(k, d): return struct.pack(">I", len(d)) + k + d + struct.pack(">I", zlib.crc32(k + d))
+head = b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", 1, 1, 8, 0, 0, 0, 0))
+clean = head + chunk(b"IDAT", b"\0~/x\0") + chunk(b"IEND", b"")
+leaky = head + chunk(b"zTXt", b"Comment\0\0" + zlib.compress(b"saved from ~/Pictures")) + chunk(b"IEND", b"")
+jpeg = b"\xff\xd8\xff\xfe\x00\x0aab ~/cd" + b"\xff\xda\x00\x04~/" + b"\xff\xd9"
+jclean = b"\xff\xd8\xff\xda\x00\x04~/" + b"\xff\xd9"
+for name, members in (("z", {"c/files/a.png": clean, "c/files/b.jpg": jclean}), ("t", {"c/files/a.png": clean, "c/notes.txt": b"see ~/x"}),
+                      ("m", {"c/files/a.png": leaky}), ("j", {"c/files/b.jpg": jpeg}), ("f", {"c/files/fake.png": b"see ~/x"})):
+    with zipfile.ZipFile(sys.argv[1].replace("z.zip", name + ".zip"), "w") as z:
+        for k, v in members.items(): z.writestr(k, v)
+ZIP
+check "a zip whose images hold ~/ in their pixels is clean" 'as_zip z'
+check "a text member with ~/ beside such an image is refused" '! as_zip t'
+check "a PNG text chunk naming a home path is refused" '! as_zip m'
+check "a JPEG comment naming a home path is refused" '! as_zip j'
+check "a text file named .png is read as text" '! as_zip f'
 exit $fail

@@ -11,10 +11,11 @@ that names its kind, it also refuses a claim whose visible label differs from
 its data-evidence, and the future tense outside a pitch's ask. Exits 1
 naming each hit's line or download, 0 when the page is clean. A PDF is read
 as text with pdftotext, and one it can't read is refused. A zip is checked
-member by member, each hit named by the member it sits in, and a member over
+member by member, each hit named by the member it sits in, a PNG or JPEG member by its
+text chunks and comments only, never its pixels, and a member over
 64 MiB is refused unread.
 """
-import base64, html, os, re, shutil, socket, subprocess, sys, tempfile, urllib.parse, zipfile
+import base64, html, os, re, shutil, socket, subprocess, sys, tempfile, urllib.parse, zipfile, zlib
 
 def patterns():
     pats = [r"(?<![\w./-])/(home|Users)/[^/\s\"'<>]+/", r"/nix/store/", r"(?<![\w./-])/tmp/[^\s\"'<>]+", r"(?<![\w.-])~/", r"(?<![\w.])\.\./"]  # local-path-ok: the patterns the check looks for
@@ -107,6 +108,48 @@ def read(path):
 # A member past this is refused unread, so a zip bomb cannot fill memory.
 LIMIT = 64 << 20
 
+# Text an image carries beside its pixels: PNG text chunks and JPEG comments.
+PNG_MAGIC, JPEG_MAGIC = b"\x89PNG\r\n\x1a\n", b"\xff\xd8\xff"
+
+def metadata(data):
+    """An image's text fields, or None when the bytes are no PNG or JPEG."""
+    out = []
+    if data.startswith(PNG_MAGIC):
+        i = 8
+        while i + 8 <= len(data):
+            n, kind = int.from_bytes(data[i:i + 4], "big"), data[i + 4:i + 8]
+            body = data[i + 8:i + 8 + n]
+            if kind == b"tEXt":
+                out.append(body.replace(b"\0", b" "))
+            elif kind in (b"zTXt", b"iTXt"):
+                key, _, rest = body.partition(b"\0")
+                if kind == b"zTXt":
+                    packed, text = True, rest[1:]  # method byte, then the deflated text
+                else:
+                    packed, text = rest[:1] == b"\1", rest[2:].split(b"\0", 2)[-1]  # flag, method, language, translated key
+                if packed:
+                    try:
+                        text = zlib.decompressobj().decompress(text, LIMIT)
+                    except zlib.error:
+                        text = b"unreadable compressed text"
+                    text = text  # capped, so a bomb chunk cannot fill memory
+                out.append(key + b" " + text)
+            if kind == b"IEND":
+                break
+            i += 12 + n
+        return b"\n".join(out)
+    if data.startswith(JPEG_MAGIC):
+        i = 2
+        while i + 4 <= len(data) and data[i] == 0xFF:
+            mark, n = data[i + 1], int.from_bytes(data[i + 2:i + 4], "big")
+            if mark == 0xDA:
+                break  # the pixels start here
+            if mark == 0xFE:
+                out.append(data[i + 4:i + 2 + n])
+            i += 2 + n
+        return b"\n".join(out)
+    return None
+
 def bundle(path):
     """Every hit in a zip's members, each named by its member."""
     hits = []
@@ -122,7 +165,9 @@ def bundle(path):
                 open(out, "wb").write(data)
                 text = read(out)
             else:
-                text = data.decode("utf-8", errors="replace")
+                meta = metadata(data)
+                # pixels hold any byte pair by chance, so an image is checked by its text fields only
+                text = (data if meta is None else meta).decode("utf-8", errors="replace")
             hits += [f"{name}: {h}" for h in scan(text)]
     return hits
 

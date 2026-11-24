@@ -7,7 +7,7 @@ A case folder's page is every sections/*.html file in it, in file name order,
 with marker paths relative to the case folder. A single template is the page's
 body, with paths relative to the template. Either is written as HTML. The PDF
 and the Markdown are written beside the page under its name, the PDF printed
-from the HTML by a headless browser so the two always match. A page that names
+from the HTML by a headless browser so the two always match. A source in a scratch folder or a linked git worktree, a page that names
 this machine, an unknown format or a missing browser stops the build before
 any file is written.
 
@@ -125,8 +125,26 @@ def render(kind, arg, base):
             f"<pre>{shown}</pre></details>")
 
 
+def worktree(path):
+    """Stop the build when the case file sits in a linked git worktree, which goes when its effort ends."""
+    where = path if os.path.isdir(path) else os.path.dirname(os.path.abspath(path))
+    try:
+        got = subprocess.run(["git", "-C", where, "rev-parse", "--path-format=absolute", "--git-dir", "--git-common-dir"],
+                             capture_output=True, text=True, timeout=30)
+    except (OSError, subprocess.TimeoutExpired):
+        return  # no git: nothing to tell a worktree from a checkout
+    dirs = got.stdout.split()
+    if got.returncode != 0 or len(dirs) != 2:
+        return  # not in a repo
+    own, common = (os.path.realpath(p) for p in dirs)
+    if own != common:
+        fail(f"{path} is in a git worktree, which is removed when its effort ends: keep a case file under .case-files/<name>/ "
+             f"at the main checkout's root, {os.path.dirname(common)}, found with git rev-parse --git-common-dir")
+
+
 def lasting(path):
-    """Stop the build when the case file sits in a folder a reboot wipes, outside a .case-files folder."""
+    """Stop the build when the case file sits in a folder a reboot wipes, outside a .case-files folder, or in a worktree."""
+    worktree(path)
     real = os.path.realpath(path)
     if ".case-files" in real.split(os.sep):
         return
