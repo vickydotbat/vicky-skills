@@ -22,7 +22,7 @@ git-subcommand.sh	34fb86b1eb17b68c	edd58cf179bc59c5	33/33
 heredoc-strip.awk	f4f00a43ef2fd634	4ab9ce14c60b9655	6/6
 keep-awake.sh	d64200a28b3c6e54	bf8816b3639cfd45	31/31
 lesson-hint.sh	7a82ca13330f28fd	7783cb6645b1d121	11/11
-lesson-ledger.sh	4c88dc2d0aebcfe6	1c3b836542cb0487	18/18
+lesson-ledger.sh	4c88dc2d0aebcfe6	4669921eff04829e	18/18
 local-path-guard.sh	7c65ca0ba2090c8c	8af3a7393171798b	31/31
 merge-point.sh	a19dbe9167831b34	fc64871b4e62cca4	2/2
 merged-branch-guard.sh	82af13fe1be3f462	984491ccbaffecd5	79/79
@@ -34,7 +34,7 @@ outside-text-guard.sh	e8f015e3aada1afe	08fac32ab3bc707c	39/39
 patch-tell-hint.sh	256a998db4051de9	5fe1d435fef9a19b	50/50
 pkill-guard.sh	b7b411516636d988	29ca7e6cb32dc5c9	7/7
 plane-block-guard.sh	a2ced0e121b33f36	c912309fd621ec7a	20/20
-plugin-data.sh	2b852e6635cec758	1eb83e986afbbf10	3/3
+plugin-data.sh	2b852e6635cec758	5192323e8cf1d533	3/3
 post-body-guard.py	2203c08aac8e7c68	37af6b3fe7ac10bb	280/280
 post-body-guard.sh	218b762a4149dd59	37af6b3fe7ac10bb	10/10
 pr-guard.sh	70eaa3009f51a514	e6c5726d88da16b0	157/157
@@ -56,6 +56,7 @@ review-brief-guard.sh	560dd59ae4621bd2	35d1f7542328b43e	22/22
 shellcheck-guard.sh	4a1cd489a882b91c	500ead1978c8e431	31/31
 since-user.sh	7be3c1c933152abd	86d6a8cd389726ce	14/14
 skill-change-proven.sh	2a77ba5faffc92ea	0d52c550be388664	13/13
+skill-graph.py	988d2fb86f4d3f58	4606a6be96d7f7bb	30/30
 skill-ledger.sh	5a29eb7f617f6f60	ff7ccbbd36194ae4	17/17
 skill-started.sh	fcfb07feca5ca217	d9fcf255178afd0f	13/13
 skills/building/over-to-you/scripts/checklist.py	9d8e4d5319372829	09a89912fc34694a	163/163

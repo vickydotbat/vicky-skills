@@ -56,6 +56,8 @@ jobs:
         run: tests/plugin-layout.test.sh
       - name: The skill graph lists each hand-off between skills and no stale one
         run: tests/skill_graph_approved_examples.test.sh
+      - name: "skill-graph.py edges: list, and usage errors"
+        run: tests/skill-graph.test.sh
       - name: The security kit drafts an advisory only where its line says (SEC-1)
         run: tests/security_advisory_approved_examples.test.sh
       - name: The security kit's levels name the run behind each finding (SEC-3)
