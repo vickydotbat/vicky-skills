@@ -2,6 +2,9 @@
 # The case-file check's rules past its approved examples: this user's name,
 # home folder and host count as this machine, and an inlined image's data
 # never does, whatever its base64 happens to spell.
+# shellcheck disable=SC2016 # each check's condition is single-quoted on purpose, so check() evals it later
+# shellcheck disable=SC2329 # the helpers run inside the eval'd conditions, which shellcheck cannot see
+# shellcheck disable=SC2034 # start and status are read inside the eval'd conditions
 set -u
 root=$(cd "$(dirname "$0")/.." && pwd)
 check_py="$root/plugins/vicky-skills/skills/writing/case-file/scripts/check.py"
@@ -11,7 +14,6 @@ fx="$scratch/.case-files"; mkdir -p "$fx"
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 page() { printf '<p>%s</p>\n' "$1" > "$fx/p.html"; }
-as_zip() { HOME=/srv/rin USER=rin python3 "$check_py" "$fx/$1.zip" >/dev/null 2>&1; }
 as_rin() { HOME=/srv/rin USER=rin python3 "$check_py" "$fx/p.html" >/dev/null 2>&1; }
 
 page "Kept in /srv/rin/notes."
@@ -86,22 +88,41 @@ check "a case folder outside any repo builds" '[ "$status" -eq 0 ]'
 out=$(PATH=/nonexistent "$(command -v python3)" "$kit/build.py" "$fx/repo/.case-files/c" "$fx/ng.html" 2>&1); status=$?
 check "with no git on PATH the build goes on" '[ "$status" -eq 0 ]'
 # Found by a session whose zip held a PNG with "~/" in its pixel bytes.
-python3 - "$fx/z.zip" <<'ZIP'
+python3 - "$fx" <<'ZIP'
 import struct, sys, zipfile, zlib
 def chunk(k, d): return struct.pack(">I", len(d)) + k + d + struct.pack(">I", zlib.crc32(k + d))
 head = b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", 1, 1, 8, 0, 0, 0, 0))
-clean = head + chunk(b"IDAT", b"\0~/x\0") + chunk(b"IEND", b"")
-leaky = head + chunk(b"zTXt", b"Comment\0\0" + zlib.compress(b"saved from ~/Pictures")) + chunk(b"IEND", b"")
-jpeg = b"\xff\xd8\xff\xfe\x00\x0aab ~/cd" + b"\xff\xda\x00\x04~/" + b"\xff\xd9"
-jclean = b"\xff\xd8\xff\xda\x00\x04~/" + b"\xff\xd9"
-for name, members in (("z", {"c/files/a.png": clean, "c/files/b.jpg": jclean}), ("t", {"c/files/a.png": clean, "c/notes.txt": b"see ~/x"}),
-                      ("m", {"c/files/a.png": leaky}), ("j", {"c/files/b.jpg": jpeg}), ("f", {"c/files/fake.png": b"see ~/x"})):
-    with zipfile.ZipFile(sys.argv[1].replace("z.zip", name + ".zip"), "w") as z:
+end = chunk(b"IEND", b"")
+def png(*chunks): return head + b"".join(chunks) + end
+clean = png(chunk(b"tEXt", b"Software\0glow"), chunk(b"zTXt", b"Comment\0\0" + zlib.compress(b"a lantern")),
+            chunk(b"iTXt", b"Title\0\0\0en\0\0dusk"), chunk(b"IDAT", b"\0~/x\0")) + chunk(b"tEXt", b"after\0~/x")
+leak = lambda c: png(c)
+# The scan data after SOS holds what looks like a comment, and must stay pixels.
+jclean = b"\xff\xd8\xff\xe0\x00\x04ab\xff\xfe\x00\x06glow\xff\xda\x00\x02\xff\xfe\x00\x05~/x\xff\xd9"
+zips = {
+    "z": {"c/files/a.png": clean, "c/files/b.jpg": jclean, "c/files/cut.jpg": b"\xff\xd8\xff\xfe\x00\x04ab\xff",
+          "c/files/bad.png": png(chunk(b"zTXt", b"Comment\0\0not deflate ~/x"))},
+    "t": {"c/files/a.png": clean, "c/notes.txt": b"see ~/x"},
+    "m": {"c/files/a.png": leak(chunk(b"zTXt", b"Comment\0\0" + zlib.compress(b"from ~/Pictures")))},
+    "e": {"c/files/a.png": leak(chunk(b"tEXt", b"Comment\0from ~/Pictures"))},
+    "i": {"c/files/a.png": leak(chunk(b"iTXt", b"Comment\0\0\0en\0\0from ~/Pictures"))},
+    "k": {"c/files/a.png": leak(chunk(b"iTXt", b"Comment\0\1\0en\0\0" + zlib.compress(b"from ~/Pictures")))},
+    "j": {"c/files/b.jpg": b"\xff\xd8\xff\xe0\x00\x04ab\xff\xfe\x00\x0aab ~/cd\xff\xda\x00\x02\xff\xd9"},
+    "f": {"c/files/fake.png": b"see ~/x"},
+}
+for name, members in zips.items():
+    with zipfile.ZipFile(f"{sys.argv[1]}/{name}.zip", "w") as z:
         for k, v in members.items(): z.writestr(k, v)
 ZIP
-check "a zip whose images hold ~/ in their pixels is clean" 'as_zip z'
-check "a text member with ~/ beside such an image is refused" '! as_zip t'
-check "a PNG text chunk naming a home path is refused" '! as_zip m'
-check "a JPEG comment naming a home path is refused" '! as_zip j'
-check "a text file named .png is read as text" '! as_zip f'
+zip_out() { HOME=/srv/rin USER=rin python3 "$check_py" "$fx/$1.zip" 2>&1; }
+clean_zip() { out=$(zip_out "$1") && grep -q "check: clean" <<<"$out"; }
+refused() { out=$(zip_out "$1"); [ $? -eq 1 ] && grep -qF "$2: " <<<"$out" && ! grep -q Traceback <<<"$out"; }
+check "a zip whose images hold ~/ in their pixels, clean text chunks, a cut JPEG and a broken chunk is clean" 'clean_zip z'
+check "a text member with ~/ beside such an image is refused" 'refused t c/notes.txt'
+check "a PNG zTXt chunk naming a home path is refused" 'refused m c/files/a.png'
+check "a PNG tEXt chunk naming a home path is refused" 'refused e c/files/a.png'
+check "a PNG iTXt chunk naming a home path is refused" 'refused i c/files/a.png'
+check "a compressed PNG iTXt chunk naming a home path is refused" 'refused k c/files/a.png'
+check "a JPEG comment naming a home path is refused" 'refused j c/files/b.jpg'
+check "a text file named .png is read as text" 'refused f c/files/fake.png'
 exit $fail

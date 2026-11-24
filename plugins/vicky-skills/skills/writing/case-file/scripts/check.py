@@ -129,10 +129,9 @@ def metadata(data):
                     packed, text = rest[:1] == b"\1", rest[2:].split(b"\0", 2)[-1]  # flag, method, language, translated key
                 if packed:
                     try:
-                        text = zlib.decompressobj().decompress(text, LIMIT)
+                        text = zlib.decompressobj().decompress(text, LIMIT)  # capped, so a bomb chunk cannot fill memory
                     except zlib.error:
                         text = b"unreadable compressed text"
-                    text = text  # capped, so a bomb chunk cannot fill memory
                 out.append(key + b" " + text)
             if kind == b"IEND":
                 break
@@ -148,7 +147,7 @@ def metadata(data):
                 out.append(data[i + 4:i + 2 + n])
             i += 2 + n
         return b"\n".join(out)
-    return None
+    return None  # mutant-ok delete: a function with no return gives None too
 
 def bundle(path):
     """Every hit in a zip's members, each named by its member."""

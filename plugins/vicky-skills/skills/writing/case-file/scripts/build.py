@@ -134,7 +134,7 @@ def worktree(path):
     except (OSError, subprocess.TimeoutExpired):
         return  # no git: nothing to tell a worktree from a checkout
     dirs = got.stdout.split()
-    if got.returncode != 0 or len(dirs) != 2:
+    if len(dirs) != 2:
         return  # not in a repo
     own, common = (os.path.realpath(p) for p in dirs)
     if own != common:
