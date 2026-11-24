@@ -11,6 +11,11 @@ started() { jq -nc --arg s "$1" '{type:"assistant",message:{content:[{type:"tool
 started vicky-skills:do > "$dir/none.jsonl"
 { started vicky-skills:do; started vicky-skills:mission-brief; } > "$dir/briefed.jsonl"
 { started vicky-skills:do; started vicky-skills:groundhog-day; } > "$dir/bugged.jsonl"
+has() { # name word...: ok when the last refusal holds every word
+  local name=$1 word; shift
+  for word in "$@"; do grep -q -- "$word" "$dir/err" || { echo "FAIL $name"; fail=1; return; }; done
+  echo "ok   $name"
+}
 expect() { # name want transcript command [env...]
   local name=$1 want=$2 transcript=$3 cmd=$4; shift 4
   jq -nc --arg c "$cmd" --arg t "$transcript" --arg a "${AGENT:-}" '{tool_input:{command:$c},transcript_path:$t} + (if $a == "" then {} else {agent_id:$a} end)' |
@@ -23,9 +28,10 @@ expect "tea issue create is refused too" 2 "$dir/none.jsonl" 'tea issue create -
 expect "gh issue create is refused" 2 "$dir/none.jsonl" 'gh issue create --title T --body b'
 expect "a filing command after cd and && is refused" 2 "$dir/none.jsonl" 'cd repo && bin/plane file GAME T'
 expect "the refusal names mission-brief and its three checks" 2 "$dir/none.jsonl" 'bin/plane file GAME T'
-grep -q "mission-brief" "$dir/err" && grep -q "codebase" "$dir/err" && grep -q "tracker" "$dir/err" && echo "ok   the steer names the three checks" || { echo "FAIL the steer names the three checks"; fail=1; }
+has "the steer names the three checks" mission-brief codebase tracker
 expect "gh issue create after groundhog-day started runs" 0 "$dir/bugged.jsonl" 'gh issue create --title T --body b'
-grep -q "groundhog-day" <(expect "x" 2 "$dir/none.jsonl" 'gh issue create --title T' >/dev/null; cat "$dir/err") && echo "ok   the steer names groundhog-day for a bug report" || { echo "FAIL the steer names groundhog-day for a bug report"; fail=1; }
+expect "gh issue create with neither filing skill is refused" 2 "$dir/none.jsonl" 'gh issue create --title T'
+has "the steer names groundhog-day for a bug report" groundhog-day
 expect "plane file after mission-brief started runs" 0 "$dir/briefed.jsonl" 'bin/plane file GAME T'
 expect "tea issues create after mission-brief started runs" 0 "$dir/briefed.jsonl" 'tea issues create --title T </dev/null'
 jq -nc '{type:"user",message:{content:"<command-message>mission-brief</command-message>\n<command-name>/vicky-skills:mission-brief</command-name>"}}' > "$dir/slash.jsonl"
@@ -33,11 +39,11 @@ jq -nc '{type:"user",message:{content:"<command-name>/vicky-skills:do</command-n
 expect "plane file after the mission-brief slash command runs" 0 "$dir/slash.jsonl" 'bin/plane file GAME T'
 expect "plane file after a different slash command is refused" 2 "$dir/slash-other.jsonl" 'bin/plane file GAME T'
 expect "a familiar debt note filed on a tracker is refused, even after mission-brief" 2 "$dir/briefed.jsonl" 'bin/plane file GAME "Familiar debt: sow-codebase session 8624" --body-file d.md'
-grep -q "local" "$dir/err" && echo "ok   the debt steer names the local note" || { echo "FAIL the debt steer names the local note"; fail=1; }
+has "the debt steer names the local note" local
 # Regression, ticked as E3 on the reader-cost page: a familiar debt note is
 # refused before any skill is read, so groundhog-day opens no way round it.
 expect "a familiar debt note is refused after groundhog-day too" 2 "$dir/bugged.jsonl" 'gh issue create --title "Familiar debt: session 12" --body b'
-grep -q "local" "$dir/err" && echo "ok   the debt steer after groundhog-day names the local note" || { echo "FAIL the debt steer after groundhog-day names the local note"; fail=1; }
+has "the debt steer after groundhog-day names the local note" local
 expect "a debt note filed through gh is refused" 2 "$dir/briefed.jsonl" 'gh issue create --title "familiar DEBT - e9" --body b'
 expect "a debt note filed through tea is refused" 2 "$dir/briefed.jsonl" "tea issues create --title 'Familiar debt: 62' </dev/null"
 expect "a debt note with the guard off lets it through" 0 "$dir/none.jsonl" 'bin/plane file GAME "Familiar debt: x"' CLAUDE_PLUGIN_OPTION_GUARD_TICKET_FILING=false
@@ -70,5 +76,5 @@ started vicky-skills:mission-brief > "$dir/torn/subagents/agent-a1b2.jsonl"
 AGENT=a1b2 expect "a torn line in the parent transcript does not hide the subagent's call" 0 "$dir/torn.jsonl" 'gh issue create --title T --body b'
 expect "the main session does not count a subagent's mission-brief" 2 "$dir/none.jsonl" 'gh issue create --title T --body b'
 expect "a missing transcript lets it through" 0 "$dir/missing.jsonl" 'bin/plane file GAME T'
-echo '' | CLAUDE_PLUGIN_OPTION_GUARD_TICKET_FILING=true "$guard" >/dev/null 2>&1; [ $? = 0 ] && echo "ok   an empty payload passes" || { echo "FAIL an empty payload passes"; fail=1; }
+if echo '' | CLAUDE_PLUGIN_OPTION_GUARD_TICKET_FILING=true "$guard" >/dev/null 2>&1; then echo "ok   an empty payload passes"; else echo "FAIL an empty payload passes"; fail=1; fi
 exit $fail
