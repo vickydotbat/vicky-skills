@@ -94,9 +94,9 @@ skills/shipping/security/scripts/kit.sh	103e8860e68b1f3f	3a55359704e54de2	11/11
 skills/shipping/security/scripts/levels.sh	ef85c88bb4a180e6	d8d4a14423e5cf26	86/86
 skills/shipping/security/scripts/lines.sh	c603602e3c5c5887	e749e62f985f882b	8/8
 skills/shipping/security/scripts/review.sh	a23c13b21aca1642	d8d4a14423e5cf26	10/10
-skills/writing/case-file/scripts/build.py	8ffa4cc46adf1703	36e5cdec1f694d33	236/236
-skills/writing/case-file/scripts/bundle.py	0e0e30370bf3f162	dc8b963547b89097	29/29
-skills/writing/case-file/scripts/check.py	cf44300a75d7c055	36e5cdec1f694d33	107/107
+skills/writing/case-file/scripts/build.py	8ffa4cc46adf1703	2a9477f9d4486e2b	236/236
+skills/writing/case-file/scripts/bundle.py	0e0e30370bf3f162	040dca5a171fdd5e	29/29
+skills/writing/case-file/scripts/check.py	cf44300a75d7c055	2a9477f9d4486e2b	107/107
 skills/writing/human-voice/scripts/lint-tells.py	57a14dabf05b04ae	458344786895c318	59/59
 skills/writing/interactive-page/scripts/open-draft.sh	2ffde8abe91f0601	85747f5c453ca110	56/56
 skills/writing/interactive-page/scripts/open-page.sh	85ac78db4f0a5522	5253f46f12411d94	9/9
