@@ -7,7 +7,7 @@ description: Build something behaviour-first, from a sentence in chat, a ticket 
 
 > _Do, or do not. There is no try: red first, then green, then the mutants._
 
-A **build** turns approved examples green, behaviour first: every behaviour change it lands, asked for or found, has a test that went red before the code (`red-first-guard` holds the approved ones). **The examples are the spec, and each one is a seam**: a Given / When / Then its test proves from the observer's side. Prose explains why and decides nothing. Mutation proves the tests can fail. The user brings a request typed in chat, a star, or a star chart whose stars are ready. A request too big for one session goes to `lay-course` instead, and a star with open blockers to `warp`. When a conversation has already settled what to build and it needs tickets, run `mission-brief`.
+A **build** turns approved examples green, behaviour first: every behaviour change it lands, asked for or found, has a test that went red before the code (`red-first-guard` holds the approved ones). **The examples are the spec, and each one is a seam**: a Given / When / Then its test proves from the observer's side. Prose explains why and decides nothing. Mutation proves the tests can fail. The user brings a request typed in chat, a star, or a star chart whose stars are ready. A request too big for one session needs `lay-course`: ask the user to type it, and a star with open blockers to `warp`. When a conversation has already settled what to build and it needs tickets, run `mission-brief`.
 
 Read the repo's testing standards first, where the `Testing standards:` line in `docs/agents/testing.md` names them (`TESTING_STANDARDS.md` at the root when the line is absent): they win over this skill's defaults.
 

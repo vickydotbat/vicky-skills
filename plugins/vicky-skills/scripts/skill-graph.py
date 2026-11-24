@@ -56,7 +56,7 @@ def hand_offs(folder):
                         continue
                     targets = re.findall(r"`([^`]+)`", match.group(1))
                     # "with `t`'s SETTLE.md" points into a file t owns, not at t.
-                    if sentence[match.end():].startswith("'s"):
+                    if sentence[match.end():].startswith(("'s", "’s")):
                         targets = targets[:-1]
                     for target in targets:
                         if target != skill:
