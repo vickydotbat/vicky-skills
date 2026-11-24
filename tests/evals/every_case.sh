@@ -9,7 +9,7 @@
 # another case's run.
 # Each run is a full Claude session on your own credential, so CI never runs
 # this file: run it by hand.
-# Usage: EVAL_SPEND=yes EVAL_MODEL=<model> every_case.sh [skill ...]   (no skill: every case with a cut.txt)
+# Usage: EVAL_SPEND=yes EVAL_MODEL=<model> every_case.sh [skill or skill/case ...]   (none: every case with a cut.txt)
 # EVAL_JOBS sets how many runs go at once, 4 by default.
 set -u
 # shellcheck source=lib.sh
@@ -17,7 +17,7 @@ set -u
 jobs=${EVAL_JOBS:-4}
 mapfile -t cuts < <(find "$evals_plugin/evals" -name cut.txt -not -path '*/results/*' | sort)
 if [ $# -gt 0 ]; then
-  keep=(); for c in "${cuts[@]}"; do rel=${c#"$evals_plugin/evals/"}; for s in "$@"; do [ "${rel%%/*}" = "$s" ] && keep+=("$c"); done; done
+  keep=(); for c in "${cuts[@]}"; do rel=${c#"$evals_plugin/evals/"}; for s in "$@"; do { [ "${rel%%/*}" = "$s" ] || [ "${rel%/cut.txt}" = "$s" ]; } && keep+=("$c"); done; done
   cuts=("${keep[@]}")
 fi
 [ ${#cuts[@]} -gt 0 ] || { echo "every-case: no case names a cut"; exit 1; }
