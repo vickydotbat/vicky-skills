@@ -3,6 +3,8 @@
 # case file came out plainer than the first hand-made one and left a zip per
 # rebuild: a page with contents, a label legend and coloured labels, files
 # folded away, a case folder with a fixed layout, and one readable zip per case.
+# shellcheck disable=SC2016  # check() evals each single-quoted body later, so it expands then.
+# shellcheck disable=SC2034  # variables set here are read inside the bodies check() evals.
 set -u
 root=$(cd "$(dirname "$0")/.." && pwd)
 kit="$root/plugins/vicky-skills/skills/writing/case-file/scripts"
