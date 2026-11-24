@@ -56,7 +56,7 @@ review-brief-guard.sh	560dd59ae4621bd2	35d1f7542328b43e	22/22
 shellcheck-guard.sh	4a1cd489a882b91c	500ead1978c8e431	31/31
 since-user.sh	7be3c1c933152abd	86d6a8cd389726ce	14/14
 skill-change-proven.sh	2a77ba5faffc92ea	0d52c550be388664	13/13
-skill-graph.py	92c2419e5e83344c	8705dddd2b17220d	40/40
+skill-graph.py	6586afbcc20c7c8c	8705dddd2b17220d	40/40
 skill-ledger.sh	5a29eb7f617f6f60	ff7ccbbd36194ae4	17/17
 skill-started.sh	fcfb07feca5ca217	d9fcf255178afd0f	13/13
 skills/building/over-to-you/scripts/checklist.py	9d8e4d5319372829	09a89912fc34694a	163/163
