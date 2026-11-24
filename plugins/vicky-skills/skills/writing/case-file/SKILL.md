@@ -33,7 +33,7 @@ Each case file has one **kind**, picked by what the reader does after reading:
 
 ## Steps
 
-1. **Open the case folder**: `.case-files/<name>/` at the root of the effort repo's main checkout, never a worktree's: from a worktree, the root is the folder above `git rev-parse --path-format=absolute --git-common-dir`. `<name>` is `<name>` the effort's short name. When it exists, reopen it and build on every file in it: never open a second folder for the same effort. Add one `.case-files/` line to `.gitignore` when no line lists it. The folder lasts across sessions: `build.py` refuses a case file in a scratch folder or a linked worktree. When the shell can't write there, make each file with the file tool. Done when the folder exists, `.gitignore` lists `.case-files/` once, and `git status` does not list the folder.
+1. **Open the case folder**: `.case-files/<name>/` at the root of the effort repo's main checkout, never a worktree's: from a worktree, the root is the folder above `git rev-parse --path-format=absolute --git-common-dir`. `<name>` is the effort's short name. When it exists, reopen it and build on every file in it: never open a second folder for the same effort. Add one `.case-files/` line to `.gitignore` when no line lists it. The folder lasts across sessions: `build.py` refuses a case file in a scratch folder or a linked worktree. When the shell can't write there, make each file with the file tool. Done when the folder exists, `.gitignore` lists `.case-files/` once, and `git status` does not list the folder.
 
    Fixed layout: the case folder holds these and nothing else, and `build.py` refuses any other entry.
 

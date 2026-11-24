@@ -11,8 +11,8 @@ that names its kind, it also refuses a claim whose visible label differs from
 its data-evidence, and the future tense outside a pitch's ask. Exits 1
 naming each hit's line or download, 0 when the page is clean. A PDF is read
 as text with pdftotext, and one it can't read is refused. A zip is checked
-member by member, each hit named by the member it sits in, a PNG or JPEG member by its
-text chunks and comments only, never its pixels, and a member over
+member by member, each hit named by the member it sits in, a PNG, JPEG, GIF or WebP member by
+everything but its pixel data, and a member over
 64 MiB is refused unread.
 """
 import base64, html, os, re, shutil, socket, subprocess, sys, tempfile, urllib.parse, zipfile, zlib
@@ -108,45 +108,110 @@ def read(path):
 # A member past this is refused unread, so a zip bomb cannot fill memory.
 LIMIT = 64 << 20
 
-# Text an image carries beside its pixels: PNG text chunks and JPEG comments.
+# An image's pixels hold any byte pair by chance, so an image is checked by everything
+# except its pixel data: every other PNG chunk, every JPEG segment before the scan, and
+# any bytes after the image ends. Each part below is pixels or fixed-size numbers.
 PNG_MAGIC, JPEG_MAGIC = b"\x89PNG\r\n\x1a\n", b"\xff\xd8\xff"
+PNG_BINARY = (b"IHDR", b"IDAT", b"PLTE", b"tRNS", b"iCCP", b"sRGB", b"gAMA", b"cHRM", b"pHYs", b"bKGD", b"sBIT", b"hIST", b"tIME", b"fdAT", b"fcTL", b"acTL")
+JPEG_BINARY = (0xDB, 0xC4, 0xDD, 0xE2) + tuple(range(0xC0, 0xD0))  # tables, frame headers, ICC profile
+EMBEDDED = re.compile(rb"\xff\xd8\xff.*?\xff\xd9", re.S)  # an EXIF thumbnail, which is pixels
+
+class Unreadable(Exception):
+    pass  # mutant-ok: already pass
+
+def inflate(packed, room):
+    """A compressed text field, inflated within room bytes."""
+    try:
+        z = zlib.decompressobj()
+        text = z.decompress(packed, room + 1)
+    except zlib.error:
+        raise Unreadable("a compressed text field will not inflate")
+    if len(text) > room:
+        raise Unreadable(f"its text passes the {LIMIT >> 20} MiB check limit")
+    return text
+
+def png_text(data):
+    out, room, i = [], LIMIT, 8
+    while i + 8 <= len(data):
+        n, kind = int.from_bytes(data[i:i + 4], "big"), data[i + 4:i + 8]
+        body = data[i + 8:i + 8 + n]
+        if kind == b"zTXt":
+            key, _, rest = body.partition(b"\0")
+            body = key + b" " + inflate(rest[1:], room)  # a method byte, then the deflated text
+        elif kind == b"iTXt":
+            key, _, rest = body.partition(b"\0")
+            text = rest[2:].split(b"\0", 2)[-1]  # flag, method, language, translated key
+            body = key + b" " + (inflate(text, room) if rest[:1] == b"\1" else text)
+        if kind not in PNG_BINARY:
+            room -= len(body)
+            out.append(body)
+        i += 12 + n
+        if kind == b"IEND":
+            out.append(data[i:])
+            break  # mutant-ok delete: the walk then reads the tail it just kept, as more of the same
+    return out
+
+def jpeg_text(data):
+    out, i = [], 2
+    while i + 4 <= len(data) and data[i] == 0xFF:
+        mark, n = data[i + 1], int.from_bytes(data[i + 2:i + 4], "big")
+        if mark == 0xDA:
+            end = data.rfind(b"\xff\xd9")
+            out.append(data[end + 2:] if end > i else b"")  # what follows the image's end
+            break
+        if mark not in JPEG_BINARY:
+            out.append(EMBEDDED.sub(b" ", data[i + 4:i + 2 + n]))
+        i += 2 + n
+    return out
+
+def blocks(data, i):
+    """A GIF's data sub-blocks from i, joined, and the index after them."""
+    out = []
+    while i < len(data) and data[i]:
+        out.append(data[i + 1:i + 1 + data[i]])
+        i += 1 + data[i]
+    return b"".join(out), i + 1
+
+def gif_text(data):
+    out, i = [], 13
+    if data[10] & 0x80:
+        i += 3 << ((data[10] & 7) + 1)  # the global colour table
+    while i < len(data):
+        if data[i] == 0x3B:
+            out.append(data[i + 1:])  # what follows the trailer  # mutant-ok: the trailer byte holds no text
+            break
+        if data[i] == 0x2C:
+            i += 10 + ((3 << ((data[i + 9] & 7) + 1)) if data[i + 9] & 0x80 else 0)
+            _, i = blocks(data, i + 1)  # the pixels, after the code size byte
+        elif data[i] == 0x21:
+            body, i = blocks(data, i + 2)  # a comment, an application's or plain text
+            out.append(body)
+        else:
+            raise ValueError("no GIF block starts here")
+    return out
+
+def webp_text(data):
+    out, i = [], 12
+    while i + 8 <= len(data):
+        kind, n = data[i:i + 4], int.from_bytes(data[i + 4:i + 8], "little")
+        if kind not in (b"VP8 ", b"VP8L", b"VP8X", b"ALPH", b"ANIM", b"ANMF", b"ICCP"):
+            out.append(data[i + 8:i + 8 + n])
+        i += 8 + n + (n & 1)
+    return out
 
 def metadata(data):
-    """An image's text fields, or None when the bytes are no PNG or JPEG."""
-    out = []
+    """An image's text, everything but its pixels, or None when the bytes are no PNG, JPEG, GIF or WebP."""
     if data.startswith(PNG_MAGIC):
-        i = 8
-        while i + 8 <= len(data):
-            n, kind = int.from_bytes(data[i:i + 4], "big"), data[i + 4:i + 8]
-            body = data[i + 8:i + 8 + n]
-            if kind == b"tEXt":
-                out.append(body.replace(b"\0", b" "))
-            elif kind in (b"zTXt", b"iTXt"):
-                key, _, rest = body.partition(b"\0")
-                if kind == b"zTXt":
-                    packed, text = True, rest[1:]  # method byte, then the deflated text
-                else:
-                    packed, text = rest[:1] == b"\1", rest[2:].split(b"\0", 2)[-1]  # flag, method, language, translated key
-                if packed:
-                    try:
-                        text = zlib.decompressobj().decompress(text, LIMIT)  # capped, so a bomb chunk cannot fill memory
-                    except zlib.error:
-                        text = b"unreadable compressed text"
-                out.append(key + b" " + text)
-            if kind == b"IEND":
-                break
-            i += 12 + n
-        return b"\n".join(out)
+        return b"\n".join(png_text(data))
     if data.startswith(JPEG_MAGIC):
-        i = 2
-        while i + 4 <= len(data) and data[i] == 0xFF:
-            mark, n = data[i + 1], int.from_bytes(data[i + 2:i + 4], "big")
-            if mark == 0xDA:
-                break  # the pixels start here
-            if mark == 0xFE:
-                out.append(data[i + 4:i + 2 + n])
-            i += 2 + n
-        return b"\n".join(out)
+        return b"\n".join(jpeg_text(data))
+    if data[:6] in (b"GIF87a", b"GIF89a") and len(data) >= 13:
+        try:
+            return b"\n".join(gif_text(data))
+        except (IndexError, ValueError):
+            return None  # a cut or odd GIF is read whole, as any other file  # mutant-ok: falling through returns None too
+    if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+        return b"\n".join(webp_text(data))
     return None  # mutant-ok delete: a function with no return gives None too
 
 def bundle(path):
@@ -164,8 +229,11 @@ def bundle(path):
                 open(out, "wb").write(data)
                 text = read(out)
             else:
-                meta = metadata(data)
-                # pixels hold any byte pair by chance, so an image is checked by its text fields only
+                try:
+                    meta = metadata(data)
+                except Unreadable as e:
+                    hits.append(f"{name}: {e}, so it cannot be checked")
+                    continue
                 text = (data if meta is None else meta).decode("utf-8", errors="replace")
             hits += [f"{name}: {h}" for h in scan(text)]
     return hits

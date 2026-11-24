@@ -7,9 +7,9 @@ A case folder's page is every sections/*.html file in it, in file name order,
 with marker paths relative to the case folder. A single template is the page's
 body, with paths relative to the template. Either is written as HTML. The PDF
 and the Markdown are written beside the page under its name, the PDF printed
-from the HTML by a headless browser so the two always match. A source in a scratch folder or a linked git worktree, a page that names
-this machine, an unknown format or a missing browser stops the build before
-any file is written.
+from the HTML by a headless browser so the two always match. A source in a
+scratch folder or a linked git worktree, a page that names this machine, an
+unknown format or a missing browser stops the build before any file is written.
 
 The source names one kind, research, demonstration or pitch, on a
 <!-- KIND <kind> --> line. Dated markers, each on its own line, with a time
