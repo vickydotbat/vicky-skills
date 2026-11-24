@@ -5,7 +5,7 @@
 # the case fails on the skill text before the change. A local run needs
 # `git fetch origin`.
 set -u
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/.." || exit 1
 judge=plugins/vicky-skills/scripts/skill-change-proven.sh
 fail=0
 case_() { printf '%b' "$3" | bash "$judge" >/dev/null; [ $? -eq "$2" ] || { echo "FAIL $1"; fail=1; }; }
@@ -20,5 +20,15 @@ out=$(printf 'plugins/vicky-skills/skills/building/do/SKILL.md\n' | bash "$judge
 # the cases above only.
 [ -n "${MUTATE_HOOKS_INNER:-}" ] && { echo "ok   skill-change-tested: cases only, inside a mutation pass"; exit 0; }
 base=$(git merge-base HEAD origin/main 2>/dev/null) || { echo "skill-change-tested: no origin/main to compare with: run git fetch origin"; exit 1; }
-git diff --name-only "$base" HEAD | bash "$judge" || exit 1
+# A skill file whose diff only touches its hands-off field changes no text an
+# agent acts on: tests/skill-hand-offs.test.sh proves that field.
+changed() {
+  git diff --name-only "$base" HEAD | while read -r f; do
+    case $f in plugins/vicky-skills/skills/*.md)
+      git diff -U0 "$base" HEAD -- "$f" | grep -E '^[-+]' | grep -vE '^(\+\+\+|---) ' | grep -qvE '^[-+]hands-off: ' || continue ;;
+    esac
+    echo "$f"
+  done
+}
+changed | bash "$judge" || exit 1
 echo "ok   skill-change-tested: every skill text change on this branch comes with an eval case change"
