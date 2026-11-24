@@ -52,6 +52,9 @@ check "CF-E46 a page with its legend checks clean" '[ -n "$p" ] && caught "$c/ou
 # Then its label is a badge in the colour of its kind
 check "CF-E47 each label has its own colour" 'for l in stock test-client-only estimate failed not-tested; do grep -q "\[data-evidence=\"\?$l\"\?\] \.label" <<<"$p" || exit 1; done'
 
+# When the page prints to the PDF
+check "CF-E54 a code block wraps in print instead of scrolling" 'grep -q "@media print{pre{overflow:visible;white-space:pre-wrap" <<<"$p"'
+
 # Given a file marker
 # When it is built
 # Then the page folds the file under its name, with its line count and download link
