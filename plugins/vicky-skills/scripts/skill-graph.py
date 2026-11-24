@@ -17,6 +17,8 @@ import pathlib
 import re
 import sys
 
+# shortcut: a bare "with" also reads "files with `do`" as a hand-off; no skill
+# says that today, and "write it with `human-voice`" needs the bare word.
 VERB = (
     r"(?:runs?|running|start(?:s|ed)?|dispatch(?:es)?|loads?|follows?|engages?|then|through|with"
     r"|go(?:es)?\s+(?:back\s+)?to|hand(?:s|ed)?\b[^.`]{0,40}?\b(?:to|with))"
@@ -26,7 +28,8 @@ NEGATION = re.compile(r"\b(?:never|not|don't)\b", re.IGNORECASE)
 
 def hand_offs(folder):
     skills = {p.parent.name: p.parent for p in pathlib.Path(folder).glob("*/*/SKILL.md")}
-    name = r"`(?:" + "|".join(re.escape(n) for n in sorted(skills, key=len, reverse=True)) + r")`"
+    # Skill names match in their own case only.
+    name = r"(?-i:`(?:" + "|".join(re.escape(n) for n in sorted(skills, key=len, reverse=True)) + r")`)"
     # A verb, not led by another skill as its subject, then one skill or a list
     # of them joined by "and", "or", commas or slashes.
     pattern = re.compile(
@@ -39,11 +42,14 @@ def hand_offs(folder):
             text = path.read_text(encoding="utf-8")
             if text.startswith("---\n"):
                 text = text.split("\n---\n", 1)[-1]
+            # A fenced block counts too: a subagent's brief hands off inside one.
+            # A line wrapped mid-sentence joins the next, unless that starts a new block.
+            text = re.sub(r"\n(?![ \t]*(?:\n|\d+\.|[-*#|>]))", " ", text)
             for sentence in re.split(r"(?<=[.;:!?])\s+|\n", text):
                 for match in pattern.finditer(sentence):
                     before = sentence[: match.start()]
-                    # "never run", "do not start": a negation in the two words before the verb.
-                    if NEGATION.search(" ".join(before.split()[-2:])):
+                    # "never run", "do not, at any point, start": a negation in the six words before the verb.
+                    if NEGATION.search(" ".join(before.split()[-6:])):
                         continue
                     # "when `h` runs `i`": the verb's subject is another skill.
                     if re.search(name + r"\s*$", before):
@@ -63,9 +69,13 @@ def main(argv):
         print(__doc__.strip(), file=sys.stderr)
         return 2
     found = hand_offs(argv[2])
+    graph = pathlib.Path(argv[3])
+    if not graph.is_file():
+        print(f"skill-graph: no graph file at {argv[3]}", file=sys.stderr)
+        return 2
     listed = set()
-    for line in pathlib.Path(argv[3]).read_text(encoding="utf-8").splitlines():
-        if line.strip():
+    for line in graph.read_text(encoding="utf-8").splitlines():
+        if line.strip() and not line.startswith("#"):
             a, _, b = line.partition("\t")
             listed.add((a.strip(), b.strip()))
     bad = 0
