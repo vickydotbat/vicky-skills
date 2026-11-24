@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
+# check runs its condition through eval, so single quotes and variables set
+# only for it are meant.
+# shellcheck disable=SC2016,SC2034
 # approved-spec: the examples the user ticked on 2026-11-24 for the skill
 # graph: a file that lists each real hand-off between skills, checked against
 # the skills' own text. Each check builds a small skills folder and a graph
 # file, then runs the checker the way tests/run-all.sh does.
 set -u
-# check runs its condition through eval, so single quotes and variables set
-# only for it are meant.
-# shellcheck disable=SC2016,SC2034
 root="$(cd "$(dirname "$0")/.." && pwd)"
 graph="$root/plugins/vicky-skills/scripts/skill-graph.py"
 scratch=$(mktemp -d)
