@@ -45,10 +45,12 @@ Build every law for the next agent: it sees only the files it opened, copies the
 ## Keep a praised trait
 
 A **keep** is a law for something that went right: the user praised one trait of an output, and the next edit must not lose it. Praise names a trait ("keep leading with the pick", "that layout is perfect"). A bare "thanks", "ok" or "nice" names none and keeps nothing.
+Proven by: plugins/vicky-skills/evals/engrave/thanks-keeps-nothing
 
 1. **Name the trait** in one line: what the output did that the user praised, as something visible. Done when the line names the trait and the skill that made the output.
 2. **Pin it** with an eval case under `evals/<skill>/<case>/` in the repo that holds that skill, as engrave step 5 builds one: a prompt that makes the skill produce such an output, and a free grader that checks the trait. Where a version of the skill without the trait exists, the case fails against it, so it can go red. Done when the case passes on the skill as it stands.
 3. **Log it**: `bash ${CLAUDE_PLUGIN_ROOT}/scripts/lesson-ledger.sh add keep "<trait> (eval case: <skill>/<case>)"`, so the ledger holds keeps apart from snags. Done when the ledger holds the line.
 4. **Report** in one line: `📓 Kept: <trait> → <skill>/<case>`. Done when the reply has it.
+   Proven by: plugins/vicky-skills/evals/engrave/keep-praised-trait
 
 Charter: C5, C6 ([CHARTER.md](../../CHARTER.md)).

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # The ledger of engraved lessons, lessons.tsv in the plugin's data folder:
-# one line per lesson, the UTC time, its home (plugin, setup or repo) and its
-# snag, tab-separated. engrave adds a line wherever the lesson went, so sup
+# one line per lesson, the UTC time, its home (plugin, setup, repo, or keep for
+# a praised trait) and its snag, tab-separated. engrave adds a line wherever the lesson went, so sup
 # counts lessons from every repo, not only the commits of the one it runs in.
 # Usage: lesson-ledger.sh add <home> <snag>
 #        lesson-ledger.sh since <UTC time, such as 2026-10-31T12:00:00Z>

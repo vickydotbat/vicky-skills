@@ -4,8 +4,11 @@
     skill-graph.py list  <skills folder>               print every hand-off
     skill-graph.py check <skills folder> <GRAPH.tsv>   exit 1 on a difference
 
-A hand-off is a verb that passes the work on (run, start, hand ... to, go to,
-through, with) followed by a skill's name in backticks. A skill named any
+A hand-off is a verb that passes the work on (run, start, dispatch, load,
+follow, engage, then, hand ... to, go to, through, with) followed by a skill's
+name in backticks, or a list of them, in any Markdown file of the skill. A
+negated verb ("never run") and a verb led by another skill as its subject are
+no hand-off. A skill named any
 other way ("`do` runs this skill") is a mention, not a hand-off. GRAPH.tsv
 holds one hand-off per line: the skill that hands off, a tab, the skill it
 hands to.
@@ -14,20 +17,40 @@ import pathlib
 import re
 import sys
 
-VERB = r"(?:\b(?:runs?|running|start(?:s|ed)?|through|with|go(?:es)?\s+(?:back\s+)?to|hand(?:s|ed)?\b[^.`]{0,40}?\b(?:to|with))\s+(?:the\s+)?)"
+VERB = (
+    r"(?:runs?|running|start(?:s|ed)?|dispatch(?:es)?|loads?|follows?|engages?|then|through|with"
+    r"|go(?:es)?\s+(?:back\s+)?to|hand(?:s|ed)?\b[^.`]{0,40}?\b(?:to|with))"
+)
+NEGATION = re.compile(r"\b(?:never|not|don't)\b", re.IGNORECASE)
 
 
 def hand_offs(folder):
-    skills = {p.parent.name: p for p in pathlib.Path(folder).glob("*/*/SKILL.md")}
-    names = "|".join(re.escape(n) for n in sorted(skills, key=len, reverse=True))
-    pattern = re.compile(VERB + r"`(" + names + r")`")
+    skills = {p.parent.name: p.parent for p in pathlib.Path(folder).glob("*/*/SKILL.md")}
+    name = r"`(?:" + "|".join(re.escape(n) for n in sorted(skills, key=len, reverse=True)) + r")`"
+    # A verb, not led by another skill as its subject, then one skill or a list
+    # of them joined by "and", "or", commas or slashes.
+    pattern = re.compile(
+        r"\b" + VERB + r"\s+(?:the\s+)?(" + name + r"(?:\s*(?:,|/|\band\b|\bor\b)\s*" + name + r")*)",
+        re.IGNORECASE,
+    )
     edges = set()
-    for name, path in skills.items():
-        text = path.read_text(encoding="utf-8")
-        body = text.split("\n---\n", 1)[1] if text.startswith("---\n") else text
-        for target in pattern.findall(body):
-            if target != name:
-                edges.add((name, target))
+    for skill, home in skills.items():
+        for path in home.rglob("*.md"):
+            text = path.read_text(encoding="utf-8")
+            if text.startswith("---\n"):
+                text = text.split("\n---\n", 1)[-1]
+            for sentence in re.split(r"(?<=[.;:!?])\s+|\n", text):
+                for match in pattern.finditer(sentence):
+                    before = sentence[: match.start()]
+                    # "never run", "do not start": a negation in the two words before the verb.
+                    if NEGATION.search(" ".join(before.split()[-2:])):
+                        continue
+                    # "when `h` runs `i`": the verb's subject is another skill.
+                    if re.search(name + r"\s*$", before):
+                        continue
+                    for target in re.findall(r"`([^`]+)`", match.group(1)):
+                        if target != skill:
+                            edges.add((skill, target))
     return edges
 
 

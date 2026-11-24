@@ -18,4 +18,19 @@ expect "list with an extra argument is a usage error" 2 "$(python3 "$graph" list
 expect "check without a graph file is a usage error" 2 "$(python3 "$graph" check "$dir/s" 2>/dev/null; echo $?)"
 expect "an unknown verb with four arguments is a usage error" 2 "$(python3 "$graph" draw "$dir/s" x 2>/dev/null; echo $?)"
 expect "a usage error prints the usage" 1 "$(python3 "$graph" 2>&1 | grep -c 'skill-graph.py check')"
+# Shapes the deathmatch of 2026-11-24 found the first pattern misread.
+mk() { mkdir -p "$dir/t/building/$1"; printf -- '---\nname: %s\n---\n%s\n' "$1" "$2" >"$dir/t/building/$1/SKILL.md"; }
+for s in b c e f h i; do mk "$s" '1. Work.'; done
+mk a 'Never run `b` here. Do not start `c`.'
+expect "a negated verb is no hand-off" "" "$(python3 "$graph" list "$dir/t" | grep '^a')"
+mk d 'Run `b` and `c`, or run `e`/`f`.'
+expect "each skill in a list after the verb is a hand-off" "b c e f" "$(python3 "$graph" list "$dir/t" | awk '$1=="d"{print $2}' | paste -sd' ')"
+mk g 'When `h` runs `i`, wait.'
+expect "a verb whose subject is another skill is no hand-off" "" "$(python3 "$graph" list "$dir/t" | grep '^g')"
+mk j 'Dispatch `b`, load `c`, follow `e`, then `f`.'
+expect "dispatch, load, follow and then hand off" "b c e f" "$(python3 "$graph" list "$dir/t" | awk '$1=="j"{print $2}' | paste -sd' ')"
+mk k '1. Work.'; printf 'Then run `h` on it.\n' >"$dir/t/building/k/STEPS.md"
+expect "a hand-off in a skill's other file counts for that skill" "$(printf 'k\th')" "$(python3 "$graph" list "$dir/t" | grep '^k')"
+mkdir -p "$dir/t/building/m"; printf -- '---\nname: m\ndescription: Use before you run `b`.\n---\n1. Work.\n' >"$dir/t/building/m/SKILL.md"
+expect "the frontmatter's description is no hand-off" "" "$(python3 "$graph" list "$dir/t" | grep '^m')"
 exit $fail
