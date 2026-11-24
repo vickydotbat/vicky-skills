@@ -44,4 +44,6 @@ expect "a missing graph file is a usage error" 2 "$(python3 "$graph" check "$dir
 expect "a missing graph file is named" 1 "$(python3 "$graph" check "$dir/t" "$dir/none.tsv" 2>&1 | grep -c 'no graph file at')"
 python3 "$graph" list "$dir/s" >"$dir/g.tsv"; printf '# from\tto\n' | cat - "$dir/g.tsv" >"$dir/h.tsv"
 expect "a comment line in the graph is skipped" 0 "$(python3 "$graph" check "$dir/s" "$dir/h.tsv" >/dev/null; echo $?)"
+mk u "Settle it with \`b\`'s SETTLE.md, then run \`c\`."
+expect "a pointer into another skill's file is no hand-off" "c" "$(python3 "$graph" list "$dir/t" | awk '$1=="u"{print $2}' | paste -sd' ')"
 exit $fail

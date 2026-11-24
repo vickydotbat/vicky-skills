@@ -23,14 +23,17 @@ for f in "$root"/*/*/SKILL.md; do
   fm "$f" | grep -q '^disable-model-invocation: true' && typed+=("$(basename "$(dirname "$f")")")
 done
 fail=0
+# The skill graph decides which skill hands off to which, as GRAPH.tsv records it.
+edges=$(python3 "$(dirname "$0")/../plugins/vicky-skills/scripts/skill-graph.py" list "$root")
 for f in "$root"/*/*/SKILL.md; do
   fm "$f" | grep -q '^disable-model-invocation: true' && continue
+  skill=$(basename "$(dirname "$f")")
   for name in "${typed[@]}"; do
-    # body lines only, past the closing frontmatter fence
-    hits=$(awk '/^---$/{n++; next} n>=2' "$f" | grep -nE "\`/?$name\`" || true)
+    printf '%s\n' "$edges" | grep -qxF "$skill	$name" || continue
+    # body lines of every file of the skill, past any frontmatter
+    hits=$(for g in "$(dirname "$f")"/*.md; do awk 'NR==1&&/^---$/{fm=1;next} fm&&/^---$/{fm=0;next} !fm' "$g"; done | grep -nE "\`/?$name\`" | grep -vE "\`/?$name\`'s" || true)
     while IFS= read -r line; do
       [ -z "$line" ] && continue
-      echo "$line" | grep -Eiq "\b(call|run|start|invoke|use|load|hand( it)? to)( the)? \`/?$name\`" || continue
       echo "$line" | grep -Eiq '\b(type|types|typed)\b|user (to )?run|tell the user|ask the user' && continue
       echo "FAIL $(basename "$(dirname "$f")") starts typed-only $name: ${line:0:110}"; fail=1
     done <<<"$hits"

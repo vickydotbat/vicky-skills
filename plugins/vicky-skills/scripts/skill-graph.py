@@ -54,7 +54,11 @@ def hand_offs(folder):
                     # "when `h` runs `i`": the verb's subject is another skill.
                     if re.search(name + r"\s*$", before):
                         continue
-                    for target in re.findall(r"`([^`]+)`", match.group(1)):
+                    targets = re.findall(r"`([^`]+)`", match.group(1))
+                    # "with `t`'s SETTLE.md" points into a file t owns, not at t.
+                    if sentence[match.end():].startswith("'s"):
+                        targets = targets[:-1]
+                    for target in targets:
                         if target != skill:
                             edges.add((skill, target))
     return edges

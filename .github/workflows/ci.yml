@@ -228,6 +228,10 @@ jobs:
         run: tests/adr-scope-hint.test.sh
       - name: Skill links
         run: tests/skill-links.test.sh
+      - name: Skill links approved examples
+        run: tests/skill_links_approved_examples.test.sh
+      - name: Skill links typed regression
+        run: tests/skill-links-typed.test.sh
       - name: Skill descriptions
         run: tests/skill-descriptions.test.sh
       - name: PR guard
