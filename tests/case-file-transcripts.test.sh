@@ -24,5 +24,9 @@ check "the digest keeps the finding from before the compaction" 'grep -q "Wrong 
 check "the digest leaves out skill bodies and the compact summary" '! grep -qE "Base directory|Summary text" "$s/out/d.txt"'
 touch -d '2026-11-17' "$s/a1.jsonl"; : > "$s/e1.jsonl"; : > "$s/e2.jsonl"
 check "a limit counts only sessions with a turn" '[[ $(python3 "$t" list --dir "$s" --limit 1) == *"a1"* ]]'
+printf '%s\n' '{"type":"user","timestamp":"2026-11-19T10:00:00Z","message":{"content":"<command-message>vicky-skills:case-file</command-message>\n<command-name>/vicky-skills:case-file</command-name>\n<command-args>glow the lantern</command-args>"}}' > "$s/b1.jsonl"
+list=$(python3 "$t" list --dir "$s")
+check "a session begun by a typed command is listed by its command" '[[ $list == *"b1"*"/vicky-skills:case-file glow the lantern"* ]]'
+check "the newest session is listed first" '[[ $list == b1* ]]'
 check "a missing session is refused" '! python3 "$t" digest zz "$s/x" --dir "$s" 2>/dev/null'
 exit $fail

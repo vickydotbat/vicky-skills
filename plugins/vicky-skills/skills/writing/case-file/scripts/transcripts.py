@@ -22,12 +22,21 @@ def default_dir():
     slug = re.sub(r"[^A-Za-z0-9-]", "-", os.getcwd())
     return Path.home() / ".claude" / "projects" / slug
 
+def command(t):
+    """A typed command's record, '<command-name>/x</command-name>...<command-args>y</command-args>', as '/x y'."""
+    name = re.search(r"<command-name>(.*?)</command-name>", t, re.S)
+    args = re.search(r"<command-args>(.*?)</command-args>", t, re.S)
+    if name:
+        return f"{name.group(1).strip()} {args.group(1).strip() if args else ''}".strip()
+    return t
+
+
 def texts(msg):
     c = (msg.get("message") or {}).get("content")
     if isinstance(c, str):
-        return [c]
+        return [command(c)]
     if isinstance(c, list):
-        return [p.get("text", "") for p in c if isinstance(p, dict) and p.get("type") == "text"]
+        return [command(p.get("text", "")) for p in c if isinstance(p, dict) and p.get("type") == "text"]
     return []
 
 def records(path):
