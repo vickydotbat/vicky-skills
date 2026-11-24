@@ -1,5 +1,6 @@
 ---
 name: captains-log
+hands-off: [cerebro, engrave, robot-voice]
 description: "Run a retrospective on a coding session: find what in the agent's environment would make the next run go better."
 disable-model-invocation: true
 ---

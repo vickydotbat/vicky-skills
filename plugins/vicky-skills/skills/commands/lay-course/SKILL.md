@@ -1,5 +1,6 @@
 ---
 name: lay-course
+hands-off: [cerebro, decision-record, do, examples, human-voice, red-pen, warp]
 description: The lazy front door for a session that doesn't know where it leads. A council finds what you want, the stars get placed as a star chart or one star, and then it stops or engages warp. Use with a loose idea to start, or with a star chart to work through.
 disable-model-invocation: true
 ---

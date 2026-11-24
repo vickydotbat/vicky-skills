@@ -1,5 +1,6 @@
 ---
 name: never-lupus
+hands-off: [deathmatch, engrave]
 description: Find the cause of a hard bug or a slowdown with a loop that goes red on it. Use when something is broken, throwing, failing or slow, or the user says "diagnose" or "debug this".
 ---
 

@@ -1,5 +1,6 @@
 ---
 name: away-team
+hands-off: [deathmatch, human-voice]
 description: Answer a question from primary sources in a background agent, and post the findings on the ticket the question belongs to. Use when a decision waits on a fact from docs, an API, source code or a spec.
 ---
 

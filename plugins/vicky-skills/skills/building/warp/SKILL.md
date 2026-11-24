@@ -1,5 +1,6 @@
 ---
 name: warp
+hands-off: [away-team, deathmatch, do, examples, human-voice, red-pen, stacked-branches]
 description: Warp through a star chart in a single run, whatever it takes: every star it can reach, or the stars the user names. Use when the user says "warp", "engage", "clear the chart" or "get <ticket> done whatever it takes", or when `lay-course` engages warp.
 disable-model-invocation: true
 ---

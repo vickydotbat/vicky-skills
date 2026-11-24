@@ -1,5 +1,6 @@
 ---
 name: case-file
+hands-off: [by-eye, human-voice]
 description: Build a case file, one zip holding a PDF, its HTML, its source and its files, that shows another team what an effort did, with every claim marked by the evidence behind it. Use when the user asks for a case file, a write-up of an effort for another team or project, or a page that shows how something was built and proven.
 disable-model-invocation: true
 ---

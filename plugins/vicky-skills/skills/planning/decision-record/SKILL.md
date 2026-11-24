@@ -1,5 +1,6 @@
 ---
 name: decision-record
+hands-off: [plot-twist]
 description: Write, supersede or amend an architecture decision record (ADR) so that no later pivot can make it false. Use whenever a broad rule gets decided (an answered ticket, a council's road, a lasting law), whenever a decision a record holds is reversed or narrowed, and before editing any file in a repo's decision-record folder.
 ---
 

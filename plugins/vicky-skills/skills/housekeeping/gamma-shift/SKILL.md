@@ -1,5 +1,6 @@
 ---
 name: gamma-shift
+hands-off: [deathmatch, do, examples, lay-course]
 description: Work through the tickets waiting on the user. Use when the user types /gamma-shift.
 disable-model-invocation: true
 ---

@@ -142,7 +142,7 @@ TESTS = {
     "assign-expand.sh": ["pr-guard", "worktree-place"],
     "worktree-place.sh": ["worktree-place", "worktree_place_approved_examples", "worktree_cleanup_approved_examples", "worktree_drop_approved_examples"],
     "lesson-ledger.sh": ["lesson-ledger", "lesson_ledger_approved_examples"],
-    "skill-graph.py": ["skill_graph_approved_examples", "skill-graph"],
+    "skill-graph.py": ["skill_graph_approved_examples", "skill-graph", "skill_hand_offs_approved_examples", "skill-hand-offs"],
     "todo-reminder.sh": ["todo-reminder", "todo_reminder_approved_examples"],
     "springboard.sh": ["springboard", "springboard_approved_examples", "summit_approved_examples"],
     "summit.sh": ["summit", "summit_approved_examples"],

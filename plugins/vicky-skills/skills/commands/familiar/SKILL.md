@@ -1,5 +1,6 @@
 ---
 name: familiar
+hands-off: [over-to-you]
 description: When the user types /familiar, this session watches every other live session on the machine, logs each snag in a debt note per session, and works the notes at each handoff, in the voice of the kind the user picked. Use when the user types /familiar.
 disable-model-invocation: true
 ---

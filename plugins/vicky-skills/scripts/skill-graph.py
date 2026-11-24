@@ -3,15 +3,18 @@
 
     skill-graph.py list  <skills folder>               print every hand-off
     skill-graph.py check <skills folder> <GRAPH.tsv>   exit 1 on a difference
+    skill-graph.py check <skills folder>               exit 1 when a skill's
+                                                       hands-off field and steps differ
 
 A hand-off is a verb that passes the work on (run, start, dispatch, load,
 follow, engage, then, hand ... to, go to, through, with) followed by a skill's
 name in backticks, or a list of them, in any Markdown file of the skill. A
 negated verb ("never run") and a verb led by another skill as its subject are
 no hand-off. A skill named any
-other way ("`do` runs this skill") is a mention, not a hand-off. GRAPH.tsv
-holds one hand-off per line: the skill that hands off, a tab, the skill it
-hands to.
+other way ("`do` runs this skill") is a mention, not a hand-off. Each skill
+declares its hand-offs in a frontmatter field, `hands-off: [a, b]`, and the
+one-argument check compares that field with the steps. A graph file holds one
+hand-off per line: the skill that hands off, a tab, the skill it hands to.
 """
 import pathlib
 import re
@@ -64,7 +67,38 @@ def hand_offs(folder):
     return edges
 
 
+def declared(folder):
+    """Each skill's hands-off frontmatter field, as (skill, target) pairs."""
+    edges = set()
+    for path in pathlib.Path(folder).glob("*/*/SKILL.md"):
+        text = path.read_text(encoding="utf-8")
+        front = text.split("\n---\n", 1)[0] if text.startswith("---\n") else ""
+        field = re.search(r"^hands-off:\s*\[(.*)\]\s*$", front, re.MULTILINE)
+        for target in field.group(1).split(",") if field else []:
+            if target.strip():
+                edges.add((path.parent.name, target.strip()))
+    return edges
+
+
+def check_declared(folder):
+    skills = {p.parent.name for p in pathlib.Path(folder).glob("*/*/SKILL.md")}
+    found, listed = hand_offs(folder), declared(folder)
+    bad = 0
+    for a, b in sorted(found - listed):
+        print(f"skill-graph: {a} hands off to {b}: add {b} to hands-off in the frontmatter of {a}")
+        bad = 1
+    for a, b in sorted(listed - found):
+        if b not in skills:
+            print(f"skill-graph: {a} lists {b} in hands-off, and no skill {b} exists")
+        else:
+            print(f"skill-graph: {a} lists {b} in hands-off, and no step of {a} hands off to {b}")
+        bad = 1
+    return bad
+
+
 def main(argv):
+    if len(argv) == 3 and argv[1] == "check":
+        return check_declared(argv[2])
     if len(argv) == 3 and argv[1] == "list":
         for a, b in sorted(hand_offs(argv[2])):
             print(f"{a}\t{b}")

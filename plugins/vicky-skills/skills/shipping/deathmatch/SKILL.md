@@ -1,5 +1,6 @@
 ---
 name: deathmatch
+hands-off: [cerebro]
 description: "Send opponents to break a branch since a fixed point, keep only the findings a run or an arena contest proves, and fix them on the effort's own branch. Use when make-it-so reaches its ready step, when assimilate needs a verdict, when an outside report or review arrives, and when the user asks to review, break or deathmatch a branch."
 ---
 

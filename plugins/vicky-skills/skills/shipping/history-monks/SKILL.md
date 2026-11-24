@@ -1,5 +1,6 @@
 ---
 name: history-monks
+hands-off: [deathmatch, ship-it]
 description: Rebase a branch onto a main that moved, following the intent of what landed. Use when the user says "rebase on main", "rebase neatly", "previous commits are authoritative" or "work with the recent PRs", and before pushing a branch that main has moved past.
 ---
 

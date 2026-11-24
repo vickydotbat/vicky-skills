@@ -65,6 +65,4 @@ printf 'do\tsentinels\n' >"$scratch/GRAPH.tsv"
 run; code=$?
 check "G4 a matching graph passes" '[ "$code" = 0 ]'
 
-# The plugin's own graph matches its skills.
-check "the plugin's GRAPH.tsv matches its skills" 'python3 "$graph" check "$root/plugins/vicky-skills/skills" "$root/plugins/vicky-skills/skills/GRAPH.tsv"'
 exit "$fail"

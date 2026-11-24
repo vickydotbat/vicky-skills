@@ -1,5 +1,6 @@
 ---
 name: plot-twist
+hands-off: [decision-record, human-voice, robot-voice]
 description: Carry a change of direction into every place that still holds the old one: repo text, tickets, pull requests, decision records. Use when the user says "actually", "instead" or "forget that", when a decision you built on is replaced, when a test overturns a recorded rule, and when a ticket records a decision (an answered anomaly or away team) that an earlier plan or doc contradicts.
 ---
 

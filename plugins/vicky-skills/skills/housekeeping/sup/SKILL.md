@@ -1,5 +1,6 @@
 ---
 name: sup
+hands-off: [cerebro, do, standing-orders]
 description: Catch the user up in one screen — what got done, what changed, what waits on them, what comes next. Use when the user asks "sup", "what's up", "where are we", "catch me up" or "status report", returns after a break, or a long stretch of work ends.
 disable-model-invocation: true
 ---

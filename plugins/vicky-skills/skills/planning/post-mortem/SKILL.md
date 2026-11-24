@@ -1,5 +1,6 @@
 ---
 name: post-mortem
+hands-off: [decision-record, human-voice, loose-lips, mission-brief]
 description: Write a post-mortem, the dated record of one incident, its causes and its follow-ups, kept beside the decision records. Use when an effort settles after a fix failed before another found the cause, after an outage or lost data, at the end of a `never-lupus` run that took more than one fix, and when the user says "post-mortem".
 ---
 

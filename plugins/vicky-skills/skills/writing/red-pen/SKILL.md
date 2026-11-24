@@ -1,5 +1,6 @@
 ---
 name: red-pen
+hands-off: [human-voice, interactive-page]
 description: Hand drafts to the user to edit on a page in their browser, then write their text back. Use whenever text meets an audience before it is published (players, customers, the public: UI text, release notes, posts, public wiki pages), whenever approved examples need the user's tick, and when the user says "drafts", "let me edit it" or "open it for me".
 ---
 

@@ -1,5 +1,6 @@
 ---
 name: power-word-fix
+hands-off: [deathmatch, over-to-you, red-pen]
 description: Fix anything the user names — a bug, a red check, wrong text, a leak, a stale decision — by sorting it and running the skills that fit, ending on proof.
 argument-hint: "What's broken?"
 disable-model-invocation: true

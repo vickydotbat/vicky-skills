@@ -1,5 +1,6 @@
 ---
 name: mission-brief
+hands-off: [away-team, red-pen]
 description: "File tickets, issues or a star chart from what the conversation settled. Use whenever the user asks to file, open or write up tickets or issues, to turn a plan or conversation into tickets, or to convert or import tickets made by another tool or planner. No interview: it writes down what is already settled."
 ---
 

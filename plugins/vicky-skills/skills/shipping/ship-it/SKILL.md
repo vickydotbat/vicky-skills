@@ -1,5 +1,6 @@
 ---
 name: ship-it
+hands-off: [human-voice]
 description: "Write or rewrite a pull request body in its one template. Use whenever a pull request opens, a stack submits new ones, a push makes the body untrue, or someone asks for a PR description."
 ---
 

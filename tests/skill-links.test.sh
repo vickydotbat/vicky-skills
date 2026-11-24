@@ -36,7 +36,8 @@ for f in "$root"/*/*/SKILL.md; do
   fm "$f" | grep -q '^disable-model-invocation: true' && typed+=("$(basename "$(dirname "$f")")")
 done
 fail=0
-# The skill graph decides which skill hands off to which, as GRAPH.tsv records it.
+# The skill graph decides which skill hands off to which, as each skill's
+# hands-off field declares it.
 edges=$(python3 "$(dirname "$0")/../plugins/vicky-skills/scripts/skill-graph.py" list "$root")
 for f in "$root"/*/*/SKILL.md; do
   fm "$f" | grep -q '^disable-model-invocation: true' && continue

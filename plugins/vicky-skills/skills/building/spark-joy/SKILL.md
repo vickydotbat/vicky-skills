@@ -1,5 +1,6 @@
 ---
 name: spark-joy
+hands-off: [sentinels, ship-it]
 description: Deepen one shallow module in a repo's busiest code and open a draft pull request, with behaviour held by the tests at its seam. Use when the user types /spark-joy.
 disable-model-invocation: true
 ---

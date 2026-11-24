@@ -1,5 +1,6 @@
 ---
 name: do
+hands-off: [by-eye, deathmatch, examples, history-monks, mission-brief, never-lupus, over-to-you, red-pen, sentinels, ship-it]
 description: Build something behaviour-first, from a sentence in chat, a ticket or a whole star chart. Use when the user asks for a change, hands over a ticket, or hands over a star chart to build.
 ---
 

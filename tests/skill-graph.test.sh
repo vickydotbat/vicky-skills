@@ -15,9 +15,20 @@ expect "list prints each hand-off, tab-separated" "$(printf 'do\tsentinels')" "$
 expect "list exits 0" 0 "$(python3 "$graph" list "$dir/s" >/dev/null; echo $?)"
 expect "no arguments is a usage error" 2 "$(python3 "$graph" 2>/dev/null; echo $?)"
 expect "list with an extra argument is a usage error" 2 "$(python3 "$graph" list "$dir/s" x 2>/dev/null; echo $?)"
-expect "check without a graph file is a usage error" 2 "$(python3 "$graph" check "$dir/s" 2>/dev/null; echo $?)"
+expect "check with only a folder fails on an undeclared hand-off" 1 "$(python3 "$graph" check "$dir/s" >/dev/null 2>&1; echo $?)"
+sed -i 's/^name: do$/name: do\nhands-off: [ sentinels ]/' "$dir/s/building/do/SKILL.md"
+expect "a declared field with spaces is read" 0 "$(python3 "$graph" check "$dir/s" >/dev/null 2>&1; echo $?)"
+sed -i 's/^hands-off: .*/hands-off: []/' "$dir/s/building/do/SKILL.md"
+expect "an empty field declares nothing" 1 "$(python3 "$graph" check "$dir/s" >/dev/null 2>&1; echo $?)"
+printf 'Then run `sentinels`.\nhands-off: [sentinels]\n' >"$dir/s/building/do/SKILL.md"
+expect "a field outside the frontmatter is not read" 1 "$(python3 "$graph" check "$dir/s" >/dev/null 2>&1; echo $?)"
+printf -- '---\nname: do\nhands-off: [zz]\n---\n1. Work.\n' >"$dir/s/building/do/SKILL.md"
+expect "an unknown declared skill says no such skill exists" 1 "$(python3 "$graph" check "$dir/s" 2>&1 | grep -c 'no skill zz exists')"
+printf -- '---\nname: do\nhands-off: [sentinels]\n---\n1. Work.\n' >"$dir/s/building/do/SKILL.md"
+expect "a declared hand-off with no step says so" 1 "$(python3 "$graph" check "$dir/s" 2>&1 | grep -c 'no step of do')"
+printf -- '---\nname: do\n---\n1. Then run `sentinels` on it.\n' >"$dir/s/building/do/SKILL.md"
 expect "an unknown verb with four arguments is a usage error" 2 "$(python3 "$graph" draw "$dir/s" x 2>/dev/null; echo $?)"
-expect "a usage error prints the usage" 1 "$(python3 "$graph" 2>&1 | grep -c 'skill-graph.py check')"
+expect "a usage error prints the usage" 2 "$(python3 "$graph" 2>&1 | grep -c 'skill-graph.py check')"
 # Shapes the deathmatch of 2026-11-24 found the first pattern misread.
 mk() { mkdir -p "$dir/t/building/$1"; printf -- '---\nname: %s\n---\n%s\n' "$1" "$2" >"$dir/t/building/$1/SKILL.md"; }
 for s in b c e f h i; do mk "$s" '1. Work.'; done

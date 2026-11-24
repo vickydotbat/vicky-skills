@@ -1,5 +1,6 @@
 ---
 name: make-it-so
+hands-off: [cerebro, deathmatch, engrave, examples, history-monks, human-voice, machine-spirit, never-lupus, over-to-you, post-mortem, red-pen, ship-it, standing-orders]
 description: Finish a draft pull request and see it through CI. Use when the user types /make-it-so. Only the user starts it.
 disable-model-invocation: true
 ---

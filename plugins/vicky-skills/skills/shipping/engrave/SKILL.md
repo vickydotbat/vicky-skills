@@ -1,5 +1,6 @@
 ---
 name: engrave
+hands-off: [plot-twist]
 description: Engrave a lesson: turn a snag, mistake or correction into a law in its repo. Use when the user says "codify", "lesson", "for the future", "from now on", "make sure we know" or "prevent this", when a fixed snag cost a retry or hit a platform limit, unasked after a serious mistake of your own, for each finding settling or `captains-log` hands over, and on praise of one trait.
 ---
 

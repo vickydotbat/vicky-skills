@@ -1,5 +1,6 @@
 ---
 name: over-to-you
+hands-off: [by-eye, engrave, human-voice, red-pen, ship-it]
 description: Hand the live checks only a person can do to the human, as a checklist page in their browser. Use when a change needs a real client, a look, a feel, real hardware or an outside account to prove, or the user asks to test something themselves.
 ---
 
