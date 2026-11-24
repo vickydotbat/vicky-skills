@@ -76,6 +76,8 @@ jobs:
         run: tests/case_file_look_approved_examples.test.sh
       - name: The case-file check's user, home, host and image-data rules
         run: tests/case-file.test.sh
+      - name: The case-file transcript lister and digest
+        run: tests/case-file-transcripts.test.sh
       - name: The security kit's edges, bad input and the GitHub route
         run: tests/security-kit.test.sh
       - name: advisory-guard opens each gate only on the user's own word
