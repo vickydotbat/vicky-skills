@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
+# An empty repo with one commit, for a request too big for one session.
 set -eu
 git init -q -b main .
-mkdir -p src tests
-printf 'export function farewell(name) {\n  return `Bye, ${name}`;\n}\n' > src/greet.js
+printf '# shop\n' > README.md
 git add -A && git -c user.name=eval -c user.email=eval@example.invalid commit -q -m start
