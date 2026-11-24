@@ -28,7 +28,7 @@ printf -- '---\nname: do\nhands-off: [sentinels]\n---\n1. Work.\n' >"$dir/s/buil
 expect "a declared hand-off with no step says so" 1 "$(python3 "$graph" check "$dir/s" 2>&1 | grep -c 'no step of do')"
 printf -- '---\nname: do\n---\n1. Then run `sentinels` on it.\n' >"$dir/s/building/do/SKILL.md"
 expect "an unknown verb with four arguments is a usage error" 2 "$(python3 "$graph" draw "$dir/s" x 2>/dev/null; echo $?)"
-expect "a usage error prints the usage" 2 "$(python3 "$graph" 2>&1 | grep -c 'skill-graph.py check')"
+expect "a usage error prints the usage" 1 "$(python3 "$graph" 2>&1 | grep -c '^usage\|skill-graph.py list')"
 # Shapes the deathmatch of 2026-11-24 found the first pattern misread.
 mk() { mkdir -p "$dir/t/building/$1"; printf -- '---\nname: %s\n---\n%s\n' "$1" "$2" >"$dir/t/building/$1/SKILL.md"; }
 for s in b c e f h i; do mk "$s" '1. Work.'; done

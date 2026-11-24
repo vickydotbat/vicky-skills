@@ -2,7 +2,7 @@
 """The skill graph: each real hand-off from one skill to another.
 
     skill-graph.py list  <skills folder>               print every hand-off
-    skill-graph.py check <skills folder> <GRAPH.tsv>   exit 1 on a difference
+    skill-graph.py check <skills folder> <graph file>  exit 1 on a difference
     skill-graph.py check <skills folder>               exit 1 when a skill's
                                                        hands-off field and steps differ
 
