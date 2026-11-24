@@ -78,6 +78,8 @@ jobs:
         run: tests/case-file.test.sh
       - name: The case-file transcript lister and digest
         run: tests/case-file-transcripts.test.sh
+      - name: The eval cut arm deletes a heading, a step or a table row
+        run: tests/every-case-cut.test.sh
       - name: The security kit's edges, bad input and the GitHub route
         run: tests/security-kit.test.sh
       - name: advisory-guard opens each gate only on the user's own word
