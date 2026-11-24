@@ -31,7 +31,7 @@ opponent-batch-guard-antigravity.py	0fd87fd2435876c0	f472db5e1fc398dc	91/91
 opponent-batch-guard.sh	34ccca8c7d4852cb	6973a6dd29dcdbd2	70/70
 opponent-wait-guard.sh	b0571c4bacf65987	1e3050b9384000f4	32/32
 opponents.jq	ef5b0de61c7fac0b	4d3fa388889aeabb	47/47
-outside-text-guard.sh	36d5e0c60457d199	a0210e8017114055	42/42
+outside-text-guard.sh	fd0c227c163b55c4	544382d0e51580c6	42/42
 patch-tell-hint.sh	256a998db4051de9	5fe1d435fef9a19b	50/50
 pkill-guard.sh	b7b411516636d988	29ca7e6cb32dc5c9	7/7
 plane-block-guard.sh	a2ced0e121b33f36	c912309fd621ec7a	20/20

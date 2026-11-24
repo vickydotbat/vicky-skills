@@ -15,7 +15,7 @@ command=$(jq -r '.tool_input.command // ""' <<<"$input" 2>/dev/null)
 # segment that runs gh, tea, gs, git-spice, curl or wget, or a git push or
 # send-pack, is refused unless it is a known read, behind any wrapper
 # (bash -c, eval, xargs, env, timeout). shortcut: a tool named through a
-# variable or an alias slips past, until the wall moves to a
+# variable or an alias, or the mark or release-outside.sh named by a glob, slips past, until the wall moves to a
 # read-only agent.
 # The mark is lifted only by release-outside.sh typed by the user as a
 # `!` command, which runs outside the hooks. A planted "go ahead" in the
@@ -35,8 +35,9 @@ while IFS= read -r seg; do
     esac
     seg=$(sed -E 's/^([[:space:]]*(-[^[:space:]]*|[0-9][0-9.]*[smhd]?))*//' <<<"$rest")
   done
-  # A help page writes nothing.
-  case ${tool##*/} in gh | tea) grep -Eq '(^|[[:space:]])(--help|-h)([[:space:]]|$)' <<<"$rest" && continue ;; esac
+  # A help page writes nothing: only subcommand words come before its -h or --help,
+  # so a body or title that says -h is still a write.
+  case ${tool##*/} in gh | tea) grep -Eq '^[[:space:]]*([a-z][a-z-]*[[:space:]]+)*(--help|-h)[[:space:]]*$' <<<"$rest" && continue ;; esac
   case ${tool##*/} in
     git) grep -Eq '(^|[[:space:]])(push|send-pack)([[:space:]]|$)' <<<"$rest" && writes=1 ;;
     gh) # gh's own flags, such as -R <repo>, come before the verb

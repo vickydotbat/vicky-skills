@@ -467,7 +467,7 @@ jobs:
         run: tests/deathmatch_approved_examples.test.sh
       - name: Outside text guard
         run: tests/outside-text-guard.test.sh
-      - name: Outside text guard
+      - name: Outside text release
         run: tests/release-outside.test.sh
       - name: Deathmatch scripts' exit codes
         run: tests/deathmatch-scripts.test.sh

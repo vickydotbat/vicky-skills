@@ -54,6 +54,8 @@ expect "grep for the word push passes" 0 "grep -n push README.md"
 expect "a tea help page passes" 0 "tea pr edit --help"
 expect "a gh help page passes" 0 "gh pr create -h"
 expect "a tea write with help elsewhere is still refused" 2 "tea comment 1 hi; tea pr edit -h"
+expect "a body that says -h is refused" 2 'tea comment 1 "see -h"'
+expect "a gh body flag that says --help is refused" 2 'gh pr comment 1 --body "run it with --help"'
 expect "the agent's own release is refused" 2 "bash plugins/x/release-outside.sh marked"
 expect "removing the mark by hand is refused" 2 "rm \"$CLAUDE_PLUGIN_DATA/outside-read/marked\""
 expect "an unmarked session pushes" 0 "git push" fresh
