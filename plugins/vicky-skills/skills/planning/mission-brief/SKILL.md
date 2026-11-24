@@ -8,7 +8,7 @@ description: "File tickets, issues or a star chart from what the conversation se
 
 > _Your mission, should you choose to accept it: write down what we already decided, then slice it._
 
-A **mission brief** writes down what a conversation already settled, and files it. It is the only way a ticket is filed: `ticket-filing-guard` refuses `plane file`, `tea issues create` and `gh issue create` until it has started. Tickets made by another tool or planner are its input too: re-slice them, never copy them across. It asks no new questions: an open question goes into the spec as an anomaly, never into chat. The words and ticket forms are in [STAR-CHART.md](../../commands/lay-course/STAR-CHART.md), and the tracker's commands in `docs/agents/issue-tracker.md`. If that file is missing, tell the user to type `/first-contact`, and stop.
+A **mission brief** writes down what a conversation already settled, and files it. It is the way a ticket is filed, and `groundhog-day` is the way one bug is: `ticket-filing-guard` refuses `plane file`, `tea issues create` and `gh issue create` until one of them has started. Tickets made by another tool or planner are its input too: re-slice them, never copy them across. It asks no new questions: an open question goes into the spec as an anomaly, never into chat. The words and ticket forms are in [STAR-CHART.md](../../commands/lay-course/STAR-CHART.md), and the tracker's commands in `docs/agents/issue-tracker.md`. If that file is missing, tell the user to type `/first-contact`, and stop.
 
 ## Check first
 

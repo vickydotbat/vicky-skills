@@ -23,6 +23,7 @@
     "./skills/building/machine-spirit",
     "./skills/shipping/make-it-so",
     "./skills/planning/mission-brief",
+    "./skills/planning/groundhog-day",
     "./skills/building/never-lupus",
     "./skills/building/nwn-model-tooling",
     "./skills/commands/power-word-fix",
@@ -235,8 +236,8 @@
     },
     "guard_ticket_filing": {
       "type": "boolean",
-      "title": "File tickets only through mission-brief",
-      "description": "Refuse a command that files a ticket (plane file, tea issues create, gh issue create) until the session has started mission-brief, which checks the source material, the tracker and the codebase first.",
+      "title": "File tickets only through mission-brief or groundhog-day",
+      "description": "Refuse a command that files a ticket (plane file, tea issues create, gh issue create) until the session has started mission-brief or, for a bug report, groundhog-day. Each checks the source material, the tracker and the codebase first.",
       "default": true
     },
     "step_guard": {

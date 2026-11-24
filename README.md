@@ -38,6 +38,7 @@ Each skill starts on its own when its trigger fits, except the ones marked "When
 | Skill | When it's used | What it does |
 | --- | --- | --- |
 | **`mission-brief`** | When you ask to file tickets, turn a plan into tickets, or convert tickets from another tool | Writes down what the conversation settled as a spec, cuts it into slices with Given / When / Then examples, and files a star chart with one star per slice after you approve the examples on a page. It asks no new questions. Tickets from another tool get re-sliced, never copied. |
+| **`groundhog-day`** | When you ask to file, report or write up a bug | Files one bug as a ticket you can take in at a glance: a two-line summary, a screenshot of now and of how it should look, steps to reproduce that it tried itself, more cases, and related issues. It checks for a ticket on the same bug first, and adds to that one instead. |
 | **`examples`** | Before a ticket is built, when a decision becomes a build, or when acceptance criteria are prose | Turns a ticket, rule or decision into Given / When / Then examples, opens them in your browser, and writes the ones you approve as failing tests. |
 | **`council-of-elrond`** | When you type it | A table of eight designers (a skeptic, a dwarf with an axe, an elf, a ranger, a rules keeper, an enthusiast and two troublemakers) argues your idea with you. Each round ends on open points with a pick, and the council ends by picking the road: a star chart, one star, or a warp. |
 | **`away-team`** | When a decision waits on a fact from docs, an API, source code or a spec | Answers the question from primary sources in a background agent and posts the findings on its ticket. |
@@ -143,7 +144,7 @@ Many guards have a per-repo opt-out line, named in their rows.
 
 | Hook | What it does | Setting |
 | --- | --- | --- |
-| **Tickets only through mission-brief** (recommended) | Refuses `plane file`, `tea issues create` and `gh issue create` until the session has started `mission-brief`. It always refuses a ticket titled "Familiar debt", since those notes stay on your machine. | On (`guard_ticket_filing`) |
+| **Tickets only through a filing skill** (recommended) | Refuses `plane file`, `tea issues create` and `gh issue create` until the session has started `mission-brief`, or `groundhog-day` for a bug report. It always refuses a ticket titled "Familiar debt", since those notes stay on your machine. | On (`guard_ticket_filing`) |
 | **Read a ticket whole** (recommended) | Refuses a ticket read cut short by `head`, `tail`, `sed -n`, `grep`, `cut` or `awk`, and points to `read-item.sh <id>`. A whole read is `read-item.sh`, `plane show`, or the command in the "Read, whole" row of `docs/agents/issue-tracker.md`. | On (`guard_whole_read`) |
 | **Read before asking** (recommended) | Sends the agent back once when it ends a turn with a `🚪 Waiting on you:` offering coded options (O1, O2) and never read a ticket this session. A council or an earlier answer may have settled it. | On (`guard_read_before_asking`) |
 | **Approved test lock** (recommended) | Refuses an edit, write or delete that changes the Given, When or Then lines of an approved test on the default branch, until the branch holds its ticked change record from examples' CHANGING.md. A shell command that changes one anyway gets the default branch's copy put back after it runs. | On (`guard_approved_test_lock`) |
@@ -238,6 +239,7 @@ The skills' eval cases live in `plugins/vicky-skills/evals/`, and you run them b
 
 - Matt Pocock's [skills](https://github.com/mattpocock/skills): the base ideas, including `spark-joy`'s deep modules (from his improve-codebase-architecture) and `mission-brief`, folded from his to-spec and to-tickets into one step.
 - Dex Horthy's [show-me](https://github.com/humanlayer/skills): `ship-it`'s pictures.
+- The [No AI Slop Manifesto](https://www.slopmanifesto.com/), and ThePrimeagen's [video on it](https://www.youtube.com/watch?v=i1IbHVstmH4): the charter's reader-cost line, `ship-it`'s before and after screenshots, and `groundhog-day`'s bug ticket layout.
 - [ponytail](https://github.com/DietrichGebert/ponytail): `do`'s smallest-change rules.
 - Basecamp's [Shape Up](https://basecamp.com/shapeup): a star chart's black holes are its rabbit holes.
 - The School of Knowledge's "The Rumsfeld matrix explained": a star chart's four boxes of knowns.

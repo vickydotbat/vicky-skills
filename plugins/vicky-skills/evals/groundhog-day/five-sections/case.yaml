@@ -1,0 +1,5 @@
+schema_version: "1.1"
+name: five-sections
+description: groundhog-day files one bug with a summary, screenshots, steps to reproduce, more cases and related issues, and links the ticket on the same page.
+context:
+  scaffold_script: scaffold.sh

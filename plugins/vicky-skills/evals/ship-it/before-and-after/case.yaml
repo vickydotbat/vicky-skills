@@ -1,0 +1,5 @@
+schema_version: "1.1"
+name: before-and-after
+description: ship-it puts a before and an after screenshot in the body of a pull request whose change is visible.
+context:
+  scaffold_script: scaffold.sh

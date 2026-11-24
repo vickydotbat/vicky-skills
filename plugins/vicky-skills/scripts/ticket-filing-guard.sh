@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # PreToolUse hook (Bash): refuses a command that files a ticket (`plane file`,
-# `tea issues create`, `gh issue create`) until the session has started the
-# mission-brief skill, which checks the source material, the tracker and the
-# codebase before it writes anything. On unless the plugin option
+# `tea issues create`, `gh issue create`) until the session has started a
+# filing skill: mission-brief for planned work, groundhog-day for a bug report.
+# Each searches the tracker and the codebase before it writes anything. On unless the plugin option
 # guard_ticket_filing is false or 0. Reads the session transcript for Skill
 # calls; a missing transcript or a missing jq lets the command through.
 # A familiar debt note is refused on every tracker, mission-brief or not:
@@ -27,6 +27,8 @@ transcript=$(jq -r '.transcript_path // ""' <<<"$payload" 2>/dev/null)
 [ -f "$transcript" ] || exit 0 # mutant-ok delete: jq reads no skills from a missing file, and the next test exits 0 the same way
 # shellcheck source=skill-started.sh
 . "$(dirname "$0")/skill-started.sh"
-skill_started "$transcript" mission-brief "$(agent_of "$payload")" && exit 0
-echo "ticket-filing-guard: refused. A ticket is filed only through the mission-brief skill, never by hand. It checks the source material (away-team when a fact is missing), searches the tracker for the same premise, and searches the codebase for anything that looks like the thing, before it writes a word. Start mission-brief, then file. Nothing in this command ran, not even its other steps: rerun the ones that need no change on their own." >&2
+agent=$(agent_of "$payload")
+skill_started "$transcript" mission-brief "$agent" && exit 0
+skill_started "$transcript" groundhog-day "$agent" && exit 0
+echo "ticket-filing-guard: refused. A ticket is filed only through a filing skill, never by hand: groundhog-day for a bug report, mission-brief for anything else. Each checks the source material (away-team when a fact is missing), searches the tracker for the same premise, and searches the codebase for anything that looks like the thing, before it writes a word. Start the one that fits, then file. Nothing in this command ran, not even its other steps: rerun the ones that need no change on their own." >&2
 exit 2

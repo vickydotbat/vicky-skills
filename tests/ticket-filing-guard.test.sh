@@ -10,6 +10,7 @@ fail=0
 started() { jq -nc --arg s "$1" '{type:"assistant",message:{content:[{type:"tool_use",name:"Skill",input:{skill:$s}}]}}'; }
 started vicky-skills:do > "$dir/none.jsonl"
 { started vicky-skills:do; started vicky-skills:mission-brief; } > "$dir/briefed.jsonl"
+{ started vicky-skills:do; started vicky-skills:groundhog-day; } > "$dir/bugged.jsonl"
 expect() { # name want transcript command [env...]
   local name=$1 want=$2 transcript=$3 cmd=$4; shift 4
   jq -nc --arg c "$cmd" --arg t "$transcript" --arg a "${AGENT:-}" '{tool_input:{command:$c},transcript_path:$t} + (if $a == "" then {} else {agent_id:$a} end)' |
@@ -23,6 +24,8 @@ expect "gh issue create is refused" 2 "$dir/none.jsonl" 'gh issue create --title
 expect "a filing command after cd and && is refused" 2 "$dir/none.jsonl" 'cd repo && bin/plane file GAME T'
 expect "the refusal names mission-brief and its three checks" 2 "$dir/none.jsonl" 'bin/plane file GAME T'
 grep -q "mission-brief" "$dir/err" && grep -q "codebase" "$dir/err" && grep -q "tracker" "$dir/err" && echo "ok   the steer names the three checks" || { echo "FAIL the steer names the three checks"; fail=1; }
+expect "gh issue create after groundhog-day started runs" 0 "$dir/bugged.jsonl" 'gh issue create --title T --body b'
+grep -q "groundhog-day" <(expect "x" 2 "$dir/none.jsonl" 'gh issue create --title T' >/dev/null; cat "$dir/err") && echo "ok   the steer names groundhog-day for a bug report" || { echo "FAIL the steer names groundhog-day for a bug report"; fail=1; }
 expect "plane file after mission-brief started runs" 0 "$dir/briefed.jsonl" 'bin/plane file GAME T'
 expect "tea issues create after mission-brief started runs" 0 "$dir/briefed.jsonl" 'tea issues create --title T </dev/null'
 jq -nc '{type:"user",message:{content:"<command-message>mission-brief</command-message>\n<command-name>/vicky-skills:mission-brief</command-name>"}}' > "$dir/slash.jsonl"
@@ -31,7 +34,6 @@ expect "plane file after the mission-brief slash command runs" 0 "$dir/slash.jso
 expect "plane file after a different slash command is refused" 2 "$dir/slash-other.jsonl" 'bin/plane file GAME T'
 expect "a familiar debt note filed on a tracker is refused, even after mission-brief" 2 "$dir/briefed.jsonl" 'bin/plane file GAME "Familiar debt: sow-codebase session 8624" --body-file d.md'
 grep -q "local" "$dir/err" && echo "ok   the debt steer names the local note" || { echo "FAIL the debt steer names the local note"; fail=1; }
-{ started vicky-skills:do; started vicky-skills:groundhog-day; } > "$dir/bugged.jsonl"
 # Regression, ticked as E3 on the reader-cost page: a familiar debt note is
 # refused before any skill is read, so groundhog-day opens no way round it.
 expect "a familiar debt note is refused after groundhog-day too" 2 "$dir/bugged.jsonl" 'gh issue create --title "Familiar debt: session 12" --body b'
