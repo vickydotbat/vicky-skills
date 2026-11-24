@@ -10,6 +10,7 @@ s=$(mktemp -d); trap 'rm -rf "$s"' EXIT
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 cat > "$s/a1.jsonl" <<'J'
+{"type":"user","timestamp":"2026-11-18T18:59:00Z","message":{"content":"<command-name>/clear</command-name>\n<command-args></command-args>"}}
 {"type":"user","timestamp":"2026-11-18T19:00:00Z","message":{"content":"Why does the lantern not glow?"}}
 {"type":"user","timestamp":"2026-11-18T19:01:00Z","message":{"content":"Base directory for this skill: x"}}
 {"type":"assistant","timestamp":"2026-11-18T19:20:00Z","message":{"content":[{"type":"text","text":"Wrong texture name."},{"type":"tool_use","name":"Bash"}]}}

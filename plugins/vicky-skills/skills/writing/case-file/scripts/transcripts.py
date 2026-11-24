@@ -27,7 +27,8 @@ def command(t):
     name = re.search(r"<command-name>(.*?)</command-name>", t, re.S)
     args = re.search(r"<command-args>(.*?)</command-args>", t, re.S)
     if name:
-        return f"{name.group(1).strip()} {args.group(1).strip() if args else ''}".strip()
+        said = args.group(1).strip() if args else ""
+        return f"{name.group(1).strip()} {said}" if said else ""  # a bare /clear says nothing
     return t
 
 
