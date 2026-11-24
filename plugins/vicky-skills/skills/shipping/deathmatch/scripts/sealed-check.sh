@@ -94,9 +94,7 @@ copy)
   # cp -a into a folder that exists copies inside it: a rerun nested clones once.
   # The copy lands under a part name and moves in whole, so a folder at $to
   # that is not a checkout of the same commit is a broken copy, never reused.
-  if [ ! -e "$to" ]; then
-    rm -rf "$to.part" && cp -a --reflink=auto "$copy" "$to.part" && mv "$to.part" "$to" || exit 1
-  fi
+  [ -e "$to" ] || { rm -rf "$to.part" && cp -a --reflink=auto "$copy" "$to.part" && mv "$to.part" "$to"; }
   [ "$(git -C "$to" rev-parse HEAD 2>/dev/null)" = "$(git -C "$copy" rev-parse HEAD)" ] || {
     echo "broken: $to is not a whole copy; delete it and run copy again" >&2; exit 1; }
   echo "$to"

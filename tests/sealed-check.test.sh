@@ -72,4 +72,9 @@ check "an angle's copy passes the check as made" '[ $r = 0 ]'
 # Found in the deathmatch: an interrupted cp left a folder the next call took as whole.
 mkdir "$s/q-half"; bash "$dm/sealed-check.sh" copy "$s/q" half >/dev/null 2>&1; r=$?
 check "a half-made copy is refused, never reused" '[ $r = 1 ]'
+rm -rf "$s/q-f"; out=$(bash "$dm/sealed-check.sh" copy "$s/q" f 2>/dev/null); r=$?
+check "a first copy prints its path and passes" '[ $r = 0 ] && [ "$out" = "$s/q-f" ] && [ -d "$s/q-f/.git" ]'
+bash "$dm/sealed-check.sh" copy "$s/q" >/dev/null 2>&1; r=$?
+bash "$dm/sealed-check.sh" copy "$s/elsewhere" x >/dev/null 2>&1; r2=$?
+check "copy refuses a missing angle or a folder that is no checkout" '[ $r = 2 ] && [ $r2 = 2 ] && [ ! -e "$s/elsewhere-x" ]'
 exit $fail
