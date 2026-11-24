@@ -27,7 +27,8 @@ expect "an unknown declared skill says no such skill exists" 1 "$(python3 "$grap
 printf -- '---\nname: do\nhands-off: [sentinels]\n---\n1. Work.\n' >"$dir/s/building/do/SKILL.md"
 expect "a declared hand-off with no step says so" 1 "$(python3 "$graph" check "$dir/s" 2>&1 | grep -c 'no step of do')"
 printf -- '---\nname: do\n---\n1. Then run `sentinels` on it.\n' >"$dir/s/building/do/SKILL.md"
-expect "an unknown verb with four arguments is a usage error" 2 "$(python3 "$graph" draw "$dir/s" x 2>/dev/null; echo $?)"
+expect "an unknown verb is a usage error" 2 "$(python3 "$graph" draw "$dir/s" 2>/dev/null; echo $?)"
+expect "check with a second argument is a usage error" 2 "$(python3 "$graph" check "$dir/s" x 2>/dev/null; echo $?)"
 expect "a usage error prints the usage" 1 "$(python3 "$graph" 2>&1 | grep -c '^usage\|skill-graph.py list')"
 # Shapes the deathmatch of 2026-11-24 found the first pattern misread.
 mk() { mkdir -p "$dir/t/building/$1"; printf -- '---\nname: %s\n---\n%s\n' "$1" "$2" >"$dir/t/building/$1/SKILL.md"; }
@@ -51,10 +52,9 @@ mk p "$(printf 'Run\n`b` after.')"
 expect "a hand-off wrapped across lines counts" "$(printf 'p\tb')" "$(python3 "$graph" list "$dir/t" | grep '^p')"
 mk r 'Run `B`.'
 expect "a name in the wrong case is no hand-off" "" "$(python3 "$graph" list "$dir/t" | grep '^r')"
-expect "a missing graph file is a usage error" 2 "$(python3 "$graph" check "$dir/t" "$dir/none.tsv" 2>/dev/null; echo $?)"
-expect "a missing graph file is named" 1 "$(python3 "$graph" check "$dir/t" "$dir/none.tsv" 2>&1 | grep -c 'no graph file at')"
-python3 "$graph" list "$dir/s" >"$dir/g.tsv"; printf '# from\tto\n' | cat - "$dir/g.tsv" >"$dir/h.tsv"
-expect "a comment line in the graph is skipped" 0 "$(python3 "$graph" check "$dir/s" "$dir/h.tsv" >/dev/null; echo $?)"
+# G2, approved 2026-11-24, kept as a plain test when G1 to G4 retired.
+mk v 'Mutation test the code `do` changed.'
+expect "a plain mention is no hand-off" "" "$(python3 "$graph" list "$dir/t" | grep '^v')"
 mk u "Settle it with \`b\`'s SETTLE.md, then run \`c\`."
 expect "a pointer into another skill's file is no hand-off" "c" "$(python3 "$graph" list "$dir/t" | awk '$1=="u"{print $2}' | paste -sd' ')"
 exit $fail

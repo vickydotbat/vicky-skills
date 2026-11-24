@@ -54,8 +54,6 @@ jobs:
         run: tests/language-tutor-store.test.sh
       - name: Plugin layout
         run: tests/plugin-layout.test.sh
-      - name: The skill graph lists each hand-off between skills and no stale one
-        run: tests/skill_graph_approved_examples.test.sh
       - name: "skill-graph.py edges: list, and usage errors"
         run: tests/skill-graph.test.sh
       - name: Skill hand-offs match each skill's field

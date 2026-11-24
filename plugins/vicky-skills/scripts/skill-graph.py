@@ -2,9 +2,8 @@
 """The skill graph: each real hand-off from one skill to another.
 
     skill-graph.py list  <skills folder>               print every hand-off
-    skill-graph.py check <skills folder> <graph file>  exit 1 on a difference
-    skill-graph.py check <skills folder>               exit 1 when a skill's
-                                                       hands-off field and steps differ
+    skill-graph.py check <skills folder>  exit 1 when a skill's
+                                          hands-off field and steps differ
 
 A hand-off is a verb that passes the work on (run, start, dispatch, load,
 follow, engage, then, hand ... to, go to, through, with) followed by a skill's
@@ -13,8 +12,7 @@ negated verb ("never run") and a verb led by another skill as its subject are
 no hand-off. A skill named any
 other way ("`do` runs this skill") is a mention, not a hand-off. Each skill
 declares its hand-offs in a frontmatter field, `hands-off: [a, b]`, and the
-one-argument check compares that field with the steps. A graph file holds one
-hand-off per line: the skill that hands off, a tab, the skill it hands to.
+check compares that field with the steps.
 """
 import pathlib
 import re
@@ -103,27 +101,8 @@ def main(argv):
         for a, b in sorted(hand_offs(argv[2])):
             print(f"{a}\t{b}")
         return 0
-    if len(argv) != 4 or argv[1] != "check":
-        print(__doc__.strip(), file=sys.stderr)
-        return 2
-    found = hand_offs(argv[2])
-    graph = pathlib.Path(argv[3])
-    if not graph.is_file():
-        print(f"skill-graph: no graph file at {argv[3]}", file=sys.stderr)
-        return 2
-    listed = set()
-    for line in graph.read_text(encoding="utf-8").splitlines():
-        if line.strip() and not line.startswith("#"):
-            a, _, b = line.partition("\t")
-            listed.add((a.strip(), b.strip()))
-    bad = 0
-    for a, b in sorted(found - listed):
-        print(f"skill-graph: missing arrow: {a} hands off to {b}, add \"{a}<tab>{b}\" to {argv[3]}")
-        bad = 1
-    for a, b in sorted(listed - found):
-        print(f"skill-graph: stale arrow: {a} -> {b}, no step of {a} hands off to {b}: delete the line from {argv[3]}")
-        bad = 1
-    return bad
+    print(__doc__, file=sys.stderr)
+    return 2
 
 
 if __name__ == "__main__":
