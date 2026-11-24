@@ -5,7 +5,7 @@
 #   check <sealed copy> <pinned sha> [<worktree> <snapshot file>]
 #   reset <sealed copy> <pinned sha>
 #   copy <sealed copy> <angle>   makes <sealed copy>-<angle> once and prints its path;
-#                                a second call reuses it, so a rerun never nests a clone
+#                                a second call reuses it, so a rerun never nests a clone, and refuses a half-made one
 #
 # check exits 0 with "sealed: as pinned", or 1 with one line per change and the
 # step to take. Files git ignores (build output) never count. A usage error
@@ -92,7 +92,13 @@ copy)
   checkout "$copy" && [ -n "$angle" ] || usage
   to="${copy%/}-$angle"
   # cp -a into a folder that exists copies inside it: a rerun nested clones once.
-  [ -d "$to" ] || cp -a --reflink=auto "$copy" "$to" || exit 1
+  # The copy lands under a part name and moves in whole, so a folder at $to
+  # that is not a checkout of the same commit is a broken copy, never reused.
+  if [ ! -e "$to" ]; then
+    rm -rf "$to.part" && cp -a --reflink=auto "$copy" "$to.part" && mv "$to.part" "$to" || exit 1
+  fi
+  [ "$(git -C "$to" rev-parse HEAD 2>/dev/null)" = "$(git -C "$copy" rev-parse HEAD)" ] || {
+    echo "broken: $to is not a whole copy; delete it and run copy again" >&2; exit 1; }
   echo "$to"
   ;;
 *) usage ;;
