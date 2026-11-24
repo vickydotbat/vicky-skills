@@ -48,8 +48,8 @@ resp=$(curl -sS --fail-with-body --max-time 60 -H "@$hdr" -H 'Content-Type: appl
     --data-binary @- "${endpoint%/}/chat/completions" < "$req" 2>"$cerr")
 notes=$(jq -r '.choices[0].message.content // empty' <<<"$resp" 2>/dev/null)
 if [ -z "$notes" ]; then
-  # Gemini sends its error inside an array, other servers as a bare object.
-  err=$(jq -r '(if type == "array" then .[0] else . end) | .error.message? // empty' <<<"$resp" 2>/dev/null)
+  # The first error anywhere in the body: Gemini wraps it in an array, some servers give a bare string.
+  err=$(jq -r 'first(.. | objects | select(has("error")) | .error | if type == "object" then .message? else . end | strings) // empty' <<<"$resp" 2>/dev/null)
   [ -n "$err" ] || err=$(tail -n 1 "$cerr")
   [ -n "$err" ] || err=$(tail -n 1 <<<"$resp")
   fallback "$model at $endpoint failed: ${err:-no answer}"

@@ -20,6 +20,8 @@ case "${STUB_MODE:-ok}" in
   busy) echo 'curl: (22) The requested URL returned error: 503' >&2
     echo '[{"error": {"code": 503, "message": "This model is currently experiencing high demand."}}]'; exit 22 ;;
   refused) echo '{"error": {"message": "API key not valid."}}'; exit 22 ;;
+  quota) echo '{"error": "quota exceeded"}'; exit 22 ;;
+  html) echo 'curl: (22) The requested URL returned error: 502' >&2; printf '<html>\n<body>Bad Gateway</body>\n</html>\n'; exit 22 ;;
 esac
 STUB
 chmod +x "$dir/bin/curl"
@@ -42,6 +44,10 @@ run GEMINI_API_KEY=k STUB_MODE=busy
 check "an error inside an array gives its message" '[ $rc -eq 0 ] && grep -q "^proofread: session model, because .*failed: This model is currently experiencing high demand.$" <<<"$out"'
 run GEMINI_API_KEY=k STUB_MODE=refused
 check "an error object gives its message" '[ $rc -eq 0 ] && grep -q "failed: API key not valid.$" <<<"$out"'
+run GEMINI_API_KEY=k STUB_MODE=quota
+check "an error given as a string gives that string" '[ $rc -eq 0 ] && grep -q "failed: quota exceeded$" <<<"$out"'
+run GEMINI_API_KEY=k STUB_MODE=html
+check "a body that is no JSON gives curl's own line" '[ $rc -eq 0 ] && grep -q "failed: curl: (22) The requested URL returned error: 502$" <<<"$out"'
 
 mkdir -p "$dir/nojq"; for t in bash awk mktemp chmod rm tail cat env; do ln -sf "$(command -v $t)" "$dir/nojq/$t"; done; ln -sf "$dir/bin/curl" "$dir/nojq/curl"
 out=$(env -i PATH="$dir/nojq" GEMINI_API_KEY=k STUB_DIR="$dir" "$dir/nojq/bash" "$pr" "$dir/draft.md" 2>&1); rc=$?
