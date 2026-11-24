@@ -2,6 +2,9 @@
 # release-outside.sh lifts a session's mark wherever the plugin data folder is,
 # leaves other sessions marked, and refuses a missing or path-shaped id.
 set -u
+# shellcheck disable=SC2016 # each check is a string ok() evals later, so it must not expand now
+# shellcheck disable=SC2329 # push() is called from inside those evaled strings
+# shellcheck disable=SC2034 # out is read from inside those evaled strings
 root="$(cd "$(dirname "$0")/.." && pwd)"
 rel="$root/plugins/vicky-skills/skills/shipping/deathmatch/scripts/release-outside.sh"
 guard="$root/plugins/vicky-skills/scripts/outside-text-guard.sh"
