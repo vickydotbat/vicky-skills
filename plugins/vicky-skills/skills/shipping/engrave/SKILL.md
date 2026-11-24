@@ -48,8 +48,11 @@ A **keep** is a law for something that went right: the user praised one trait of
 Proven by: plugins/vicky-skills/evals/engrave/thanks-keeps-nothing
 
 1. **Name the trait** in one line: what the output did that the user praised, as something visible. Done when the line names the trait and the skill that made the output.
+   Proven by: plugins/vicky-skills/evals/engrave/keep-praised-trait
 2. **Pin it** with an eval case under `evals/<skill>/<case>/` in the repo that holds that skill, as engrave step 5 builds one: a prompt that makes the skill produce such an output, and a free grader that checks the trait. Where a version of the skill without the trait exists, the case fails against it, so it can go red. Done when the case passes on the skill as it stands.
+   Proven by: plugins/vicky-skills/evals/engrave/keep-praised-trait
 3. **Log it**: `bash ${CLAUDE_PLUGIN_ROOT}/scripts/lesson-ledger.sh add keep "<trait> (eval case: <skill>/<case>)"`, so the ledger holds keeps apart from snags. Done when the ledger holds the line.
+   Proven by: plugins/vicky-skills/evals/engrave/keep-praised-trait
 4. **Report** in one line: `📓 Kept: <trait> → <skill>/<case>`. Done when the reply has it.
    Proven by: plugins/vicky-skills/evals/engrave/keep-praised-trait
 
