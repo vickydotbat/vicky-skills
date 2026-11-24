@@ -22,5 +22,7 @@ check "list names the session by its first ask" '[[ $list == *"a1"*"turns=1 comp
 python3 "$t" digest a1 "$s/out/d.txt" --dir "$s" >/dev/null
 check "the digest keeps the finding from before the compaction" 'grep -q "Wrong texture name" "$s/out/d.txt"'
 check "the digest leaves out skill bodies and the compact summary" '! grep -qE "Base directory|Summary text" "$s/out/d.txt"'
+touch -d '2026-11-17' "$s/a1.jsonl"; : > "$s/e1.jsonl"; : > "$s/e2.jsonl"
+check "a limit counts only sessions with a turn" '[[ $(python3 "$t" list --dir "$s" --limit 1) == *"a1"* ]]'
 check "a missing session is refused" '! python3 "$t" digest zz "$s/x" --dir "$s" 2>/dev/null'
 exit $fail

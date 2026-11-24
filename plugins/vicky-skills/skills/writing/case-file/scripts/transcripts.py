@@ -84,10 +84,13 @@ def main():
     if not folder.is_dir():
         sys.exit(f"transcripts: no transcript folder {folder}")
     if a.cmd == "list":
-        files = sorted(folder.glob("*.jsonl"), key=lambda p: p.stat().st_mtime, reverse=True)[: a.limit]
-        for p in files:
+        shown = 0
+        for p in sorted(folder.glob("*.jsonl"), key=lambda p: p.stat().st_mtime, reverse=True):
+            if shown >= a.limit:
+                break
             s, e, n, c, name = summary(p)
             if n:
+                shown += 1
                 print(f"{p.stem}  {(s or '?')[:16]} to {(e or '?')[:16]}  turns={n} compactions={c}  {name}")
         return
     path = folder / f"{a.id}.jsonl"
