@@ -64,4 +64,4 @@ Closes <ticket>
 
 At every stop, write the pull request body's Status section: a draft opened, a slice parked, a gate reached, the run ended. `do`, `warp`, `gamma-shift` and `make-it-so` point here.
 
-Charter: C3, C4 ([CHARTER.md](../../CHARTER.md)).
+Charter: C3, C4, C10 ([CHARTER.md](../../CHARTER.md)).
