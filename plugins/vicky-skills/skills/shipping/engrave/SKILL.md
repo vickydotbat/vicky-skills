@@ -1,6 +1,6 @@
 ---
 name: engrave
-description: Engrave a lesson: turn a snag, mistake or correction into a law in its repo. Use when the user says "codify", "lesson", "for the future", "from now on", "make sure we know" or "prevent this", when a fixed snag cost a retry or hit a platform limit, unasked after a serious mistake of your own, and for each finding settling or `captains-log` hands over. Any other correction waits for that settling.
+description: Engrave a lesson: turn a snag, mistake or correction into a law in its repo. Use when the user says "codify", "lesson", "for the future", "from now on", "make sure we know" or "prevent this", when a fixed snag cost a retry or hit a platform limit, unasked after a serious mistake of your own, for each finding settling or `captains-log` hands over, and on praise of one trait.
 ---
 
 # Engrave
@@ -41,5 +41,14 @@ Build every law for the next agent: it sees only the files it opened, copies the
 
    Add the rung and, for a promoted snag below rung 1, the reason in a few words the rung above it couldn't hold it. Done when every snag of the turn has its line.
    Proven by: plugins/vicky-skills/evals/engrave/law-names-proof
+
+## Keep a praised trait
+
+A **keep** is a law for something that went right: the user praised one trait of an output, and the next edit must not lose it. Praise names a trait ("keep leading with the pick", "that layout is perfect"). A bare "thanks", "ok" or "nice" names none and keeps nothing.
+
+1. **Name the trait** in one line: what the output did that the user praised, as something visible. Done when the line names the trait and the skill that made the output.
+2. **Pin it** with an eval case under `evals/<skill>/<case>/` in the repo that holds that skill, as engrave step 5 builds one: a prompt that makes the skill produce such an output, and a free grader that checks the trait. Where a version of the skill without the trait exists, the case fails against it, so it can go red. Done when the case passes on the skill as it stands.
+3. **Log it**: `bash ${CLAUDE_PLUGIN_ROOT}/scripts/lesson-ledger.sh add keep "<trait> (eval case: <skill>/<case>)"`, so the ledger holds keeps apart from snags. Done when the ledger holds the line.
+4. **Report** in one line: `📓 Kept: <trait> → <skill>/<case>`. Done when the reply has it.
 
 Charter: C5, C6 ([CHARTER.md](../../CHARTER.md)).
