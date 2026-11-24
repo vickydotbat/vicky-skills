@@ -17,6 +17,9 @@ cat >> "$STUB_DIR/sent"
 case "${STUB_MODE:-ok}" in
   ok) echo '{"choices":[{"message":{"content":"no changes"}}]}' ;;
   empty) echo '{"choices":[]}' ;;
+  busy) echo 'curl: (22) The requested URL returned error: 503' >&2
+    echo '[{"error": {"code": 503, "message": "This model is currently experiencing high demand."}}]'; exit 22 ;;
+  refused) echo '{"error": {"message": "API key not valid."}}'; exit 22 ;;
 esac
 STUB
 chmod +x "$dir/bin/curl"
@@ -33,6 +36,12 @@ check "a key variable name that is no name falls back" '[ $rc -eq 0 ] && [ ! -e 
 
 run GEMINI_API_KEY=k STUB_MODE=empty
 check "an answer with no notes falls back" '[ $rc -eq 0 ] && grep -q "^proofread: session model" <<<"$out"'
+
+# Gemini wraps an error in an array, and curl adds its own line on stderr.
+run GEMINI_API_KEY=k STUB_MODE=busy
+check "an error inside an array gives its message" '[ $rc -eq 0 ] && grep -q "^proofread: session model, because .*failed: This model is currently experiencing high demand.$" <<<"$out"'
+run GEMINI_API_KEY=k STUB_MODE=refused
+check "an error object gives its message" '[ $rc -eq 0 ] && grep -q "failed: API key not valid.$" <<<"$out"'
 
 mkdir -p "$dir/nojq"; for t in bash awk mktemp chmod rm tail cat env; do ln -sf "$(command -v $t)" "$dir/nojq/$t"; done; ln -sf "$dir/bin/curl" "$dir/nojq/curl"
 out=$(env -i PATH="$dir/nojq" GEMINI_API_KEY=k STUB_DIR="$dir" "$dir/nojq/bash" "$pr" "$dir/draft.md" 2>&1); rc=$?

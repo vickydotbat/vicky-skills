@@ -29,7 +29,7 @@ fi
 
 [ "$model" = session ] && fallback "the proofread model setting is session"
 { command -v curl && command -v jq; } >/dev/null || fallback "curl or jq is missing"
-hdr=$(mktemp); req=$(mktemp); trap 'rm -f "$hdr" "$req"' EXIT  # mktemp makes them 0600
+hdr=$(mktemp); req=$(mktemp); cerr=$(mktemp); trap 'rm -f "$hdr" "$req" "$cerr"' EXIT  # mktemp makes them 0600
 # The key goes through a header file, never the command line, where ps shows it.
 if [ "$key_env" != none ]; then
   [[ $key_env =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]] || fallback "the key variable name $key_env is not a variable name"
@@ -43,11 +43,14 @@ prompt='You proofread prose. The draft comes with its line numbers. Report each 
 awk '{ printf "%d: %s\n", NR, $0 }' "$file" |
   jq -Rs --arg m "$model" --arg p "$prompt" \
     '{model: $m, messages: [{role: "system", content: $p}, {role: "user", content: .}]}' > "$req"
+# curl's own error goes to its own file, so the body stays JSON for jq.
 resp=$(curl -sS --fail-with-body --max-time 60 -H "@$hdr" -H 'Content-Type: application/json' \
-    --data-binary @- "${endpoint%/}/chat/completions" < "$req" 2>&1)
+    --data-binary @- "${endpoint%/}/chat/completions" < "$req" 2>"$cerr")
 notes=$(jq -r '.choices[0].message.content // empty' <<<"$resp" 2>/dev/null)
 if [ -z "$notes" ]; then
-  err=$(jq -r '.error.message // empty' <<<"$resp" 2>/dev/null)
+  # Gemini sends its error inside an array, other servers as a bare object.
+  err=$(jq -r '(if type == "array" then .[0] else . end) | .error.message? // empty' <<<"$resp" 2>/dev/null)
+  [ -n "$err" ] || err=$(tail -n 1 "$cerr")
   [ -n "$err" ] || err=$(tail -n 1 <<<"$resp")
   fallback "$model at $endpoint failed: ${err:-no answer}"
 fi
