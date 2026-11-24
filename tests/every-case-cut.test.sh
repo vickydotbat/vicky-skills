@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2016 # check() evals its test later, so the quotes keep it unexpanded
 # shellcheck disable=SC2034 # out, before and status are read inside the eval'd tests
-# tests/evals/cut.sh, the cut arm's editor for every_case.sh: a heading cut,
+# tests/lib/cut.sh, the cut arm's editor for every_case.sh: a heading cut,
 # a step cut, a table-row cut, and a cut line that matches nothing.
 set -u
 root=$(cd "$(dirname "$0")/.." && pwd)
-cut="$root/tests/evals/cut.sh"
+cut="$root/tests/lib/cut.sh"
 dir=$(mktemp -d); trap 'rm -rf "$dir"' EXIT
 fail=0
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }

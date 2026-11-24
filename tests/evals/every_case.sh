@@ -47,7 +47,7 @@ for n in "${!groups[@]}"; do
   cp -r "$evals_plugin" "$dir"; rm -rf "$dir/evals"; mkdir -p "$dir/evals"
   for c in "${cuts[@]}"; do [ "${group_of["$c"]}" = "$n" ] || continue
     d=$(dirname "$c"); rel=${d#"$evals_plugin/evals/"}; mkdir -p "$dir/evals/$(dirname "$rel")"; cp -r "$d" "$dir/evals/$rel"; done
-  "$(dirname "$0")/cut.sh" "$(ls "$dir"/skills/*/"$skill"/SKILL.md)" "$line" || { echo "every-case: $skill has no part \"$line\""; exit 1; }
+  "$(dirname "$0")/../lib/cut.sh" "$(ls "$dir"/skills/*/"$skill"/SKILL.md)" "$line" || { echo "every-case: $skill has no part \"$line\""; exit 1; }
 done
 run_all "$evals_out/now-plugin" now "$jobs"
 # The cut arms run side by side, at most $jobs at once, one run each at a time.

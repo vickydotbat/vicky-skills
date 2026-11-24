@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # cut.sh <SKILL.md> <cut line>: delete one part of a skill copy in place, for
-# the cut arm of every_case.sh. Costs nothing, so it is tested on its own.
+# the cut arm of every_case.sh. Costs nothing, so it sits outside tests/evals, whose runners are paid.
 #   A cut line that starts with # is a heading: the section goes, up to the
 #   next heading of the same or a higher level.
 #   Any other cut line is the start of a line, such as a numbered step's bold
