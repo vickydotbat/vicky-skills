@@ -75,12 +75,21 @@ check "a half-made copy is refused, never reused" '[ $r = 1 ]'
 echo x > "$s/q-holds/a"; bash "$dm/sealed-check.sh" copy "$s/q" holds >/dev/null 2>&1; r=$?
 git -C "$s/q-holds" checkout -q -- a
 check "a copy an opponent left dirty is refused, never handed on" '[ $r = 1 ]'
+fresh qq; bash "$dm/sealed-check.sh" copy "$s/qq" fs >/dev/null; git -C "$s/qq-fs" config core.fsmonitor "touch $s/ran"
+bash "$dm/sealed-check.sh" copy "$s/qq" fs >/dev/null 2>&1; r=$?
+check "a reused copy with a command in its git config is refused, and the command never runs" '[ $r = 1 ] && [ ! -e "$s/ran" ]'
+bash "$dm/sealed-check.sh" copy "$s/qq" au >/dev/null; echo z > "$s/qq-au/a"; git -C "$s/qq-au" update-index --assume-unchanged a
+bash "$dm/sealed-check.sh" copy "$s/qq" au >/dev/null 2>&1; r=$?
+bash "$dm/sealed-check.sh" copy "$s/qq" hk >/dev/null; printf '#!/bin/sh\n' > "$s/qq-hk/.git/hooks/post-checkout"; chmod +x "$s/qq-hk/.git/hooks/post-checkout"
+bash "$dm/sealed-check.sh" copy "$s/qq" hk >/dev/null 2>&1; r2=$?
+ln -s "$s/qq" "$s/qq-ln"; bash "$dm/sealed-check.sh" copy "$s/qq" ln >/dev/null 2>&1; r3=$?
+check "a reused copy with a hidden edit, a hook, or a link to the sealed copy is refused" '[ $r = 1 ] && [ $r2 = 1 ] && [ $r3 = 1 ]'
 mkdir -p "$s/q-p.part/q"; out=$(bash "$dm/sealed-check.sh" copy "$s/q" p 2>/dev/null); r=$?
 check "a part copy an interrupted call left is cleared, and the copy made whole" '[ $r = 0 ] && [ ! -e "$s/q-p.part" ] && [ ! -e "$s/q-p/q" ] && [ -d "$s/q-p/.git" ]'
 rm -rf "$s/q-f"; out=$(bash "$dm/sealed-check.sh" copy "$s/q" f 2>/dev/null); r=$?
 check "a first copy prints its path and passes" '[ $r = 0 ] && [ "$out" = "$s/q-f" ] && [ -d "$s/q-f/.git" ]'
 bash "$dm/sealed-check.sh" copy "$s/q" >/dev/null 2>&1; r=$?
 bash "$dm/sealed-check.sh" copy "$s/elsewhere" x >/dev/null 2>&1; r2=$?
-bash "$dm/sealed-check.sh" copy "$s/q" ../esc >/dev/null 2>&1; r3=$?
-check "copy refuses a missing angle, an angle with a slash, or a folder that is no checkout" '[ $r = 2 ] && [ $r2 = 2 ] && [ $r3 = 2 ] && [ ! -e "$s/elsewhere-x" ]'
+bash "$dm/sealed-check.sh" copy "$s/q" ../esc >/dev/null 2>&1; r3=$?; bash "$dm/sealed-check.sh" copy "$s/q" .. >/dev/null 2>&1; r4=$?
+check "copy refuses a missing angle, an angle with a slash, or a folder that is no checkout" '[ $r = 2 ] && [ $r2 = 2 ] && [ $r3 = 2 ] && [ $r4 = 2 ] && [ ! -e "$s/elsewhere-x" ]'
 exit $fail
