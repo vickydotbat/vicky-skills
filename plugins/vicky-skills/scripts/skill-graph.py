@@ -66,22 +66,32 @@ def hand_offs(folder):
 
 
 def declared(folder):
-    """Each skill's hands-off frontmatter field, as (skill, target) pairs."""
-    edges = set()
+    """Each skill's hands-off frontmatter field, as (skill, target) pairs, and
+    a line for each field the check cannot read."""
+    edges, problems = set(), []
     for path in pathlib.Path(folder).glob("*/*/SKILL.md"):
-        text = path.read_text(encoding="utf-8")
+        text, skill = path.read_text(encoding="utf-8"), path.parent.name
         front = text.split("\n---\n", 1)[0] if text.startswith("---\n") else ""
-        field = re.search(r"^hands-off:\s*\[(.*)\]\s*$", front, re.MULTILINE)
-        for target in field.group(1).split(",") if field else []:
-            if target.strip():
-                edges.add((path.parent.name, target.strip()))
-    return edges
+        lines = re.findall(r"^hands-off:.*$", front, re.MULTILINE)
+        if len(lines) > 1:
+            problems.append(f"skill-graph: {skill} has more than one hands-off line: keep one")
+        for line in lines[:1]:
+            field = re.fullmatch(r"hands-off:\s*\[(.*)\]\s*", line)
+            if not field:
+                problems.append(f"skill-graph: {skill}: write hands-off as [a, b] on one line")
+                continue
+            for target in re.findall(r"[^,\s\"']+", field.group(1)):
+                edges.add((skill, target))
+    return edges, problems
 
 
 def check_declared(folder):
     skills = {p.parent.name for p in pathlib.Path(folder).glob("*/*/SKILL.md")}
-    found, listed = hand_offs(folder), declared(folder)
-    bad = 0
+    listed, problems = declared(folder)
+    found = hand_offs(folder)
+    for line in problems:
+        print(line)
+    bad = 1 if problems else 0
     for a, b in sorted(found - listed):
         print(f"skill-graph: {a} hands off to {b}: add {b} to hands-off in the frontmatter of {a}")
         bad = 1

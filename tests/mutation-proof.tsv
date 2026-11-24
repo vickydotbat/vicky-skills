@@ -56,8 +56,8 @@ restack-origin-guard.sh	cb150444008a2d6b	b0aff1578e77ce0d	74/74
 review-brief-guard.sh	560dd59ae4621bd2	35d1f7542328b43e	22/22
 shellcheck-guard.sh	4a1cd489a882b91c	500ead1978c8e431	31/31
 since-user.sh	7be3c1c933152abd	86d6a8cd389726ce	14/14
-skill-change-proven.sh	2a77ba5faffc92ea	be3e2c07f27d2fbf	13/13
-skill-graph.py	1cf7423f4c560756	f84fcec30488b88e	42/42
+skill-change-proven.sh	2a77ba5faffc92ea	ea349a03792d2390	13/13
+skill-graph.py	9915c56e8e2fc239	1671c494b93daa59	50/50
 skill-ledger.sh	5a29eb7f617f6f60	ff7ccbbd36194ae4	17/17
 skill-started.sh	fcfb07feca5ca217	d9fcf255178afd0f	13/13
 skills/building/over-to-you/scripts/checklist.py	9d8e4d5319372829	09a89912fc34694a	163/163

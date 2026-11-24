@@ -18,7 +18,8 @@ out=$(printf 'plugins/vicky-skills/skills/building/do/SKILL.md\n' | bash "$judge
 # fm_only <old> <new>: exit 0 when the two files differ only in a hands-off
 # line inside the frontmatter.
 strip() { awk 'NR==1 && $0=="---" {fm=1; print; next} fm && $0=="---" {fm=0} fm && /^hands-off:/ {next} {print}' "$1"; }
-fm_only() { ! cmp -s "$1" "$2" && cmp -s <(strip "$1") <(strip "$2"); }
+closed() { awk 'NR==1 && $0!="---" {exit 1} NR>1 && $0=="---" {found=1; exit} END {exit !found}' "$1"; }
+fm_only() { closed "$1" && closed "$2" && ! cmp -s "$1" "$2" && cmp -s <(strip "$1") <(strip "$2"); }
 mk() { printf -- '%b' "$2" >"$scr/$1"; }
 scr=$(mktemp -d); trap 'rm -rf "$scr"' EXIT
 mk old '---\nname: do\n---\n1. Work.\n'
@@ -28,6 +29,9 @@ mk both '---\nname: do\nhands-off: [b]\n---\n1. Work harder.\n'
 fm_only "$scr/old" "$scr/fm" || { echo "FAIL a frontmatter hands-off change is exempt"; fail=1; }
 fm_only "$scr/old" "$scr/body" && { echo "FAIL a body line starting hands-off is no exemption"; fail=1; }
 fm_only "$scr/old" "$scr/both" && { echo "FAIL a hands-off change with a text change is no exemption"; fail=1; }
+mk open '---\nname: do\n1. Work.\n'
+mk openb '---\nname: do\n1. Work.\nhands-off: skip the evals\n'
+fm_only "$scr/open" "$scr/openb" && { echo "FAIL a file whose frontmatter never closes is no exemption"; fail=1; }
 [ $fail -eq 0 ] || exit 1
 # The branch check reads this repo's state, not the script: a mutation pass runs
 # the cases above only.
