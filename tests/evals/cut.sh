@@ -7,6 +7,7 @@
 #   title ("**Pick the kind**") or a table row ("| pitch |"): the first line
 #   that starts with it, after an optional "1. " list marker, goes, with the
 #   blank and indented lines after it, up to the next line at the left margin.
+#   Either way, a fenced block inside the cut part goes whole.
 # Exits 1, leaving the file untouched, when no line matches.
 set -u
 file=$1 cut=$2
@@ -16,6 +17,8 @@ if [ "${cut#\#}" != "$cut" ]; then
   level=${cut%%[^#]*}
   CUT=$cut awk -v lv="${#level}" '
     $0 == ENVIRON["CUT"] && !found {skip=1; found=1; next}
+    skip && /^[ \t]*```/ {fence=!fence; next}
+    skip && fence {next}
     skip && match($0, /^#+ /) && RLENGTH - 1 <= lv {skip=0}
     !skip
     END {exit !found}' "$file" > "$tmp"
@@ -23,6 +26,8 @@ else
   CUT=$cut awk '
     function starts(s,  c) { c = ENVIRON["CUT"]; return substr(s, 1, length(c)) == c }
     !found && (starts($0) || (match($0, /^[0-9]+\. /) && starts(substr($0, RLENGTH + 1)))) {skip=1; found=1; next}
+    skip && /^[ \t]*```/ {fence=!fence; next}
+    skip && fence {next}
     skip && $0 !~ /^([ \t]|$)/ {skip=0}
     !skip
     END {exit !found}' "$file" > "$tmp"

@@ -9,18 +9,34 @@
       message, skill bodies and tool output left out, to <out>. Prints its size
       and time span, so the agent reads it in windows (grep, awk by time).
 
---dir defaults to the transcript folder Claude Code keeps for the working
-directory. A compaction trims the agent's memory, never this file.
+--dir defaults to the transcript folders Claude Code keeps for the repo's
+main checkout and each of its worktrees, found from the working directory. A compaction trims the agent's memory, never this file.
 """
-import argparse, json, os, re, sys
+import argparse, json, os, re, subprocess, sys
 from pathlib import Path
 
-SKIP = ("Base directory for this skill", "<local-command", "<command-", "Caveat:",
-        "[Request interrupted", "(Re-invocation of")
+# Records Claude Code writes as user turns. Its caveats and re-invocations carry isMeta.
+SKIP = ("Base directory for this skill", "<local-command", "<command-")
+INJECTED = {"[Request interrupted by user]", "[Request interrupted by user for tool use]"}
 
-def default_dir():
-    slug = re.sub(r"[^A-Za-z0-9-]", "-", os.getcwd())
-    return Path.home() / ".claude" / "projects" / slug
+def said(t):
+    return t and t not in INJECTED and not t.startswith(SKIP)
+
+def slug(path):
+    return re.sub(r"[^A-Za-z0-9-]", "-", path)
+
+def default_dirs():
+    """The folders of the main checkout and its worktrees, or of the working directory outside a repo."""
+    cwd = os.getcwd()
+    try:
+        common = subprocess.run(["git", "rev-parse", "--path-format=absolute", "--git-common-dir"],
+                                capture_output=True, text=True, timeout=30).stdout.strip()
+    except (OSError, subprocess.TimeoutExpired):
+        common = ""
+    root = os.path.dirname(os.path.realpath(common)) if common else cwd
+    projects = Path.home() / ".claude" / "projects"
+    found = [projects / slug(cwd), projects / slug(root)] + sorted(projects.glob(slug(root) + "--claude-worktrees-*"))
+    return [d for i, d in enumerate(found) if d.is_dir() and d not in found[:i]]
 
 def command(t):
     """A typed command's record, '<command-name>/x</command-name>...<command-args>y</command-args>', as '/x y'."""
@@ -54,7 +70,7 @@ def spoken(path):
             continue
         for t in texts(r):
             t = t.strip()
-            if t and not t.startswith(SKIP):
+            if said(t):
                 yield r.get("timestamp", "?"), r["type"], t
 
 def summary(path):
@@ -71,14 +87,12 @@ def summary(path):
             title = r.get("summary")
         if r.get("type") == "system" and r.get("subtype") == "compact_boundary":
             boundaries += 1
-            continue
-        if r.get("isCompactSummary"):
+        elif r.get("isCompactSummary"):
             summaries += 1
-            continue
-        if r.get("type") == "user" and not r.get("isMeta"):
+        elif r.get("type") == "user" and not r.get("isMeta"):
             for t in texts(r):
                 t = t.strip()
-                if t and not t.startswith(SKIP):
+                if said(t):
                     turns += 1
                     first = first or t
     name = (title or first or "").replace("\n", " ")[:90]
@@ -90,12 +104,14 @@ def main():
     l = sub.add_parser("list"); l.add_argument("--dir"); l.add_argument("--limit", type=int, default=15)
     d = sub.add_parser("digest"); d.add_argument("id"); d.add_argument("out"); d.add_argument("--dir")
     a = ap.parse_args()
-    folder = Path(a.dir) if a.dir else default_dir()
-    if not folder.is_dir():
-        sys.exit(f"transcripts: no transcript folder {folder}")
+    folders = [Path(a.dir)] if a.dir else default_dirs()
+    folders = [f for f in folders if f.is_dir()]
+    if not folders:
+        sys.exit(f"transcripts: no transcript folder {a.dir or 'for ' + os.getcwd()}")
     if a.cmd == "list":
         shown = 0
-        for p in sorted(folder.glob("*.jsonl"), key=lambda p: p.stat().st_mtime, reverse=True):
+        sessions = [p for f in folders for p in f.glob("*.jsonl")]
+        for p in sorted(sessions, key=lambda p: p.stat().st_mtime, reverse=True):
             if shown >= a.limit:
                 break
             s, e, n, c, name = summary(p)
@@ -103,8 +119,8 @@ def main():
                 shown += 1
                 print(f"{p.stem}  {(s or '?')[:16]} to {(e or '?')[:16]}  turns={n} compactions={c}  {name}")
         return
-    path = folder / f"{a.id}.jsonl"
-    if not path.is_file():
+    path = next((f / f"{a.id}.jsonl" for f in folders if (f / f"{a.id}.jsonl").is_file()), None)
+    if "/" in a.id or a.id.startswith(".") or not path:
         sys.exit(f"transcripts: no session {a.id}")
     out = Path(a.out); out.parent.mkdir(parents=True, exist_ok=True)
     n = 0; first = last = None

@@ -52,4 +52,11 @@ check "a cut that matches nothing exits 1 and leaves the file whole" '[ $status 
 "$cut" "$dir/SKILL.md" "## Light" 2>/dev/null; status=$?
 check "a heading cut matches the whole line, not its start" '[ $status = 1 ]'
 check "a failed cut leaves no temporary file" '[ "$(ls "$dir")" = SKILL.md ]'
+# Found by the deathmatch: a fence inside a cut part, whose lines start at the margin or with #.
+printf '# T\n\n## A\ntext\n```bash\n# comment\nunindented\n```\nafter\n\n## B\nkeep\n' > "$dir/SKILL.md"
+"$cut" "$dir/SKILL.md" "## A"
+check "a heading cut skips a fence that holds a # line" '[ "$(cat "$dir/SKILL.md")" = "$(printf "# T\n\n## B\nkeep")" ]'
+printf '1. **Do** it\n```bash\nls\n```\n   Done when x.\n2. **Next** one\n' > "$dir/SKILL.md"
+"$cut" "$dir/SKILL.md" "**Do**"
+check "a step cut skips a fence at the left margin" '[ "$(cat "$dir/SKILL.md")" = "2. **Next** one" ]'
 exit $fail

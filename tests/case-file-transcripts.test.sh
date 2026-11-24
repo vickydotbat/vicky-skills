@@ -30,4 +30,26 @@ list=$(python3 "$t" list --dir "$s")
 check "a session begun by a typed command is listed by its command" '[[ $list == *"b1"*"/vicky-skills:case-file glow the lantern"* ]]'
 check "the newest session is listed first" '[[ $list == b1* ]]'
 check "a missing session is refused" '! python3 "$t" digest zz "$s/x" --dir "$s" 2>/dev/null'
+# Found by the deathmatch: a user may type what an injected record starts with.
+printf '%s\n' '{"type":"user","timestamp":"2026-11-20T10:00:00Z","message":{"content":"Caveat: the lantern is brass"}}' \
+  '{"type":"user","timestamp":"2026-11-20T10:01:00Z","message":{"content":"[Request interrupted by user]"}}' > "$s/c1.jsonl"
+list=$(python3 "$t" list --dir "$s")
+check "a turn the user typed is counted whatever it starts with" '[[ $list == *"c1"*"turns=1 "*"Caveat: the lantern"* ]]'
+mkdir -p "$s/sub"
+check "an id that climbs out of the folder is refused" '! python3 "$t" digest ../a1 "$s/x" --dir "$s/sub" 2>/dev/null && [ ! -e "$s/x" ]'
+# Found by the deathmatch: a session run in a worktree keeps its transcript in the worktree's own folder.
+h="$s/home"; r="$s/repo"
+g() { git -C "$r" -c user.name=t -c user.email=t@example.invalid "$@"; }
+mkdir -p "$r" && git -C "$r" init -q -b main && g commit -q --allow-empty -m start && g worktree add -q "$r/.claude/worktrees/w" 2>/dev/null
+slug=$(cd "$r" && pwd -P | sed 's/[^A-Za-z0-9-]/-/g')
+mkdir -p "$h/.claude/projects/$slug" "$h/.claude/projects/$slug--claude-worktrees-w" "$h/.claude/projects/$slug-other"
+printf '%s\n' '{"type":"user","timestamp":"2026-11-21T10:00:00Z","message":{"content":"main ask"}}' > "$h/.claude/projects/$slug/m1.jsonl"
+printf '%s\n' '{"type":"user","timestamp":"2026-11-21T11:00:00Z","message":{"content":"worktree ask"}}' > "$h/.claude/projects/$slug--claude-worktrees-w/w1.jsonl"
+printf '%s\n' '{"type":"user","timestamp":"2026-11-21T12:00:00Z","message":{"content":"other repo ask"}}' > "$h/.claude/projects/$slug-other/o1.jsonl"
+list=$(cd "$r" && HOME="$h" python3 "$t" list)
+check "list from the main checkout shows its worktrees' sessions" '[[ $list == *"m1"* && $list == *"w1"* && $list != *"o1"* ]]'
+list=$(cd "$r/.claude/worktrees/w" && HOME="$h" python3 "$t" list)
+check "list from a worktree shows the main checkout's sessions" '[[ $list == *"m1"* && $list == *"w1"* ]]'
+(cd "$r" && HOME="$h" python3 "$t" digest w1 "$s/w1.txt" >/dev/null)
+check "digest finds a worktree's session from the main checkout" 'grep -q "worktree ask" "$s/w1.txt"'
 exit $fail
