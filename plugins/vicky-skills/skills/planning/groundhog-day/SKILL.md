@@ -1,5 +1,6 @@
 ---
 name: groundhog-day
+hands-off: [by-eye, human-voice, mission-brief]
 description: "File one bug as a ticket a reader takes in at a glance: a short summary, screenshots, steps to reproduce, more cases and related issues. Use when the user asks to file, report, log or write up a bug, or when a bug found mid-work must wait for a ticket."
 ---
 
