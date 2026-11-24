@@ -4,6 +4,9 @@
 # the skills' own text. Each check builds a small skills folder and a graph
 # file, then runs the checker the way tests/run-all.sh does.
 set -u
+# check runs its condition through eval, so single quotes and variables set
+# only for it are meant.
+# shellcheck disable=SC2016,SC2034
 root="$(cd "$(dirname "$0")/.." && pwd)"
 graph="$root/plugins/vicky-skills/scripts/skill-graph.py"
 scratch=$(mktemp -d)
@@ -22,7 +25,7 @@ run() { python3 "$graph" check "$scratch/skills" "$scratch/GRAPH.tsv" >"$scratch
 # And the skill graph file has no arrow for that hand-off
 # When the maintainer runs tests/run-all.sh
 # Then the skill graph test fails and names both skills
-skill building do 'Mutate the lines, then run `sentinels` on them.'
+skill building 'do' 'Mutate the lines, then run `sentinels` on them.'
 skill building sentinels 'Mutate the code.'
 : >"$scratch/GRAPH.tsv"
 run; code=$?
@@ -34,7 +37,7 @@ check "G1 the failure names both skills" 'grep -q "do.*sentinels" "$scratch/out"
 # When the maintainer runs tests/run-all.sh
 # Then the skill graph test passes
 rm -rf "$scratch/skills"
-skill building do 'Build the change.'
+skill building 'do' 'Build the change.'
 skill building sentinels 'Mutation test the code `do` changed.'
 : >"$scratch/GRAPH.tsv"
 run; code=$?
@@ -45,7 +48,7 @@ check "G2 a plain mention passes" '[ "$code" = 0 ]'
 # When the maintainer runs tests/run-all.sh
 # Then the skill graph test fails and names the stale arrow
 rm -rf "$scratch/skills"
-skill building do 'Build the change.'
+skill building 'do' 'Build the change.'
 skill building sentinels 'Mutate the code.'
 printf 'do\tsentinels\n' >"$scratch/GRAPH.tsv"
 run; code=$?
@@ -56,7 +59,7 @@ check "G3 the failure names the stale arrow" 'grep -q "do.*sentinels" "$scratch/
 # When the maintainer runs tests/run-all.sh
 # Then the skill graph test passes
 rm -rf "$scratch/skills"
-skill building do 'Mutate the lines, then run `sentinels` on them.'
+skill building 'do' 'Mutate the lines, then run `sentinels` on them.'
 skill building sentinels 'Mutate the code.'
 printf 'do\tsentinels\n' >"$scratch/GRAPH.tsv"
 run; code=$?
