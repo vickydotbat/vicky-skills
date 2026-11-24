@@ -347,6 +347,8 @@ jobs:
         run: tests/red-first.test.sh
       - name: Ticket filing guard decisions
         run: tests/ticket-filing-guard.test.sh
+      - name: A bug report files through groundhog-day
+        run: tests/groundhog_day_approved_examples.test.sh
       - name: Warp reaches do, do reaches sentinels
         run: tests/mutation_step_approved_examples.test.sh
       - name: Plane block guard

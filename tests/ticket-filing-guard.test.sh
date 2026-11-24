@@ -31,6 +31,11 @@ expect "plane file after the mission-brief slash command runs" 0 "$dir/slash.jso
 expect "plane file after a different slash command is refused" 2 "$dir/slash-other.jsonl" 'bin/plane file GAME T'
 expect "a familiar debt note filed on a tracker is refused, even after mission-brief" 2 "$dir/briefed.jsonl" 'bin/plane file GAME "Familiar debt: sow-codebase session 8624" --body-file d.md'
 grep -q "local" "$dir/err" && echo "ok   the debt steer names the local note" || { echo "FAIL the debt steer names the local note"; fail=1; }
+{ started vicky-skills:do; started vicky-skills:groundhog-day; } > "$dir/bugged.jsonl"
+# Regression, ticked as E3 on the reader-cost page: a familiar debt note is
+# refused before any skill is read, so groundhog-day opens no way round it.
+expect "a familiar debt note is refused after groundhog-day too" 2 "$dir/bugged.jsonl" 'gh issue create --title "Familiar debt: session 12" --body b'
+grep -q "local" "$dir/err" && echo "ok   the debt steer after groundhog-day names the local note" || { echo "FAIL the debt steer after groundhog-day names the local note"; fail=1; }
 expect "a debt note filed through gh is refused" 2 "$dir/briefed.jsonl" 'gh issue create --title "familiar DEBT - e9" --body b'
 expect "a debt note filed through tea is refused" 2 "$dir/briefed.jsonl" "tea issues create --title 'Familiar debt: 62' </dev/null"
 expect "a debt note with the guard off lets it through" 0 "$dir/none.jsonl" 'bin/plane file GAME "Familiar debt: x"' CLAUDE_PLUGIN_OPTION_GUARD_TICKET_FILING=false
