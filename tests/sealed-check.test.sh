@@ -65,4 +65,8 @@ out=$(bash "$dm/sealed-check.sh" check "$s/p" "$spin" 2>&1); r=$?
 check "a planted git hook fails the check" '[ $r = 1 ] && grep -q "^git: hook post-checkout" <<<"$out"'
 fresh q; bash "$dm/sealed-check.sh" check "$s/q" "$spin" >/dev/null 2>&1; r=$?
 check "a fresh clone passes" '[ $r = 0 ]'
+TMPDIR="$s" bash "$dm/sealed-check.sh" copy "$s/q" holds >/dev/null; TMPDIR="$s" out=$(bash "$dm/sealed-check.sh" copy "$s/q" holds 2>&1); r=$?
+check "a second copy for one angle reuses the first and nests no clone" '[ $r = 0 ] && [ "$out" = "$s/q-holds" ] && [ ! -e "$s/q-holds/q" ] && [ ! -e "$s/q-holds/q-holds" ]'
+bash "$dm/sealed-check.sh" check "$s/q-holds" "$spin" >/dev/null 2>&1; r=$?
+check "an angle's copy passes the check as made" '[ $r = 0 ]'
 exit $fail

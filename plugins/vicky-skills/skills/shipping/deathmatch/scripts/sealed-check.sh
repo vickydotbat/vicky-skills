@@ -4,13 +4,15 @@
 #   snapshot <worktree>     prints the effort worktree's state before the fight
 #   check <sealed copy> <pinned sha> [<worktree> <snapshot file>]
 #   reset <sealed copy> <pinned sha>
+#   copy <sealed copy> <angle>   makes <sealed copy>-<angle> once and prints its path;
+#                                a second call reuses it, so a rerun never nests a clone
 #
 # check exits 0 with "sealed: as pinned", or 1 with one line per change and the
 # step to take. Files git ignores (build output) never count. A usage error
 # exits 2 and says nothing about the copy.
 set -u
 usage() {
-  echo "usage: sealed-check.sh snapshot <worktree> | check <sealed copy> <pinned sha> [<worktree> <snapshot file>] | reset <sealed copy> <pinned sha>" >&2
+  echo "usage: sealed-check.sh snapshot <worktree> | check <sealed copy> <pinned sha> [<worktree> <snapshot file>] | reset <sealed copy> <pinned sha> | copy <sealed copy> <angle>" >&2
   exit 2
 }
 # The path is the top of a git checkout, not a folder somewhere inside one.
@@ -84,6 +86,14 @@ reset)
   esac
   git -C "$copy" ls-files -z | git -C "$copy" update-index -z --no-assume-unchanged --no-skip-worktree --stdin
   git -C "$copy" reset -q --hard "$pin" && git -C "$copy" clean -fdq
+  ;;
+copy)
+  copy=${2:-} angle=${3:-}
+  checkout "$copy" && [ -n "$angle" ] || usage
+  to="${copy%/}-$angle"
+  # cp -a into a folder that exists copies inside it: a rerun nested clones once.
+  [ -d "$to" ] || cp -a --reflink=auto "$copy" "$to" || exit 1
+  echo "$to"
   ;;
 *) usage ;;
 esac
