@@ -50,6 +50,12 @@ expect "a tea read passes" 0 "tea pr 9 --comments"
 expect "a plain curl GET passes" 0 "curl -s https://example.com/x"
 expect "a fetch passes" 0 "git -C . fetch origin"
 expect "grep for the word push passes" 0 "grep -n push README.md"
+# The user lifts the mark with a `!` command; the agent never can.
+expect "a tea help page passes" 0 "tea pr edit --help"
+expect "a gh help page passes" 0 "gh pr create -h"
+expect "a tea write with help elsewhere is still refused" 2 "tea comment 1 hi; tea pr edit -h"
+expect "the agent's own release is refused" 2 "bash plugins/x/release-outside.sh marked"
+expect "removing the mark by hand is refused" 2 "rm \"$CLAUDE_PLUGIN_DATA/outside-read/marked\""
 expect "an unmarked session pushes" 0 "git push" fresh
 expect "the guard off lets a push through" 0 "git push" marked false
 expect "the guard set to 0 lets a push through" 0 "git push" marked 0

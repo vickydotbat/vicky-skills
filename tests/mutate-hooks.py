@@ -112,6 +112,7 @@ TESTS = {
     "skills/shipping/deathmatch/scripts/batch.sh": ["deathmatch_approved_examples", "deathmatch-scripts"],
     "skills/shipping/deathmatch/scripts/verdict.sh": ["deathmatch_approved_examples", "deathmatch-scripts"],
     "skills/shipping/deathmatch/scripts/mark-outside.sh": ["deathmatch_approved_examples", "deathmatch-scripts"],
+    "skills/shipping/deathmatch/scripts/release-outside.sh": ["release-outside"],
     "skills/shipping/deathmatch/scripts/sealed-check.sh": ["sealed_copy_approved_examples", "sealed-check"],
     "skills/shipping/security/scripts/advisory.sh": ["security_advisory_approved_examples", "advisory_guard_approved_examples", "security-kit"],
     "skills/shipping/security/scripts/lines.sh": ["security_advisory_approved_examples", "security_levels_approved_examples", "security-kit"],
