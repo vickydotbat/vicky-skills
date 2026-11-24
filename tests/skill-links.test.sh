@@ -4,6 +4,8 @@
 # line has to ask the user to type it. A line passes when it says the user
 # types, runs or is told the skill.
 # Usage: skill-links.test.sh [skills dir]
+# The fixtures hold backticks on purpose, so single quotes keep them literal.
+# shellcheck disable=SC2016
 set -u
 # Self-check on a fixture, when run with no skills dir: a step that runs a
 # typed-only skill fails, and a line that only mentions one passes.
