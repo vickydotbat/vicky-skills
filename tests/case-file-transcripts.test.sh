@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2016 # check() evals its test later, so the quotes keep it unexpanded
+# shellcheck disable=SC2034 # list is read inside the eval'd test
 # transcripts.py lists sessions in a few lines and writes a digest that keeps
 # what came before a compaction, without skill bodies or the compact summary.
 set -u
