@@ -21,6 +21,9 @@ case "${STUB_MODE:-ok}" in
     echo '[{"error": {"code": 503, "message": "This model is currently experiencing high demand."}}]'; exit 22 ;;
   refused) echo '{"error": {"message": "API key not valid."}}'; exit 22 ;;
   quota) echo '{"error": "quota exceeded"}'; exit 22 ;;
+  plain) echo 'upstream refused the request'; exit 22 ;;
+  two) echo '{"error": {"message": "outer"}, "x": {"error": "inner"}}'; exit 22 ;;
+  blank) echo '{"error": {"message": ""}, "x": {"error": "deep"}}'; exit 22 ;;
   html) echo 'curl: (22) The requested URL returned error: 502' >&2; printf '<html>\n<body>Bad Gateway</body>\n</html>\n'; exit 22 ;;
 esac
 STUB
@@ -46,6 +49,12 @@ run GEMINI_API_KEY=k STUB_MODE=refused
 check "an error object gives its message" '[ $rc -eq 0 ] && grep -q "failed: API key not valid.$" <<<"$out"'
 run GEMINI_API_KEY=k STUB_MODE=quota
 check "an error given as a string gives that string" '[ $rc -eq 0 ] && grep -q "failed: quota exceeded$" <<<"$out"'
+run GEMINI_API_KEY=k STUB_MODE=plain
+check "a body that is no JSON, with no curl line, gives its last line" '[ $rc -eq 0 ] && grep -q "failed: upstream refused the request$" <<<"$out"'
+run GEMINI_API_KEY=k STUB_MODE=two
+check "the first error in the body wins" '[ $rc -eq 0 ] && grep -q "failed: outer$" <<<"$out"'
+run GEMINI_API_KEY=k STUB_MODE=blank
+check "an empty error message gives way to the next one" '[ $rc -eq 0 ] && grep -q "failed: deep$" <<<"$out"'
 run GEMINI_API_KEY=k STUB_MODE=html
 check "a body that is no JSON gives curl's own line" '[ $rc -eq 0 ] && grep -q "failed: curl: (22) The requested URL returned error: 502$" <<<"$out"'
 
