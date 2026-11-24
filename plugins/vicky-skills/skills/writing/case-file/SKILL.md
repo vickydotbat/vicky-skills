@@ -71,7 +71,8 @@ Each case file has one **kind**, picked by what the reader does after reading:
    | `<!-- STEP <command> \| <expected result> -->` | a step that reproduces the effort |
 
    Write each time as `2026-11-19T14:05+00:00`. End with the steps that reproduce the effort from the start. Done when every claim from step 4 and every approved quote has its marker.
-   Proven by: plugins/vicky-skills/evals/case-file/marks-evidence
+   Proven by: tests/case_file_kinds_approved_examples.test.sh
+   Proven by: tests/case_file_look_approved_examples.test.sh
 8. **Build it**: `python3 scripts/build.py .case-files/<name> .case-files/<name>/out/<name>.html --formats html,pdf,md`. It writes the page with its kind, a legend of the labels it uses, a contents list of its `<h2>` sections, coloured labels, each file folded under its name, and a timeline of every claim, event and quote, oldest first, then the PDF printed from it by a headless browser, and the Markdown. It stops, writing nothing, on a scratch folder or a worktree, a missing or unknown kind, an undated claim, event or quote, an unknown label or format, a missing browser, a missing or oversized file, an image ImageMagick can't shrink, and a case folder entry outside the fixed layout, a page that names this machine, uses the future tense outside a pitch's ask, or shows a label its attribute contradicts. Fix what it names and build again. With no headless browser on the machine, build `--formats html,md` and list the PDF under `Not proven`. When the shell can't write the folder, build each format to `/dev/stdout` and save it with the file tool, and do the same for every other file this skill writes. Done when it prints `built:` for each format, or each file is saved from its build.
    Proven by: tests/case_file_kinds_approved_examples.test.sh
    Proven by: tests/case_file_look_approved_examples.test.sh
