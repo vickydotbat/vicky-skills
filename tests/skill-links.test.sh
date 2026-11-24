@@ -17,6 +17,8 @@ if [ $# -eq 0 ]; then
   bash "$0" "$fx" >/dev/null && { echo "FAIL a step that runs a typed-only skill passes"; exit 1; }
   printf -- '---\nname: caller\ndescription: y. Use when z.\n---\n1. Run the checks, then leave the rest to `finisher`.\n' > "$fx/g/caller/SKILL.md"
   bash "$0" "$fx" >/dev/null || { echo "FAIL a line that only mentions a typed-only skill fails"; exit 1; }
+  printf -- '---\nname: caller\ndescription: y. Use when z.\n---\n1. Settle it with `finisher`'"'"'s SETTLE.md, then write it with `finisher`.\n' > "$fx/g/caller/SKILL.md"
+  bash "$0" "$fx" >/dev/null && { echo "FAIL a pointer hides a hand-off on the same line"; exit 1; }
 fi
 root="${1:-$(dirname "$0")/../plugins/vicky-skills/skills}"
 fm() { awk '/^---$/{n++; next} n==1' "$1"; }
@@ -33,7 +35,7 @@ for f in "$root"/*/*/SKILL.md; do
   for name in "${typed[@]}"; do
     printf '%s\n' "$edges" | grep -qxF "$skill	$name" || continue
     # body lines of every file of the skill, past any frontmatter
-    hits=$(for g in "$(dirname "$f")"/*.md; do awk 'NR==1&&/^---$/{fm=1;next} fm&&/^---$/{fm=0;next} !fm' "$g"; done | grep -nE "\`/?$name\`" | grep -vE "\`/?$name\`'s" || true)
+    hits=$(for g in "$(dirname "$f")"/*.md; do awk 'NR==1&&/^---$/{fm=1;next} fm&&/^---$/{fm=0;next} !fm' "$g"; done | grep -nE "\`/?$name\`" | sed -E "s/\`\/?$name\`'s//g" | grep -E "\`/?$name\`" || true)
     while IFS= read -r line; do
       [ -z "$line" ] && continue
       echo "$line" | grep -Eiq '\b(type|types|typed)\b|user (to )?run|tell the user|ask the user' && continue
