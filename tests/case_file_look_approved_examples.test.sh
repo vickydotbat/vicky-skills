@@ -52,9 +52,6 @@ check "CF-E46 a page with its legend checks clean" '[ -n "$p" ] && caught "$c/ou
 # Then its label is a badge in the colour of its kind
 check "CF-E47 each label has its own colour" 'for l in stock test-client-only estimate failed not-tested; do grep -q "\[data-evidence=\"\?$l\"\?\] \.label" <<<"$p" || exit 1; done'
 
-# When the page prints to the PDF
-check "CF-E54 a code block wraps in print instead of scrolling" 'grep -q "@media print{pre{overflow:visible;white-space:pre-wrap" <<<"$p"'
-
 # Given a file marker
 # When it is built
 # Then the page folds the file under its name, with its line count and download link
@@ -92,4 +89,15 @@ rm -f "$c"/out/*.zip; bundle "$c/out/glow.html" "$c/files" "$c/out" --readme "$c
 out=$(caught "$c"/out/*.zip); status=$?
 check "CF-E52 a leak inside the zip fails, naming the file" '[ "$status" -ne 0 ] && grep -q "leak.frag" <<<"$out"'
 rm "$c/files/leak.frag"
+# Given a case file whose shown file holds a line wider than the page
+# When it is built as a PDF
+# Then the PDF shows the whole line, wrapped, with no part cut off
+w="$scratch/.case-files/wide"; mkdir -p "$w/sections" "$w/files" "$w/raw" "$w/out"
+printf '# Wide\n' > "$w/README.md"
+long="start$(printf 'q%.0s' $(seq 1 300))tailmark"
+printf 'short line\n%s\n' "$long" > "$w/files/wide.txt"
+printf '<!-- KIND research -->\n<h2>The answer</h2>\n<!-- FILE files/wide.txt -->\n' > "$w/sections/1-answer.html"
+build "$w" "$w/out/wide.html" --formats html,pdf >/dev/null
+check "CF-E54 a code line wider than the page wraps whole in the PDF" '[ -s "$w/out/wide.pdf" ] && pdftotext "$w/out/wide.pdf" - 2>/dev/null | tr -d " \n" | grep -q "$long"'
+
 exit $fail
