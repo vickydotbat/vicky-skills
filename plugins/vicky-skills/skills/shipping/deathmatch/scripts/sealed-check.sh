@@ -89,14 +89,16 @@ reset)
   ;;
 copy)
   copy=${2:-} angle=${3:-}
-  checkout "$copy" && [ -n "$angle" ] || usage
+  checkout "$copy" && [ -n "$angle" ] && [ "${angle#*/}" = "$angle" ] || usage
   to="${copy%/}-$angle"
   # cp -a into a folder that exists copies inside it: a rerun nested clones once.
   # The copy lands under a part name and moves in whole, so a folder at $to
   # that is not a checkout of the same commit is a broken copy, never reused.
   [ -e "$to" ] || { rm -rf "$to.part" && cp -a --reflink=auto "$copy" "$to.part" && mv "$to.part" "$to"; }
-  [ "$(git -C "$to" rev-parse HEAD 2>/dev/null)" = "$(git -C "$copy" rev-parse HEAD)" ] || {
-    echo "broken: $to is not a whole copy; delete it and run copy again" >&2; exit 1; }
+  # A reused copy may hold a cut-off opponent's edits: it is handed on clean or not at all.
+  [ "$(git -C "$to" rev-parse HEAD 2>/dev/null)" = "$(git -C "$copy" rev-parse HEAD)" ] &&
+    [ -z "$(git -C "$to" status --porcelain 2>/dev/null)" ] || {
+    echo "unclean: $to is not a clean copy at the sealed copy's commit; run sealed-check.sh reset on it, or delete it, and run copy again" >&2; exit 1; }
   echo "$to"
   ;;
 *) usage ;;
