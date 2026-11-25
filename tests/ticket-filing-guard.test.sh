@@ -2,7 +2,8 @@
 # shellcheck disable=SC2016 # each command is test input, matched as text and never expanded
 # The ticket-filing guard: a command that files a ticket (plane file, tea issues
 # create, gh issue create) is refused until the session has started
-# mission-brief. Every other command, a quoted mention, the setting off, a
+# mission-brief or groundhog-day, or away-team for one plain Research filing.
+# Every other command, a quoted mention, the setting off, a
 # missing transcript and bad input pass.
 set -u
 guard="$(cd "$(dirname "$0")/.." && pwd)/plugins/vicky-skills/scripts/ticket-filing-guard.sh"
