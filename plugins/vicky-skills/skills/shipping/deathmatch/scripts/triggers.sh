@@ -3,8 +3,9 @@
 # diff since the fixed point reaches, one per line: "fight: <angle>" or
 # "out of reach: <angle>" for each core angle, then each triggered one
 # ("runaway: <file>", "security: <file>"), or "no trigger in the diff".
-# Intent always fights, and Standards does except on a rerun with no file changed. Holds and Simplicity fight a diff that
-# changes a file other than Markdown. Cause fights when a commit or the body
+# Intent always fights, and Standards does except on a rerun with no file
+# changed. Holds and Simplicity fight a diff that changes a file other than
+# Markdown. Cause fights when a commit or the body
 # claims a fix. Claims fights a body with a Proof section. Triggers read only
 # added lines, and a Markdown file never triggers.
 # triggers.sh --rerun <verdict commit> [body file]: a follow-up since a verdict.
@@ -19,8 +20,7 @@ rerun=0
 base=${1:?usage: triggers.sh [--rerun] <fixed-point> [body file]}
 body=${2:-}
 say() {
-  if [ "$2" = 1 ] && [ -n "${4:-}" ]; then echo "fight: $1 ($4)"
-  elif [ "$2" = 1 ]; then echo "fight: $1"
+  if [ "$2" = 1 ]; then echo "fight: $1${4:+ ($4)}"
   elif [ "$rerun" = 1 ]; then echo "out of reach: $1 ($3)"
   else echo "out of reach: $1"; fi
 }
@@ -31,7 +31,7 @@ fix=0
 { git log --format=%B "$base"..HEAD; [ -n "$body" ] && cat "$body" 2>/dev/null; } | grep -qiE '\b(fix(es|ed)?|bug|regression)\b' && fix=1
 proof=0
 [ -n "$body" ] && grep -qE '^## Proof' "$body" 2>/dev/null && proof=1
-std=1 scope=
+scope=
 if [ "$rerun" = 1 ]; then
   [ "$code" = 0 ] && scope="only the commits since $base"
   # Nothing new since the verdict: every angle but Intent rests on it.
@@ -42,7 +42,7 @@ if [ "$rerun" = 1 ]; then
   fi
 fi
 say intent 1
-say standards "$std" "" "$scope"
+say standards 1 "" "$scope"
 say holds "$code" "no file other than Markdown changed"
 say simplicity "$code" "no file other than Markdown changed"
 say cause "$fix" "no commit or body line claims a fix"
