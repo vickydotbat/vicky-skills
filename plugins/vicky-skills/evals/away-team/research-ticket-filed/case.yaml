@@ -1,0 +1,5 @@
+schema_version: "1.1"
+name: research-ticket-filed
+description: away-team with no ticket for its question files a "Research:" ticket through the tracker itself, with no mission-brief, and ticket-filing-guard lets it through.
+context:
+  scaffold_script: scaffold.sh

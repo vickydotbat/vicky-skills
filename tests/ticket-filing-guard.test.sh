@@ -11,6 +11,7 @@ started() { jq -nc --arg s "$1" '{type:"assistant",message:{content:[{type:"tool
 started vicky-skills:do > "$dir/none.jsonl"
 { started vicky-skills:do; started vicky-skills:mission-brief; } > "$dir/briefed.jsonl"
 { started vicky-skills:do; started vicky-skills:groundhog-day; } > "$dir/bugged.jsonl"
+{ started vicky-skills:do; started vicky-skills:away-team; } > "$dir/away.jsonl"
 has() { # name word...: ok when the last refusal holds every word
   local name=$1 word; shift
   for word in "$@"; do grep -q -- "$word" "$dir/err" || { echo "FAIL $name"; fail=1; return; }; done
@@ -32,6 +33,10 @@ has "the steer names the three checks" mission-brief codebase tracker
 expect "gh issue create after groundhog-day started runs" 0 "$dir/bugged.jsonl" 'gh issue create --title T --body b'
 expect "gh issue create with neither filing skill is refused" 2 "$dir/none.jsonl" 'gh issue create --title T'
 has "the steer names groundhog-day for a bug report" groundhog-day
+expect "a Research ticket after away-team started runs" 0 "$dir/away.jsonl" 'bin/plane file GAME "Research: does save trim the name?" --body-file b.md'
+expect "any other ticket after away-team is refused" 2 "$dir/away.jsonl" 'bin/plane file GAME "Fix the save button" --body-file b.md'
+has "the steer names away-team for a research note" away-team
+expect "a Research ticket with no filing skill is refused" 2 "$dir/none.jsonl" 'gh issue create --title "Research: x" --body b'
 expect "plane file after mission-brief started runs" 0 "$dir/briefed.jsonl" 'bin/plane file GAME T'
 expect "tea issues create after mission-brief started runs" 0 "$dir/briefed.jsonl" 'tea issues create --title T </dev/null'
 jq -nc '{type:"user",message:{content:"<command-message>mission-brief</command-message>\n<command-name>/vicky-skills:mission-brief</command-name>"}}' > "$dir/slash.jsonl"

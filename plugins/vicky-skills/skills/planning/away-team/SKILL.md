@@ -1,6 +1,6 @@
 ---
 name: away-team
-hands-off: [deathmatch, human-voice, mission-brief]
+hands-off: [deathmatch, human-voice]
 description: Answer a question from primary sources in a background agent, and post the findings on the ticket the question belongs to. Use when a decision waits on a fact from docs, an API, source code or a spec.
 ---
 
@@ -13,8 +13,8 @@ description: Answer a question from primary sources in a background agent, and p
 Start a **background agent** for the reading, so the session keeps working. Its brief:
 
 1. **Read primary sources**: official docs, source code, specs, first-party APIs. Follow each claim back to the source that owns it, and quote it with its version or date. <!-- kept 2026-11-03: a diagnosis read from primary sources was right first time --> Data you download for the answer goes in the place the `fetch-place-hint` hook names, outside git.
-2. **Post the findings as a comment** on the ticket the question belongs to. With no ticket, start `mission-brief` and file one through it titled "Research: <question>", post the findings there and close it. Write them with `human-voice`. Findings stay off branches and out of repo files.
-   Proven by: plugins/vicky-skills/evals/away-team/research-ticket-via-brief
+2. **Post the findings as a comment** on the ticket the question belongs to. With no ticket, file one titled "Research: <question>", post the findings there and close it. Write them with `human-voice`. Findings stay off branches and out of repo files.
+   Proven by: plugins/vicky-skills/evals/away-team/research-ticket-filed
 3. **Lead with the answer**, then the evidence, one claim per line with its source. A claim no primary source settles is posted as `unverified`, with the sources tried.
 
 Done when the ticket holds the findings and every claim has a source.

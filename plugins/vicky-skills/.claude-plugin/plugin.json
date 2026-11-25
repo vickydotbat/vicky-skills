@@ -236,8 +236,8 @@
     },
     "guard_ticket_filing": {
       "type": "boolean",
-      "title": "File tickets only through mission-brief or groundhog-day",
-      "description": "Refuse a command that files a ticket (plane file, tea issues create, gh issue create) until the session has started mission-brief or, for a bug report, groundhog-day. Each checks the source material, the tracker and the codebase first.",
+      "title": "File tickets only through mission-brief, groundhog-day or away-team",
+      "description": "Refuse a command that files a ticket (plane file, tea issues create, gh issue create) until the session has started mission-brief, groundhog-day for a bug report, or away-team for a ticket titled \"Research: <question>\". Each checks the source material, the tracker and the codebase first.",
       "default": true
     },
     "step_guard": {
