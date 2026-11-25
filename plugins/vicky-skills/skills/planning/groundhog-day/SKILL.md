@@ -20,6 +20,7 @@ A **bug ticket** costs its reader less time than it cost to write: the reader se
    Proven by: plugins/vicky-skills/evals/groundhog-day/five-sections
 4. **Write the ticket** in the template below, with `human-voice`. Brief: the summary holds two sentences at most, and each step one action. Use the tracker's bug kind or label when its doc names one, and its plain ticket otherwise. Keep local paths and machine names out, as `loose-lips` says. Done when every section is filled or says why it is empty.
    Proven by: plugins/vicky-skills/evals/groundhog-day/five-sections
+   Proven by: plugins/vicky-skills/evals/groundhog-day/bug-kind
 5. **File it** with the tracker's File action, then read it back. Done when the reply holds the ticket's link.
    Proven by: plugins/vicky-skills/evals/groundhog-day/five-sections
 

@@ -1,0 +1,5 @@
+schema_version: "1.1"
+name: bug-kind
+description: groundhog-day marks a bug report with the bug kind its tracker doc names.
+context:
+  scaffold_script: scaffold.sh
