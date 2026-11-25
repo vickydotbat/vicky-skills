@@ -14,8 +14,9 @@ printf '# Game mod\n\nRun the packer in build/ to make the pack.\n' > README.md
 git add -A && c -m start
 git switch -q -c preview-page
 mkdir -p previews
-for i in $(seq 1 347); do head -c 700 /dev/urandom > "previews/p$i.webp"; done
-(cd previews && ls *.webp | sed 's/.*/"&"/' | paste -sd, | sed 's/^/[/; s/$/]/') > previews/index.json
+names=
+for i in $(seq 1 347); do head -c 700 /dev/urandom > "previews/p$i.webp"; names+="\"p$i.webp\","; done
+printf '[%s]\n' "${names%,}" > previews/index.json
 printf '<!doctype html>\n<title>Previews</title>\n<div id="grid"></div>\n<script src="page.js"></script>\n' > tools/page.html
 printf 'fetch("../previews/index.json").then(r => r.json()).then(names => {\n  for (const n of names) {\n    const img = document.createElement("img");\n    img.src = "../previews/" + n;\n    document.getElementById("grid").append(img);\n  }\n});\n' > tools/page.js
 git add -A && c -m "Add a page that shows every preview"

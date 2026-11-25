@@ -10,7 +10,18 @@ printf '# Docs\n\nSee [the guide](guide.md).\n' > docs/index.md
 printf '# Guide\n\nStart here.\n' > docs/guide.md
 git add -A && c -m start
 git switch -q -c link-check
-printf '#!/usr/bin/env bash\n# Fails when a relative Markdown link in docs/ names a missing file.\nset -eu\nfail=0\nfor f in docs/*.md; do\n  for l in $(grep -o "](\\([^)]*\\))" "$f" | sed "s/^](//; s/)$//"); do\n    [ -e "docs/$l" ] || { echo "$f: $l missing"; fail=1; }\n  done\ndone\nexit $fail\n' > tools/check-links.sh
+cat > tools/check-links.sh <<'SH'
+#!/usr/bin/env bash
+# Fails when a relative Markdown link in docs/ names a missing file.
+set -eu
+fail=0
+for f in docs/*.md; do
+  for l in $(grep -o "](\([^)]*\))" "$f" | sed "s/^](//; s/)$//"); do
+    [ -e "docs/$l" ] || { echo "$f: $l missing"; fail=1; }
+  done
+done
+exit $fail
+SH
 chmod +x tools/check-links.sh
 cat > .github/workflows/links.yml <<'YML'
 name: links
