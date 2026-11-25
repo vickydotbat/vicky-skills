@@ -267,6 +267,12 @@ printf 'g\n' >> "$cr/f"; g commit -qam g; new2=$(g rev-parse HEAD); cp "$t/cb.md
 (cd "$cr" && bash "$dm/verdict.sh" due "$t/cb.md" "$new2" main s9 >/dev/null 2>&1); r=$?
 check "due stays due after a content change, and leaves the body" '[ $r = 0 ] && cmp -s "$t/cb.md" "$t/cb0.md"'
 g switch -q --detach; (cd "$cr" && bash "$dm/verdict.sh" due "$t/cb.md" "$new" main s8 >/dev/null 2>&1); r=$?
+printf 'Deathmatch verdict for %s: 0 proven findings' "$old" > "$t/cn.md"
+(cd "$cr" && bash "$dm/verdict.sh" due "$t/cn.md" "$new" main s7 >/dev/null 2>&1)
+check "due's carry starts its line on a line of its own" 'grep -qx "Deathmatch verdict for $old: 0 proven findings" "$t/cn.md" && grep -q "^Deathmatch verdict for $new: carried" "$t/cn.md"'
+printf 'Deathmatch verdict for %s: 0 proven findings\n' "$old" > "$t/cl.md"
+(cd "$cr" && bash "$dm/verdict.sh" due "$t/cl.md" "$new" main s7 >/dev/null 2>&1)
+check "due's carry after a last newline adds no blank line" '[ "$(grep -c "^$" "$t/cl.md")" = 0 ] && grep -q "carried" "$t/cl.md"'
 check "due carries on a detached head without a record" '[ $r = 1 ] && ! grep -q "^s8 " "$rec" 2>/dev/null'
 # triggers.sh --rerun: code since the verdict keeps Standards and Holds fighting; plain mode gives no reasons.
 rr="$t/rr"; git init -q -b main "$rr"; h() { git -C "$rr" -c user.name=t -c user.email=t@example.invalid "$@"; }
