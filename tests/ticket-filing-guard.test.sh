@@ -49,8 +49,12 @@ expect "a quoted plane word in a later command after away-team is refused" 2 "$d
 expect "two titles after away-team are refused" 2 "$dir/away.jsonl" 'gh issue create --title Fix --title "Research: x"'
 expect "a Research ticket after another command after away-team is refused" 2 "$dir/away.jsonl" 'cd repo && gh issue create --title "Research: x" --body b'
 expect "a Research ticket with a command chained after it after away-team is refused" 2 "$dir/away.jsonl" 'gh issue create --title "Research: x" --body b && echo done'
-expect "a gh --title=Research: after away-team runs" 0 "$dir/away.jsonl" 'gh issue create --title="Research: x" --body b'
-expect "a gh Research title after away-team runs" 0 "$dir/away.jsonl" 'gh issue create --title "Research: x" --body b'
+expect "a gh --title=Research: after away-team runs" 0 "$dir/away.jsonl" 'gh issue create --title="Research: x" --body-file b.md'
+expect "a gh Research title after away-team runs" 0 "$dir/away.jsonl" 'gh issue create --title "Research: x" --body-file b.md'
+expect "a Research ticket with a body file before a second title after away-team is refused" 2 "$dir/away.jsonl" 'gh issue create --title "Research: x" --body "#1" --title "Fix"'
+expect "a Research ticket with an inline body after away-team is refused, so the body comes from a file" 2 "$dir/away.jsonl" 'gh issue create --title "Research: x" --body "# Heading"'
+expect "a Research ticket followed by a second line after away-team is refused" 2 "$dir/away.jsonl" "$(printf 'gh issue create --title "Research: x" --body-file b.md\nrm -rf zz')"
+expect "a Research title holding a command substitution after away-team is refused" 2 "$dir/away.jsonl" 'gh issue create --title "Research: $(touch zz)" --body-file b.md'
 expect "a tea Research title after away-team runs" 0 "$dir/away.jsonl" "tea issues create -t 'Research: x' </dev/null"
 expect "a gh ticket with Research: only in its body after away-team is refused" 2 "$dir/away.jsonl" 'gh issue create --title "Fix it" --body "Research: x"'
 expect "a Research ticket with no filing skill is refused" 2 "$dir/none.jsonl" 'gh issue create --title "Research: x" --body b'

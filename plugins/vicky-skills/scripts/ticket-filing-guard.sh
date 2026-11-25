@@ -33,34 +33,15 @@ agent=$(agent_of "$payload")
 skill_started "$transcript" mission-brief "$agent" && exit 0
 skill_started "$transcript" groundhog-day "$agent" && exit 0
 # away-team files one note titled "Research: <question>", through one plain
-# command: no ;, &&, |, $( or backtick outside quotes, the tracker's tool as its
-# first word, and one title (plane's quoted title, or gh's and tea's --title or
-# -t) that opens with it. The filings are counted in the raw command, so one
-# nested in a quoted $(...) or backticks counts too. xargs splits the words as
-# the shell quotes them, so a "-t" inside a quoted body stays inside its word,
-# and the words stop at a shell comment.
+# command on one line: the tracker's create command, then its quoted title
+# (plane's after the project, gh's and tea's after --title or -t) opening
+# with Research: and holding no $, backtick or backslash, then at most a
+# --body-file and a </dev/null. Nothing else fits, so a second title, an
+# inline body, a comment or a chained command is refused.
+research='^[[:space:]]*(((\./)?bin/)?plane[[:space:]]+file[[:space:]]+[[:alnum:]_-]+[[:space:]]+|gh[[:space:]]+issue[[:space:]]+create[[:space:]]+(--title|-t)([[:space:]]+|=)|tea[[:space:]]+(issues?|i)[[:space:]]+(create|c)[[:space:]]+(--title|-t)([[:space:]]+|=))("Research:[^"$`\\]*"|'"'"'Research:[^'"'"']*'"'"')([[:space:]]+(--body-file|-F)[[:space:]]+[[:alnum:]_./-]+)?([[:space:]]+<[[:space:]]*/dev/null)?[[:space:]]*$'
 research_title() {
-  grep -Eq '[;&|`]|\$\(' <<<"$command" && return 1
-  [ "$(grep -Eo "$filing" <<<"$raw" | wc -l)" = 1 ] || return 1
-  local words word prev="" plane=0 n=0 titles=0 title="" # mutant-ok delete: unset, each reads the same as its start value, and an unset titles fails the last test the same way
-  words=$(xargs printf '%s\n' <<<"$raw" 2>/dev/null) || return 1
-  while IFS= read -r word; do
-    case $word in \#*) break ;; esac
-    n=$((n + 1))
-    if [ $n = 1 ]; then
-      case $word in plane | bin/plane | ./bin/plane) plane=1 ;; gh | tea) ;; *) return 1 ;; esac
-    fi
-    case $plane:$word in
-      1:file) plane=2 ;;
-      2:*) plane=3 ;;
-      3:*) title=$word plane=4 titles=$((titles + 1)) ;;
-    esac
-    case $prev in --title | -t) title=$word titles=$((titles + 1)) ;; esac
-    case $word in --title=*) title=${word#--title=} titles=$((titles + 1)) ;; esac
-    prev=$word
-  done <<<"$words"
-  [ $titles = 1 ] && [[ $title == Research:* ]]
+  [[ $raw != *$'\n'* ]] && grep -Eq "$research" <<<"$raw"
 }
 research_title && skill_started "$transcript" away-team "$agent" && exit 0
-echo "ticket-filing-guard: refused. A ticket is filed only through a filing skill, never by hand: groundhog-day for a bug report, away-team for a note titled Research: <question>, filed by one plain command of its own, mission-brief for anything else. Each checks the source material (away-team when a fact is missing), searches the tracker for the same premise, and searches the codebase for anything that looks like the thing, before it writes a word. Start the one that fits, then file. Nothing in this command ran, not even its other steps: rerun the ones that need no change on their own." >&2
+echo "ticket-filing-guard: refused. A ticket is filed only through a filing skill, never by hand: groundhog-day for a bug report, away-team for a note titled Research: <question>, filed by one plain command of its own with its body in --body-file, mission-brief for anything else. Each checks the source material (away-team when a fact is missing), searches the tracker for the same premise, and searches the codebase for anything that looks like the thing, before it writes a word. Start the one that fits, then file. Nothing in this command ran, not even its other steps: rerun the ones that need no change on their own." >&2
 exit 2
