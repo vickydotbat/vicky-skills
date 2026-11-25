@@ -1,0 +1,5 @@
+schema_version: "1.1"
+name: lean-big-pr
+description: ship-it's body for a branch that renames 41 tests counts them in one line, and, with no build running, holds no Plan check line or Check these section.
+context:
+  scaffold_script: scaffold.sh
