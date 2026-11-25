@@ -239,4 +239,29 @@ out=$(cd "$t/sn" && bash "$dm/verdict.sh" since "$t/sn2.md"); r=$?
 check "since prints nothing and exits 1 when no verdict commit is in HEAD's history" '[ $r = 1 ] && [ -z "$out" ]'
 (cd "$t/sn" && bash "$dm/verdict.sh" since "$t/missing.md") >/dev/null 2>&1; r=$?
 check "since refuses a body file that doesn't exist" '[ $r = 2 ]'
+# verdict.sh due carries a verdict only with a base and a session, and only from a commit that exists.
+printf 'Deathmatch verdict for 1234567: 0 proven findings\n' > "$t/dc.md"; cp "$t/dc.md" "$t/dc0.md"
+(cd "$t/sn" && bash "$dm/verdict.sh" due "$t/dc.md" "$b" main s9 >/dev/null 2>&1); r=$?
+check "due stays due when the body's verdict names no commit, and leaves the body" '[ $r = 0 ] && cmp -s "$t/dc.md" "$t/dc0.md"'
+printf 'Deathmatch verdict for %s: 0 proven findings\n' "$b" > "$t/dc2.md"; cp "$t/dc2.md" "$t/dc3.md"
+(cd "$t/sn" && git switch -q side && bash "$dm/verdict.sh" due "$t/dc2.md" "$side" main >/dev/null 2>&1); r=$?; git -C "$t/sn" switch -q main
+check "due with a base but no session carries nothing" '[ $r = 0 ] && cmp -s "$t/dc2.md" "$t/dc3.md"'
+# verdict.sh due carries a verdict across a rebase that keeps the content, and records it.
+cr="$t/carry"; git init -q -b main "$cr"; g() { git -C "$cr" -c user.name=t -c user.email=t@example.invalid "$@"; }
+printf 'a\n' > "$cr/a"; g add -A; g commit -qm a; g switch -qc feat; printf 'f\n' > "$cr/f"; g add -A; g commit -qm f; old=$(g rev-parse HEAD)
+g switch -q main; printf 'm\n' > "$cr/m"; g add -A; g commit -qm m; g switch -q feat; g rebase -q main; new=$(g rev-parse HEAD)
+printf 'x\nDeathmatch verdict for %s: 0 proven findings\n' "$old" > "$t/cb.md"
+cp "$t/cb.md" "$t/cb1.md"; (cd "$cr" && bash "$dm/verdict.sh" due "$t/cb.md" "$new" main >/dev/null 2>&1); r=$?
+check "due with no session carries nothing, even when the content matches" '[ $r = 0 ] && cmp -s "$t/cb.md" "$t/cb1.md"'
+(cd "$cr" && bash "$dm/verdict.sh" due "$t/cb.md" "$new" "" s9 >/dev/null 2>&1); r=$?
+check "due with no base carries nothing" '[ $r = 0 ] && cmp -s "$t/cb.md" "$t/cb1.md"'
+(cd "$cr" && bash "$dm/verdict.sh" due "$t/cb.md" "$new" main s9 >/dev/null 2>&1); r=$?
+rec="$cr/.git/vicky-skills/deathmatch/feat"
+check "due carries a rebased verdict: exit 1, a carried line, and this session's record" \
+  '[ $r = 1 ] && grep -qxF "Deathmatch verdict for $new: carried from $old, no content change" "$t/cb.md" && grep -qxF "s9 $new" "$rec"'
+printf 'g\n' >> "$cr/f"; g commit -qam g; new2=$(g rev-parse HEAD); cp "$t/cb.md" "$t/cb0.md"
+(cd "$cr" && bash "$dm/verdict.sh" due "$t/cb.md" "$new2" main s9 >/dev/null 2>&1); r=$?
+check "due stays due after a content change, and leaves the body" '[ $r = 0 ] && cmp -s "$t/cb.md" "$t/cb0.md"'
+g switch -q --detach; (cd "$cr" && bash "$dm/verdict.sh" due "$t/cb.md" "$new" main s8 >/dev/null 2>&1); r=$?
+check "due carries on a detached head without a record" '[ $r = 1 ] && ! grep -q "^s8 " "$rec" 2>/dev/null'
 exit $fail

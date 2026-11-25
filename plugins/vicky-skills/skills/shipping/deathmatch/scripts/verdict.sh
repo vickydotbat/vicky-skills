@@ -16,6 +16,12 @@
 # verdict.sh since <body file>: prints the last verdict's commit that is still
 # an ancestor of HEAD, the fixed point a follow-up deathmatch fights from, and
 # exits 1 when there is none.
+# verdict.sh due <body file> <head sha> <base> <session id>: also carries an
+# earlier verdict across a rebase. When the diff from merge-base(base, v) to a
+# verdict's commit v has the same patch-id as the diff from merge-base(base,
+# head) to the head, the content is the same: it appends a carried verdict line
+# for the head to the body, records the run for pr-guard as record does, and
+# exits 1. make-it-so's step 1 has already run the checks green on that head.
 set -u
 # A run records only this session's own id, so pr-guard finds the record it looks for.
 refuse_other() {
@@ -53,8 +59,25 @@ if [ "${1:-}" = carry ]; then
   [ -z "${5:-}" ] || exec bash "$0" record "$5"
   exit 0
 fi
-[ "${1:-}" = due ] || { echo "usage: verdict.sh due <body file> <head sha> | since <body file> | record <session id> | carry <body file> <head sha> <verdict sha>" >&2; exit 2; }
+[ "${1:-}" = due ] || { echo "usage: verdict.sh due <body file> <head sha> [<base> <session id>] | since <body file> | record <session id> | carry <body file> <head sha> <verdict sha>" >&2; exit 2; }
 body=${2:-}; sha=${3:-}
 [ -n "$body" ] && [ -n "$sha" ] || { echo "usage: verdict.sh due <body file> <head sha>" >&2; exit 2; }
 holds "$sha" "$body" && exit 1
+base=${4:-} session=${5:-}
+[ -n "$base" ] && [ -n "$session" ] || exit 0
+# git patch-id hashes a diff with its line numbers and whitespace left out, so
+# a rebase onto unrelated commits keeps it.
+pid() { git diff "$(git merge-base "$base" "$1")" "$1" 2>/dev/null | git patch-id --stable | cut -d' ' -f1; }
+now=$(pid "$sha")
+[ -n "$now" ] || exit 0
+while read -r v; do
+  [ "$(pid "$v")" = "$now" ] || continue
+  refuse_other "$session" "due $body $sha $base"
+  [ -n "$(tail -c1 "$body" 2>/dev/null)" ] && echo >>"$body"
+  printf 'Deathmatch verdict for %s: carried from %s, no content change\n' "$sha" "$v" >>"$body"
+  # record refuses a detached head; a carry there still counts for due.
+  branch=$(git branch --show-current 2>/dev/null); dir="$(git rev-parse --git-common-dir 2>/dev/null)/vicky-skills/deathmatch"
+  [ -n "$branch" ] && mkdir -p "$(dirname "$dir/$branch")" && echo "$session $sha" >>"$dir/$branch"
+  exit 1
+done < <(grep -oE 'Deathmatch verdict for [0-9a-f]{7,40}' "$body" 2>/dev/null | awk '{print $4}')
 exit 0 # mutant-ok delete: a no-op in its place also ends the script with status 0
