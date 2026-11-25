@@ -118,22 +118,26 @@ out=$(BATCH_MEMINFO="$t/mem0" bash "$dm/batch.sh" 2 2>&1); r=$?
 check "batch with no memory free stops and says so" '[ $r = 2 ] && grep -q "no MemAvailable" <<<"$out"'
 rm -rf "$g"
 mkdir "$t/v" && git -C "$t/v" init -qb feat && git -C "$t/v" -c user.email=t@t -c user.name=t commit -q --allow-empty -m v
-(cd "$t/v" && bash "$dm/verdict.sh" record) >/dev/null 2>&1; r=$?
+(cd "$t/v" && env -u CLAUDE_CODE_SESSION_ID bash "$dm/verdict.sh" record) >/dev/null 2>&1; r=$?
 check "record without a session id refuses" '[ $r = 2 ] && [ ! -e "$t/v/.git/vicky-skills" ]'
-(cd "$t/v" && bash "$dm/verdict.sh" record s1 && bash "$dm/verdict.sh" record s2); r=$?
+(cd "$t/v" && env -u CLAUDE_CODE_SESSION_ID bash "$dm/verdict.sh" record s1 && env -u CLAUDE_CODE_SESSION_ID bash "$dm/verdict.sh" record s2); r=$?
 h=$(git -C "$t/v" rev-parse HEAD)
 check "record writes each session id with the head commit for the branch" '[ $r = 0 ] && [ "$(cat "$t/v/.git/vicky-skills/deathmatch/feat")" = "$(printf "s1 %s\ns2 %s" "$h" "$h")" ]'
 git -C "$t/v" checkout -q --detach
-(cd "$t/v" && bash "$dm/verdict.sh" record s3) >/dev/null 2>&1; r=$?
+(cd "$t/v" && env -u CLAUDE_CODE_SESSION_ID bash "$dm/verdict.sh" record s3) >/dev/null 2>&1; r=$?
 check "record off a branch refuses and writes nothing" '[ $r = 2 ] && ! grep -q s3 -r "$t/v/.git/vicky-skills"'
-(cd "$t/v" && git checkout -q feat && bash "$dm/verdict.sh" record s4 >/dev/null 2>&1; echo $?) >"$t/rc"
+(cd "$t/v" && git checkout -q feat && env -u CLAUDE_CODE_SESSION_ID bash "$dm/verdict.sh" record s4 >/dev/null 2>&1; echo $?) >"$t/rc"
 check "record exits 0" '[ "$(cat "$t/rc")" = 0 ]'
-CLAUDE_PLUGIN_DATA= PLUGIN_DATA="$t/mo-pd" bash "$dm/mark-outside.sh" s1 "pr 7"
+(cd "$t/v" && CLAUDE_CODE_SESSION_ID=me bash "$dm/verdict.sh" record other) >"$t/out" 2>&1; r=$?
+check "record refuses a session id that is not this session's, and names this one" '[ $r = 2 ] && grep -q "this session is me" "$t/out" && ! grep -q "^other " "$t/v/.git/vicky-skills/deathmatch/feat"'
+(cd "$t/v" && CLAUDE_CODE_SESSION_ID=me bash "$dm/verdict.sh" record me >/dev/null 2>&1); r=$?
+check "record takes this session's own id" '[ $r = 0 ] && grep -q "^me " "$t/v/.git/vicky-skills/deathmatch/feat"'
+CLAUDE_PLUGIN_DATA='' PLUGIN_DATA="$t/mo-pd" bash "$dm/mark-outside.sh" s1 "pr 7"
 check "mark-outside resolves PLUGIN_DATA when CLAUDE_PLUGIN_DATA is unset" '[ "$(cat "$t/mo-pd/outside-read/s1")" = "pr 7" ]'
 agy_dm="$t/.gemini/config/plugins/vicky-skills"
 mkdir -p "$agy_dm/scripts" "$agy_dm/skills/deathmatch/scripts"
 cp "$dm/../../../../scripts/plugin-data.sh" "$agy_dm/scripts/"
 cp "$dm/mark-outside.sh" "$agy_dm/skills/deathmatch/scripts/"
-CLAUDE_PLUGIN_DATA= PLUGIN_DATA= bash "$agy_dm/skills/deathmatch/scripts/mark-outside.sh" s2 "issue 9"
+CLAUDE_PLUGIN_DATA='' PLUGIN_DATA='' bash "$agy_dm/skills/deathmatch/scripts/mark-outside.sh" s2 "issue 9"
 check "mark-outside resolves Antigravity flattened plugin_data" '[ "$(cat "$t/.gemini/antigravity/plugin_data/vicky-skills/outside-read/s2")" = "issue 9" ]'
 exit $fail

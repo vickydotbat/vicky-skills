@@ -10,6 +10,9 @@
 set -u
 if [ "${1:-}" = record ]; then
   [ -n "${2:-}" ] || { echo "usage: verdict.sh record <session id>" >&2; exit 2; }
+  if [ -n "${CLAUDE_CODE_SESSION_ID:-}" ] && [ "$2" != "$CLAUDE_CODE_SESSION_ID" ]; then
+    echo "verdict.sh: $2 is not this session; this session is $CLAUDE_CODE_SESSION_ID. Run: verdict.sh record $CLAUDE_CODE_SESSION_ID" >&2; exit 2
+  fi
   branch=$(git branch --show-current 2>/dev/null); dir="$(git rev-parse --git-common-dir 2>/dev/null)/vicky-skills/deathmatch"
   [ -n "$branch" ] || { echo "verdict.sh: not on a branch" >&2; exit 2; }
   mkdir -p "$(dirname "$dir/$branch")" && echo "$2 $(git rev-parse HEAD)" >>"$dir/$branch"
