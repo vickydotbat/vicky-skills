@@ -5,8 +5,11 @@
 A refusal is a tool result whose text names `scripts/<hook>.sh` in a hook
 error. The agent's next tool call before the user speaks is sorted into:
 retry-passed (a call like the refused one that went through), retry-refused
-(one refused again), other-call, other-refused, skill (it started a skill) or
-stopped (no call before the user spoke). Prints one line per hook, most
+(one refused again), other-call, other-refused, skill (it started a skill),
+stopped (the user spoke before any call) or unjudged (no call and its
+result within the window). Only a message the user typed counts as the user
+speaking: a skill body, a background notice, a compaction summary or a local
+command's output is the harness talking. Prints one line per hook, most
 refusals first. A hook whose script is in neither the plugin's scripts
 folder nor the current folder's .claude/hooks ends its line with "gone": it
 was deleted, and its counts are history.
@@ -27,6 +30,13 @@ WINDOW = 12  # events after a refusal searched for the next call and its result
 HOOK = re.compile(r'hook error: \[\\?"[^\]]*scripts/([a-z0-9-]+)\.(?:sh|py)')
 
 
+NOT_TYPED = ("<task-notification", "This session is being continued", "<local-command")
+
+
+def typed(d, text):
+    return d.get("type") == "user" and not d.get("isMeta") and not text.lstrip().startswith(NOT_TYPED)
+
+
 def events(path):
     calls, seq = {}, []
     for line in open(path, errors="ignore"):
@@ -36,7 +46,7 @@ def events(path):
             continue
         m = d.get("message") if isinstance(d.get("message"), dict) else {}
         content = m.get("content") if isinstance(m.get("content"), list) else []
-        if d.get("type") == "user" and isinstance(m.get("content"), str):
+        if isinstance(m.get("content"), str) and typed(d, m["content"]):
             seq.append(("user",))
         for x in content:
             if x.get("type") == "tool_use":
@@ -45,15 +55,16 @@ def events(path):
             elif x.get("type") == "tool_result":
                 t = x.get("content")
                 seq.append(("res", x.get("tool_use_id"), t if isinstance(t, str) else json.dumps(t)))
-            elif x.get("type") == "text" and d.get("type") == "user":
+            elif x.get("type") == "text" and typed(d, x.get("text") or ""):
                 seq.append(("user",))
     return calls, seq
 
 
 def outcome(refused, seq, k):
-    nxt = None
+    nxt, spoke = None, False
     for e in seq[k + 1:k + WINDOW]:
         if e[0] == "user":
+            spoke = True
             break
         if e[0] == "use" and nxt is None:
             nxt = e[1]
@@ -63,7 +74,9 @@ def outcome(refused, seq, k):
                 return "skill"
             same = difflib.SequenceMatcher(None, json.dumps(refused["input"])[:COMPARED], json.dumps(nxt["input"])[:COMPARED]).ratio() > SAME
             return ("retry-" if same else "other-") + ("refused" if again else "passed" if same else "call")
-    return "skill" if nxt and nxt["name"] == "Skill" else "stopped"
+    if nxt and nxt["name"] == "Skill":
+        return "skill"
+    return "stopped" if spoke and nxt is None else "unjudged"
 
 
 def present(hook, places):

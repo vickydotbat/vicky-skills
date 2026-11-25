@@ -22,6 +22,8 @@ say() { # say <copy> <session id> [extra env...]
     | jq -r '.hookSpecificOutput.additionalContext // empty' 2>/dev/null
 }
 check "names the newest install of this plugin, not another plugin's" yes "$(say stale222222222 a | grep -q '(new1111)' && echo yes)"
+check "the reload line goes at the end of the final reply, after the turn, so a reload never interrupts the work" yes \
+  "$(say stale222222222 h | grep -q "End this turn's final reply" && say stale222222222 i | grep -q "once the turn has ended" && echo yes)"
 check "a session on an older install that is still listed is current" "" "$(say old0000000000 b)"
 quiet() { # quiet <copy> <session id> [extra env...]: the hook's exit code and every byte it wrote
   local copy=$1 id=$2; shift 2

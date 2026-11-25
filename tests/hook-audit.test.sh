@@ -45,4 +45,14 @@ lines=$(cd "$dir/w" && python3 -I "$audit" 30 "$dir/u")
 check "a hook with no script in the plugin or the repo is marked gone" 1 "$(grep -c '^demo-guard .* gone$' <<<"$lines")"
 check "a plugin hook that still ships is not marked gone" 0 "$(grep -c '^git-guard .*gone' <<<"$lines")"
 check "a repo's own hook is not marked gone" 0 "$(grep -c '^repo-guard .*gone' <<<"$lines")"
+mkdir -p "$dir/v"
+{ use a "make a"; res a "$refused"; jq -nc '{type:"user",isMeta:true,message:{content:"Base directory for this skill"}}'
+  use b "make b"; res b "$refused"; jq -nc '{type:"user",message:{content:"<task-notification> <status>completed</status>"}}'
+  use c "make c"; res c "$refused"; jq -nc '{type:"user",message:{content:[{type:"text",text:"This session is being continued from a previous conversation"}]}}'
+  use d "make d"; res d "$refused"; jq -nc '{type:"user",message:{content:"<local-command-stdout>Reloaded</local-command-stdout>"}}'; } > "$dir/v/s.jsonl"
+check "a skill body, a notice, a compaction summary and a local command's output are not the user speaking" \
+  "refusals=4 retry-refused=3 unjudged=1" "$(counts "$dir/v")"
+mkdir -p "$dir/x"
+{ use e "make e"; res e "$refused"; for i in 1 2 3 4 5 6 7 8 9 10 11 12; do jq -nc '{type:"assistant",message:{content:[{type:"text",text:"thinking"}]}}'; done; } > "$dir/x/s.jsonl"
+check "no call and no user message within the window is unjudged, not stopped" "refusals=1 unjudged=1" "$(counts "$dir/x")"
 exit $fail

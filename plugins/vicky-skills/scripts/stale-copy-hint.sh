@@ -3,7 +3,9 @@
 # after the plugin updates it goes on running the old skills and scripts. When
 # the session's copy is not the one installed, tells the agent once a session,
 # with both commits, that typing /reload-plugins picks up the new one, so no
-# restart is needed.
+# restart is needed. The agent says it as the last line of the turn's final
+# reply: a reload typed while the turn runs interrupts it, and the user then
+# has to type "continue".
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every later read comes back empty, and the hook exits 0 the same way
 [ -n "${CLAUDE_PLUGIN_ROOT:-}" ] && [ -n "${CLAUDE_PLUGIN_DATA:-}" ] || exit 0
 installed="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/plugins/installed_plugins.json"
@@ -18,5 +20,5 @@ newest=$(jq -r --arg p "$(dirname -- "$CLAUDE_PLUGIN_ROOT")" '[.plugins[]?[] | s
 told="$CLAUDE_PLUGIN_DATA/stale-copy-told"
 mkdir -p "$told" && [ ! -e "$told/$session" ] || exit 0
 touch "$told/$session"
-hint="This session runs an older vicky-skills copy (${mine:0:7}) than the one installed ($(basename -- "$newest" | cut -c1-7)), so its skills and scripts are out of date. Tell the user in one line that typing /reload-plugins picks up the new one, with no restart."
+hint="This session runs an older vicky-skills copy (${mine:0:7}) than the one installed ($(basename -- "$newest" | cut -c1-7)), so its skills and scripts are out of date. End this turn's final reply with one line telling the user that typing /reload-plugins once the turn has ended picks up the new one, with no restart. Say it there and nowhere earlier: a reload typed while the turn runs interrupts the work."
 jq -nc --arg h "$hint" '{hookSpecificOutput:{hookEventName:"UserPromptSubmit",additionalContext:$h}}'
