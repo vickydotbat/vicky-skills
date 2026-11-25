@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # skill_started <transcript> <skill> [agent_id]: true when the session started
 # the skill, by the agent's Skill call or the user's typed /<skill>. A typed
 # command arrives as a plain string prompt; a tool result never does, so text
