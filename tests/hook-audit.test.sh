@@ -53,6 +53,6 @@ mkdir -p "$dir/v"
 check "a skill body, a notice, a compaction summary and a local command's output are not the user speaking" \
   "refusals=4 retry-refused=3 unjudged=1" "$(counts "$dir/v")"
 mkdir -p "$dir/x"
-{ use e "make e"; res e "$refused"; for i in 1 2 3 4 5 6 7 8 9 10 11 12; do jq -nc '{type:"assistant",message:{content:[{type:"text",text:"thinking"}]}}'; done; } > "$dir/x/s.jsonl"
+{ use e "make e"; res e "$refused"; for _ in 1 2 3 4 5 6 7 8 9 10 11 12; do jq -nc '{type:"assistant",message:{content:[{type:"text",text:"thinking"}]}}'; done; } > "$dir/x/s.jsonl"
 check "no call and no user message within the window is unjudged, not stopped" "refusals=1 unjudged=1" "$(counts "$dir/x")"
 exit $fail
