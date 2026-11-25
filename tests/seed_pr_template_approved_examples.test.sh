@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2319 # each $? is the outcome of the test line above it, which check grades
 # approved-spec: the examples approved on the note "RS-S2 first-contact seeds
 # the pull request template", on 2026-11-25. seed-pr-template.sh writes ship-it's
 # seeded template into a repo that has none, in the forge's own place.

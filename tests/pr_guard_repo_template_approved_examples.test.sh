@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2016 # single quotes write a literal $1 into the stand-in gh and the jq filter
 # approved-spec: the examples approved on the notes "RS-S3 ship-it follows the
 # repo template", "RS-S4 ship-it knows where Status lives" and "RS-S6 ship-it
 # takes groundhog-day replay and related lines", on 2026-11-25. Each check runs
