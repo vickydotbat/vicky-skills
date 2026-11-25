@@ -39,6 +39,10 @@ has "the steer names away-team for a research note" away-team
 expect "a ticket with Research: only in its body after away-team is refused" 2 "$dir/away.jsonl" 'bin/plane file APP "Fix the save button" --body "Research: see notes"'
 expect "a ticket with Research: only in a shell comment after away-team is refused" 2 "$dir/away.jsonl" 'bin/plane file APP "Fix bug" # Research:'
 expect "a second filing chained on a Research ticket after away-team is refused" 2 "$dir/away.jsonl" 'bin/plane file APP "Research: x"; bin/plane file APP "Add feature"'
+expect "a -t Research: title inside a shell comment after away-team is refused" 2 "$dir/away.jsonl" 'bin/plane file APP "Fix the button" # -t "Research: x"'
+expect "a -t Research: inside a quoted body after away-team is refused" 2 "$dir/away.jsonl" "bin/plane file APP \"Fix it\" --body \"see -t 'Research: x'\""
+expect "a plane file with no project before its Research title is refused" 2 "$dir/away.jsonl" 'bin/plane file "Research: x"'
+expect "a gh --title=Research: after away-team runs" 0 "$dir/away.jsonl" 'gh issue create --title="Research: x" --body b'
 expect "a gh Research title after away-team runs" 0 "$dir/away.jsonl" 'gh issue create --title "Research: x" --body b'
 expect "a tea Research title after away-team runs" 0 "$dir/away.jsonl" "tea issues create -t 'Research: x' </dev/null"
 expect "a gh ticket with Research: only in its body after away-team is refused" 2 "$dir/away.jsonl" 'gh issue create --title "Fix it" --body "Research: x"'

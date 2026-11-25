@@ -35,9 +35,25 @@ skill_started "$transcript" groundhog-day "$agent" && exit 0
 # away-team files one note titled "Research: <question>": one filing command,
 # whose title (plane's quoted title, or gh's and tea's --title or -t) opens with
 # it. The title sits in quotes, so it is read from the raw command.
+# xargs splits the words as the shell quotes them, so a "-t" inside a quoted
+# body stays inside its word, and the words stop at a shell comment.
 research_title() {
   [ "$(grep -Eo "$filing" <<<"$command" | wc -l)" = 1 ] || return 1
-  grep -Eq "(plane[[:space:]]+file[[:space:]]+[^[:space:]\"']+|(--title|-t))[[:space:]=]+[\"']Research:" <<<"$raw"
+  local words word prev="" plane=0 title=""
+  words=$(xargs printf '%s\n' <<<"$raw" 2>/dev/null) || return 1
+  while IFS= read -r word; do
+    case $word in \#*) break ;; esac
+    case $plane:$word in
+      0:plane | 0:bin/plane | 0:./bin/plane) plane=1 ;;
+      1:file) plane=2 ;;
+      2:*) plane=3 ;;
+      3:*) title=$word plane=4 ;;
+    esac
+    case $prev in --title | -t) title=$word ;; esac
+    case $word in --title=*) title=${word#--title=} ;; esac
+    prev=$word
+  done <<<"$words"
+  [[ $title == Research:* ]]
 }
 research_title && skill_started "$transcript" away-team "$agent" && exit 0
 echo "ticket-filing-guard: refused. A ticket is filed only through a filing skill, never by hand: groundhog-day for a bug report, away-team for a note titled Research: <question>, mission-brief for anything else. Each checks the source material (away-team when a fact is missing), searches the tracker for the same premise, and searches the codebase for anything that looks like the thing, before it writes a word. Start the one that fits, then file. Nothing in this command ran, not even its other steps: rerun the ones that need no change on their own." >&2
