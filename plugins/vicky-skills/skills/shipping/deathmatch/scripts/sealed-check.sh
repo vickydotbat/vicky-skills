@@ -34,7 +34,7 @@ git_keys() {
   git -C "$1" config --local --name-only --list |
     grep -E '^(core\.(hookspath|fsmonitor|sshcommand|pager|editor|askpass|gitproxy|attributesfile)|sequence\.editor|(alias|include|includeif|filter|pager|credential)\..*|diff\.(external|.*\.(textconv|command))|merge\..*\.driver|gpg\..*program|uploadpack\.packobjectshook)$' |
     while IFS= read -r name; do printf 'git: %s\t%s=%s\n' "$name" "$name" "$(git -C "$1" config --local --get-all "$name" | sha256sum | cut -c1-16)"; done
-  find "$(git -C "$1" rev-parse --absolute-git-dir)/hooks" -type f ! -name '*.sample' 2>/dev/null |
+  find "$(git -C "$1" rev-parse --absolute-git-dir)/hooks" \( -type f -o -type l \) ! -name '*.sample' 2>/dev/null |
     while IFS= read -r hook; do printf 'git: hook %s\thook %s=%s\n' "${hook##*/}" "${hook##*/}" "$(sha256sum < "$hook" | cut -c1-16)"; done
 }
 git_state() {

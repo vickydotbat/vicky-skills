@@ -121,6 +121,10 @@ mkdir -p "$dir/none2/subagents"; started vicky-skills:do > "$dir/none2.jsonl"
 { printf '\0\0\0\n'; started vicky-skills:mission-brief; } > "$dir/none2/subagents/agent-t0rn.jsonl"
 AGENT=t0rn expect "a torn line in the subagent's file does not hide its later call" 0 "$dir/none2.jsonl" 'gh issue create --title T --body b'
 expect "the main session does not count a subagent's mission-brief" 2 "$dir/none.jsonl" 'gh issue create --title T --body b'
+expect "a variable that only an argument names is no CLI" 0 "$dir/none.jsonl" 'echo $X issue create'
+expect "a command substitution naming gh is refused" 2 "$dir/none.jsonl" '$(which gh) issue create --title T'
+expect "a command substitution naming tea is refused" 2 "$dir/none.jsonl" '$(command -v tea) issues create -t T'
+expect "a variable in command position is still refused" 2 "$dir/none.jsonl" '$GH issue create --title T'
 expect "a missing transcript lets it through" 0 "$dir/missing.jsonl" 'bin/plane file GAME T'
 if echo '' | CLAUDE_PLUGIN_OPTION_GUARD_TICKET_FILING=true "$guard" >/dev/null 2>&1; then echo "ok   an empty payload passes"; else echo "FAIL an empty payload passes"; fail=1; fi
 exit $fail

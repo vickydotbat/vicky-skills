@@ -65,9 +65,11 @@ body=${2:-}; sha=${3:-}
 holds "$sha" "$body" && exit 1
 base=${4:-} session=${5:-}
 [ -n "$base" ] && [ -n "$session" ] || exit 0
-# git patch-id hashes a diff with its line numbers and whitespace left out, so
-# a rebase onto unrelated commits keeps it.
-pid() { git diff "$(git merge-base "$base" "$1")" "$1" 2>/dev/null | git patch-id --stable | cut -d' ' -f1; }
+# git patch-id hashes a diff with its line numbers left out, so a rebase onto
+# unrelated commits keeps it. --verbatim keeps whitespace: an indent can change
+# meaning (YAML, Python, Makefiles), so a whitespace edit is a content change.
+# --verbatim also hashes as --stable does: git refuses the two together.
+pid() { git diff "$(git merge-base "$base" "$1")" "$1" 2>/dev/null | git patch-id --verbatim | cut -d' ' -f1; }
 now=$(pid "$sha")
 [ -n "$now" ] || exit 0
 while read -r v; do

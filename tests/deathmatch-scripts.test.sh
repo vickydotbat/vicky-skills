@@ -285,4 +285,14 @@ o=$(cd "$rr" && bash "$dm/triggers.sh" "$rv2")
 check "a plain run on a Markdown-only diff keeps Standards and gives no reasons" 'grep -qx "fight: standards" <<<"$o" && grep -qx "out of reach: holds" <<<"$o"'
 o=$(cd "$rr" && bash "$dm/triggers.sh" --rerun "$rv2")
 check "a Markdown-only rerun names the verdict in Standards' reason" 'grep -qx "out of reach: standards (only Markdown changed since the verdict for $rv2, which held the rules)" <<<"$o" && grep -qx "out of reach: cause (no commit or body line claims a fix)" <<<"$o"'
+# A whitespace-only change can change meaning (YAML nesting), so it is no carry.
+ws="$t/ws"; git init -q -b main "$ws"; w() { git -C "$ws" -c user.name=t -c user.email=t@example.invalid "$@"; }
+printf 'a:\n  b: 1\n' > "$ws/c.yml"; w add -A; w commit -qm a; w switch -qc feat; printf 'a:\n  b: 1\n  c: 3\n' > "$ws/c.yml"; w commit -qam c; wv=$(w rev-parse HEAD)
+printf 'a:\n  b: 1\nc: 3\n' > "$ws/c.yml"; w commit -qam top; wh=$(w rev-parse HEAD); w reset -q --hard "$wv"; w switch -qc other main; printf 'a:\n  b: 1\nc: 3\n' > "$ws/c.yml"; w commit -qam top; wh=$(w rev-parse HEAD)
+printf 'Deathmatch verdict for %s: 0 proven findings\n' "$wv" > "$t/ws.md"; cp "$t/ws.md" "$t/ws0.md"
+(cd "$ws" && bash "$dm/verdict.sh" due "$t/ws.md" "$wh" main s9 >/dev/null 2>&1); r=$?
+check "due carries no verdict across a whitespace-only change of meaning" '[ $r = 0 ] && cmp -s "$t/ws.md" "$t/ws0.md"'
+# A rerun with nothing changed since the verdict sends no Holds, Simplicity or Standards.
+o=$(cd "$rr" && bash "$dm/triggers.sh" --rerun HEAD)
+check "a rerun with no change since the verdict leaves Holds and Simplicity out" 'grep -qx "out of reach: holds (no file other than Markdown changed)" <<<"$o" && grep -q "^out of reach: simplicity" <<<"$o"'
 exit $fail

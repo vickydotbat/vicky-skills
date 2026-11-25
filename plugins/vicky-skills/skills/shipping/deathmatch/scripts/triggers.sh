@@ -23,7 +23,7 @@ say() {
 }
 files=$(git diff --name-only "$base"...HEAD)
 code=0
-grep -qv '\.md$' <<<"$files" && code=1 # mutant-ok: grep -vv inverts once, as -v does
+[ -n "$files" ] && grep -qv '\.md$' <<<"$files" && code=1 # mutant-ok: grep -vv inverts once, as -v does
 fix=0
 { git log --format=%B "$base"..HEAD; [ -n "$body" ] && cat "$body" 2>/dev/null; } | grep -qiE '\b(fix(es|ed)?|bug|regression)\b' && fix=1
 proof=0

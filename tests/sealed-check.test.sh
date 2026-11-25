@@ -63,6 +63,9 @@ check "a local git setting the clone never had fails the check" '[ $r = 1 ] && g
 fresh p; printf '#!/bin/sh\n' > "$s/p/.git/hooks/post-checkout"
 out=$(bash "$dm/sealed-check.sh" check "$s/p" "$spin" 2>&1); r=$?
 check "a planted git hook fails the check" '[ $r = 1 ] && grep -q "^git: hook post-checkout" <<<"$out"'
+fresh pl; printf '#!/bin/sh\n' > "$s/pl-target"; chmod +x "$s/pl-target"; ln -s "$s/pl-target" "$s/pl/.git/hooks/post-checkout"
+out=$(bash "$dm/sealed-check.sh" check "$s/pl" "$spin" 2>&1); r=$?
+check "a git hook planted as a link fails the check" '[ $r = 1 ] && grep -q "^git: hook post-checkout" <<<"$out"'
 fresh q; bash "$dm/sealed-check.sh" check "$s/q" "$spin" >/dev/null 2>&1; r=$?
 check "a fresh clone passes" '[ $r = 0 ]'
 bash "$dm/sealed-check.sh" copy "$s/q" holds >/dev/null; out=$(bash "$dm/sealed-check.sh" copy "$s/q" holds 2>&1); r=$?
