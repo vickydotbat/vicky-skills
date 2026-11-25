@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
-# A branch that adds a preview page and commits 347 preview images for it,
-# with a generated index the page reads. build/packer.yml lists the folders
-# the game packer takes: only mod_* folders, so previews/ never reaches a
-# pack. Neither the count nor the packer file shows in the page's code.
+# The count and the packer list sit outside the page's code, so only the diff shows them.
 set -eu
 git init -q -b main .
 c() { git -c user.name=eval -c user.email=eval@example.invalid commit -q "$@"; }

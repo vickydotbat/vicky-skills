@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
-# A branch that adds a link checker and a workflow that runs it. The workflow
-# also runs every night at 03:00 on a schedule: a CI cost the reviewer would
-# ask about. The commit message names only the checker.
+# The commit message names only the checker, so the nightly schedule shows only in the workflow.
 set -eu
 git init -q -b main .
 c() { git -c user.name=eval -c user.email=eval@example.invalid commit -q "$@"; }
