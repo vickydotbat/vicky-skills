@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Its template search is twin to repo_template() in the plugin's pr-guard.sh:
+# change both together, so the guard checks the file this script keeps.
 # seed-pr-template.sh <repo>: writes ship-it's seeded pull request template
 # into a repo that has none, in its forge's place: .github/pull_request_template.md
 # for GitHub, .gitea/PULL_REQUEST_TEMPLATE.md for any other remote. A repo that
@@ -11,7 +13,7 @@ template="$(cd "$(dirname "$0")/../../../shipping/ship-it" && pwd)/SEEDED-TEMPLA
 if grep -qix 'Seed PR template:[[:space:]]*off' "$repo/docs/agents/issue-tracker.md" 2>/dev/null; then
   echo "seed-pr-template: off in docs/agents/issue-tracker.md, so no template written"; exit 0
 fi
-found=$(find "$repo" -maxdepth 2 -path "$repo/.git" -prune -o -type f -iname pull_request_template.md -print | head -n 1)
+found=$(find "$repo" -maxdepth 2 -path "$repo/.git" -prune -o -type f -iname pull_request_template.md -print | sort | head -n 1)
 if [ -n "$found" ]; then
   echo "seed-pr-template: the repo keeps its own template at ${found#"$repo"/}"; exit 0
 fi

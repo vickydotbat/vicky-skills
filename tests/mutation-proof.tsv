@@ -38,7 +38,7 @@ plane-block-guard.sh	a2ced0e121b33f36	c912309fd621ec7a	20/20
 plugin-data.sh	57e39b685133452d	e9143dd821916d5e	5/5
 post-body-guard.py	2203c08aac8e7c68	37af6b3fe7ac10bb	280/280
 post-body-guard.sh	218b762a4149dd59	37af6b3fe7ac10bb	10/10
-pr-guard.sh	83cde3ff605193c3	5a86ba7661d2bb87	160/160
+pr-guard.sh	67c996e2206cbcab	5a86ba7661d2bb87	160/160
 promise-guard.sh	080cb078921ad99f	8b391a320412fcdd	17/17
 prose-strip.sh	4af2ac6de8168c90	f38a51df643790ee	95/95
 publickey-hint.sh	d3098ec01110850e	00f13591da283269	13/13

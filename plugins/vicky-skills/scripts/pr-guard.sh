@@ -157,14 +157,14 @@ fi
 
 # The repo's own pull request template, at any place a forge reads one, or nothing.
 repo_template() {
-  local top # mutant-ok delete: top is only read inside this function, so a global changes nothing
+  local top # mutant-ok delete: top is only read inside this function, so a global changes nothing; kept local so a caller's names stay unshadowed
   top=$(git rev-parse --show-toplevel 2>/dev/null) || return 1
   find "$top" -maxdepth 2 -path "$top/.git" -prune -o -type f -iname pull_request_template.md -print 2>/dev/null | sort | head -n 1 | grep .
 }
 # The headings a body must hold: each heading of the repo's template whose
 # comment does not open with "Optional", or ship-it's four when it has none.
 required_sections() {
-  local template # mutant-ok delete: template is only read inside this function, so a global changes nothing
+  local template # mutant-ok delete: template is only read inside this function, so a global changes nothing; kept local so a caller's names stay unshadowed
   if template=$(repo_template); then
     awk '/^## /{if (h != "") print h; h=substr($0, 4); next} h != "" && /^<!--[[:space:]]*Optional/{h=""} h != "" && NF && !/^<!--/{print h; h=""} END{if (h != "") print h}' "$template" | awk '!seen[$0]++'
   else
