@@ -279,7 +279,7 @@ rr="$t/rr"; git init -q -b main "$rr"; h() { git -C "$rr" -c user.name=t -c user
 printf 'a\n' > "$rr/a.sh"; h add -A; h commit -qm a; rv=$(h rev-parse HEAD); printf 'b\n' >> "$rr/a.sh"; h commit -qam b
 o=$(cd "$rr" && bash "$dm/triggers.sh" --rerun "$rv")
 check "a rerun with code since the verdict sends Standards, Holds and Simplicity" \
-  'grep -qx "fight: standards (only the commits since $rv)" <<<"$o" && grep -qx "fight: holds" <<<"$o" && grep -qx "fight: simplicity" <<<"$o" && grep -qx "out of reach: claims (the body has no Proof section)" <<<"$o"'
+  'grep -qx "fight: standards" <<<"$o" && grep -qx "fight: holds" <<<"$o" && grep -qx "fight: simplicity" <<<"$o" && grep -qx "out of reach: claims (the body has no Proof section)" <<<"$o"'
 printf '# n\n' > "$rr/n.md"; h add -A; h commit -qm n; rv2=$(h rev-parse HEAD~1)
 o=$(cd "$rr" && bash "$dm/triggers.sh" "$rv2")
 check "a plain run on a Markdown-only diff keeps Standards and gives no reasons" 'grep -qx "fight: standards" <<<"$o" && grep -qx "out of reach: holds" <<<"$o"'
@@ -294,5 +294,5 @@ printf 'Deathmatch verdict for %s: 0 proven findings\n' "$wv" > "$t/ws.md"; cp "
 check "due carries no verdict across a whitespace-only change of meaning" '[ $r = 0 ] && cmp -s "$t/ws.md" "$t/ws0.md"'
 # A rerun with nothing changed since the verdict sends no Holds, Simplicity or Standards.
 o=$(cd "$rr" && bash "$dm/triggers.sh" --rerun HEAD); r=$?
-check "a rerun with no change since the verdict leaves Holds and Simplicity out" '[ $r = 0 ] && grep -qx "out of reach: holds (no commit since the verdict for HEAD)" <<<"$o" && grep -qx "out of reach: standards (no commit since the verdict for HEAD)" <<<"$o" && grep -qx "no trigger in the diff" <<<"$o"'
+check "a rerun with no change since the verdict leaves Holds and Simplicity out" '[ $r = 0 ] && grep -qx "out of reach: holds (no file changed since the verdict for HEAD)" <<<"$o" && grep -qx "out of reach: standards (no file changed since the verdict for HEAD)" <<<"$o" && grep -qx "no trigger in the diff" <<<"$o"'
 exit $fail

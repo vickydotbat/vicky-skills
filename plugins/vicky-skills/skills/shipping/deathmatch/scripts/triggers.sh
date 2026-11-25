@@ -11,7 +11,7 @@
 # When the diff since it changes only Markdown, Intent, Standards and Claims
 # can fight, and Standards reads only the commits since the verdict: in this
 # kind of repo the skills are Markdown, and Standards is the angle that reads
-# their rules. With no commit since the verdict, only Intent fights. Each "out
+# their rules. With no file changed since the verdict, only Intent fights. Each "out
 # of reach" line then ends with its reason in brackets.
 set -u
 rerun=0
@@ -33,11 +33,11 @@ proof=0
 [ -n "$body" ] && grep -qE '^## Proof' "$body" 2>/dev/null && proof=1
 std=1 scope=
 if [ "$rerun" = 1 ]; then
-  scope="only the commits since $base"
+  [ "$code" = 0 ] && scope="only the commits since $base"
   # Nothing new since the verdict: every angle but Intent rests on it.
   if [ -z "$files" ]; then
     say intent 1
-    for a in standards holds simplicity cause claims; do say "$a" 0 "no commit since the verdict for $base"; done
+    for a in standards holds simplicity cause claims; do say "$a" 0 "no file changed since the verdict for $base"; done
     echo "no trigger in the diff"; exit 0
   fi
 fi
