@@ -1,5 +1,0 @@
-schema_version: "1.1"
-name: theme-shots
-description: ship-it asks for the before and after shots in each theme a page offers, when the branch holds a shot of only one.
-context:
-  scaffold_script: scaffold.sh
