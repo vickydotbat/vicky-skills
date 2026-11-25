@@ -293,6 +293,6 @@ printf 'Deathmatch verdict for %s: 0 proven findings\n' "$wv" > "$t/ws.md"; cp "
 (cd "$ws" && bash "$dm/verdict.sh" due "$t/ws.md" "$wh" main s9 >/dev/null 2>&1); r=$?
 check "due carries no verdict across a whitespace-only change of meaning" '[ $r = 0 ] && cmp -s "$t/ws.md" "$t/ws0.md"'
 # A rerun with nothing changed since the verdict sends no Holds, Simplicity or Standards.
-o=$(cd "$rr" && bash "$dm/triggers.sh" --rerun HEAD)
-check "a rerun with no change since the verdict leaves Holds and Simplicity out" 'grep -qx "out of reach: holds (no commit since the verdict for HEAD)" <<<"$o" && grep -qx "out of reach: standards (no commit since the verdict for HEAD)" <<<"$o" && grep -qx "no trigger in the diff" <<<"$o"'
+o=$(cd "$rr" && bash "$dm/triggers.sh" --rerun HEAD); r=$?
+check "a rerun with no change since the verdict leaves Holds and Simplicity out" '[ $r = 0 ] && grep -qx "out of reach: holds (no commit since the verdict for HEAD)" <<<"$o" && grep -qx "out of reach: standards (no commit since the verdict for HEAD)" <<<"$o" && grep -qx "no trigger in the diff" <<<"$o"'
 exit $fail
