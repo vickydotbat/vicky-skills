@@ -3,15 +3,15 @@
 # diff since the fixed point reaches, one per line: "fight: <angle>" or
 # "out of reach: <angle>" for each core angle, then each triggered one
 # ("runaway: <file>", "security: <file>"), or "no trigger in the diff".
-# Intent and Standards always fight. Holds and Simplicity fight a diff that
+# Intent always fights, and Standards does except on a rerun with no file changed. Holds and Simplicity fight a diff that
 # changes a file other than Markdown. Cause fights when a commit or the body
 # claims a fix. Claims fights a body with a Proof section. Triggers read only
 # added lines, and a Markdown file never triggers.
 # triggers.sh --rerun <verdict commit> [body file]: a follow-up since a verdict.
 # When the diff since it changes only Markdown, Intent, Standards and Claims
-# can fight, and Standards reads only the commits since the verdict: in this
-# kind of repo the skills are Markdown, and Standards is the angle that reads
-# their rules. With no file changed since the verdict, only Intent fights. Each "out
+# can fight, and Standards reads only the commits since the verdict: Markdown
+# here holds the rules Standards checks, so a Markdown-only diff still needs it.
+# With no file changed since the verdict, only Intent fights. Each "out
 # of reach" line then ends with its reason in brackets.
 set -u
 rerun=0
