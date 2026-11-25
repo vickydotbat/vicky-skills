@@ -138,6 +138,12 @@ jobs:
         run: tests/git-guard.test.sh
       - name: Pull request body examples
         run: tests/pr_guard_body_approved_examples.test.sh
+      - name: pr-guard follows the repo template
+        run: tests/pr_guard_repo_template_approved_examples.test.sh
+      - name: ticket guard names the filing seam
+        run: tests/filing_seam_approved_examples.test.sh
+      - name: first-contact seeds the pull request template
+        run: tests/seed_pr_template_approved_examples.test.sh
       - name: Draw chart
         run: tests/draw-chart.test.sh
       - name: Black hole drawing

@@ -1,0 +1,5 @@
+schema_version: "1.1"
+name: how-to-try
+description: ship-it's body for a fix a reviewer can run gives numbered steps to try it, the cases tried, and no Related section when nothing is related.
+context:
+  scaffold_script: scaffold.sh

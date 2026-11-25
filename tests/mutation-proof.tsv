@@ -26,7 +26,7 @@ lesson-ledger.sh	b7090b3458da341d	cb2db8767cc53e16	18/18
 local-path-guard.sh	7c65ca0ba2090c8c	8af3a7393171798b	31/31
 merge-point.sh	a19dbe9167831b34	fc64871b4e62cca4	2/2
 merged-branch-guard.sh	82af13fe1be3f462	984491ccbaffecd5	79/79
-open-heads.sh	b15397c66d1e2bd6	aed5400e318a30c4	11/11
+open-heads.sh	b15397c66d1e2bd6	11ce4a5819ded155	11/11
 opponent-batch-guard-antigravity.py	0fd87fd2435876c0	f472db5e1fc398dc	91/91
 opponent-batch-guard.sh	34ccca8c7d4852cb	6973a6dd29dcdbd2	70/70
 opponent-wait-guard.sh	b0571c4bacf65987	1e3050b9384000f4	32/32
@@ -38,7 +38,7 @@ plane-block-guard.sh	a2ced0e121b33f36	c912309fd621ec7a	20/20
 plugin-data.sh	57e39b685133452d	e9143dd821916d5e	5/5
 post-body-guard.py	2203c08aac8e7c68	37af6b3fe7ac10bb	280/280
 post-body-guard.sh	218b762a4149dd59	37af6b3fe7ac10bb	10/10
-pr-guard.sh	70eaa3009f51a514	e6c5726d88da16b0	157/157
+pr-guard.sh	83cde3ff605193c3	5a86ba7661d2bb87	160/160
 promise-guard.sh	080cb078921ad99f	8b391a320412fcdd	17/17
 prose-strip.sh	4af2ac6de8168c90	f38a51df643790ee	95/95
 publickey-hint.sh	d3098ec01110850e	00f13591da283269	13/13
@@ -113,7 +113,7 @@ summit.sh	8e6e2e361acbd473	a77cb004911c26a9	43/43
 sup-handoff-hint.sh	ca0328e26873afae	acb6527e08baa0b0	37/37
 tea-stdin.awk	ddfdfc5257c31b06	3860b78ecc589fec	70/70
 tea-stdin.sh	c631fcfccdb1abf0	d1eb052256ae5a2a	15/15
-ticket-filing-guard.sh	4e3a6072b5363e13	59acdd113ba57834	34/34
+ticket-filing-guard.sh	897dc3a0264e2e30	59acdd113ba57834	34/34
 todo-reminder.sh	87bab188b0686e79	118f1019071f20bc	9/9
 user-test-guard.sh	b684b056550b7e16	d407cb0e230ed4d5	58/58
 watch.sh	8361b0cd96435e12	fc2f74078f28c806	33/33

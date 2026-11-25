@@ -1,4 +1,5 @@
 schema_version: "1.1"
 name: docs-only-files-a-task
+description: mission-brief asked to file one docs task hands the filing to groundhog-day and files no star.
 context:
   scaffold_script: scaffold.sh

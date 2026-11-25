@@ -60,7 +60,11 @@ Change `on` to `off` to stop the `ticket-drift` check in this repo.
 
 PR template: on
 
-Change `on` to `off` to stop `pr-guard` refusing a pull request body that lacks `ship-it`'s Status, Summary, Proof and Risk sections in this repo.
+Change `on` to `off` to stop `pr-guard` refusing a pull request body that lacks a section the repo's pull request template asks for, or `ship-it`'s Status, Summary, Proof and Risk when it has none, in this repo.
+
+Seed PR template: on
+
+Change `on` to `off` to stop `first-contact` writing a pull request template into this repo.
 
 PR drafts: on
 

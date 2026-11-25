@@ -1,0 +1,5 @@
+schema_version: "1.1"
+name: repo-template
+description: ship-it fills the repo's own pull request template, in its headings and order, keeps no HTML comment, leaves the person's box unticked, and puts Status in a comment when the template has no Status heading.
+context:
+  scaffold_script: scaffold.sh

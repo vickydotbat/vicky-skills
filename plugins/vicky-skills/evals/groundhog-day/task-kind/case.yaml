@@ -1,0 +1,5 @@
+schema_version: "1.1"
+name: task-kind
+description: groundhog-day files one task that is not a bug, with a summary and a Done when line and no steps to reproduce.
+context:
+  scaffold_script: scaffold.sh

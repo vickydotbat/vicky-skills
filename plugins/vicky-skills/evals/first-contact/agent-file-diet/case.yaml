@@ -1,0 +1,5 @@
+schema_version: "1.1"
+name: agent-file-diet
+description: first-contact splits a long agent file into a short one plus ARCHITECTURE.md and CONTRIBUTING.md, writes no GAPS.md, and seeds the pull request template with a line telling agents to fill it.
+context:
+  scaffold_script: scaffold.sh

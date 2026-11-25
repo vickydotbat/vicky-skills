@@ -10,7 +10,7 @@ What the whole workflow is for. Every skill names the lines it serves on its `Ch
 - **C6** Finish, don't file. Found work is done now, and the backlog shrinks.
 - **C7** The user's machine, data and secrets stay safe, and nothing private leaves.
 - **C8** It works in any repo.
-- **C9** Work enters the tracker only through a filing skill: mission-brief for planned work, groundhog-day for a bug, away-team for a research note. A ticket is never filed by hand, so the same premise is searched for first.
+- **C9** Work enters the tracker only through a filing skill: groundhog-day for one ticket or issue, mission-brief for a chart and its stars, away-team for a research note. A ticket is never filed by hand, so the same premise is searched for first.
 - **C10** The reader's time is worth more than the writer's. Nothing goes out that costs more to read than it cost to make: short, checked, and owned by whoever sends it.
 
 A line changes only after the user approves its new text on a `red-pen` page. A code is never reused for a different line.

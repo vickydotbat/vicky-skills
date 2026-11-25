@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # PreToolUse hook (Bash): refuses a command that files a ticket (`plane file`,
 # `tea issues create`, `gh issue create`) until the session has started a
-# filing skill: mission-brief for planned work, groundhog-day for a bug report,
+# filing skill: groundhog-day for one ticket or issue, mission-brief for a chart,
 # away-team for a ticket titled "Research: <question>".
 # Each searches the tracker and the codebase before it writes anything. On unless the plugin option
 # guard_ticket_filing is false or 0. Reads the session transcript for Skill
@@ -45,5 +45,5 @@ research_title() {
   [[ $raw != *$'\n'* ]] && grep -Eq "$research" <<<"$raw"
 }
 research_title && skill_started "$transcript" away-team "$agent" && exit 0
-echo "ticket-filing-guard: refused. A ticket is filed only through a filing skill, never by hand: groundhog-day for a bug report, away-team for a note titled Research: <question>, filed by one plain command of its own with its body in --body-file, mission-brief for anything else. Each checks the source material (away-team when a fact is missing), searches the tracker for the same premise, and searches the codebase for anything that looks like the thing, before it writes a word. Start the one that fits, then file. Nothing in this command ran, not even its other steps: rerun the ones that need no change on their own." >&2
+echo "ticket-filing-guard: refused. A ticket is filed only through a filing skill, never by hand: groundhog-day for one ticket or issue, a bug or not, mission-brief for a star chart and its stars, and away-team for a note titled Research: <question>, filed by one plain command of its own with its body in --body-file. Each checks the source material (away-team when a fact is missing), searches the tracker for the same premise, and searches the codebase for anything that looks like the thing, before it writes a word. Start the one that fits, then file. Nothing in this command ran, not even its other steps: rerun the ones that need no change on their own." >&2
 exit 2
