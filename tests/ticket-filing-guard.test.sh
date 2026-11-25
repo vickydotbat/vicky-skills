@@ -116,6 +116,10 @@ AGENT=e5f6 expect "a parent's prompt that quotes the typed marker does not count
 mkdir -p "$dir/torn/subagents"; printf '{bad\n' > "$dir/torn.jsonl"
 started vicky-skills:mission-brief > "$dir/torn/subagents/agent-a1b2.jsonl"
 AGENT=a1b2 expect "a torn line in the parent transcript does not hide the subagent's call" 0 "$dir/torn.jsonl" 'gh issue create --title T --body b'
+# A torn line in the subagent's own file hides none of its later Skill calls either.
+mkdir -p "$dir/none2/subagents"; started vicky-skills:do > "$dir/none2.jsonl"
+{ printf '\0\0\0\n'; started vicky-skills:mission-brief; } > "$dir/none2/subagents/agent-t0rn.jsonl"
+AGENT=t0rn expect "a torn line in the subagent's file does not hide its later call" 0 "$dir/none2.jsonl" 'gh issue create --title T --body b'
 expect "the main session does not count a subagent's mission-brief" 2 "$dir/none.jsonl" 'gh issue create --title T --body b'
 expect "a missing transcript lets it through" 0 "$dir/missing.jsonl" 'bin/plane file GAME T'
 if echo '' | CLAUDE_PLUGIN_OPTION_GUARD_TICKET_FILING=true "$guard" >/dev/null 2>&1; then echo "ok   an empty payload passes"; else echo "FAIL an empty payload passes"; fail=1; fi

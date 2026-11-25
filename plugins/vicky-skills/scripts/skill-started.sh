@@ -8,8 +8,8 @@
 # <transcript without .jsonl>/subagents/agent-<agent_id>.jsonl. Given the
 # payload's agent_id, a Skill call in that file counts too. Its plain string
 # prompt is the parent agent's task, never the user's typing, so only its Skill
-# calls are read. Each file gets its own jq run, so a torn line in one never
-# hides the other.
+# calls are read. Each file gets its own jq run, and each line is parsed on its
+# own, so a torn line (NUL bytes from a crash) is skipped and hides no later call.
 skill_started() {
   local sub="" calls='.message.content[]? | select(.type == "tool_use" and .name == "Skill") | (.input.skill // "") | sub("^[A-Za-z0-9_-]+:"; "")'
   case "${3:-}" in
@@ -17,10 +17,10 @@ skill_started() {
     *) sub="${1%.jsonl}/subagents/agent-$3.jsonl" ;;
   esac
   {
-    jq -r --arg s "$2" "if .type == \"assistant\" then ($calls)
+    jq -Rr --arg s "$2" "fromjson? | if .type == \"assistant\" then ($calls)
       elif .type == \"user\" then (.message.content | strings | select(test(\"<command-name>/([A-Za-z0-9_-]+:)?\" + \$s + \"</command-name>\")) | \$s)
       else empty end" "$1"
-    [ -z "$sub" ] || jq -r "select(.type == \"assistant\") | $calls" "$sub"
+    [ -z "$sub" ] || jq -Rr "fromjson? | select(.type == \"assistant\") | $calls" "$sub"
   } 2>/dev/null | grep -qxF -- "$2"
 }
 
