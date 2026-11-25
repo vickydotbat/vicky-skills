@@ -198,4 +198,30 @@ bash "$as" "$t/g.json" 2026-11-01T00:00:00Z >/dev/null 2>&1; r=$?
 check "an assimilate comment with no readable time is a usage error" '[ $r = 2 ]'
 bash "$as" "$t/e.json" 2026-11-01T00:00:00Z >/dev/null 2>&1; r=$?
 check "none exits 0" '[ $r = 0 ]'
+# Deathmatch findings on 83ebef4a: Gitea's offset times, sha prefixes, a body with no last newline, a heading named in prose.
+cat > "$t/o.json" <<'JSON'
+[{"id":1,"body":"Assimilate verdict for abc1234","created_at":"2026-11-25T11:00:00+02:00","updated_at":"2026-11-25T11:00:00+02:00"},
+ {"id":2,"body":"Assimilate verdict for abc1234","created_at":"2026-11-25T10:30:00+02:00","updated_at":"2026-11-25T10:30:00+02:00"}]
+JSON
+out=$(bash "$as" "$t/o.json" 2026-11-25T00:00:00Z)
+check "the newest of several comments with offset times wins" '[ "$out" = "comment 1" ]'
+cat > "$t/p.json" <<'JSON'
+[{"id":1,"body":"## The four answers\nx\n## The patch\ny","created_at":"2026-11-21T10:00:00Z"},
+ {"id":2,"body":"see The four answers and The patch above","created_at":"2026-11-22T10:00:00Z"}]
+JSON
+out=$(bash "$as" "$t/p.json" 2026-11-01T00:00:00Z)
+check "a comment that names the headings in prose is no assimilate comment" '[ "$out" = "comment 1" ]'
+printf 'Deathmatch verdict for abc1234567: 0 proven findings\n' > "$t/pb"
+bash "$dm/verdict.sh" carry "$t/pb" fff0000 abc12 >/dev/null 2>&1; r=$?
+check "carry refuses a sha that only prefixes the verdict's" '[ $r != 0 ] && ! grep -q fff0000 "$t/pb"'
+bash "$dm/verdict.sh" due "$t/pb" abc12; r=$?
+check "due holds a sha that only prefixes the verdict's as due" '[ $r = 0 ]'
+bash "$dm/verdict.sh" due "$t/pb" a.c1234567; r=$?
+check "due reads the sha as text, not a pattern" '[ $r != 1 ]'
+printf 'Deathmatch verdict for aaa1111: 0 proven findings\n- last line' > "$t/nb"
+bash "$dm/verdict.sh" carry "$t/nb" bbb2222 aaa1111 >/dev/null 2>&1
+check "carry starts its line on a line of its own" 'grep -q "^- last line$" "$t/nb" && grep -q "^Deathmatch verdict for bbb2222: carried" "$t/nb"'
+printf 'Deathmatch verdict for aaa1111: 0 proven findings\n' > "$t/eb"
+bash "$dm/verdict.sh" carry "$t/eb" bbb2222 aaa1111 >/dev/null 2>&1
+check "carry after a last newline adds no blank line" '[ "$(grep -c "^$" "$t/eb")" = 0 ]'
 exit $fail
