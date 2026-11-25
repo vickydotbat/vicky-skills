@@ -162,14 +162,22 @@ repo_template() {
   find "$top" -maxdepth 2 -path "$top/.git" -prune -o -type f -iname pull_request_template.md -print 2>/dev/null | sort | head -n 1 | grep .
 }
 # The headings a body must hold: each heading of the repo's template whose
-# comment does not open with "Optional", or ship-it's four when it has none.
+# comment does not open with "Optional", or ship-it's four when it has
+# none or names none.
 required_sections() {
   local template # mutant-ok delete: template is only read inside this function, so a global changes nothing; kept local so a caller's names stay unshadowed
-  if template=$(repo_template); then
-    awk '/^## /{if (h != "") print h; h=substr($0, 4); next} h != "" && /^<!--[[:space:]]*Optional/{h=""} h != "" && NF && !/^<!--/{print h; h=""} END{if (h != "") print h}' "$template" | awk '!seen[$0]++'
-  else
-    printf '%s\n' Status Summary Proof Risk
-  fi
+  local found # mutant-ok delete: found is only read inside this function, so a global changes nothing; kept local so a caller's names stay unshadowed
+  template=$(repo_template) &&
+    found=$(awk '
+      { sub(/\r$/, "") }
+      /^## / { if (h != "") print h; h = substr($0, 4); sub(/[[:space:]]+$/, "", h); c = 0; next }
+      h == "" { next }
+      c { t = $0; sub(/^[[:space:]]+/, "", t); if (first && t ~ /^Optional/) h = ""; if (t != "") first = 0; if ($0 ~ /-->/) c = 0; next }
+      /^<!--/ { t = $0; sub(/^<!--[[:space:]]*/, "", t); if (t ~ /^Optional/) { h = ""; next } if (t !~ /-->/) { c = 1; first = (t == "") } next }
+      NF { print h }
+      END { if (h != "") print h }' "$template" | awk '!seen[$0]++') && [ -n "$found" ] &&
+    { printf '%s\n' "$found"; return; }
+  printf '%s\n' Status Summary Proof Risk
 }
 
 # Rule 6, in each gh or tea segment that creates a pull request or edits its body.
@@ -188,7 +196,7 @@ if [[ $event != PostToolUse ]] && [ -f "$tracker" ] && ! grep -qix 'PR template:
     missing=()
     mapfile -t sections < <(required_sections)
     for section in "${sections[@]}"; do
-      grep -Eq "^[[:space:]'\"]*## $section([[:space:]]|$)" <<<"$forge_text" || missing+=("## $section")
+      awk -v s="## $section" '{ sub(/^[[:space:]'"'"'"]+/, ""); sub(/\r$/, "") } $0 == s || index($0, s " ") == 1 || index($0, s "\t") == 1 { f = 1 } END { exit !f }' <<<"$forge_text" || missing+=("## $section")
     done
     printf -v list '%s, ' "${missing[@]}"
     [ ${#missing[@]} = 0 ] || refuse "This pull request body has no ${list%, } section." \
