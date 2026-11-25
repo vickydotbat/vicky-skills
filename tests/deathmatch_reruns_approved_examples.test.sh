@@ -128,12 +128,23 @@ check "DR-7 a rebase with no content change carries the verdict and pr-guard let
 # DR-8
 # Given an earlier verdict, and new commits that change only Markdown
 # When deathmatch runs again
-# Then only Intent and Claims fight, and the report names each opponent left out and why
+# Then Intent, Standards and Claims fight, Standards reads only the commits since the verdict, and the report names each opponent left out and why
 g8="$t/g8"; repo "$g8"; v8=$(git -C "$g8" rev-parse HEAD); printf '# n\n' > "$g8/n.md"; git -C "$g8" add -A; git -C "$g8" commit -qm notes
 verdict_body "$v8" > "$t/body8.md"
 tr8=$(cd "$g8" && bash "$dm/triggers.sh" --rerun "$v8" "$t/body8.md" 2>&1)
-fights=$(grep '^fight: ' <<<"$tr8" | sed 's/^fight: //' | sort | tr '\n' ' ')
-check "DR-8 a Markdown-only rerun sends only Intent and Claims, and names why each other is out" \
-  '[ "$fights" = "claims intent " ] && [ "$(grep -c "^out of reach: [a-z]* (.\+)" <<<"$tr8")" = 4 ]'
+fights=$(grep '^fight: ' <<<"$tr8" | awk '{print $2}' | sort | tr '\n' ' ')
+check "DR-8 a Markdown-only rerun sends Intent, Standards on the commits since the verdict, and Claims, and names why each other is out" \
+  '[ "$fights" = "claims intent standards " ] && grep -qx "fight: standards (only the commits since $v8)" <<<"$tr8" && [ "$(grep -c "^out of reach: [a-z]* (.\+)" <<<"$tr8")" = 3 ]'
+
+# DR-8b
+# Given an earlier verdict, and no commit since it
+# When deathmatch runs again
+# Then no opponent but Intent fights, and the report names each opponent left out and why
+g8b="$t/g8b"; repo "$g8b"; v8b=$(git -C "$g8b" rev-parse HEAD)
+verdict_body "$v8b" > "$t/body8b.md"
+tr8b=$(cd "$g8b" && bash "$dm/triggers.sh" --rerun "$v8b" "$t/body8b.md" 2>&1)
+fights8b=$(grep '^fight: ' <<<"$tr8b" | awk '{print $2}' | sort | tr '\n' ' ')
+check "DR-8b a rerun with no commit since the verdict sends only Intent, and names why each other is out" \
+  '[ "$fights8b" = "intent " ] && [ "$(grep -c "^out of reach: [a-z]* (.\+)" <<<"$tr8b")" = 5 ]'
 
 exit "$fail"
