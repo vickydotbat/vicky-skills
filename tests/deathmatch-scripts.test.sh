@@ -185,7 +185,7 @@ bash "$dm/verdict.sh" carry "$t/body" "" aaa1111 >/dev/null 2>&1; r=$?
 check "carry with an empty head sha is a usage error" '[ $r = 2 ]'
 bash "$dm/verdict.sh" carry "" ddd4444 aaa1111 >/dev/null 2>&1; r=$?
 check "carry with an empty body path is a usage error" '[ $r = 2 ]'
-(cd "$t/v" && bash "$dm/verdict.sh" carry "$t/body" eee5555 aaa1111 s9) >/dev/null 2>&1; r=$?
+(cd "$t/v" && env -u CLAUDE_CODE_SESSION_ID bash "$dm/verdict.sh" carry "$t/body" eee5555 aaa1111 s9) >/dev/null 2>&1; r=$?
 check "carry with a session id records that session for the branch" '[ $r = 0 ] && grep -q "^s9 " "$t/v/.git/vicky-skills/deathmatch/feat"'
 echo '[{"id":1,"body":"Assimilate verdict for abc1234","created_at":"2026-11-21T10:00:00Z"}]' > "$t/m.json"
 bash "$as" "$t/m.json" "" >/dev/null 2>&1; r=$?
@@ -224,4 +224,7 @@ check "carry starts its line on a line of its own" 'grep -q "^- last line$" "$t/
 printf 'Deathmatch verdict for aaa1111: 0 proven findings\n' > "$t/eb"
 bash "$dm/verdict.sh" carry "$t/eb" bbb2222 aaa1111 >/dev/null 2>&1
 check "carry after a last newline adds no blank line" '[ "$(grep -c "^$" "$t/eb")" = 0 ]'
+cp "$t/body" "$t/body.before"
+(cd "$t/v" && CLAUDE_CODE_SESSION_ID=me bash "$dm/verdict.sh" carry "$t/body" ggg7777 aaa1111 other) >"$t/out" 2>&1; r=$?
+check "carry refuses another session's id, names this one, and writes nothing" '[ $r = 2 ] && grep -q "this session is me" "$t/out" && cmp -s "$t/body" "$t/body.before" && ! grep -q "^other " "$t/v/.git/vicky-skills/deathmatch/feat"'
 exit $fail

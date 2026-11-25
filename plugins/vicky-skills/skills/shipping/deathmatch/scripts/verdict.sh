@@ -14,13 +14,17 @@
 # into it, so
 # due exits 1 for the head commit. With a session id it also records the run.
 set -u
+# A run records only this session's own id, so pr-guard finds the record it looks for.
+refuse_other() {
+  if [ -n "${CLAUDE_CODE_SESSION_ID:-}" ] && [ "$1" != "$CLAUDE_CODE_SESSION_ID" ]; then
+    echo "verdict.sh: $1 is not this session; this session is $CLAUDE_CODE_SESSION_ID. Run: verdict.sh $2 $CLAUDE_CODE_SESSION_ID" >&2; exit 2
+  fi
+}
 # The body holds a verdict for exactly this sha, read as text: a prefix of another sha is not it.
 holds() { grep -qE "Deathmatch verdict for $(printf %s "$1" | sed 's/[^0-9A-Za-z]/\\&/g')([^0-9a-fA-F]|$)" "$2" 2>/dev/null; }
 if [ "${1:-}" = record ]; then
   [ -n "${2:-}" ] || { echo "usage: verdict.sh record <session id>" >&2; exit 2; }
-  if [ -n "${CLAUDE_CODE_SESSION_ID:-}" ] && [ "$2" != "$CLAUDE_CODE_SESSION_ID" ]; then
-    echo "verdict.sh: $2 is not this session; this session is $CLAUDE_CODE_SESSION_ID. Run: verdict.sh record $CLAUDE_CODE_SESSION_ID" >&2; exit 2
-  fi
+  refuse_other "$2" record
   branch=$(git branch --show-current 2>/dev/null); dir="$(git rev-parse --git-common-dir 2>/dev/null)/vicky-skills/deathmatch"
   [ -n "$branch" ] || { echo "verdict.sh: not on a branch" >&2; exit 2; }
   mkdir -p "$(dirname "$dir/$branch")" && echo "$2 $(git rev-parse HEAD)" >>"$dir/$branch"
@@ -29,10 +33,11 @@ fi
 if [ "${1:-}" = carry ]; then
   body=${2:-}; sha=${3:-}; from=${4:-}
   [ -n "$body" ] && [ -n "$sha" ] && [ -n "$from" ] || { echo "usage: verdict.sh carry <body file> <head sha> <verdict sha> [session id]" >&2; exit 2; }
+  [ -z "${5:-}" ] || refuse_other "$5" "carry $body $sha $from"
   holds "$from" "$body" || { echo "verdict.sh: the body holds no verdict for $from" >&2; exit 1; }
   [ -n "$(tail -c1 "$body" 2>/dev/null)" ] && echo >>"$body"
   echo "Deathmatch verdict for $sha: carried from $from, assimilate patch only, $(date -u +%FT%TZ)" >>"$body"
-  [ -n "${5:-}" ] && bash "$0" record "$5"
+  [ -z "${5:-}" ] || exec bash "$0" record "$5"
   exit 0
 fi
 [ "${1:-}" = due ] || { echo "usage: verdict.sh due <body file> <head sha> | record <session id> | carry <body file> <head sha> <verdict sha>" >&2; exit 2; }
