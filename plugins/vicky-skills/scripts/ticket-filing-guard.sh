@@ -13,10 +13,13 @@ command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool every la
 payload=$(cat)
 command=$(jq -r '.tool_input.command // ""' <<<"$payload" 2>/dev/null)
 # Text a heredoc feeds a program, and quoted text such as a grep pattern, is
-# never a command, so it is dropped first.
+# never a command, so it is dropped first. A quoted lone variable ("$GH") is a
+# command name, so it loses its quotes before that.
 raw=$command
-command=$(awk -f "$(dirname "$0")/heredoc-strip.awk" <<<"$command" | sed -zE "s/'[^']*'//g; s/\"([^\"\\\\]|\\\\.)*\"//g")
-filing='(^|[;&|(][[:space:]]*|[[:space:]])((\./)?bin/)?plane[[:space:]]+file([[:space:]]|$)|(^|[^[:alnum:]_-])tea[[:space:]]+(issues?|i)[[:space:]]+(create|c)([[:space:]]|$)|(^|[^[:alnum:]_-])gh[[:space:]]+issue[[:space:]]+create([[:space:]]|$)'
+command=$(awk -f "$(dirname "$0")/heredoc-strip.awk" <<<"$command" | sed -zE 's/"(\$\{?[A-Za-z_][A-Za-z0-9_]*\}?)"/\1/g' | sed -zE "s/'[^']*'//g; s/\"([^\"\\\\]|\\\\.)*\"//g")
+# A forge CLI can sit behind a variable ($GH, ${GH}) or a full path.
+cli='\$\{?[A-Za-z_][A-Za-z0-9_]*\}?'
+filing="(^|[;&|(][[:space:]]*|[[:space:]])((\./)?bin/)?plane[[:space:]]+file([[:space:]]|$)|(^|[^[:alnum:]_-])($cli|tea|[^[:space:];&|()]*/tea)[[:space:]]+(issues?|i)[[:space:]]+(create|c)([[:space:]]|$)|(^|[^[:alnum:]_-])($cli|gh|[^[:space:];&|()]*/gh)[[:space:]]+issue[[:space:]]+create([[:space:]]|$)"
 grep -Eq "$filing" <<<"$command" || exit 0
 # A call that only asks for the usage text files nothing.
 grep -Eq '(file|create)[[:space:]]+--help([[:space:]]|$)' <<<"$command" && exit 0
