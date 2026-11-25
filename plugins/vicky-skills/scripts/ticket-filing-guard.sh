@@ -36,9 +36,11 @@ skill_started "$transcript" groundhog-day "$agent" && exit 0
 # command on one line: the tracker's create command, then its quoted title
 # (plane's after the project, gh's and tea's after --title or -t) opening
 # with Research: and holding no $, backtick or backslash, then at most a
-# --body-file and a </dev/null. Nothing else fits, so a second title, an
+# --body-file in the repo, /tmp or $TMPDIR, with no folder or file that starts with a
+# dot, and a </dev/null. Nothing else fits, so a second title, an
 # inline body, a comment or a chained command is refused.
-research='^[[:space:]]*(((\./)?bin/)?plane[[:space:]]+file[[:space:]]+[[:alnum:]_-]+[[:space:]]+|gh[[:space:]]+issue[[:space:]]+create[[:space:]]+(--title|-t)([[:space:]]+|=)|tea[[:space:]]+(issues?|i)[[:space:]]+(create|c)[[:space:]]+(--title|-t)([[:space:]]+|=))("Research:[^"$`\\]*"|'"'"'Research:[^'"'"']*'"'"')([[:space:]]+(--body-file|-F)[[:space:]]+[[:alnum:]_./-]+)?([[:space:]]+<[[:space:]]*/dev/null)?[[:space:]]*$'
+# shellcheck disable=SC2016 # $TMPDIR is matched as text, never expanded
+research='^[[:space:]]*(((\./)?bin/)?plane[[:space:]]+file[[:space:]]+[[:alnum:]][[:alnum:]_-]*[[:space:]]+|gh[[:space:]]+issue[[:space:]]+create[[:space:]]+(--title|-t)([[:space:]]+|=)|tea[[:space:]]+(issues?|i)[[:space:]]+(create|c)[[:space:]]+(--title|-t)([[:space:]]+|=))("Research:[^"$`\\]*"|'"'"'Research:[^'"'"']*'"'"')([[:space:]]+(--body-file|-F)[[:space:]]+"?(/tmp/|\$TMPDIR/|\$\{TMPDIR\}/)?[[:alnum:]_][[:alnum:]_.-]*(/[[:alnum:]_][[:alnum:]_.-]*)*"?)?([[:space:]]+<[[:space:]]*/dev/null)?[[:space:]]*$'
 research_title() {
   [[ $raw != *$'\n'* ]] && grep -Eq "$research" <<<"$raw"
 }
