@@ -35,4 +35,4 @@ Done when each claim in the brief has its quoted source, a tracker search names 
 
 A slice whose examples the user cut is filed with "Examples: not written yet", never with examples the user did not see. `examples` writes them later, before that star is built.
 
-Charter: C1, C6 ([CHARTER.md](../../CHARTER.md)).
+Charter: C1, C6, C9 ([CHARTER.md](../../CHARTER.md)).
