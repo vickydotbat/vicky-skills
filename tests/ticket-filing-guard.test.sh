@@ -36,6 +36,12 @@ has "the steer names groundhog-day for a bug report" groundhog-day
 expect "a Research ticket after away-team started runs" 0 "$dir/away.jsonl" 'bin/plane file GAME "Research: does save trim the name?" --body-file b.md'
 expect "any other ticket after away-team is refused" 2 "$dir/away.jsonl" 'bin/plane file GAME "Fix the save button" --body-file b.md'
 has "the steer names away-team for a research note" away-team
+expect "a ticket with Research: only in its body after away-team is refused" 2 "$dir/away.jsonl" 'bin/plane file APP "Fix the save button" --body "Research: see notes"'
+expect "a ticket with Research: only in a shell comment after away-team is refused" 2 "$dir/away.jsonl" 'bin/plane file APP "Fix bug" # Research:'
+expect "a second filing chained on a Research ticket after away-team is refused" 2 "$dir/away.jsonl" 'bin/plane file APP "Research: x"; bin/plane file APP "Add feature"'
+expect "a gh Research title after away-team runs" 0 "$dir/away.jsonl" 'gh issue create --title "Research: x" --body b'
+expect "a tea Research title after away-team runs" 0 "$dir/away.jsonl" "tea issues create -t 'Research: x' </dev/null"
+expect "a gh ticket with Research: only in its body after away-team is refused" 2 "$dir/away.jsonl" 'gh issue create --title "Fix it" --body "Research: x"'
 expect "a Research ticket with no filing skill is refused" 2 "$dir/none.jsonl" 'gh issue create --title "Research: x" --body b'
 expect "plane file after mission-brief started runs" 0 "$dir/briefed.jsonl" 'bin/plane file GAME T'
 expect "tea issues create after mission-brief started runs" 0 "$dir/briefed.jsonl" 'tea issues create --title T </dev/null'

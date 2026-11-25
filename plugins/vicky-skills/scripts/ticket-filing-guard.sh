@@ -16,7 +16,8 @@ command=$(jq -r '.tool_input.command // ""' <<<"$payload" 2>/dev/null)
 # never a command, so it is dropped first.
 raw=$command
 command=$(awk -f "$(dirname "$0")/heredoc-strip.awk" <<<"$command" | sed -zE "s/'[^']*'//g; s/\"([^\"\\\\]|\\\\.)*\"//g")
-grep -Eq '(^|[;&|(][[:space:]]*|[[:space:]])((\./)?bin/)?plane[[:space:]]+file([[:space:]]|$)|(^|[^[:alnum:]_-])tea[[:space:]]+(issues?|i)[[:space:]]+(create|c)([[:space:]]|$)|(^|[^[:alnum:]_-])gh[[:space:]]+issue[[:space:]]+create([[:space:]]|$)' <<<"$command" || exit 0
+filing='(^|[;&|(][[:space:]]*|[[:space:]])((\./)?bin/)?plane[[:space:]]+file([[:space:]]|$)|(^|[^[:alnum:]_-])tea[[:space:]]+(issues?|i)[[:space:]]+(create|c)([[:space:]]|$)|(^|[^[:alnum:]_-])gh[[:space:]]+issue[[:space:]]+create([[:space:]]|$)'
+grep -Eq "$filing" <<<"$command" || exit 0
 # A call that only asks for the usage text files nothing.
 grep -Eq '(file|create)[[:space:]]+--help([[:space:]]|$)' <<<"$command" && exit 0
 # The title sits in quotes, which the stripped command no longer holds.
@@ -31,7 +32,13 @@ transcript=$(jq -r '.transcript_path // ""' <<<"$payload" 2>/dev/null)
 agent=$(agent_of "$payload")
 skill_started "$transcript" mission-brief "$agent" && exit 0
 skill_started "$transcript" groundhog-day "$agent" && exit 0
-# The title sits in quotes, so it is read from the raw command.
-grep -Eq 'Research:' <<<"$raw" && skill_started "$transcript" away-team "$agent" && exit 0
+# away-team files one note titled "Research: <question>": one filing command,
+# whose title (plane's quoted title, or gh's and tea's --title or -t) opens with
+# it. The title sits in quotes, so it is read from the raw command.
+research_title() {
+  [ "$(grep -Eo "$filing" <<<"$command" | wc -l)" = 1 ] || return 1
+  grep -Eq "(plane[[:space:]]+file[[:space:]]+[^[:space:]\"']+|(--title|-t))[[:space:]=]+[\"']Research:" <<<"$raw"
+}
+research_title && skill_started "$transcript" away-team "$agent" && exit 0
 echo "ticket-filing-guard: refused. A ticket is filed only through a filing skill, never by hand: groundhog-day for a bug report, away-team for a note titled Research: <question>, mission-brief for anything else. Each checks the source material (away-team when a fact is missing), searches the tracker for the same premise, and searches the codebase for anything that looks like the thing, before it writes a word. Start the one that fits, then file. Nothing in this command ran, not even its other steps: rerun the ones that need no change on their own." >&2
 exit 2
