@@ -264,4 +264,15 @@ printf 'g\n' >> "$cr/f"; g commit -qam g; new2=$(g rev-parse HEAD); cp "$t/cb.md
 check "due stays due after a content change, and leaves the body" '[ $r = 0 ] && cmp -s "$t/cb.md" "$t/cb0.md"'
 g switch -q --detach; (cd "$cr" && bash "$dm/verdict.sh" due "$t/cb.md" "$new" main s8 >/dev/null 2>&1); r=$?
 check "due carries on a detached head without a record" '[ $r = 1 ] && ! grep -q "^s8 " "$rec" 2>/dev/null'
+# triggers.sh --rerun: code since the verdict keeps Standards and Holds fighting; plain mode gives no reasons.
+rr="$t/rr"; git init -q -b main "$rr"; h() { git -C "$rr" -c user.name=t -c user.email=t@example.invalid "$@"; }
+printf 'a\n' > "$rr/a.sh"; h add -A; h commit -qm a; rv=$(h rev-parse HEAD); printf 'b\n' >> "$rr/a.sh"; h commit -qam b
+o=$(cd "$rr" && bash "$dm/triggers.sh" --rerun "$rv")
+check "a rerun with code since the verdict sends Standards, Holds and Simplicity" \
+  'grep -qx "fight: standards" <<<"$o" && grep -qx "fight: holds" <<<"$o" && grep -qx "fight: simplicity" <<<"$o" && grep -qx "out of reach: claims (the body has no Proof section)" <<<"$o"'
+printf '# n\n' > "$rr/n.md"; h add -A; h commit -qm n; rv2=$(h rev-parse HEAD~1)
+o=$(cd "$rr" && bash "$dm/triggers.sh" "$rv2")
+check "a plain run on a Markdown-only diff keeps Standards and gives no reasons" 'grep -qx "fight: standards" <<<"$o" && grep -qx "out of reach: holds" <<<"$o"'
+o=$(cd "$rr" && bash "$dm/triggers.sh" --rerun "$rv2")
+check "a Markdown-only rerun names the verdict in Standards' reason" 'grep -qx "out of reach: standards (only Markdown changed since the verdict for $rv2, which held the rules)" <<<"$o" && grep -qx "out of reach: cause (no commit or body line claims a fix)" <<<"$o"'
 exit $fail
