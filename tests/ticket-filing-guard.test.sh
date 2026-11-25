@@ -42,6 +42,8 @@ expect "a second filing chained on a Research ticket after away-team is refused"
 expect "a -t Research: title inside a shell comment after away-team is refused" 2 "$dir/away.jsonl" 'bin/plane file APP "Fix the button" # -t "Research: x"'
 expect "a -t Research: inside a quoted body after away-team is refused" 2 "$dir/away.jsonl" "bin/plane file APP \"Fix it\" --body \"see -t 'Research: x'\""
 expect "a plane file with no project before its Research title is refused" 2 "$dir/away.jsonl" 'bin/plane file "Research: x"'
+expect "a filing nested in a quoted \$(...) after away-team is refused" 2 "$dir/away.jsonl" 'gh issue create --title "Research: x" --body "$(gh issue create --title Fix --body b)"'
+expect "a filing nested in quoted backticks after away-team is refused" 2 "$dir/away.jsonl" 'gh issue create --title "Research: x" --body "`gh issue create --title Fix`"'
 expect "a gh --title=Research: after away-team runs" 0 "$dir/away.jsonl" 'gh issue create --title="Research: x" --body b'
 expect "a gh Research title after away-team runs" 0 "$dir/away.jsonl" 'gh issue create --title "Research: x" --body b'
 expect "a tea Research title after away-team runs" 0 "$dir/away.jsonl" "tea issues create -t 'Research: x' </dev/null"

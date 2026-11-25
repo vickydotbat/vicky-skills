@@ -35,10 +35,11 @@ skill_started "$transcript" groundhog-day "$agent" && exit 0
 # away-team files one note titled "Research: <question>": one filing command,
 # whose title (plane's quoted title, or gh's and tea's --title or -t) opens with
 # it. The title sits in quotes, so it is read from the raw command.
-# xargs splits the words as the shell quotes them, so a "-t" inside a quoted
+# The filings are counted in the raw command, so one nested in a quoted $(...)
+# or backticks counts too. xargs splits the words as the shell quotes them, so a "-t" inside a quoted
 # body stays inside its word, and the words stop at a shell comment.
 research_title() {
-  [ "$(grep -Eo "$filing" <<<"$command" | wc -l)" = 1 ] || return 1
+  [ "$(grep -Eo "$filing" <<<"$raw" | wc -l)" = 1 ] || return 1
   local words word prev="" plane=0 title=""
   words=$(xargs printf '%s\n' <<<"$raw" 2>/dev/null) || return 1
   while IFS= read -r word; do
