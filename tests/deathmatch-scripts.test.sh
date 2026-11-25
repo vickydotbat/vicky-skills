@@ -227,4 +227,16 @@ check "carry after a last newline adds no blank line" '[ "$(grep -c "^$" "$t/eb"
 cp "$t/body" "$t/body.before"
 (cd "$t/v" && CLAUDE_CODE_SESSION_ID=me bash "$dm/verdict.sh" carry "$t/body" ggg7777 aaa1111 other) >"$t/out" 2>&1; r=$?
 check "carry refuses another session's id, names this one, and writes nothing" '[ $r = 2 ] && grep -q "this session is me" "$t/out" && cmp -s "$t/body" "$t/body.before" && ! grep -q "^other " "$t/v/.git/vicky-skills/deathmatch/feat"'
+# verdict.sh since: only a verdict commit still in HEAD's history is a fixed point.
+git init -qb main "$t/sn" && git -C "$t/sn" -c user.name=t -c user.email=t@t commit -q --allow-empty -m a && a=$(git -C "$t/sn" rev-parse HEAD)
+git -C "$t/sn" -c user.name=t -c user.email=t@t commit -q --allow-empty -m b && b=$(git -C "$t/sn" rev-parse HEAD)
+git -C "$t/sn" switch -qc side "$a" && git -C "$t/sn" -c user.name=t -c user.email=t@t commit -q --allow-empty -m s && side=$(git -C "$t/sn" rev-parse HEAD) && git -C "$t/sn" switch -q main
+printf 'Deathmatch verdict for %s: 0 proven findings\nDeathmatch verdict for %s: 0 proven findings\nDeathmatch verdict for %s: 1 proven findings\n' "$a" "$b" "$side" > "$t/sn.md"
+out=$(cd "$t/sn" && bash "$dm/verdict.sh" since "$t/sn.md"); r=$?
+check "since skips a newer verdict whose commit left HEAD's history, and takes the newest one in it" '[ $r = 0 ] && [ "$out" = "$b" ]'
+printf 'Deathmatch verdict for %s: 0 proven findings\n' "$side" > "$t/sn2.md"
+out=$(cd "$t/sn" && bash "$dm/verdict.sh" since "$t/sn2.md"); r=$?
+check "since prints nothing and exits 1 when no verdict commit is in HEAD's history" '[ $r = 1 ] && [ -z "$out" ]'
+(cd "$t/sn" && bash "$dm/verdict.sh" since "$t/missing.md") >/dev/null 2>&1; r=$?
+check "since refuses a body file that doesn't exist" '[ $r = 2 ]'
 exit $fail

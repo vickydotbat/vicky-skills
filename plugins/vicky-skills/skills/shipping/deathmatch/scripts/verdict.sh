@@ -13,6 +13,9 @@
 # for <head sha>: carried from <verdict sha>, assimilate patch only, <UTC time>"
 # into it, so
 # due exits 1 for the head commit. With a session id it also records the run.
+# verdict.sh since <body file>: prints the last verdict's commit that is still
+# an ancestor of HEAD, the fixed point a follow-up deathmatch fights from, and
+# exits 1 when there is none.
 set -u
 # A run records only this session's own id, so pr-guard finds the record it looks for.
 refuse_other() {
@@ -30,6 +33,16 @@ if [ "${1:-}" = record ]; then
   mkdir -p "$(dirname "$dir/$branch")" && echo "$2 $(git rev-parse HEAD)" >>"$dir/$branch"
   exit 0
 fi
+if [ "${1:-}" = since ]; then
+  [ -f "${2:-}" ] || { echo "usage: verdict.sh since <body file>" >&2; exit 2; }
+  found= # mutant-ok delete: found starts unset in a fresh script, so the reset only guards a caller that exported it
+  # A rebase rewrites the commits a verdict names, so only one still in HEAD's history counts.
+  while read -r v; do
+    git merge-base --is-ancestor "$v" HEAD 2>/dev/null && found=$v
+  done < <(grep -oE 'Deathmatch verdict for [0-9a-f]{7,40}' "$2" | awk '{print $4}')
+  [ -n "$found" ] || exit 1
+  echo "$found"; exit 0
+fi
 if [ "${1:-}" = carry ]; then
   body=${2:-}; sha=${3:-}; from=${4:-}
   [ -n "$body" ] && [ -n "$sha" ] && [ -n "$from" ] || { echo "usage: verdict.sh carry <body file> <head sha> <verdict sha> [session id]" >&2; exit 2; }
@@ -40,7 +53,7 @@ if [ "${1:-}" = carry ]; then
   [ -z "${5:-}" ] || exec bash "$0" record "$5"
   exit 0
 fi
-[ "${1:-}" = due ] || { echo "usage: verdict.sh due <body file> <head sha> | record <session id> | carry <body file> <head sha> <verdict sha>" >&2; exit 2; }
+[ "${1:-}" = due ] || { echo "usage: verdict.sh due <body file> <head sha> | since <body file> | record <session id> | carry <body file> <head sha> <verdict sha>" >&2; exit 2; }
 body=${2:-}; sha=${3:-}
 [ -n "$body" ] && [ -n "$sha" ] || { echo "usage: verdict.sh due <body file> <head sha>" >&2; exit 2; }
 holds "$sha" "$body" && exit 1
