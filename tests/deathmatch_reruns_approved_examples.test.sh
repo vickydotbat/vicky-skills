@@ -14,6 +14,7 @@ t=$(mktemp -d); trap 'rm -rf "$t"' EXIT
 # A home and git config of its own, so no setting on the machine reaches a repo here.
 export HOME="$t/home" GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null
 export CLAUDE_PLUGIN_DATA="$t/data" TMPDIR="$t/tmp"; mkdir -p "$HOME" "$TMPDIR" "$t/bin"
+unset CLAUDE_CODE_SESSION_ID # verdict.sh record checks it, and CI never sets it
 # A gh stub, so no guard here ever reaches a real forge.
 printf '#!/bin/sh\nexit 0\n' > "$t/bin/gh"; chmod +x "$t/bin/gh"; export PATH="$t/bin:$PATH"
 skill() { jq -nc --arg s "$1" '{type:"assistant",message:{content:[{type:"tool_use",name:"Skill",input:{skill:$s}}]}}'; }

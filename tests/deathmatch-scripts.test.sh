@@ -247,11 +247,15 @@ printf 'Deathmatch verdict for %s: 0 proven findings\n' "$b" > "$t/dc2.md"; cp "
 (cd "$t/sn" && git switch -q side && bash "$dm/verdict.sh" due "$t/dc2.md" "$side" main >/dev/null 2>&1); r=$?; git -C "$t/sn" switch -q main
 check "due with a base but no session carries nothing" '[ $r = 0 ] && cmp -s "$t/dc2.md" "$t/dc3.md"'
 # verdict.sh due carries a verdict across a rebase that keeps the content, and records it.
+unset CLAUDE_CODE_SESSION_ID # as record's checks above: CI never sets it
 cr="$t/carry"; git init -q -b main "$cr"; g() { git -C "$cr" -c user.name=t -c user.email=t@example.invalid "$@"; }
 printf 'a\n' > "$cr/a"; g add -A; g commit -qm a; g switch -qc feat; printf 'f\n' > "$cr/f"; g add -A; g commit -qm f; old=$(g rev-parse HEAD)
 g switch -q main; printf 'm\n' > "$cr/m"; g add -A; g commit -qm m; g switch -q feat; g rebase -q main; new=$(g rev-parse HEAD)
 printf 'x\nDeathmatch verdict for %s: 0 proven findings\n' "$old" > "$t/cb.md"
-cp "$t/cb.md" "$t/cb1.md"; (cd "$cr" && bash "$dm/verdict.sh" due "$t/cb.md" "$new" main >/dev/null 2>&1); r=$?
+cp "$t/cb.md" "$t/cb1.md"
+(cd "$cr" && CLAUDE_CODE_SESSION_ID=me bash "$dm/verdict.sh" due "$t/cb.md" "$new" main other >"$t/cbo" 2>&1); r=$?
+check "due refuses to carry for another session's id, as record does" '[ $r = 2 ] && grep -q "this session is me" "$t/cbo" && cmp -s "$t/cb.md" "$t/cb1.md"'
+(cd "$cr" && bash "$dm/verdict.sh" due "$t/cb.md" "$new" main >/dev/null 2>&1); r=$?
 check "due with no session carries nothing, even when the content matches" '[ $r = 0 ] && cmp -s "$t/cb.md" "$t/cb1.md"'
 (cd "$cr" && bash "$dm/verdict.sh" due "$t/cb.md" "$new" "" s9 >/dev/null 2>&1); r=$?
 check "due with no base carries nothing" '[ $r = 0 ] && cmp -s "$t/cb.md" "$t/cb1.md"'
