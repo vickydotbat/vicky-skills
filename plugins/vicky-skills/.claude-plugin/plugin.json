@@ -56,6 +56,12 @@
     "./skills/commands/conn"
   ],
   "userConfig": {
+    "sealed_copy_root": {
+      "type": "string",
+      "title": "Folder for deathmatch's sealed copies",
+      "description": "Where deathmatch makes its sealed copies, for a repo too big for the temp folder. sealed-check.sh reset also accepts a copy under it. Empty means the temp folder.",
+      "default": ""
+    },
     "guard_pr": {
       "type": "boolean",
       "title": "One pull request per effort, and no AI credit",

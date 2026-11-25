@@ -92,4 +92,18 @@ bash "$dm/sealed-check.sh" copy "$s/q" >/dev/null 2>&1; r=$?
 bash "$dm/sealed-check.sh" copy "$s/elsewhere" x >/dev/null 2>&1; r2=$?
 bash "$dm/sealed-check.sh" copy "$s/q" ../esc >/dev/null 2>&1; r3=$?; bash "$dm/sealed-check.sh" copy "$s/q" .. >/dev/null 2>&1; r4=$?
 check "copy refuses a missing angle, an angle with a slash, or a folder that is no checkout" '[ $r = 2 ] && [ $r2 = 2 ] && [ $r3 = 2 ] && [ $r4 = 2 ] && [ ! -e "$s/elsewhere-x" ]'
+git clone -q "$s/w" "$s/bl" && printf 'a\n' > "$s/bl/.git/hooks/pre-commit" && bash "$dm/sealed-check.sh" baseline "$s/bl" > "$s/bl.base"
+out=$(SEALED_GIT_BASELINE="$s/bl.base" bash "$dm/sealed-check.sh" check "$s/bl" "$spin" 2>&1); r=$?
+check "a hook the baseline holds, unchanged, passes the check" '[ $r = 0 ] && [ "$out" = "sealed: as pinned" ]'
+printf 'b\n' > "$s/bl/.git/hooks/pre-commit"; out=$(SEALED_GIT_BASELINE="$s/bl.base" bash "$dm/sealed-check.sh" check "$s/bl" "$spin" 2>&1); r=$?
+check "a baseline hook changed after the baseline still fails the check" '[ $r = 1 ] && grep -qx "git: hook pre-commit" <<<"$out"'
+git -C "$s/bl" config core.pager cat && bash "$dm/sealed-check.sh" baseline "$s/bl" > "$s/bl.base"; git -C "$s/bl" config core.pager less
+out=$(SEALED_GIT_BASELINE="$s/bl.base" bash "$dm/sealed-check.sh" check "$s/bl" "$spin" 2>&1)
+check "a baseline setting given a new value still fails the check" 'grep -qx "git: core.pager" <<<"$out"'
+bash "$dm/sealed-check.sh" baseline "$s/elsewhere" >/dev/null 2>&1; r=$?
+check "baseline refuses a folder that is no checkout" '[ $r = 2 ]'
+mkdir "$s/root"; echo b > "$s/c/a"; CLAUDE_PLUGIN_OPTION_SEALED_COPY_ROOT="$s/root" TMPDIR="$s/elsewhere" bash "$dm/sealed-check.sh" reset "$s/c" "$spin" 2>/dev/null; r=$?
+check "with the root setting, reset still refuses a copy outside the root and the temp folder" '[ $r = 2 ] && [ "$(cat "$s/c/a")" = b ]'
+CLAUDE_PLUGIN_OPTION_SEALED_COPY_ROOT="$s/missing" TMPDIR="$s/elsewhere" bash "$dm/sealed-check.sh" reset "$s/c" "$spin" 2>/dev/null; r=$?
+check "a root setting that names no folder widens nothing" '[ $r = 2 ] && [ "$(cat "$s/c/a")" = b ]'
 exit $fail
