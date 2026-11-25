@@ -7,6 +7,12 @@
 # branch's head commit in this session, as "<session id> <head sha>", at
 # <git common dir>/vicky-skills/deathmatch/<branch>.
 # pr-guard reads it before a pull request goes ready.
+# verdict.sh carry <body file> <head sha> <verdict sha> [session id]: for a head
+# commit that only applies an assimilate comment's own patch. Needs the body to
+# hold "Deathmatch verdict for <verdict sha>", then writes "Deathmatch verdict
+# for <head sha>: carried from <verdict sha>, assimilate patch only, <UTC time>"
+# into it, so
+# due exits 1 for the head commit. With a session id it also records the run.
 set -u
 if [ "${1:-}" = record ]; then
   [ -n "${2:-}" ] || { echo "usage: verdict.sh record <session id>" >&2; exit 2; }
@@ -18,7 +24,15 @@ if [ "${1:-}" = record ]; then
   mkdir -p "$(dirname "$dir/$branch")" && echo "$2 $(git rev-parse HEAD)" >>"$dir/$branch"
   exit 0
 fi
-[ "${1:-}" = due ] || { echo "usage: verdict.sh due <body file> <head sha> | record <session id>" >&2; exit 2; }
+if [ "${1:-}" = carry ]; then
+  body=${2:-}; sha=${3:-}; from=${4:-}
+  [ -n "$body" ] && [ -n "$sha" ] && [ -n "$from" ] || { echo "usage: verdict.sh carry <body file> <head sha> <verdict sha> [session id]" >&2; exit 2; }
+  grep -q "Deathmatch verdict for $from" "$body" 2>/dev/null || { echo "verdict.sh: the body holds no verdict for $from" >&2; exit 1; }
+  echo "Deathmatch verdict for $sha: carried from $from, assimilate patch only, $(date -u +%FT%TZ)" >>"$body"
+  [ -n "${5:-}" ] && bash "$0" record "$5"
+  exit 0
+fi
+[ "${1:-}" = due ] || { echo "usage: verdict.sh due <body file> <head sha> | record <session id> | carry <body file> <head sha> <verdict sha>" >&2; exit 2; }
 body=${2:-}; sha=${3:-}
 [ -n "$body" ] && [ -n "$sha" ] || { echo "usage: verdict.sh due <body file> <head sha>" >&2; exit 2; }
 grep -q "Deathmatch verdict for $sha" "$body" 2>/dev/null && exit 1

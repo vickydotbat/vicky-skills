@@ -140,4 +140,62 @@ cp "$dm/../../../../scripts/plugin-data.sh" "$agy_dm/scripts/"
 cp "$dm/mark-outside.sh" "$agy_dm/skills/deathmatch/scripts/"
 CLAUDE_PLUGIN_DATA='' PLUGIN_DATA='' bash "$agy_dm/skills/deathmatch/scripts/mark-outside.sh" s2 "issue 9"
 check "mark-outside resolves Antigravity flattened plugin_data" '[ "$(cat "$t/.gemini/antigravity/plugin_data/vicky-skills/outside-read/s2")" = "issue 9" ]'
+# An assimilate verdict is the work list: carry its patch past a due deathmatch,
+# and pick the newer of it and the body.
+printf 'Proof\nDeathmatch verdict for aaa1111: 2 proven findings\n' > "$t/body"
+bash "$dm/verdict.sh" carry "$t/body" bbb2222 aaa1111 >/dev/null 2>&1; r=$?
+check "carry marks the head commit as holding the verdict it applies" '[ $r = 0 ] && grep -q "Deathmatch verdict for bbb2222: carried from aaa1111" "$t/body"'
+bash "$dm/verdict.sh" due "$t/body" bbb2222 >/dev/null 2>&1; r=$?
+check "a carried head commit is no longer due" '[ $r = 1 ]'
+bash "$dm/verdict.sh" due "$t/body" ccc3333 >/dev/null 2>&1; r=$?
+check "a commit after the carried one is due again" '[ $r = 0 ]'
+cp "$t/body" "$t/body.before"
+bash "$dm/verdict.sh" carry "$t/body" ddd4444 zzz9999 >/dev/null 2>&1; r=$?
+check "carry refuses a verdict the body never held, and writes nothing" '[ $r = 1 ] && cmp -s "$t/body" "$t/body.before"'
+bash "$dm/verdict.sh" carry "$t/body" ddd4444 >/dev/null 2>&1; r=$?
+check "carry with a missing argument is a usage error" '[ $r = 2 ]'
+as="$dm/assimilate-source.sh"
+cat > "$t/c.json" <<'JSON'
+[{"id":11,"body":"Looks fine, but see The patch below.","created_at":"2026-11-20T10:00:00Z","updated_at":"2026-11-20T10:00:00Z"},
+ {"id":12,"body":"Assimilate verdict for abc1234\n## The four answers\n...\n## The patch\n...\n## Unproven, not blocking\n...","created_at":"2026-11-21T10:00:00Z","updated_at":"2026-11-21T10:00:00Z"},
+ {"id":13,"body":"## The four answers\nx\n## The patch\ny\n## What stays\nz","created_at":"2026-11-22T10:00:00Z","updated_at":"2026-11-22T10:00:00Z"}]
+JSON
+out=$(bash "$as" "$t/c.json" 2026-11-21T12:00:00Z); r=$?
+check "the newest assimilate comment wins over an older body" '[ $r = 0 ] && [ "$out" = "comment 13" ]'
+out=$(bash "$as" "$t/c.json" 2026-11-23T00:00:00+00:00)
+check "a body edited after the comment wins" '[ "$out" = body ]'
+out=$(bash "$as" "$t/c.json" 2026-11-22T10:00:00Z)
+check "a body edited at the comment's own second wins the tie" '[ "$out" = body ]'
+out=$(bash "$as" "$t/c.json" 2026-11-22T11:00:00+02:00)
+check "times compare across time zones" '[ "$out" = "comment 13" ]'
+echo '[{"id":1,"body":"Assimilate verdict for abc1234","created_at":"2026-11-21T10:00:00Z"}]' > "$t/m.json"
+out=$(bash "$as" "$t/m.json" 2026-11-01T00:00:00Z)
+check "the marker line alone marks an assimilate comment, with no updated_at" '[ "$out" = "comment 1" ]'
+echo '[{"id":1,"body":"The patch is wrong","created_at":"2026-11-21T10:00:00Z"}]' > "$t/n.json"
+out=$(bash "$as" "$t/n.json" 2026-11-01T00:00:00Z)
+check "a plain review comment is no assimilate comment" '[ "$out" = none ]'
+echo '[]' > "$t/e.json"
+out=$(bash "$as" "$t/e.json" 2026-11-01T00:00:00Z)
+check "no comments is none" '[ "$out" = none ]'
+bash "$as" "$t/c.json" no-such-time >/dev/null 2>&1; r=$?
+check "a body time that is no time is a usage error" '[ $r = 2 ]'
+bash "$as" "$t/nofile.json" 2026-11-01T00:00:00Z >/dev/null 2>&1; r=$?
+check "an unreadable comments file is a usage error" '[ $r = 2 ]'
+bash "$dm/verdict.sh" carry "$t/body" "" aaa1111 >/dev/null 2>&1; r=$?
+check "carry with an empty head sha is a usage error" '[ $r = 2 ]'
+bash "$dm/verdict.sh" carry "" ddd4444 aaa1111 >/dev/null 2>&1; r=$?
+check "carry with an empty body path is a usage error" '[ $r = 2 ]'
+(cd "$t/v" && bash "$dm/verdict.sh" carry "$t/body" eee5555 aaa1111 s9) >/dev/null 2>&1; r=$?
+check "carry with a session id records that session for the branch" '[ $r = 0 ] && grep -q "^s9 " "$t/v/.git/vicky-skills/deathmatch/feat"'
+echo '[{"id":1,"body":"Assimilate verdict for abc1234","created_at":"2026-11-21T10:00:00Z"}]' > "$t/m.json"
+bash "$as" "$t/m.json" "" >/dev/null 2>&1; r=$?
+check "an empty body time is a usage error" '[ $r = 2 ]'
+echo 'not json' > "$t/bad.json"
+bash "$as" "$t/bad.json" 2026-11-01T00:00:00Z >/dev/null 2>&1; r=$?
+check "a file that is no JSON is a usage error" '[ $r = 2 ]'
+echo '[{"id":5,"body":"Assimilate verdict for abc1234","created_at":"garbage"}]' > "$t/g.json"
+bash "$as" "$t/g.json" 2026-11-01T00:00:00Z >/dev/null 2>&1; r=$?
+check "an assimilate comment with no readable time is a usage error" '[ $r = 2 ]'
+bash "$as" "$t/e.json" 2026-11-01T00:00:00Z >/dev/null 2>&1; r=$?
+check "none exits 0" '[ $r = 0 ]'
 exit $fail

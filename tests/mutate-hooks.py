@@ -111,6 +111,7 @@ TESTS = {
     "skills/shipping/deathmatch/scripts/halfway.sh": ["deathmatch_approved_examples", "deathmatch-scripts"],
     "skills/shipping/deathmatch/scripts/batch.sh": ["deathmatch_approved_examples", "deathmatch-scripts"],
     "skills/shipping/deathmatch/scripts/verdict.sh": ["deathmatch_approved_examples", "deathmatch-scripts"],
+    "skills/shipping/deathmatch/scripts/assimilate-source.sh": ["deathmatch-scripts"],
     "skills/shipping/deathmatch/scripts/mark-outside.sh": ["deathmatch_approved_examples", "deathmatch-scripts"],
     "skills/shipping/deathmatch/scripts/release-outside.sh": ["release-outside"],
     "skills/shipping/deathmatch/scripts/sealed-check.sh": ["sealed_copy_approved_examples", "sealed-check"],
