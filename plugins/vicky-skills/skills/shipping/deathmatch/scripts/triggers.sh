@@ -8,16 +8,19 @@
 # claims a fix. Claims fights a body with a Proof section. Triggers read only
 # added lines, and a Markdown file never triggers.
 # triggers.sh --rerun <verdict commit> [body file]: a follow-up since a verdict.
-# When the diff since it changes only Markdown, Standards rests on the verdict
-# too, so only Intent and Claims can fight. Each "out of reach" line then ends
-# with its reason in brackets.
+# When the diff since it changes only Markdown, Intent, Standards and Claims
+# can fight, and Standards reads only the commits since the verdict: in this
+# kind of repo the skills are Markdown, and Standards is the angle that reads
+# their rules. With no commit since the verdict, only Intent fights. Each "out
+# of reach" line then ends with its reason in brackets.
 set -u
 rerun=0
 [ "${1:-}" = --rerun ] && { rerun=1; shift; }
 base=${1:?usage: triggers.sh [--rerun] <fixed-point> [body file]}
 body=${2:-}
 say() {
-  if [ "$2" = 1 ]; then echo "fight: $1"
+  if [ "$2" = 1 ] && [ -n "${4:-}" ]; then echo "fight: $1 ($4)"
+  elif [ "$2" = 1 ]; then echo "fight: $1"
   elif [ "$rerun" = 1 ]; then echo "out of reach: $1 ($3)"
   else echo "out of reach: $1"; fi
 }
@@ -28,10 +31,18 @@ fix=0
 { git log --format=%B "$base"..HEAD; [ -n "$body" ] && cat "$body" 2>/dev/null; } | grep -qiE '\b(fix(es|ed)?|bug|regression)\b' && fix=1
 proof=0
 [ -n "$body" ] && grep -qE '^## Proof' "$body" 2>/dev/null && proof=1
-std=1
-[ "$rerun" = 1 ] && [ "$code" = 0 ] && std=0
+std=1 scope=
+if [ "$rerun" = 1 ]; then
+  scope="only the commits since $base"
+  # Nothing new since the verdict: every angle but Intent rests on it.
+  if [ -z "$files" ]; then
+    say intent 1
+    for a in standards holds simplicity cause claims; do say "$a" 0 "no commit since the verdict for $base"; done
+    echo "no trigger in the diff"; exit 0
+  fi
+fi
 say intent 1
-say standards "$std" "only Markdown changed since the verdict for $base, which held the rules"
+say standards "$std" "" "$scope"
 say holds "$code" "no file other than Markdown changed"
 say simplicity "$code" "no file other than Markdown changed"
 say cause "$fix" "no commit or body line claims a fix"
