@@ -48,6 +48,7 @@ expect "a -t Research: in a later command after away-team is refused" 2 "$dir/aw
 expect "a quoted plane word in a later command after away-team is refused" 2 "$dir/away.jsonl" 'gh issue create --title Fix; echo "plane" file X "Research: y"'
 expect "two titles after away-team are refused" 2 "$dir/away.jsonl" 'gh issue create --title Fix --title "Research: x"'
 expect "a Research ticket after another command after away-team is refused" 2 "$dir/away.jsonl" 'cd repo && gh issue create --title "Research: x" --body b'
+expect "a Research ticket with a command chained after it after away-team is refused" 2 "$dir/away.jsonl" 'gh issue create --title "Research: x" --body b && echo done'
 expect "a gh --title=Research: after away-team runs" 0 "$dir/away.jsonl" 'gh issue create --title="Research: x" --body b'
 expect "a gh Research title after away-team runs" 0 "$dir/away.jsonl" 'gh issue create --title "Research: x" --body b'
 expect "a tea Research title after away-team runs" 0 "$dir/away.jsonl" "tea issues create -t 'Research: x' </dev/null"

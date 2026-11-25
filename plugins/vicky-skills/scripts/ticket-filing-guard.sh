@@ -42,7 +42,7 @@ skill_started "$transcript" groundhog-day "$agent" && exit 0
 research_title() {
   grep -Eq '[;&|`]|\$\(' <<<"$command" && return 1
   [ "$(grep -Eo "$filing" <<<"$raw" | wc -l)" = 1 ] || return 1
-  local words word prev="" plane=0 n=0 titles=0 title=""
+  local words word prev="" plane=0 n=0 titles=0 title="" # mutant-ok delete: unset, each reads the same as its start value, and an unset titles fails the last test the same way
   words=$(xargs printf '%s\n' <<<"$raw" 2>/dev/null) || return 1
   while IFS= read -r word; do
     case $word in \#*) break ;; esac

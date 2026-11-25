@@ -59,7 +59,7 @@ since-user.sh	7be3c1c933152abd	86d6a8cd389726ce	14/14
 skill-change-proven.sh	2a77ba5faffc92ea	ea349a03792d2390	13/13
 skill-graph.py	9915c56e8e2fc239	1671c494b93daa59	50/50
 skill-ledger.sh	5a29eb7f617f6f60	ff7ccbbd36194ae4	17/17
-skill-started.sh	fcfb07feca5ca217	0438571f35a56277	13/13
+skill-started.sh	fcfb07feca5ca217	f28606674b112043	13/13
 skills/building/over-to-you/scripts/checklist.py	9d8e4d5319372829	09a89912fc34694a	163/163
 skills/building/over-to-you/scripts/lint-checklist.py	80e5765a76b4cf46	530598300fdf49e4	61/61
 skills/building/over-to-you/scripts/ran.sh	ab38b142893f3817	09a89912fc34694a	52/52
@@ -112,7 +112,7 @@ summit.sh	8e6e2e361acbd473	a77cb004911c26a9	43/43
 sup-handoff-hint.sh	ca0328e26873afae	acb6527e08baa0b0	37/37
 tea-stdin.awk	ddfdfc5257c31b06	3860b78ecc589fec	70/70
 tea-stdin.sh	c631fcfccdb1abf0	d1eb052256ae5a2a	15/15
-ticket-filing-guard.sh	fb948f7f0eeb14c3	ce83676502d249c0	45/45
+ticket-filing-guard.sh	702eb7268d6bf1cc	5d76cb24a4dd371a	49/49
 todo-reminder.sh	87bab188b0686e79	118f1019071f20bc	9/9
 user-test-guard.sh	b684b056550b7e16	d407cb0e230ed4d5	58/58
 watch.sh	8361b0cd96435e12	fc2f74078f28c806	33/33
