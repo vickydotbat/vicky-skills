@@ -52,12 +52,13 @@ limit=$(grep -oE 'at once: [0-9]+' "$transcript" 2>/dev/null | tail -n 1 | grep 
 # final notification after its launch or its last message, and no error result.
 # Only lines that can name a launch, its result, a notification, a message or a stop reach jq.
 running=$(grep -E 'opponent|<task-notification>|"(SendMessage|TaskStop)"|"is_error":true|"agentId"' "$transcript" 2>/dev/null \
-  | jq -Rrn -L "$(dirname "$0")" --rawfile rec "$record" --argjson now "$now" --argjson window "$window" '
+  | jq -Rrn -L "$(dirname "$0")" --rawfile rec "$record" --argjson now "$now" --argjson window "$window" --arg self "$id" '
   include "opponents";
   [inputs | fromjson? | objects] as $r
   | [$rec | split("\n")[] | select(length > 0) | split("\t")
      | select(($now - (.[2] | tonumber? // 0)) < $window) | {id: .[0], type: .[1], from: "record"}] as $recorded
-  | (opponent_launches($r) | map(. + {from: "transcript"})) as $seen
+  # The launch being judged may already sit in the transcript: it never counts itself.
+  | (opponent_launches($r) | map(select(.id != $self) | . + {from: "transcript"})) as $seen
   | fighting($r; $recorded + $seen)
   | "\(.from)\t\(.id)\t\(.type)"' 2>/dev/null) || { echo "opponent-batch-guard: the read of running opponents failed, so this launch is refused, never passed uncounted. Send it again. Nothing was dispatched." >&2; exit 2; }
 # A launch the record and the transcript both hold counts once: every record row counts, and
