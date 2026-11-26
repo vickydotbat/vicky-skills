@@ -72,7 +72,7 @@ GIT_GUARDS = ["git-guard", "git_guard_approved_examples", "push-behind-guard", "
 TESTS = {
     "skill-change-proven.sh": ["skill_change_proven_approved_examples", "skill-change-tested"],
     "familiar-voice.sh": ["familiar_approved_examples", "familiar"],
-    "auto-tidy.sh": ["auto-tidy", "auto-tidy-keeps", "auto_tidy_approved_examples", "auto_tidy_gaps_approved_examples", "auto_tidy_forks_approved_examples", "auto-tidy-clone", "clone_takeover_approved_examples"],
+    "auto-tidy.sh": ["auto-tidy", "auto-tidy-keeps", "auto_tidy_approved_examples", "auto_tidy_gaps_approved_examples", "auto_tidy_forks_approved_examples", "auto-tidy-forks", "auto-tidy-clone", "clone_takeover_approved_examples"],
     "stale-copy-hint.sh": ["stale_copy_hint_approved_examples", "stale-copy-hint", "hint_once_approved_examples"],
     "approved-spec.sh": ["approved-spec", "open-draft"],
     "git-guard.sh": ["git-guard", "git_guard_approved_examples"],
@@ -164,8 +164,8 @@ TESTS = {
     "merged-branch-guard.sh": ["merged-branch-guard", "merged_branch_approved_examples", "merged-branch-hint", "mbg_after_302_approved_examples"],
     "git-subcommand.sh": GIT_GUARDS + ["mbg_after_302_approved_examples"],
     "drop-worktree.sh": ["worktree_drop_approved_examples", "auto_tidy_approved_examples", "auto-tidy"],
-    "fork-tidy.sh": ["auto_tidy_forks_approved_examples"],
-    "fork-sweep.sh": ["auto_tidy_forks_approved_examples"],
+    "fork-tidy.sh": ["auto_tidy_forks_approved_examples", "auto-tidy-forks"],
+    "fork-sweep.sh": ["auto_tidy_forks_approved_examples", "auto-tidy-forks"],
     "merge-point.sh": ["merged-branch-guard", "merged_branch_approved_examples", "auto-tidy-clone", "clone_takeover_approved_examples"],
     # Skill scripts, by their path under the plugin.
     "skills/commands/captains-log/scripts/hook-audit.py": ["hook-audit"],

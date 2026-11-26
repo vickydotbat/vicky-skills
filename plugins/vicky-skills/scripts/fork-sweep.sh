@@ -17,9 +17,9 @@ forks=$(timeout 30 gh repo list --fork --limit 1000 --json nameWithOwner,parent 
 while read -r fork parent; do
   furl="https://github.com/$fork.git" purl="https://github.com/$parent.git"
   g="$work/${fork//\//_}"
-  git init -q --bare "$g" || continue
+  git init -q --bare "$g" || continue # mutant-ok delete: the cd on the next line fails on a folder that is not there and skips the fork the same way
   cd "$g" || continue
-  pdef=$(head_of "$purl") fdef=$(head_of "$furl")
+  prs="" pdef=$(head_of "$purl") fdef=$(head_of "$furl")
   if [ -z "$pdef" ] || [ -z "$fdef" ] \
     || ! GIT_TERMINAL_PROMPT=0 timeout 120 git fetch -q "$purl" "+refs/heads/$pdef:refs/p/$pdef" 2>/dev/null \
     || ! GIT_TERMINAL_PROMPT=0 timeout 120 git fetch -q "$furl" '+refs/heads/*:refs/f/*' 2>/dev/null \

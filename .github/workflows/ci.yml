@@ -319,6 +319,8 @@ jobs:
         run: tests/auto_tidy_gaps_approved_examples.test.sh
       - name: Auto-tidy and the fork sweep clear your forks
         run: tests/auto_tidy_forks_approved_examples.test.sh
+      - name: The fork tidy's edges and the sweep's own safety
+        run: tests/auto-tidy-forks.test.sh
       - name: Auto-tidy keeps unpushed work and worktrees in use
         run: tests/auto-tidy-keeps.test.sh
       - name: Gate-notify hook
