@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2016 # the hints are Markdown, and their backticks stay literal
 # PostToolUse hook (Skill): when a skill in the case below starts, adds one line
 # of context naming what its steps need. Off unless the plugin option step_guard
 # is true; the option keeps that name, from when it also drove step-guard, so
