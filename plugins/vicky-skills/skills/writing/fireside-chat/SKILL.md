@@ -36,8 +36,11 @@ Two kinds of question, kept apart:
    ```
 
    Every `[?]` claim gets a question in the first round it can. Done when every question on the frontier is asked or waits on an open one.
+   Proven by: plugins/vicky-skills/evals/fireside-chat/ask-the-story
 3. **Keep their words.** Record each answer in the piece's notes as the user wrote it, quoted, before you paraphrase anything. A turn of phrase, a joke or a swear word is material: keep it for the draft. Done when every answer sits verbatim in the notes, under its question.
 4. **Follow the story.** An answer that opens a better story than the planned angle gets a follow-up in the next round, and an angle change goes to the user as a craft question with your pick. An "I don't remember" leaves the claim out of the piece. Done when every answer is placed, every branch it opened is asked or dropped, and no `[?]` is left.
+   Proven by: plugins/vicky-skills/evals/fireside-chat/follow-the-story
 5. **Hand over to the writer.** Stop when the frontier is empty. Tell the user that the notes are ready, and name the angle, the story beats and the quotes to use. The draft itself is written through `human-voice`. Done when the notes hold the angle, the beats and the quotes, and the writing step has started or the user has named a later time.
+   Proven by: plugins/vicky-skills/evals/fireside-chat/hand-over
 
 Charter: C1 ([CHARTER.md](../../CHARTER.md)).
