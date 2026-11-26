@@ -22,9 +22,8 @@ tea_login() {
 # forge_of <url> prints "<forge> <login> <owner/name>": "gh -" for github.com,
 # "tea <login>" for a host a tea login names, and nothing for any other.
 forge_of() {
-  local h p l
+  local h p l # mutant-ok delete: callers read forge_of through $(...), so its names never leak
   read -r h p <<<"$(url_parts "$1")"
-  [ -n "$p" ] || return 0
   if [ "$h" = github.com ]; then printf 'gh - %s' "$p"
   elif l=$(tea_login "$h") && [ -n "$l" ]; then printf 'tea %s %s' "$l" "$p"
   fi
@@ -37,7 +36,7 @@ forge_user() {
 }
 # repo_owner_parent <forge> <login> <owner/name> prints "<owner> <parent owner/name>".
 repo_owner_parent() {
-  local info
+  local info # mutant-ok delete: callers read it through $(...), so info never leaks
   if [ "$1" = gh ]; then
     info=$(timeout 10 gh repo view "$3" --json owner,parent 2>/dev/null) || return 1
     jq -r '"\(.owner.login) \(.parent.owner.login // "")/\(.parent.name // "")"' <<<"$info" 2>/dev/null
@@ -48,7 +47,7 @@ repo_owner_parent() {
 }
 # drop_runs <forge> <login> <owner/name> <branch> deletes the branch's workflow runs.
 drop_runs() {
-  local id
+  local id # mutant-ok delete: no caller reads id after drop_runs
   if [ "$1" = gh ]; then
     for id in $(timeout 10 gh run list -R "$3" --branch "$4" --limit 100 --json databaseId 2>/dev/null | jq -r '.[].databaseId' 2>/dev/null); do
       timeout 10 gh run delete "$id" -R "$3" >/dev/null 2>&1

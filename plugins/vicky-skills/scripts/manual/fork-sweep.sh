@@ -14,7 +14,7 @@ pr() { awk -v b="$1" -v f="$2" '$1 == b { print $f; exit }' <<<"$prs"; }
 head_of() { GIT_TERMINAL_PROMPT=0 timeout 15 git ls-remote --symref "$1" HEAD 2>/dev/null | sed -n 's#^ref: refs/heads/\(.*\)\tHEAD$#\1#p'; }
 # parent_prs <forge> <login> <parent>: its pull requests as <branch> <state> <head sha>.
 parent_prs() {
-  local out
+  local out # mutant-ok delete: callers read parent_prs through $(...), so out never leaks
   if [ "$1" = gh ]; then
     out=$(timeout 20 gh pr list -R "$3" --state all --limit 500 --json headRefName,state,headRefOid 2>/dev/null) || return 1
     jq -r '.[] | "\(.headRefName) \(.state) \(.headRefOid)"' <<<"$out"
@@ -31,7 +31,7 @@ forks=$(
     for page in $(seq 20); do
       got=$(timeout 20 tea api -l "$l" "user/repos?limit=50&page=$page" </dev/null 2>/dev/null \
         | jq -r --arg l "$l" '.[] | select(.fork and .parent != null) | "tea \($l) \(.full_name) \(.parent.full_name) \(.clone_url) \(.parent.clone_url)"' 2>/dev/null)
-      [ -n "$got" ] || break
+      [ -n "$got" ] || break # mutant-ok delete: past the last page each page is empty, so the loop only takes longer
       echo "$got"
     done
   done

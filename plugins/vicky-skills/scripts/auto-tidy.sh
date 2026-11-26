@@ -162,8 +162,7 @@ if [ -n "$oslug" ] && who=$(forge_user "$oforge" "$ologin") && [ -n "$who" ]; th
   while read -r rem; do
     [ "$rem" = origin ] && continue # mutant-ok delete: origin is never its own parent, so the owner check below skips it too
     read -r forge login slug <<<"$(forge_of "$(git config --get "remote.$rem.url")")"
-    [ "$forge $login" = "$oforge $ologin" ] && [ -n "$slug" ] || continue
-    [ "$(repo_owner_parent "$forge" "$login" "$slug")" = "$who $oslug" ] || continue
+    [ "$forge $login $(repo_owner_parent "$forge" "$login" "$slug")" = "$oforge $ologin $who $oslug" ] || continue
     GIT_TERMINAL_PROMPT=0 timeout 15 git fetch --prune --quiet "$rem" >/dev/null 2>&1 || continue
     fork_tidy "$rem" "$forge" "$login" "$slug" "refs/remotes/$rem/" "$default" "$main_name"
     for b in "${fork_gone[@]}"; do went+=("$rem/$b"); done

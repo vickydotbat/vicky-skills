@@ -63,4 +63,10 @@ echo "me/two me gone/two" >> "$dir/repos"
 runsweep >/dev/null
 check "a fork whose parent cannot be read keeps a branch another fork's merge names" 'on two.git feat'
 
+# The Gitea sweep reads a pull request's state: closed unmerged is named, open is not.
+gsetup; fbranch fork.git shut; fbranch fork.git live
+echo "shut CLOSED $(git -C "$dir/fork.git" rev-parse shut)" >> "$dir/prs"; echo "live OPEN $(git -C "$dir/fork.git" rev-parse live)" >> "$dir/prs"
+out=$(gsweep)
+check "the Gitea sweep names a branch whose pull request closed unmerged, and not an open one" 'grep -q "Kept unmerged: shut\." <<<"$out"'
+
 exit "$fail"
