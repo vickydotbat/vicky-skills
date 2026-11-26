@@ -86,7 +86,6 @@ second() {
 worktree() { git -C "$dir/repo" worktree add -q "$dir/wt-$1" "$1" 2>/dev/null; }
 # busy <path>: another session stands in that folder until the test ends.
 busy() {
-  local _
   (cd "$1" && exec sleep 300) & pids+=($!)
   for _ in $(seq 50); do [ "$(readlink "/proc/$!/cwd" 2>/dev/null)" = "$1" ] && return; sleep 0.1; done
 }
