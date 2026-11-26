@@ -155,17 +155,17 @@ while read -r rb; do
   GIT_TERMINAL_PROMPT=0 timeout 15 git push -q origin --delete "$b" >/dev/null 2>&1 && went+=("origin/$b")
 done < <(git for-each-ref --format='%(refname:short)' refs/remotes/origin)
 
-# Your fork on another remote: a GitHub repo of yours whose parent is origin.
-origin_slug=$(gh_slug "$(git config --get remote.origin.url)") # the URL as written: get-url would apply insteadOf
-if [ -n "$origin_slug" ] && login=$(timeout 10 gh api user --jq .login 2>/dev/null) && [ -n "$login" ]; then
+# Your fork on another remote: a repo of yours on origin's forge, GitHub or
+# Gitea, whose parent is origin.
+read -r oforge ologin oslug <<<"$(forge_of "$(git config --get remote.origin.url)")" # the URL as written: get-url would apply insteadOf
+if [ -n "$oslug" ] && who=$(forge_user "$oforge" "$ologin") && [ -n "$who" ]; then
   while read -r rem; do
     [ "$rem" = origin ] && continue # mutant-ok delete: origin is never its own parent, so the owner check below skips it too
-    slug=$(gh_slug "$(git config --get "remote.$rem.url")")
-    [ -n "$slug" ] || continue # mutant-ok delete: gh repo view fails on an empty name, so the next line skips it too
-    info=$(timeout 10 gh repo view "$slug" --json owner,parent 2>/dev/null) || continue
-    [ "$(jq -r '"\(.owner.login) \(.parent.owner.login // "")/\(.parent.name // "")"' <<<"$info" 2>/dev/null)" = "$login $origin_slug" ] || continue
+    read -r forge login slug <<<"$(forge_of "$(git config --get "remote.$rem.url")")"
+    [ "$forge $login" = "$oforge $ologin" ] && [ -n "$slug" ] || continue
+    [ "$(repo_owner_parent "$forge" "$login" "$slug")" = "$who $oslug" ] || continue
     GIT_TERMINAL_PROMPT=0 timeout 15 git fetch --prune --quiet "$rem" >/dev/null 2>&1 || continue
-    fork_tidy "$rem" "$slug" "refs/remotes/$rem/" "$default" "$main_name"
+    fork_tidy "$rem" "$forge" "$login" "$slug" "refs/remotes/$rem/" "$default" "$main_name"
     for b in "${fork_gone[@]}"; do went+=("$rem/$b"); done
     n=$(unmerged_note "git push $rem --delete")
     [ -n "$n" ] && notes+=("On $rem: $n")

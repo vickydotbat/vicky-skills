@@ -6,13 +6,18 @@
 # line and the sweep's line say, and the sweep's own safety: its scratch
 # folder, a failed push, and a fork whose parent cannot be read after another.
 set -u
-# shellcheck source=lib/fork-fixture.sh
-. "$(dirname "$0")/lib/fork-fixture.sh"
+# shellcheck source=lib/gitea-fork-fixture.sh
+. "$(dirname "$0")/lib/gitea-fork-fixture.sh"
 . "$root/plugins/vicky-skills/scripts/fork-tidy.sh"
 for u in https://github.com/a/b.git https://github.com/a/b/ git@github.com:a/b.git ssh://git@github.com/a/b; do
-  check "gh_slug reads $u" '[ "$(gh_slug "$u")" = a/b ]'
+  check "forge_of reads $u" '[ "$(forge_of "$u")" = "gh - a/b" ]'
 done
-check "gh_slug says nothing for another host" '[ -z "$(gh_slug https://example.invalid/a/b.git)" ]'
+check "forge_of says nothing for a host with no tea login" '[ -z "$(PATH="$dir/tea:$PATH" forge_of https://example.invalid/a/b.git)" ]'
+printf '[{"name":"gt","url":"https://git.example.invalid","user":"me","ssh_host":"ssh.example.invalid"}]\n' > "$dir/tea-logins"
+check "forge_of names the tea login for a Gitea URL" '[ "$(PATH="$dir/tea:$PATH" forge_of https://git.example.invalid/a/b.git)" = "tea gt a/b" ]'
+check "forge_of matches a tea login's ssh host" '[ "$(PATH="$dir/tea:$PATH" forge_of ssh://git@ssh.example.invalid:2222/a/b.git)" = "tea gt a/b" ]'
+check "each fake forge shadows the other forge's real tool, so no test reaches a real fork" '[ -x "$dir/gh/tea" ] && [ -x "$dir/tea/gh" ]'
+check "url_parts says nothing for a local path" '[ -z "$(url_parts /srv/a/b.git)" ]'
 
 fsetup; on_main; git -C "$dir/fork.git" config receive.denyDeleteCurrent ignore; echo "main MERGED $(git -C "$dir/fork.git" rev-parse main)" >> "$dir/prs"
 run >/dev/null

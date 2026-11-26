@@ -1,26 +1,71 @@
 # shellcheck shell=bash
 # Sourced by auto-tidy and fork-sweep.
 #
-# gh_slug <url> prints owner/name for a github.com URL, and nothing for any
-# other host. shortcut: GitHub only, until a Gitea fork has a way to name its parent.
-gh_slug() {
-  local u=$1
+# url_parts <url> prints "<host> <owner/name>" for an https, ssh or scp-style
+# URL, and nothing for any other form.
+url_parts() {
+  local u=$1 h p
   case "$u" in
-    https://github.com/*) u=${u#https://github.com/} ;;
-    git@github.com:*) u=${u#git@github.com:} ;;
-    ssh://git@github.com/*) u=${u#ssh://git@github.com/} ;;
+    http://* | https://*) u=${u#*://}; u=${u#*@}; h=${u%%/*}; p=${u#*/} ;;
+    ssh://*) u=${u#ssh://}; u=${u#*@}; h=${u%%/*}; h=${h%%:*}; p=${u#*/} ;;
+    *@*:*) u=${u#*@}; h=${u%%:*}; p=${u#*:} ;;
     *) return 0 ;;
   esac
-  u=${u%/}
-  printf '%s' "${u%.git}"
+  p=${p%/}
+  printf '%s %s' "$h" "${p%.git}"
 }
-# fork_tidy <push target> <fork slug> <ref prefix> <base ref> <fork default>
+# tea_login <host> prints the name of the tea login on that host, if any.
+tea_login() {
+  timeout 10 tea logins list -o json </dev/null 2>/dev/null \
+    | jq -r --arg h "$1" '.[] | select((.url | sub("^https?://"; "") | sub("[/:].*$"; "")) == $h or .ssh_host == $h) | .name' 2>/dev/null | head -1
+}
+# forge_of <url> prints "<forge> <login> <owner/name>": "gh -" for github.com,
+# "tea <login>" for a host a tea login names, and nothing for any other.
+forge_of() {
+  local h p l
+  read -r h p <<<"$(url_parts "$1")"
+  [ -n "$p" ] || return 0
+  if [ "$h" = github.com ]; then printf 'gh - %s' "$p"
+  elif l=$(tea_login "$h") && [ -n "$l" ]; then printf 'tea %s %s' "$l" "$p"
+  fi
+}
+# forge_user <forge> <login> prints the signed-in account's name.
+forge_user() {
+  if [ "$1" = gh ]; then timeout 10 gh api user --jq .login 2>/dev/null
+  else timeout 10 tea api -l "$2" user </dev/null 2>/dev/null | jq -r '.login // empty' 2>/dev/null
+  fi
+}
+# repo_owner_parent <forge> <login> <owner/name> prints "<owner> <parent owner/name>".
+repo_owner_parent() {
+  local info
+  if [ "$1" = gh ]; then
+    info=$(timeout 10 gh repo view "$3" --json owner,parent 2>/dev/null) || return 1
+    jq -r '"\(.owner.login) \(.parent.owner.login // "")/\(.parent.name // "")"' <<<"$info" 2>/dev/null
+  else
+    info=$(timeout 10 tea api -l "$2" "repos/$3" </dev/null 2>/dev/null) || return 1
+    jq -r '"\(.owner.login) \(.parent.full_name // "")"' <<<"$info" 2>/dev/null
+  fi
+}
+# drop_runs <forge> <login> <owner/name> <branch> deletes the branch's workflow runs.
+drop_runs() {
+  local id
+  if [ "$1" = gh ]; then
+    for id in $(timeout 10 gh run list -R "$3" --branch "$4" --limit 100 --json databaseId 2>/dev/null | jq -r '.[].databaseId' 2>/dev/null); do
+      timeout 10 gh run delete "$id" -R "$3" >/dev/null 2>&1
+    done
+  else
+    for id in $(timeout 10 tea api -l "$2" "repos/$3/actions/runs?branch=$4&limit=50" </dev/null 2>/dev/null | jq -r '.workflow_runs[]?.id' 2>/dev/null); do
+      timeout 10 tea api -l "$2" -X DELETE "repos/$3/actions/runs/$id" </dev/null >/dev/null 2>&1
+    done
+  fi
+}
+# fork_tidy <push target> <forge> <login> <fork slug> <ref prefix> <base ref> <fork default>
 # deletes each fork branch under the ref prefix whose pull request to the
 # parent merged at that very commit, with its workflow runs, and keeps every
 # other. A kept branch with commits the base lacks goes in fork_unmerged. The
 # caller defines pr <branch> <field> over the parent's pull requests.
 fork_tidy() {
-  local dest=$1 slug=$2 prefix=$3 base=$4 fdefault=$5 ref sha b id
+  local dest=$1 forge=$2 login=$3 slug=$4 prefix=$5 base=$6 fdefault=$7 ref sha b
   fork_gone=() fork_unmerged=()
   while read -r ref sha; do
     b=${ref#"$prefix"}
@@ -28,9 +73,7 @@ fork_tidy() {
     if [ "$(pr "$b" 2)" = MERGED ] && [ "$(pr "$b" 3)" = "$sha" ]; then
       GIT_TERMINAL_PROMPT=0 timeout 15 git push -q "$dest" --delete "$b" >/dev/null 2>&1 || continue
       fork_gone+=("$b")
-      for id in $(timeout 10 gh run list -R "$slug" --branch "$b" --limit 100 --json databaseId 2>/dev/null | jq -r '.[].databaseId' 2>/dev/null); do
-        timeout 10 gh run delete "$id" -R "$slug" >/dev/null 2>&1
-      done
+      drop_runs "$forge" "$login" "$slug" "$b"
     elif [ "$(pr "$b" 2)" != OPEN ] && [ -n "$(git rev-list -1 "$base..$sha" 2>/dev/null)" ]; then
       fork_unmerged+=("$b")
     fi

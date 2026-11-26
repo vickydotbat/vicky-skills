@@ -1,7 +1,7 @@
 # shellcheck shell=bash
 # Sourced by the Gitea fork tests: the fork fixture moved to a Gitea host, and a
 # fake tea that answers logins list, api user, repo lookups, forks, pull
-# requests and workflow runs from files under $dir. gh is left off PATH.
+# requests and workflow runs from files under $dir, and a gh that always fails.
 # shellcheck source=fork-fixture.sh
 . "$(dirname "${BASH_SOURCE[0]}")/fork-fixture.sh"
 G=https://git.example.invalid
@@ -16,7 +16,7 @@ while [ \$# -gt 0 ]; do case "\$1" in -l|--login) shift ;; -X|--method) m=\$2; s
 url() { printf '%s/%s.git' "$G" "\$1"; }
 case "\$m \$ep" in
   "GET user") echo '{"login":"me"}' ;;
-  "GET user/repos"*) awk '\$2 == "me" && \$3 != "-"' "$dir/repos" | jq -Rn --arg g "$G" '[inputs | split(" ") | {full_name: .[0], fork: true, clone_url: ("\(\$g)/\(.[0]).git"), parent: {full_name: .[2], clone_url: ("\(\$g)/\(.[2]).git")}}]' ;;
+  "GET user/repos"*) [[ \$ep == *page=1 ]] || { echo '[]'; exit 0; }; awk '\$2 == "me" && \$3 != "-"' "$dir/repos" | jq -Rn --arg g "$G" '[inputs | split(" ") | {full_name: .[0], fork: true, clone_url: ("\(\$g)/\(.[0]).git"), parent: {full_name: .[2], clone_url: ("\(\$g)/\(.[2]).git")}}]' ;;
   "GET repos/"*"/pulls"*) [ -f "$dir/prs" ] && [ ! -f "$dir/prs-fail" ] || exit 1
     jq -Rn '[inputs | split(" ") | {head: {ref: .[0], sha: .[2]}, merged: (.[1] == "MERGED"), state: (if .[1] == "OPEN" then "open" else "closed" end)}]' "$dir/prs" ;;
   "GET repos/"*"/actions/runs?branch="*) s=\${ep#repos/}; s=\${s%%/actions/*}; b=\${ep##*branch=}; b=\${b%%&*}
@@ -28,7 +28,9 @@ case "\$m \$ep" in
   *) exit 1 ;;
 esac
 EOF
-chmod +x "$dir/tea/tea"
+# A gh that always fails sits beside the fake tea, so the real gh never answers.
+printf '#!/usr/bin/env bash\nexit 1\n' > "$dir/tea/gh"
+chmod +x "$dir/tea/tea" "$dir/tea/gh"
 # gsetup: the fork setup, with origin, your fork and someone's fork on the Gitea host.
 gsetup() {
   fsetup; rm -f "$dir/tea-down"; FORGE=tea

@@ -25,7 +25,9 @@ case "\$1 \$2" in
   *) exit 1 ;;
 esac
 EOF
-chmod +x "$dir/gh/gh"
+# A tea that always fails sits beside the fake gh, so the real tea never answers.
+printf '#!/usr/bin/env bash\nexit 1\n' > "$dir/gh/tea"
+chmod +x "$dir/gh/gh" "$dir/gh/tea"
 # fsetup: origin is up/proj, your fork me/proj holds the same main, and the clone has both remotes.
 fsetup() {
   setup; rm -rf "$dir/fork.git" "$dir/other.git" "$dir/runs" "$dir/prs-fail"; : > "$dir/prs"
