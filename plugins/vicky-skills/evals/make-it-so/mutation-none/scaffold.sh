@@ -5,6 +5,7 @@ g() { git -c user.name=eval -c user.email=eval@example.invalid "$@"; }
 git init -q -b main .
 git init -q --bare .git/origin.git
 git remote add origin "$PWD/.git/origin.git"
+echo body.md >> .git/info/exclude
 printf 'def total(xs):\n    return sum(xs)\n' > calc.py
 mkdir -p docs/agents; printf 'Testing standards: TESTING_STANDARDS.md\n' > docs/agents/testing.md
 printf '# Testing standards\n\nTest kinds: unit, pytest tests/\nMutation: none, because the project is a teaching repo whose code is examples\nMetrics: none\n' > TESTING_STANDARDS.md

@@ -5,6 +5,7 @@ g() { git -c user.name=eval -c user.email=eval@example.invalid "$@"; }
 git init -q -b main .
 git init -q --bare .git/origin.git
 git remote add origin "$PWD/.git/origin.git"
+echo body.md >> .git/info/exclude
 printf 'def total(xs):\n    return sum(xs)\n' > calc.py
 printf '# Agent rules\n\nPull requests land with a merge commit. Bring main into a branch with git merge, never rebase.\n' > AGENTS.md
 g add -A && g commit -q -m start && git push -q origin main
