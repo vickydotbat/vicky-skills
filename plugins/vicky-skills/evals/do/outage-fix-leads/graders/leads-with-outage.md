@@ -1,6 +1,6 @@
 ---
 type: regex
 target: last_message
-pattern: '^\W*(🚨\s*)?Broken until !203'
-flags: im
+pattern: '^[\s*_]*🚨[\s*_]*Broken until !203'
+flags: i
 ---
