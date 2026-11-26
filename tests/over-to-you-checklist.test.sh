@@ -21,7 +21,7 @@ fresh() { mkdir -p "$1/over-to-you-receipts"; jq -n --arg id "$2" --arg c "$3" -
 fresh "$dir" stage "podman ps --filter name=app"
 spec() { # items json -> spec file; an item with no ran names the receipt r
   jq -n --argjson items "$(jq 'map(.ran //= "r")' <<<"$1")" '{name: "Bob", brief: ["One sitting for the pack."], open: "Open the client on the branch.",
-    signed_off: "nothing yet", proven_by: "`health.sh` answers ok", stage_ran: "stage", sections: [{title: "Pack", items: $items}]}' > "$dir/spec.json"
+    signed_off: "nothing yet", proven_by: "`health.sh` answers ok", stage_ran: "stage", kits_made: "none", sections: [{title: "Pack", items: $items}]}' > "$dir/spec.json"
 }
 write() { rm -f "$dir/out.md"; python3 -I "$skill/checklist.py" "$dir/spec.json" "$dir/out.md"; }
 
@@ -53,7 +53,7 @@ check "a checklist loose in the shared temp folder is refused, naming the sessio
 env TMPDIR="$dir/tmp" CLAUDE_CODE_SESSION_ID=s1 python3 -I "$skill/checklist.py" "$dir/spec.json" "$dir/tmp/s1/over-to-you-x.md" >/dev/null
 check "a checklist in the session folder is written" '[ -s "$dir/tmp/s1/over-to-you-x.md" ]'
 # The whole file for a full spec: a one-line brief, two sections, a kit and its source, and extra tests.
-jq -n '{name: "Bob", brief: "One sitting.", open: "Open the client.", signed_off: "nothing yet", proven_by: "`health.sh` answers ok", stage_ran: "stage", extra: "Try the bank too.", sections: [{title: "Pack", items: [{do: "Open the pack", see: "the slots show", person: "look", ran: "r"}]}, {title: "Paper", items: [{do: "Spawn the paper", see: "the sheet shows", person: "real client", kit: "`/runscript paper` in the game chat", source: "the module scripts", ran: "r"}]}]}' > "$dir/spec.json"
+jq -n '{name: "Bob", brief: "One sitting.", open: "Open the client.", signed_off: "nothing yet", proven_by: "`health.sh` answers ok", stage_ran: "stage", kits_made: "none", extra: "Try the bank too.", sections: [{title: "Pack", items: [{do: "Open the pack", see: "the slots show", person: "look", ran: "r"}]}, {title: "Paper", items: [{do: "Spawn the paper", see: "the sheet shows", person: "real client", kit: "`/runscript paper` in the game chat", source: "the module scripts", ran: "r"}]}]}' > "$dir/spec.json"
 cat > "$dir/want.md" <<'WANT'
 # Over to you, Bob!
 

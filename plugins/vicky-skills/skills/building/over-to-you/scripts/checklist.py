@@ -14,6 +14,8 @@ The spec:
         {"do": "Spawn the paper", "see": "the sheet shows",
          "person": "real client", "kit": "`/runscript paper` as a DM",
          "source": "scripts/paper.nss in the module", "ran": "paper"}]}],
+     "kits_made": ["scratch/paper.nss"],     # with a kit item: each path kit.sh add recorded, or "none";
+                                             # sealed with its sha256 for auto-tidy once the checklist is written
      "extra": "checks run outside the list"}
 
 Writes the file and exits 0, or prints `<problem>` lines and exits 1 without
@@ -34,6 +36,7 @@ reads a file is refused, since a log line can come from another server, and
 a repo's `Stage check:` line in docs/agents/testing.md names the one command,
 matched whole, or says `none` to switch the check off.
 """
+import hashlib
 import json
 import os
 import re
@@ -203,6 +206,67 @@ def stage_problem(spec, out_dir):
     return None  # mutant-ok delete: falling off the end returns None too
 
 
+def kits_problem(spec, items, out_dir):
+    """The problem with kits_made, or None. A spec with a kit item names in kits_made each path kit.sh recorded for
+    the sitting, or "none" when its kits wrote nothing (a tracked seed script, a console command)."""
+    if not any(item.get("kit") for item in items):
+        return None
+    made = spec.get("kits_made")
+    if isinstance(made, str) and made.strip().lower() == "none":
+        return None
+    if not isinstance(made, list) or not made:
+        return ('kits_made: an item has a kit, so list every file or folder the kits wrote, each recorded with '
+                '`kit.sh add <path>` before it was written, or write "none" when they wrote nothing')
+    try:
+        with open(os.path.join(out_dir, "over-to-you-kits"), encoding="utf-8") as f:
+            recorded = {line.rstrip("\n").split("\t", 1)[1] for line in f if "\t" in line}
+    except OSError:
+        recorded = set()
+    for path in made:
+        if os.path.realpath(str(path)) not in recorded:
+            return (f"kits_made: {path} is not on the kit record: run `kit.sh add {path}` before you write it, "
+                    "so kit.sh clean removes it when the sitting closes")
+    return None  # mutant-ok delete: falling off the end also returns None
+
+
+def seal_kits(spec):
+    """List each kits_made path with its sha256 in over-to-you-kits/<branch> in its repo's git folder, and each kit
+    folder as "dir", so auto-tidy removes the kits once the branch's pull request merged or closed, unless edited."""
+    made = spec.get("kits_made")
+    if not isinstance(made, list):
+        return
+    manifests = {}
+    for path in made:
+        path = os.path.realpath(str(path))
+        here = path if os.path.isdir(path) else os.path.dirname(path)
+        try:
+            common, branch = (subprocess.run(["git", "-C", here] + args, capture_output=True, text=True, check=True,
+                                             timeout=10).stdout.strip()
+                              for args in (["rev-parse", "--path-format=absolute", "--git-common-dir"],
+                                           ["symbolic-ref", "--short", "HEAD"]))
+        except (OSError, subprocess.SubprocessError):
+            continue
+        entries = manifests.setdefault(os.path.join(common, "over-to-you-kits", branch.replace("/", "%2F")), {})
+        files = [path]
+        if os.path.isdir(path):
+            entries[path] = "dir"
+            files = [os.path.join(d, f) for d, _, names in os.walk(path) for f in names]
+        for name in files:
+            if os.path.isfile(name) and not os.path.islink(name):
+                with open(name, "rb") as f:
+                    entries[name] = hashlib.sha256(f.read()).hexdigest()
+    for manifest, entries in manifests.items():
+        try:
+            with open(manifest, encoding="utf-8") as f:
+                old = dict(reversed(line.rstrip("\n").split("\t", 1)) for line in f if "\t" in line)
+        except OSError:
+            old = {}
+        old.update(entries)
+        os.makedirs(os.path.dirname(manifest), exist_ok=True)
+        with open(manifest, "w", encoding="utf-8") as f:
+            f.writelines(f"{tag}\t{path}\n" for path, tag in old.items())
+
+
 def render(spec, out_dir="."):
     problems = []
     for key in ("name", "open", "signed_off", "proven_by", "sections"):
@@ -217,9 +281,9 @@ def render(spec, out_dir="."):
         for key in ("do", "see", "person"):
             if not item.get(key):
                 problems.append(f"item {n} has no {key}")
-    problem = stage_problem(spec, out_dir)
-    if problem:
-        problems.append(problem)
+    for problem in (stage_problem(spec, out_dir), kits_problem(spec, items, out_dir)):
+        if problem:
+            problems.append(problem)
     ran = {}
     for n, item in enumerate(items, 1):
         line, problem = receipt(item, n, out_dir)
@@ -268,12 +332,14 @@ def main(argv):
         print(refusal)
         return 1
     with open(argv[1], encoding="utf-8") as f:
-        text, problems = render(json.load(f), os.path.dirname(os.path.abspath(argv[2])))
+        spec = json.load(f)
+    text, problems = render(spec, os.path.dirname(os.path.abspath(argv[2])))
     if problems:
         print("\n".join(problems))
         return 1
     with open(argv[2], "w", encoding="utf-8") as f:
         f.write(text)
+    seal_kits(spec)
     return 0  # mutant-ok delete: sys.exit(None) also exits 0
 
 

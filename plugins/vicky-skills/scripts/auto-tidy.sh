@@ -115,6 +115,30 @@ clone() {
 }
 clone
 
+# over-to-you kits: checklist.py lists each kit with its sha256 in
+# over-to-you-kits/<branch> in the git folder, and each kit folder as "dir".
+# Once the branch's pull request merged or closed, each kit still matching its
+# hash goes, then each listed folder, and the folders inside it, once empty.
+# An edited kit and an unlisted file stay.
+kits_dir="$(git rev-parse --path-format=absolute --git-common-dir)/over-to-you-kits"
+for m in "$kits_dir"/*; do
+  [ -f "$m" ] || continue # mutant-ok: with no manifest the glob stays literal, and no pull request has that name
+  b=${m##*/}; b=${b//%2F//}
+  case "$(pr "$b" 2)" in MERGED | CLOSED) ;; *) continue ;; esac
+  n=0
+  while IFS=$'\t' read -r sum p; do
+    [ "$sum" != dir ] && [ -f "$p" ] || continue
+    if [ "$(sha256sum -- "$p" 2>/dev/null | cut -d' ' -f1)" != "$sum" ]; then kept+=("${p#"$top"/} (edited since its sitting)"); continue; fi
+    rm -f -- "$p" && n=$((n + 1))
+  done <"$m"
+  while IFS=$'\t' read -r sum p; do
+    [ "$sum" = dir ] || continue # mutant-ok delete: find on a file or a missing path removes no folder
+    find "$p" -depth -type d -empty -exec rmdir -- {} \; 2>/dev/null # one at a time, so a parent is empty by the time find tests it
+  done <"$m"
+  rm -f -- "$m"
+  [ "$n" -gt 0 ] && notes+=("Removed $n over-to-you kits for '$b'.")
+done
+
 git worktree prune >/dev/null 2>&1 # mutant-ok delete: a worktree whose folder is gone only adds entries no check below matches
 # Each local branch: delete it, and its worktree, when it merged and its work landed.
 while read -r b track; do
