@@ -64,7 +64,7 @@ A pull request body tells a reviewer what changed, the proof that it works, and 
 
 - Examples: <each approved example> (`<test name>`)
 - Tests: <what ran, failing before and passing after>
-- Mutation: <the sentinels line per file, and each survivor's answer>
+- Mutation: <the sentinels line per file, and each survivor's answer, or the `Mutation: none, because <reason>` line from `docs/agents/testing.md`>
 
 ## Risk
 
