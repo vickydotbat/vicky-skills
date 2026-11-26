@@ -10,8 +10,7 @@
 # line. add refuses a path that already exists, unless a recorded folder holds
 # it, so a file the session did not make is never on the record. clean removes
 # a recorded folder file by file, then folder by folder: nothing under it
-# predates the record. kit-guard holds the end of a turn while a closed
-# sitting's kits are still in place.
+# predates the record.
 set -u
 usage() { echo "usage: kit.sh add <path>... | clean | left" >&2; exit 2; }
 [ $# -ge 1 ] || usage

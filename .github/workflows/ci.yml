@@ -178,8 +178,6 @@ jobs:
         run: tests/over_to_you_lint_checklist.test.sh
       - name: over-to-you records and removes its kits
         run: tests/over-to-you-kit.test.sh
-      - name: kit-guard holds the stop while a closed sitting's kits remain
-        run: tests/kit-guard.test.sh
       - name: Hooks read SendUserMessage
         run: tests/sendusermessage-mode.test.sh
       - name: Read before asking

@@ -123,7 +123,6 @@ TESTS = {
     "skills/shipping/engrave/scripts/law-lint.sh": ["law-lint", "law_lint_approved_examples", "laws_line_approved_examples"],
     "red-first-guard.sh": ["red-first", "red-first-paths", "red_first_approved_examples", "red_first_state_approved_examples"],
     "done-check.sh": ["done_check_approved_examples", "done-check"],
-    "kit-guard.sh": ["kit-guard"],
     "skills/building/over-to-you/scripts/kit.sh": ["over-to-you-kit"],
     "repeat-call-hint.sh": ["repeat_call_approved_examples", "repeat-call-hint"],
     "approved-test-lock.sh": ["approved_test_lock_approved_examples", "approved-test-lock"],

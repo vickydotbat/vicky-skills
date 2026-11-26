@@ -401,12 +401,6 @@
       "title": "Proofread key variable",
       "description": "The name of the environment variable that holds your API key for the proofread endpoint, or \"none\" for a local server that needs none. Blank means GEMINI_API_KEY. With no key set, the session model proofreads.",
       "default": ""
-    },
-    "guard_kit_cleanup": {
-      "type": "boolean",
-      "title": "An over-to-you sitting's kits are gone before the turn ends",
-      "description": "Once an over-to-you page has closed, send the agent back while a kit it recorded with kit.sh is still in place, naming kit.sh clean, at most 3 times in a row. On unless you turn it off.",
-      "default": true
     }
   }
 }

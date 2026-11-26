@@ -448,11 +448,6 @@
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/done-check.sh\"",
             "timeout": 330
-          },
-          {
-            "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/kit-guard.sh\"",
-            "timeout": 10
           }
         ]
       }
