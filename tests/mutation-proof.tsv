@@ -5,15 +5,16 @@ ai-credit.sh	ce9c03ae1de6bb7b	54a54a7b1bf4c1d7	1/1
 approved-spec.sh	1631dde4942ed5b6	d5a1068815cf4493	5/5
 approved-test-lock.sh	30402fcb88e5195f	aeb7120cb3461bc3	114/114
 assign-expand.sh	a2d6f7ea568cb59e	78556a7a7d220be6	5/5
-auto-tidy.sh	744f3115cff7b6d1	0c1ae74fe16555f0	154/154
+auto-tidy.sh	18e769490494d2fc	f171f79265ff43a7	199/199
 cerebro-ask-guard.sh	3d06494f2356b096	8ec4b2dfa0afd7eb	23/23
 done-check.sh	7ef4ac769cc241a5	f119be1bdab65605	63/63
 draft-guard.sh	d8080cb94b59072d	e751bde952207ebd	61/61
-drop-worktree.sh	5642f9beebc9dad3	715d5243f0d151d8	1/1
+drop-worktree.sh	5642f9beebc9dad3	f91af64a1a2783b6	1/1
 familiar-voice.sh	3128a205d08ce300	332924cc4ac536f4	18/18
 fetch-place-hint.sh	3573b2f17e94944d	4d9507bd1e4e8a08	12/12
 foreign-post-hint.sh	e4595240e7a8d340	0bd998170b80a6db	25/25
 foreign-repo.sh	0d615176ee862b67	8b52685799064f63	14/14
+fork-tidy.sh	74c374f8a2c8a51a	2bdac703494dd284	31/31
 gate-notify.sh	7ba893f680c5d672	0b6b4ce0073c128e	25/25
 gate-state-guard.sh	71c338f183976bce	85e6bad15dbacc16	71/71
 git-guard.sh	482f159e829405f5	6e734a2b66835eaf	52/52
@@ -54,6 +55,7 @@ red-first-guard.sh	82f8c645439f2b90	bb5249d5995f0204	46/46
 repeat-call-hint.sh	421adcd33a063615	6c17557d3c6836b9	27/27
 restack-origin-guard.sh	cb150444008a2d6b	b0aff1578e77ce0d	74/74
 review-brief-guard.sh	560dd59ae4621bd2	35d1f7542328b43e	22/22
+scripts/manual/fork-sweep.sh	daa0b5b23a25e2e9	697f421aabe4aa2f	39/39
 shellcheck-guard.sh	4a1cd489a882b91c	500ead1978c8e431	31/31
 since-user.sh	7be3c1c933152abd	86d6a8cd389726ce	14/14
 skill-change-proven.sh	2a77ba5faffc92ea	ea349a03792d2390	13/13

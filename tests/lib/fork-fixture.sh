@@ -5,7 +5,7 @@
 # list and run delete from files under $dir.
 # shellcheck source=auto-tidy-fixture.sh
 . "$(dirname "${BASH_SOURCE[0]}")/auto-tidy-fixture.sh"
-sweep="$root/plugins/vicky-skills/scripts/fork-sweep.sh"
+sweep="$root/plugins/vicky-skills/scripts/manual/fork-sweep.sh"
 export GIT_CONFIG_GLOBAL="$dir/gitconfig"
 cat > "$dir/gh/gh" <<EOF
 #!/usr/bin/env bash

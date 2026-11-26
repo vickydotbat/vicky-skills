@@ -165,7 +165,7 @@ TESTS = {
     "git-subcommand.sh": GIT_GUARDS + ["mbg_after_302_approved_examples"],
     "drop-worktree.sh": ["worktree_drop_approved_examples", "auto_tidy_approved_examples", "auto-tidy"],
     "fork-tidy.sh": ["auto_tidy_forks_approved_examples", "auto-tidy-forks"],
-    "fork-sweep.sh": ["auto_tidy_forks_approved_examples", "auto-tidy-forks"],
+    "scripts/manual/fork-sweep.sh": ["auto_tidy_forks_approved_examples", "auto-tidy-forks"],
     "merge-point.sh": ["merged-branch-guard", "merged_branch_approved_examples", "auto-tidy-clone", "clone_takeover_approved_examples"],
     # Skill scripts, by their path under the plugin.
     "skills/commands/captains-log/scripts/hook-audit.py": ["hook-audit"],
@@ -527,7 +527,7 @@ def main(argv):
         print("survivors: 0")
         return 0
     started = time.monotonic()
-    names = names or sorted(os.listdir(SCRIPTS)) + skill_scripts()
+    names = names or [n for n in sorted(os.listdir(SCRIPTS)) if os.path.isfile(os.path.join(SCRIPTS, n))] + ["scripts/manual/" + n for n in sorted(os.listdir(os.path.join(SCRIPTS, "manual")))] + skill_scripts()
     unmapped = [name for name in names if name not in TESTS]
     if unmapped:
         print("no tests mapped for: " + " ".join(unmapped))

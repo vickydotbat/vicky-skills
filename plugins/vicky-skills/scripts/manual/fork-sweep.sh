@@ -6,8 +6,8 @@
 # stays. One line per fork says what went and what stayed. Needs gh, signed
 # in, and jq.
 set -u
-# shellcheck source=fork-tidy.sh
-. "$(dirname "$0")/fork-tidy.sh"
+# shellcheck source=../fork-tidy.sh
+. "$(dirname "$0")/../fork-tidy.sh"
 work=$(mktemp -d) || exit 1
 trap 'rm -rf "$work"' EXIT
 pr() { awk -v b="$1" -v f="$2" '$1 == b { print $f; exit }' <<<"$prs"; }
