@@ -72,7 +72,7 @@ GIT_GUARDS = ["git-guard", "git_guard_approved_examples", "push-behind-guard", "
 TESTS = {
     "skill-change-proven.sh": ["skill_change_proven_approved_examples", "skill-change-tested"],
     "familiar-voice.sh": ["familiar_approved_examples", "familiar"],
-    "auto-tidy.sh": ["auto-tidy", "auto-tidy-keeps", "auto_tidy_approved_examples", "auto-tidy-clone", "clone_takeover_approved_examples"],
+    "auto-tidy.sh": ["auto-tidy", "auto-tidy-keeps", "auto_tidy_approved_examples", "auto_tidy_gaps_approved_examples", "auto-tidy-clone", "clone_takeover_approved_examples"],
     "stale-copy-hint.sh": ["stale_copy_hint_approved_examples", "stale-copy-hint", "hint_once_approved_examples"],
     "approved-spec.sh": ["approved-spec", "open-draft"],
     "git-guard.sh": ["git-guard", "git_guard_approved_examples"],

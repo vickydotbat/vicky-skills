@@ -104,4 +104,24 @@ setup; branch feat; merge feat; git -C "$dir/repo" fetch -q origin; git -C "$dir
 run >/dev/null
 check "a clone handed back to a stale local main stands on origin's main" '[ "$(git -C "$dir/repo" symbolic-ref --short HEAD)" = main ] && [ "$(git -C "$dir/repo" rev-parse main)" = "$(git -C "$dir/repo" rev-parse origin/main)" ]'
 
+# The tidy line names a detached worktree and a leftover folder it removed.
+gdoc() { mkdir -p "$dir/repo/docs/agents" "$dir/repo/scripts"; printf 'Drop worktree: scripts/drop.sh\n' > "$dir/repo/docs/agents/testing.md"; printf '#!/usr/bin/env bash\ngit worktree remove --force "$1" 2>/dev/null || rm -rf "$1"\n' > "$dir/repo/scripts/drop.sh"; chmod +x "$dir/repo/scripts/drop.sh"; }
+setup; on_main; git -C "$dir/repo" worktree add -q --detach "$dir/wt-d" origin/main 2>/dev/null; main_moves
+out=$(run)
+check "a removed detached worktree is named" 'seen "$out" | grep -q "detached worktree wt-d"'
+setup; on_main; gdoc; mkdir -p "$dir/repo/.claude/worktrees/old"
+out=$(run)
+check "a removed leftover folder is named" 'seen "$out" | grep -q "leftover folder old"'
+setup; on_main; gdoc; mkdir -p "$dir/repo/.claude/worktrees"
+out=$(run)
+check "an empty worktrees folder says nothing" '[ -z "$out" ]'
+# A removal script that forces would take a dirty detached worktree, so the tidy checks first.
+setup; on_main; gdoc; git -C "$dir/repo" worktree add -q --detach "$dir/wt-d" origin/main 2>/dev/null; main_moves; echo half > "$dir/wt-d/notes.txt"
+run >/dev/null
+check "a forcing removal script never gets a dirty detached worktree" '[ -f "$dir/wt-d/notes.txt" ]'
+# The clone itself, detached on a commit main holds, is never handed to the removal script.
+setup; gdoc; git -C "$dir/repo" switch -q --detach origin/main; main_moves
+run >/dev/null
+check "a detached clone stays" '[ -d "$dir/repo/.git" ]'
+
 exit $fail

@@ -157,11 +157,11 @@ done < <(git for-each-ref --format='%(refname:short)' refs/remotes/origin)
 remove_wt() {
   local drop; drop=$(drop_script "$top")
   if [ -n "$drop" ]; then (cd "$top" && "$top/$drop" "$1") >/dev/null 2>&1; else git worktree remove "$1" >/dev/null 2>&1; fi
-  git worktree prune >/dev/null 2>&1
+  git worktree prune >/dev/null 2>&1 # mutant-ok delete: a removed worktree left in the list only adds an entry no later check matches
 }
 # Each clean, unlocked, idle worktree on a detached HEAD that main already holds.
 while read -r wt; do
-  [ "$wt" = "$top" ] && continue
+  [ "$wt" = "$top" ] && continue # mutant-ok delete: the clone is the session's own folder, so in_use skips it too
   git merge-base --is-ancestor "$(git -C "$wt" rev-parse HEAD 2>/dev/null)" "$default" 2>/dev/null || continue
   [ -z "$(git -C "$wt" status --porcelain 2>/dev/null)" ] || continue
   in_use "$wt" && continue
@@ -169,7 +169,7 @@ while read -r wt; do
   [ -d "$wt" ] || went+=("detached worktree ${wt##*/}")
 done < <(git worktree list --porcelain | awk '/^worktree /{p=substr($0, 10); l=0} /^locked/{l=1} /^detached/ && !l {print p}')
 # Each folder under .claude/worktrees that git no longer lists, when the repo names its own removal script.
-if [ -d "$top/.claude/worktrees" ] && [ -n "$(drop_script "$top")" ]; then
+if [ -d "$top/.claude/worktrees" ] && [ -n "$(drop_script "$top")" ]; then # mutant-ok: with no folder the glob matches nothing a directory test passes
   listed=$(git worktree list --porcelain | sed -n 's/^worktree //p')
   for wt in "$top"/.claude/worktrees/*/; do
     wt=${wt%/}
