@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2016 # check() evals its single-quoted condition later
+# shellcheck disable=SC2034 # names set here are read inside check()'s eval
+# shellcheck disable=SC2154 # fail is set by the fixture the fork fixture sources
 # Approved examples for the Auto-tidy gaps chart, T5 to T13 and F1 to F8:
 # auto-tidy clears your fork remote at session start, and the fork sweep, run
 # by hand, clears your forks that have no clone.
 set -u
+# shellcheck source=lib/fork-fixture.sh
 . "$(dirname "$0")/lib/fork-fixture.sh"
 
 # Given a clone whose origin is another person's repo and whose second remote is your fork
@@ -142,4 +146,4 @@ tip=$(git -C "$dir/fork.git" rev-parse main)
 out=$(runsweep)
 check "F8 a diverged default branch is not reset" '[ "$(git -C "$dir/fork.git" rev-parse main)" = "$tip" ] && grep -q "me/proj" <<<"$out"'
 
-exit $fail
+exit "$fail"

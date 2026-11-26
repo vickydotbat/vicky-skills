@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2016 # check() evals its single-quoted condition later
+# shellcheck disable=SC2034 # names set here are read inside check()'s eval
 # Approved examples for the Auto-tidy gaps chart, T1 to T4: a merge inside a
 # script tidies, detached and leftover worktrees go only when nothing is lost.
 set -u
+# shellcheck source=lib/auto-tidy-fixture.sh
 . "$(dirname "$0")/lib/auto-tidy-fixture.sh"
 # merge_call <command>: the PostToolUse payload of a Bash call, the way a REPL script's shell call reaches the hook.
 merge_call() { jq -nc --arg c "$1" --arg d "$dir/repo" '{hook_event_name: "PostToolUse", tool_name: "Bash", tool_input: {command: $c}, cwd: $d}'; }
@@ -94,4 +97,4 @@ mkdir -p "$dir/repo/.claude/worktrees/old"
 run >/dev/null
 check "X5 only unlisted folders go" '[ -d "$dir/repo/.claude/worktrees/live" ] && [ ! -d "$dir/repo/.claude/worktrees/old" ]'
 
-exit $fail
+exit "$fail"
