@@ -20,7 +20,7 @@ The main thread does the TDD, red to green. Deathmatch is the refactor: its job 
 Each opponent is an agent, `vicky-skills:<angle>-opponent` (`intent-opponent`, `runaway-opponent`), that holds its angle and works to [OPPONENT.md](OPPONENT.md)'s contract. An opponent fights when the diff reaches its angle, as `scripts/triggers.sh <fixed-point> [body file]` prints it (`fight: <angle>` or `out of reach: <angle>`), and Security also when an outside report claims a security hole. The six core angles:
 
 - **Intent**, always: the observer's view. Which prose ask has no approved example? The tests already prove each example passes.
-- **Holds**, when a file other than Markdown changes: break each path the change reaches that no `sentinels` receipt covers. A repo whose `docs/agents/testing.md` holds a `Mutation: none, because <reason>` line has no receipts to ask for, as `do` step 4 says: Holds breaks the paths by test alone. Can its tests fail?
+- **Holds**, when a file other than Markdown changes: break each path the change reaches that no `sentinels` receipt covers. Can its tests fail?
 - **Cause**, when a commit or the body claims a fix: symptom or cause, by [CAUSE.md](CAUSE.md). A symptom fix, or a suspected better way, opens the arena round.
 - **Simplicity**, when a file other than Markdown changes: what can be deleted, merged or not built. Its proof is a deletion that leaves every check green.
 - **Standards**, always but on a follow-up with no file changed since its verdict: the repo's rules and STANDARDS.md, quoted by leading word.
