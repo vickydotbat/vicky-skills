@@ -315,6 +315,8 @@ jobs:
         run: tests/auto-tidy-clone.test.sh
       - name: Auto-tidy does the whole cleanup and the agent hears nothing
         run: tests/auto_tidy_approved_examples.test.sh
+      - name: Auto-tidy clears script merges, detached and leftover worktrees
+        run: tests/auto_tidy_gaps_approved_examples.test.sh
       - name: Auto-tidy keeps unpushed work and worktrees in use
         run: tests/auto-tidy-keeps.test.sh
       - name: Gate-notify hook
