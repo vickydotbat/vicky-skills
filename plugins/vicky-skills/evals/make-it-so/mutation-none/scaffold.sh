@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Testing standards that say Mutation: none, because ...: Q8 passes with no mutation counts.
+# A docs/agents/testing.md that says Mutation: none, because ...: Q8 passes with no mutation counts.
 set -eu
 g() { git -c user.name=eval -c user.email=eval@example.invalid "$@"; }
 git init -q -b main .
@@ -7,8 +7,8 @@ git init -q --bare .git/origin.git
 git remote add origin "$PWD/.git/origin.git"
 mkdir -p .git/info && echo body.md >> .git/info/exclude
 printf 'def total(xs):\n    return sum(xs)\n' > calc.py
-mkdir -p docs/agents; printf 'Testing standards: TESTING_STANDARDS.md\n' > docs/agents/testing.md
-printf '# Testing standards\n\nTest kinds: unit, pytest tests/\nMutation: none, because the project is a teaching repo whose code is examples\nMetrics: none\n' > TESTING_STANDARDS.md
+mkdir -p docs/agents; printf 'Testing standards: TESTING_STANDARDS.md\nMutation: none, because the project is a teaching repo whose code is examples\n' > docs/agents/testing.md
+printf '# Testing standards\n\nTest kinds: unit, pytest tests/\nMetrics: none\n' > TESTING_STANDARDS.md
 g add -A && g commit -q -m start && git push -q origin main
 git switch -q -c feature
 printf 'def mean(xs):\n    return sum(xs) / len(xs) if xs else 0\n' > stats.py

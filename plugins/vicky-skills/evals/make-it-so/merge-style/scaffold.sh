@@ -15,4 +15,4 @@ g add -A && g commit -q -m mean
 git switch -q main; printf 'x\n' > other.txt; g add -A; g commit -q -m other; git push -q origin main; git switch -q feature
 g merge -q --no-edit main
 printf '## Summary\n\nAdds mean, the average of a list.\n\n## Proof\n\n- tests/test_stats.py proves the approved examples E1 and E2.\n- Deathmatch verdict for HEAD: 0 proven findings.\n' > body.md
-g add -A && g commit -q -m body && git push -q -u origin feature && git fetch -q origin
+git push -q -u origin feature && git fetch -q origin
