@@ -254,7 +254,7 @@ def seal_kits(spec):
         for name in files:
             if os.path.isfile(name) and not os.path.islink(name):
                 with open(name, "rb") as f:
-                    entries[name] = hashlib.sha256(f.read()).hexdigest()
+                    entries[name] = hashlib.file_digest(f, "sha256").hexdigest()  # streams, so a large kit fits in memory
     for manifest, entries in manifests.items():
         try:
             with open(manifest, encoding="utf-8") as f:

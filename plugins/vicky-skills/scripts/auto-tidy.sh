@@ -119,7 +119,7 @@ clone
 # over-to-you-kits/<branch> in the git folder, and each kit folder as "dir".
 # Once the branch's pull request merged or closed, each kit still matching its
 # hash goes, then each listed folder, and the folders inside it, once empty.
-# An edited kit and an unlisted file stay.
+# An edited kit, a tracked one and an unlisted file stay.
 kits_dir="$(git rev-parse --path-format=absolute --git-common-dir)/over-to-you-kits"
 for m in "$kits_dir"/*; do
   [ -f "$m" ] || continue # mutant-ok: with no manifest the glob stays literal, and no pull request has that name
@@ -128,6 +128,7 @@ for m in "$kits_dir"/*; do
   n=0
   while IFS=$'\t' read -r sum p; do
     [ "$sum" != dir ] && [ -f "$p" ] || continue
+    if [ -n "$(git -C "${p%/*}" ls-files -- "$p" 2>/dev/null)" ]; then kept+=("${p#"$top"/} (tracked)"); continue; fi
     if [ "$(sha256sum -- "$p" 2>/dev/null | cut -d' ' -f1)" != "$sum" ]; then kept+=("${p#"$top"/} (edited since its sitting)"); continue; fi
     rm -f -- "$p" && n=$((n + 1))
   done <"$m"

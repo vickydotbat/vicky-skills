@@ -61,6 +61,10 @@ check "writing it again keeps one line per path" 'write >/dev/null && [ "$(wc -l
 kit add "$repo/one.lua"; echo k >"$repo/one.lua"; ln -s ../../a.txt "$repo/scratch/ot14/link"
 spec '{"kits_made": ["scratch/ot14", "one.lua"]}'
 check "a relative kit path and a single-file kit are sealed by their full path, and a link is not hashed" '(cd "$repo" && write >/dev/null) && grep -qF "$(printf "\t")$repo/one.lua" "$manifest" && ! grep -q "link" "$manifest" && ! grep -q "$(printf "\t")scratch" "$manifest"'
+kit add "$repo/big.bin"; truncate -s 600M "$repo/big.bin"
+spec '{"kits_made": ["big.bin"]}'
+check "a kit larger than the memory limit is sealed by streaming its hash" '(cd "$repo" && ulimit -v 300000 && write >/dev/null 2>&1) && grep -qF "$(printf "\t")$repo/big.bin" "$manifest"'
+rm -f "$repo/big.bin"
 spec '{"kits_made": []}'
 check "an empty kits_made is refused" 'out=$(write); [ $? = 1 ] && grep -q "kits_made" <<<"$out"'
 exit "$fail"

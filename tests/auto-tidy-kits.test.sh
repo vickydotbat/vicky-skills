@@ -54,4 +54,10 @@ check "a branch name with a slash finds its manifest" '[ ! -e "$dir/repo/scratch
 setup; branch feat; merge feat; on_main; kits feat
 OPT=false run >/dev/null
 check "auto_tidy off leaves the kits" '[ -f "$dir/repo/scratch/ot1/a.lua" ]'
+
+setup; branch feat; merge feat; on_main; kits feat
+git -C "$dir/repo" add -f scratch/ot1/a.lua && git -C "$dir/repo" commit -qm "keep a.lua"
+out=$(run)
+check "a kit git tracks stays, and the report says why" '[ -f "$dir/repo/scratch/ot1/a.lua" ] && [ -z "$(git -C "$dir/repo" status --porcelain)" ] && seen "$out" | grep -qF "scratch/ot1/a.lua (tracked)"'
+check "the untracked kit beside it still goes" '[ ! -e "$dir/repo/scratch/ot1/deep" ]'
 exit "$fail"
