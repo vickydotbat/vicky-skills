@@ -15,12 +15,14 @@ Proven by: plugins/vicky-skills/evals/mission-brief/docs-only-files-a-task
 
 ## Check first
 
-Before step 1 writes a word, check what the brief rests on. A ticket written from memory carries invented premises. Do all four:
+Before step 1 writes a word, check what the brief rests on. A ticket written from memory carries invented premises. Do all five:
 
 - **Source material.** Read the rulebook, spec, docs, decision records and API each claim rests on, and quote the line. Start `away-team` for a fact no source in hand answers.
 - **The tracker.** Search it for every term and claim the brief makes: tickets, comments and decisions that already settle it. A premise decided there binds the brief, quoted, and is never re-opened.
 - **An existing ticket.** Search for a ticket on the same work. Read it whole, with its comments. The brief replaces or amends it: it keeps what the comments settled and goes on that ticket as a comment, never as a second ticket.
 - **The codebase.** Search it for anything that looks like what the brief names, by behaviour as well as by name (a "touch attack" that is already a spell attack). Search the open pull requests too, since the checkout may lack work they hold. What exists is reused or extended, never rebuilt.
+- **Earlier attempts.** Search the merged and closed pull requests and the closed tickets for the same symptom, and list them in the chart body, as STAR-CHART.md's "Earlier attempts" says. Its check runs before filing.
+  Proven by: tests/earlier-attempts-check.test.sh
 
 Done when each claim in the brief has its quoted source, a tracker search names the tickets it found or says it found none, and a codebase search names what looks like it or says it found nothing.
 

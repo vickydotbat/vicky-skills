@@ -39,6 +39,10 @@ Pre-mortems: on
 
 Write `Pre-mortems: off` to stop the Foreseen check before a star chart is filed.
 
+Earlier attempts: on
+
+Write `Earlier attempts: off` to stop the Earlier attempts check before a star chart is filed.
+
 Checklist lint: full
 
 Write `Checklist lint: basic` to keep only the person, kit and proof checks on over-to-you pages.

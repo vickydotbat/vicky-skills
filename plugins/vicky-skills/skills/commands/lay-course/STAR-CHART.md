@@ -115,6 +115,9 @@ Every chart sorts what its stars rest on into the four boxes of the Rumsfeld mat
 
   **Pre-mortem**: before the chart is filed, assume the effort shipped and failed, and list why. Each reason becomes one `Foreseen YYYY-MM-DD:` line with one disposition: `guarded by` the record, test or star that stops it, `accepted:` with why, or `ticketed:` with its link. A plan with no foreseen failure holds one `- None foreseen: <reason>` line. Run `bash <this skill's folder>/scripts/check-foreseen.sh <chart>` before filing. Done when it exits 0, and only then is the chart filed. A repo whose agent docs read `Pre-mortems: off` skips it. A foreseen failure that becomes a decision record's force takes the tag in `decision-record`'s FORMAT.md.
 
+  **Earlier attempts**: before the chart is filed, search the merged and closed pull requests and the closed tickets of the last month for the symptom the chart fixes, by behaviour as well as by name. The chart body holds a `## Earlier attempts` section: one `- <link>: <what it changed>, <whether the symptom came back>` line per attempt, or `None found: searched <where> for <words>.` A plan that repeats an attempt names what it does differently. Run `bash <this skill's folder>/scripts/check-earlier-attempts.sh <chart>` before filing. Done when it exits 0, and only then is the chart filed. A repo whose agent docs read `Earlier attempts: off` skips it.
+  Proven by: tests/earlier-attempts-check.test.sh
+
 A box is never left empty without saying why: a box with nothing in it holds one line with the reason, such as "None: the spec answers every question."
 
 ## Tickets

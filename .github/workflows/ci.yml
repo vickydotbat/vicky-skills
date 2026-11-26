@@ -232,6 +232,8 @@ jobs:
         run: tests/post_mortem_check_approved_examples.test.sh
       - name: Post-mortem and Foreseen check edges
         run: tests/mortem-checks.test.sh
+      - name: Earlier attempts check
+        run: tests/earlier-attempts-check.test.sh
       - name: human-voice proofread approved examples
         run: tests/proofread_approved_examples.test.sh
       - name: human-voice proofread edges
