@@ -24,6 +24,7 @@ Each opponent is an agent, `vicky-skills:<angle>-opponent` (`intent-opponent`, `
 - **Cause**, when a commit or the body claims a fix: symptom or cause, by [CAUSE.md](CAUSE.md). A symptom fix, or a suspected better way, opens the arena round.
 - **Simplicity**, when a file other than Markdown changes: what can be deleted, merged or not built. Its proof is a deletion that leaves every check green.
 - **Standards**, always but on a follow-up with no file changed since its verdict: the repo's rules and STANDARDS.md, quoted by leading word.
+   Proven by: tests/deathmatch_reruns_approved_examples.test.sh
 - **Claims**, when the body has a Proof section: the pull request body's Proof and Status against what actually ran.
 
 Triggered opponents fight when `scripts/triggers.sh <fixed-point>` names them, and Security also fights on each file an outside report claims a security hole in, whatever the diff triggers. Otherwise they stay out of reach: **Runaway** (the diff starts a process, loop, server or container) and **Security** (a route, permission check, user input, parser, query, rendered user content, secret, process spawn, network call or CI permission). Every opponent run goes through `scripts/cap.sh`, so a run over its time or memory cap is stopped and reported, and nothing else on the machine is touched.
