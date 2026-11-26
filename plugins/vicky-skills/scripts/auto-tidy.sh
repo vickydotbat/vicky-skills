@@ -38,8 +38,8 @@ notes=() went=() kept=()
 prs=$(
   if out=$(timeout 10 gh pr list --state all --limit 200 --json headRefName,state,headRefOid 2>/dev/null) && [ -n "$out" ]; then # mutant-ok: gh answers either a list or a failure, never success with no output
     jq -r '.[] | "\(.headRefName) \(.state) \(.headRefOid)"' <<<"$out" 2>/dev/null
-  elif out=$(timeout 10 tea api 'repos/{owner}/{repo}/pulls?state=all&limit=50' </dev/null 2>/dev/null) && [ -n "$out" ]; then # mutant-ok: tea answers either a list or a failure, never success with no output
-    jq -r '.[] | "\(.head.ref) \(if .merged then "MERGED" elif .state == "open" then "OPEN" else "CLOSED" end) \(.head.sha)"' <<<"$out" 2>/dev/null
+  else
+    tea_pulls '{owner}/{repo}'
   fi
 )
 pr() { awk -v b="$1" -v f="$2" '$1 == b { print $f; exit }' <<<"$prs"; }

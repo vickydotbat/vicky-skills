@@ -28,6 +28,18 @@ forge_of() {
   elif l=$(tea_login "$h") && [ -n "$l" ]; then printf 'tea %s %s' "$l" "$p"
   fi
 }
+# tea_pulls <owner/name> [login] prints the repo's pull requests, newest first, as
+# "<branch> <OPEN|MERGED|CLOSED> <head sha>", reading Gitea's pages of 50 up to 10
+# pages. It fails when the first page does.
+tea_pulls() {
+  local pg page l=()
+  [ -n "${2:-}" ] && l=(-l "$2")
+  for pg in $(seq 10); do
+    page=$(timeout 10 tea api "${l[@]}" "repos/$1/pulls?state=all&limit=50&page=$pg" </dev/null 2>/dev/null) || { [ "$pg" -gt 1 ]; return; }
+    [ "$(jq length <<<"$page" 2>/dev/null)" -gt 0 ] 2>/dev/null || return 0
+    jq -r '.[] | "\(.head.ref) \(if .merged then "MERGED" elif .state == "open" then "OPEN" else "CLOSED" end) \(.head.sha)"' <<<"$page" 2>/dev/null
+  done
+}
 # forge_user <forge> <login> prints the signed-in account's name.
 forge_user() {
   if [ "$1" = gh ]; then timeout 10 gh api user --jq .login 2>/dev/null

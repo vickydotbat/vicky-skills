@@ -19,8 +19,7 @@ parent_prs() {
     out=$(timeout 20 gh pr list -R "$3" --state all --limit 500 --json headRefName,state,headRefOid 2>/dev/null) || return 1
     jq -r '.[] | "\(.headRefName) \(.state) \(.headRefOid)"' <<<"$out"
   else
-    out=$(timeout 20 tea api -l "$2" "repos/$3/pulls?state=all&limit=50" </dev/null 2>/dev/null) || return 1
-    jq -r '.[] | "\(.head.ref) \(if .merged then "MERGED" elif .state == "open" then "OPEN" else "CLOSED" end) \(.head.sha)"' <<<"$out"
+    tea_pulls "$3" "$2"
   fi
 }
 # Every fork, one per line: <forge> <login> <fork> <parent> <fork url> <parent url>.
