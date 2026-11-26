@@ -18,7 +18,7 @@ case "${CLAUDE_PLUGIN_OPTION_AUTO_TIDY:-}" in false|0) exit 0 ;; esac
 # only a command that merged a pull request starts the tidy.
 payload=$(cat 2>/dev/null)
 if grep -Eq '"hook_event_name"[[:space:]]*:[[:space:]]*"PostToolUse"' <<<"$payload"; then
-  grep -Eq '"command"[[:space:]]*:[[:space:]]*"(([^"\\]|\\.)*[;&|( ])?(gh|tea) +(pr|pulls) +merge([ "\\]|$)' <<<"$payload" || exit 0
+  grep -Eq '"command"[[:space:]]*:[[:space:]]*"(([^"\\]|\\.)*([;&|( ]|\\n))?(gh|tea) +(pr|pulls) +merge([ "\\]|$)' <<<"$payload" || exit 0
 fi
 # The folder the session stands in, whose worktree is never removed.
 here=$(sed -n 's/.*"cwd"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' <<<"$payload"); here=${here%%$'\n'*}
@@ -152,6 +152,34 @@ while read -r rb; do
   fi
   GIT_TERMINAL_PROMPT=0 timeout 15 git push -q origin --delete "$b" >/dev/null 2>&1 && went+=("origin/$b")
 done < <(git for-each-ref --format='%(refname:short)' refs/remotes/origin)
+
+# remove_wt <path>: the repo's own removal script, or git, takes the folder off.
+remove_wt() {
+  local drop; drop=$(drop_script "$top")
+  if [ -n "$drop" ]; then (cd "$top" && "$top/$drop" "$1") >/dev/null 2>&1; else git worktree remove "$1" >/dev/null 2>&1; fi
+  git worktree prune >/dev/null 2>&1
+}
+# Each clean, unlocked, idle worktree on a detached HEAD that main already holds.
+while read -r wt; do
+  [ "$wt" = "$top" ] && continue
+  git merge-base --is-ancestor "$(git -C "$wt" rev-parse HEAD 2>/dev/null)" "$default" 2>/dev/null || continue
+  [ -z "$(git -C "$wt" status --porcelain 2>/dev/null)" ] || continue
+  in_use "$wt" && continue
+  remove_wt "$wt"
+  [ -d "$wt" ] || went+=("detached worktree ${wt##*/}")
+done < <(git worktree list --porcelain | awk '/^worktree /{p=substr($0, 10); l=0} /^locked/{l=1} /^detached/ && !l {print p}')
+# Each folder under .claude/worktrees that git no longer lists, when the repo names its own removal script.
+if [ -d "$top/.claude/worktrees" ] && [ -n "$(drop_script "$top")" ]; then
+  listed=$(git worktree list --porcelain | sed -n 's/^worktree //p')
+  for wt in "$top"/.claude/worktrees/*/; do
+    wt=${wt%/}
+    [ -d "$wt" ] || continue
+    grep -Fxq "$wt" <<<"$listed" && continue
+    in_use "$wt" && continue
+    remove_wt "$wt"
+    [ -d "$wt" ] || went+=("leftover folder ${wt##*/}")
+  done
+fi
 
 # Fast-forward each clean checkout, the clone or a worktree, that stands on the default branch.
 while read -r p; do
