@@ -13,6 +13,8 @@ set -u
 . "$(dirname "$0")/merge-point.sh"
 # shellcheck source=drop-worktree.sh
 . "$(dirname "$0")/drop-worktree.sh"
+# shellcheck source=fork-tidy.sh
+. "$(dirname "$0")/fork-tidy.sh"
 case "${CLAUDE_PLUGIN_OPTION_AUTO_TIDY:-}" in false|0) exit 0 ;; esac
 # Read without jq, so a machine without it still tidies: after a tool call,
 # only a command that merged a pull request starts the tidy.
@@ -152,6 +154,23 @@ while read -r rb; do
   fi
   GIT_TERMINAL_PROMPT=0 timeout 15 git push -q origin --delete "$b" >/dev/null 2>&1 && went+=("origin/$b")
 done < <(git for-each-ref --format='%(refname:short)' refs/remotes/origin)
+
+# Your fork on another remote: a GitHub repo of yours whose parent is origin.
+origin_slug=$(gh_slug "$(git config --get remote.origin.url)") # the URL as written: get-url would apply insteadOf
+if [ -n "$origin_slug" ] && login=$(timeout 10 gh api user --jq .login 2>/dev/null) && [ -n "$login" ]; then
+  while read -r rem; do
+    [ "$rem" = origin ] && continue
+    slug=$(gh_slug "$(git config --get "remote.$rem.url")")
+    [ -n "$slug" ] || continue
+    info=$(timeout 10 gh repo view "$slug" --json owner,parent 2>/dev/null) || continue
+    [ "$(jq -r '"\(.owner.login) \(.parent.owner.login // "")/\(.parent.name // "")"' <<<"$info" 2>/dev/null)" = "$login $origin_slug" ] || continue
+    GIT_TERMINAL_PROMPT=0 timeout 15 git fetch --prune --quiet "$rem" >/dev/null 2>&1 || continue
+    fork_tidy "$rem" "$slug" "refs/remotes/$rem/" "$default" "$main_name"
+    for b in "${fork_gone[@]}"; do went+=("$rem/$b"); done
+    n=$(unmerged_note "git push $rem --delete")
+    [ -n "$n" ] && notes+=("On $rem: $n")
+  done < <(git remote)
+fi
 
 # remove_wt <path>: the repo's own removal script, or git, takes the folder off.
 remove_wt() {
