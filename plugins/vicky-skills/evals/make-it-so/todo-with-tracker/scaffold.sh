@@ -5,7 +5,7 @@ g() { git -c user.name=eval -c user.email=eval@example.invalid "$@"; }
 git init -q -b main .
 git init -q --bare .git/origin.git
 git remote add origin "$PWD/.git/origin.git"
-echo body.md >> .git/info/exclude
+mkdir -p .git/info && echo body.md >> .git/info/exclude
 printf 'def total(xs):\n    return sum(xs)\n' > calc.py
 mkdir -p docs/agents; printf '# Issue tracker\n\nTickets live in the GitHub issues of this repo, keyed #<n>.\n' > docs/agents/issue-tracker.md
 g add -A && g commit -q -m start && git push -q origin main

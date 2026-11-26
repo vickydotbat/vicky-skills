@@ -5,7 +5,7 @@ g() { git -c user.name=eval -c user.email=eval@example.invalid "$@"; }
 git init -q -b main .
 git init -q --bare .git/origin.git
 git remote add origin "$PWD/.git/origin.git"
-echo body.md >> .git/info/exclude
+mkdir -p .git/info && echo body.md >> .git/info/exclude
 printf 'def total(xs):\n    return sum(xs)\n' > calc.py
 g add -A && g commit -q -m start && git push -q origin main
 git switch -q -c feature
