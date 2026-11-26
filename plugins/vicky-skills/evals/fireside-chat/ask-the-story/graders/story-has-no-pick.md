@@ -1,6 +1,6 @@
 ---
 type: regex
 target: last_message
-pattern: 'Yours to tell'
-flags: i
+pattern: '^\s*➡️\s*\**Yours to tell'
+flags: im
 ---
