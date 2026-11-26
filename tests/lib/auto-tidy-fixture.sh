@@ -25,7 +25,8 @@ EOF
 cat > "$dir/tea/tea" <<EOF
 #!/usr/bin/env bash
 [ "\$1" = api ] && [ -f "$dir/prs" ] || exit 1
-jq -Rn '[inputs | split(" ") | {head: {ref: .[0], sha: .[2]}, merged: (.[1] == "MERGED"), state: (if .[1] == "OPEN" then "open" else "closed" end)}]' "$dir/prs"
+# 50 pull requests a page, as Gitea serves them.
+p=\$(grep -o 'page=[0-9]*' <<<"\$*" | cut -d= -f2); p=\${p:-1}; sed -n "\$(( (p-1)*50+1 )),\$(( p*50 ))p" "$dir/prs" | jq -Rn '[inputs | split(" ") | {head: {ref: .[0], sha: .[2]}, merged: (.[1] == "MERGED"), state: (if .[1] == "OPEN" then "open" else "closed" end)}]'
 EOF
 chmod +x "$dir/gh/gh" "$dir/tea/tea"
 fail=0

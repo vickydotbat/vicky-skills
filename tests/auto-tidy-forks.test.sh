@@ -69,4 +69,11 @@ echo "shut CLOSED $(git -C "$dir/fork.git" rev-parse shut)" >> "$dir/prs"; echo 
 out=$(gsweep)
 check "the Gitea sweep names a branch whose pull request closed unmerged, and not an open one" 'grep -q "Kept unmerged: shut\." <<<"$out"'
 
+# A merged pull request past Gitea's first page of 50 still counts, in the hook and the sweep.
+for who in run gsweep; do
+  gsetup; fbranch fork.git feat; for i in $(seq 59); do echo "x$i CLOSED 0" >> "$dir/prs"; done; land feat; on_main
+  "$who" >/dev/null
+  check "$who reads a merged Gitea pull request on the second page" '! on fork.git feat'
+done
+
 exit "$fail"

@@ -18,7 +18,7 @@ case "\$m \$ep" in
   "GET user") echo '{"login":"me"}' ;;
   "GET user/repos"*) [[ \$ep == *page=1 ]] || { echo '[]'; exit 0; }; awk '\$2 == "me" && \$3 != "-"' "$dir/repos" | jq -Rn --arg g "$G" '[inputs | split(" ") | {full_name: .[0], fork: true, clone_url: ("\(\$g)/\(.[0]).git"), parent: {full_name: .[2], clone_url: ("\(\$g)/\(.[2]).git")}}]' ;;
   "GET repos/"*"/pulls"*) [ -f "$dir/prs" ] && [ ! -f "$dir/prs-fail" ] || exit 1
-    jq -Rn '[inputs | split(" ") | {head: {ref: .[0], sha: .[2]}, merged: (.[1] == "MERGED"), state: (if .[1] == "OPEN" then "open" else "closed" end)}]' "$dir/prs" ;;
+    p=\$(grep -o 'page=[0-9]*' <<<"\$ep" | cut -d= -f2); p=\${p:-1}; sed -n "\$(( (p-1)*50+1 )),\$(( p*50 ))p" "$dir/prs" | jq -Rn '[inputs | split(" ") | {head: {ref: .[0], sha: .[2]}, merged: (.[1] == "MERGED"), state: (if .[1] == "OPEN" then "open" else "closed" end)}]' ;;
   "GET repos/"*"/actions/runs?branch="*) s=\${ep#repos/}; s=\${s%%/actions/*}; b=\${ep##*branch=}; b=\${b%%&*}
     awk -v r="\$s" -v b="\$b" '\$1 == r && \$2 == b {print \$3}' "$dir/runs" 2>/dev/null | jq -Rn '{workflow_runs: [inputs | {id: (. | tonumber)}]}' ;;
   "DELETE repos/"*"/actions/runs/"*) s=\${ep#repos/}; s=\${s%%/actions/*}; i=\${ep##*/}
