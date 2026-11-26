@@ -73,7 +73,7 @@ skills/commands/familiar/scripts/familiar-sessions.sh	a6d057056cae9b4b	26c33ba98
 skills/commands/familiar/scripts/familiar-shapes.sh	5c68c101c08e4a1f	5fab397e8876d8d3	32/32
 skills/commands/familiar/scripts/familiar-visibility.py	38fc0f4a6d3fa052	a37831789be39684	35/35
 skills/commands/familiar/scripts/familiar-watch.sh	11dc76c55896e285	5efc3566d7bfef5a	57/57
-skills/commands/lay-course/scripts/check-earlier-attempts.sh	26acc589d1716cca	b7db1c1cd634d24d	26/26
+skills/commands/lay-course/scripts/check-earlier-attempts.sh	aa0a2534473eaf9e	a6d092fbf759c25b	29/29
 skills/commands/lay-course/scripts/draw-chart.py	0c5de7696438df4a	c963455b75e41e38	80/80
 skills/housekeeping/standing-orders/scripts/todo.sh	8b469102d3f5fa91	f6fdfdfd9ab0076e	32/32
 skills/housekeeping/summit/scripts/tracker-status.sh	6a332a8355300f2b	d075af041ac67551	25/25

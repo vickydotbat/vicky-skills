@@ -43,6 +43,28 @@ chart 'The hook got a fix last week.'
 out=$(bash "$ea" "$dir/chart.md"); rc=$?
 check "prose with no linked attempt and no None found line fails" '[ $rc -eq 1 ] && grep -q "Earlier attempts is empty" <<<"$out"'
 
+chart '- [[2026-11-01 Fix flaky hook]]: fixed the hook, and the symptom came back.'
+bash "$ea" "$dir/chart.md" >/dev/null; rc=$?
+check "an attempt linked by vault note passes" '[ $rc -eq 0 ]'
+chart '- None found: searched closed tickets for flaky.'
+bash "$ea" "$dir/chart.md" >/dev/null; rc=$?
+check "a None found line written as a bullet passes" '[ $rc -eq 0 ]'
+chart '- UTF-8 handling was tweaked last week.'
+out=$(bash "$ea" "$dir/chart.md"); rc=$?
+check "a key-shaped word inside prose is no link" '[ $rc -eq 1 ] && grep -q "links nothing" <<<"$out"'
+chart '- https://'
+bash "$ea" "$dir/chart.md" >/dev/null; rc=$?
+check "a bare scheme is no link" '[ $rc -eq 1 ]'
+chart 'None found: research pending.'
+out=$(bash "$ea" "$dir/chart.md"); rc=$?
+check "a None found line must say where it searched and for what" '[ $rc -eq 1 ] && grep -q "names no search" <<<"$out"'
+chart 'None found: searched closed tickets for flaky.' '- #12: fixed the hook, and the symptom came back.'
+out=$(bash "$ea" "$dir/chart.md"); rc=$?
+check "None found beside a linked attempt fails" '[ $rc -eq 1 ] && grep -q "both" <<<"$out"'
+printf '## Earlier attempts \r\n\r\n- #12: fixed the hook, and the symptom came back.\r\n' > "$dir/chart.md"
+bash "$ea" "$dir/chart.md" >/dev/null; rc=$?
+check "CRLF line ends and a trailing space on the heading pass" '[ $rc -eq 0 ]'
+
 mkdir -p "$dir/docs/agents"; printf 'Earlier attempts: off\n' > "$dir/docs/agents/domain.md"
 chart
 bash "$ea" "$dir/chart.md" >/dev/null; rc=$?
