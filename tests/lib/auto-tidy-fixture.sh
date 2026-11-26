@@ -30,6 +30,7 @@ p=\$(grep -o 'page=[0-9]*' <<<"\$*" | cut -d= -f2); p=\${p:-1}; sed -n "\$(( (p-
 EOF
 chmod +x "$dir/gh/gh" "$dir/tea/tea"
 fail=0
+# shellcheck disable=SC2034 # fail is read by the tests that source this file
 check() { if eval "$2"; then echo "ok   $1"; else echo "FAIL $1"; fail=1; fi; }
 FORGE=gh
 start_in() { jq -nc --arg d "$1" '{hook_event_name: "SessionStart", source: "startup", cwd: $d}'; }
@@ -85,9 +86,9 @@ second() {
 worktree() { git -C "$dir/repo" worktree add -q "$dir/wt-$1" "$1" 2>/dev/null; }
 # busy <path>: another session stands in that folder until the test ends.
 busy() {
-  local i
+  local _
   (cd "$1" && exec sleep 300) & pids+=($!)
-  for i in $(seq 50); do [ "$(readlink "/proc/$!/cwd" 2>/dev/null)" = "$1" ] && return; sleep 0.1; done
+  for _ in $(seq 50); do [ "$(readlink "/proc/$!/cwd" 2>/dev/null)" = "$1" ] && return; sleep 0.1; done
 }
 on_main() { git -C "$dir/repo" switch -q main 2>/dev/null || git -C "$dir/repo" switch -q -c main origin/main; }
 
