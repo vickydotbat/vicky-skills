@@ -64,7 +64,7 @@ skills/building/over-to-you/scripts/checklist.py	9d8e4d5319372829	09a89912fc3469
 skills/building/over-to-you/scripts/lint-checklist.py	80e5765a76b4cf46	530598300fdf49e4	61/61
 skills/building/over-to-you/scripts/ran.sh	ab38b142893f3817	09a89912fc34694a	52/52
 skills/building/video-captions/scripts/flatten-captions.sh	415082ac283f9808	37d767511d6f2968	6/6
-skills/commands/captains-log/scripts/hook-audit.py	5cc9c3889ce33b29	b0cceb1d3dfe1489	71/71
+skills/commands/captains-log/scripts/hook-audit.py	94f2e12fc6e6755a	ca43dba72820c012	70/70
 skills/commands/captains-log/scripts/idle-skills.py	a2b8bf6588ba88a3	5106d5763b5a3fd3	29/29
 skills/commands/familiar/scripts/familiar-replay.sh	97db63da8c1beba8	5697ccfe712d396f	41/41
 skills/commands/familiar/scripts/familiar-sessions.sh	a6d057056cae9b4b	26c33ba9822bc023	47/47
