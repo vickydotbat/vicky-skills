@@ -10,7 +10,7 @@ for u in https://github.com/a/b.git https://github.com/a/b/ git@github.com:a/b.g
 done
 check "gh_slug says nothing for another host" '[ -z "$(gh_slug https://example.invalid/a/b.git)" ]'
 
-fsetup; on_main; echo "main MERGED $(git -C "$dir/fork.git" rev-parse main)" >> "$dir/prs"
+fsetup; on_main; git -C "$dir/fork.git" config receive.denyDeleteCurrent ignore; echo "main MERGED $(git -C "$dir/fork.git" rev-parse main)" >> "$dir/prs"
 run >/dev/null
 check "a pull request from the fork's own main never deletes it" 'on fork.git main'
 fsetup; fbranch fork.git feat; land feat; on_main

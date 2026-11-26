@@ -25,7 +25,7 @@ while read -r fork parent; do
     || ! GIT_TERMINAL_PROMPT=0 timeout 120 git fetch -q "$furl" '+refs/heads/*:refs/f/*' 2>/dev/null \
     || ! prs=$(timeout 20 gh pr list -R "$parent" --state all --limit 500 --json headRefName,state,headRefOid 2>/dev/null | jq -r '.[] | "\(.headRefName) \(.state) \(.headRefOid)"'); then
     echo "$fork: could not compare with $parent, so every branch stays."
-    continue
+    continue # mutant-ok delete: with nothing read, prs is empty and no base ref exists, so nothing is deleted or pushed
   fi
   fork_tidy "$furl" "$fork" "refs/f/" "refs/p/$pdef" "$fdef"
   line="$fork:"
