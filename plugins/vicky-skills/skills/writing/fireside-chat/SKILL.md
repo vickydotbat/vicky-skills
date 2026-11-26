@@ -1,7 +1,9 @@
 ---
 name: fireside-chat
 hands-off: [human-voice]
-description: Interview the user for a piece in their name (a journal post, an article, a talk) and gather its story, opinions and quotes in their own words. Use when a writing skill reaches its interview step, when the user says "interview me" or "ask me about it", and before drafting prose that needs a story or opinion only the user holds.---
+description: Interview the user for a piece in their name (a journal post, an article, a talk) and gather its story, opinions and quotes in their own words. Use when a writing skill reaches its interview step, when the user says "interview me" or "ask me about it", and before drafting prose that needs a story or opinion only the user holds.
+disable-model-invocation: true
+---
 
 # Fireside chat
 
@@ -27,7 +29,7 @@ Two kinds of question, kept apart:
 1. **Read the ground first.** Read the shipped work the piece covers: its commits, pull requests, tickets, decision records and any earlier post it calls back. Write each fact into the draft with its source, and mark every claim you could not check `[?]`. Done when the draft holds every fact a source can give, and no question you plan to ask has an answer in a source.
 2. **Ask one round**, at most five questions, story questions first, the sharpest first. Number each one:
 
-   ```
+   ```text
    ❓ **Q1** - **<title>**: <the question>
 
    ➡️ <your pick, for a craft question> | Yours to tell. <a lead with its source, for a story question>
