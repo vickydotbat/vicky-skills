@@ -24,7 +24,7 @@ say() {
   elif [ "$rerun" = 1 ]; then echo "out of reach: $1 ($3)"
   else echo "out of reach: $1"; fi
 }
-files=$(git diff --name-only "$base"...HEAD)
+files=$(git diff --name-only "$base"...HEAD) || { echo "triggers.sh: cannot diff $base...HEAD" >&2; exit 2; }
 code=0
 [ -n "$files" ] && grep -qv '\.md$' <<<"$files" && code=1 # mutant-ok: grep -vv inverts once, as -v does
 fix=0

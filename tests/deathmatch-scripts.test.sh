@@ -295,4 +295,6 @@ check "due carries no verdict across a whitespace-only change of meaning" '[ $r 
 # A rerun with nothing changed since the verdict sends no Holds, Simplicity or Standards.
 o=$(cd "$rr" && bash "$dm/triggers.sh" --rerun HEAD); r=$?
 check "a rerun with no change since the verdict leaves Holds and Simplicity out" '[ $r = 0 ] && grep -qx "out of reach: holds (no file changed since the verdict for HEAD)" <<<"$o" && grep -qx "out of reach: standards (no file changed since the verdict for HEAD)" <<<"$o" && grep -qx "no trigger in the diff" <<<"$o"'
+o=$(cd "$rr" && bash "$dm/triggers.sh" --rerun deadbeef00 2>/dev/null); r=$?
+check "a rerun from a verdict commit git cannot find stops with no opponent named" '[ $r != 0 ] && ! grep -q "^fight:" <<<"$o"'
 exit $fail
