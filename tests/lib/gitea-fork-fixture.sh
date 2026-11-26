@@ -10,9 +10,11 @@ cat > "$dir/tea/tea" <<EOF
 # $dir/tea-logins: the logins list JSON. $dir/repos and $dir/runs as for gh.
 [ "\$1 \$2" = "logins list" ] && { [ -f "$dir/tea-logins" ] && cat "$dir/tea-logins"; exit \$?; }
 [ "\$1" = api ] || exit 1
-shift; m=GET ep=""
-while [ \$# -gt 0 ]; do case "\$1" in -l|--login) shift ;; -X|--method) m=\$2; shift ;; -*) ;; *) ep=\$1 ;; esac; shift; done
+shift; m=GET ep="" lg=""
+while [ \$# -gt 0 ]; do case "\$1" in -l|--login) lg=\$2; shift ;; -X|--method) m=\$2; shift ;; -*) ;; *) ep=\$1 ;; esac; shift; done
 [ -f "$dir/tea-down" ] && exit 1
+# Outside the repo's own context, as {owner}/{repo} gives it, a call must name its login.
+[[ \$ep == *'{owner}'* ]] || [ -n "\$lg" ] || exit 1
 url() { printf '%s/%s.git' "$G" "\$1"; }
 case "\$m \$ep" in
   "GET user") echo '{"login":"me"}' ;;
