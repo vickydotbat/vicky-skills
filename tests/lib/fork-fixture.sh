@@ -3,6 +3,7 @@
 # second remote, both behind github.com URLs that git rewrites to local bare
 # repos, and a fake gh that also answers repo view, repo list, api user, run
 # list and run delete from files under $dir.
+# shellcheck source=auto-tidy-fixture.sh
 . "$(dirname "${BASH_SOURCE[0]}")/auto-tidy-fixture.sh"
 sweep="$root/plugins/vicky-skills/scripts/fork-sweep.sh"
 export GIT_CONFIG_GLOBAL="$dir/gitconfig"

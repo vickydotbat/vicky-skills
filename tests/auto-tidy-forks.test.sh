@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2016 # check() evals its single-quoted condition later
+# shellcheck disable=SC2034 # names set here are read inside check()'s eval
+# shellcheck disable=SC2154 # fail is set by the fixture the fork fixture sources
 # The fork tidy's edges: URL forms, the fork's default branch, what the tidy
 # line and the sweep's line say, and the sweep's own safety: its scratch
 # folder, a failed push, and a fork whose parent cannot be read after another.
 set -u
+# shellcheck source=lib/fork-fixture.sh
 . "$(dirname "$0")/lib/fork-fixture.sh"
 . "$root/plugins/vicky-skills/scripts/fork-tidy.sh"
 for u in https://github.com/a/b.git https://github.com/a/b/ git@github.com:a/b.git ssh://git@github.com/a/b; do
@@ -54,4 +58,4 @@ echo "me/two me gone/two" >> "$dir/repos"
 runsweep >/dev/null
 check "a fork whose parent cannot be read keeps a branch another fork's merge names" 'on two.git feat'
 
-exit $fail
+exit "$fail"

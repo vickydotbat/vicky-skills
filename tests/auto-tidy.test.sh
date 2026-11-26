@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2016 # check() evals its single-quoted condition later
+# shellcheck disable=SC2034 # names set here are read inside check()'s eval
+# shellcheck disable=SC2329 # helpers are called inside check()'s eval
 # auto-tidy's switches and triggers: which settings turn it off, which tool
 # calls start it, and that it stays silent where it has nothing to do.
 set -u
+# shellcheck source=lib/auto-tidy-fixture.sh
 . "$(dirname "$0")/lib/auto-tidy-fixture.sh"
 merged_repo() { setup; branch feat; merge feat; on_main; }
 after() { jq -nc --arg c "$1" --arg d "$dir/repo" '{hook_event_name: "PostToolUse", tool_name: "Bash", tool_input: {command: $c}, cwd: $d}'; }
@@ -124,4 +128,4 @@ setup; gdoc; git -C "$dir/repo" switch -q --detach origin/main; main_moves
 run >/dev/null
 check "a detached clone stays" '[ -d "$dir/repo/.git" ]'
 
-exit $fail
+exit "$fail"
