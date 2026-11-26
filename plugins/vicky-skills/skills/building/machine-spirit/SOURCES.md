@@ -16,5 +16,8 @@ The primary source behind each doctrine rule in [SKILL.md](SKILL.md), quoted, wi
 | Fix a broken build at once (step 7) | Martin Fowler, "Continuous Integration", revised 18 January 2024 | "Should the integration build fail, then it needs to be fixed right away." |
 | Confirm a feature exists on the server (step 1) | Gitea docs, Actions comparison with GitHub, current on 2026-11-17 | "`jobs.<job_id>.environment` is ignored." |
 | A path-skipped required check blocks the merge (the clean gate) | GitHub Actions docs, workflow syntax, current on 2026-11-17 | A pull request that requires checks from a path-skipped workflow "will be blocked from merging." |
+| A red the local loop missed is the tooling's gap (Rules) | Software Engineering at Google, chapter 23, web edition, read 2026-11-26 | "The fundamental goal of CI is to automatically catch problematic changes as early as possible." |
+| Timing is enforced by the harness (Rules) | Martin Fowler, "Eradicating Non-Determinism in Tests", 14 April 2011, read 2026-11-26 | "Never use bare sleeps to wait for asynchronous responses: use a callback or polling." |
+| A rerun on the same tree says whose red it is (Rules) | GitHub Engineering, "Reducing flaky builds by 18x", 16 December 2020, read 2026-11-26 | A rerun on another host catches "order dependence or shared state". GitHub's passing rerun keeps the build green. This plugin keeps it red, since `make-it-so` holds that a test that fails only some runs is red. |
 
 Left out until a primary source settles them: passing one build's artifact to later jobs, Gitea's handling of `concurrency` and `timeout-minutes`, and quarantine as a flaky-test policy (it conflicts with `make-it-so`'s "a test that fails only some runs is red").
