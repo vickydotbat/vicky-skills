@@ -5,7 +5,7 @@ ai-credit.sh	ce9c03ae1de6bb7b	54a54a7b1bf4c1d7	1/1
 approved-spec.sh	1631dde4942ed5b6	d5a1068815cf4493	5/5
 approved-test-lock.sh	30402fcb88e5195f	aeb7120cb3461bc3	114/114
 assign-expand.sh	a2d6f7ea568cb59e	78556a7a7d220be6	5/5
-auto-tidy.sh	56243e9c8c97cc59	cae9d9eb44ab87a6	213/213
+auto-tidy.sh	02d1cf818d270cb2	7e285cfa100c1edd	213/213
 cerebro-ask-guard.sh	3d06494f2356b096	8ec4b2dfa0afd7eb	23/23
 done-check.sh	7ef4ac769cc241a5	f119be1bdab65605	63/63
 draft-guard.sh	d8080cb94b59072d	e751bde952207ebd	61/61
@@ -62,7 +62,7 @@ skill-change-proven.sh	2a77ba5faffc92ea	ea349a03792d2390	13/13
 skill-graph.py	9915c56e8e2fc239	1671c494b93daa59	50/50
 skill-ledger.sh	5a29eb7f617f6f60	ff7ccbbd36194ae4	17/17
 skill-started.sh	e0987ddb3b83e8d4	a926b688fa4a766e	13/13
-skills/building/over-to-you/scripts/checklist.py	55df0b53ea8994d5	4002dacc3401f3da	193/193
+skills/building/over-to-you/scripts/checklist.py	5903e5e2a0f4dae1	c9a64ae377dc3d87	193/193
 skills/building/over-to-you/scripts/lint-checklist.py	80e5765a76b4cf46	530598300fdf49e4	61/61
 skills/building/over-to-you/scripts/ran.sh	ab38b142893f3817	3e378aba9497566e	52/52
 skills/building/video-captions/scripts/flatten-captions.sh	415082ac283f9808	37d767511d6f2968	6/6
