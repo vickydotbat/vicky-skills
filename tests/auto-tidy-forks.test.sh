@@ -76,4 +76,9 @@ for who in run gsweep; do
   check "$who reads a merged Gitea pull request on the second page" '! on fork.git feat'
 done
 
+# A failed first page of Gitea pull requests stops the sweep's compare.
+gsetup; fbranch fork.git feat; land feat; touch "$dir/prs-fail"
+out=$(gsweep)
+check "the Gitea sweep says it could not compare when the pull request list fails" 'on fork.git feat && grep -q "could not compare" <<<"$out"'
+
 exit "$fail"

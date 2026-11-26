@@ -32,11 +32,11 @@ forge_of() {
 # "<branch> <OPEN|MERGED|CLOSED> <head sha>", reading Gitea's pages of 50 up to 10
 # pages. It fails when the first page does.
 tea_pulls() {
-  local pg page l=()
+  local pg page l=() # mutant-ok delete: callers read tea_pulls through $(...), so its names never leak
   [ -n "${2:-}" ] && l=(-l "$2")
   for pg in $(seq 10); do
     page=$(timeout 10 tea api "${l[@]}" "repos/$1/pulls?state=all&limit=50&page=$pg" </dev/null 2>/dev/null) || { [ "$pg" -gt 1 ]; return; }
-    [ "$(jq length <<<"$page" 2>/dev/null)" -gt 0 ] 2>/dev/null || return 0
+    [ "$(jq length <<<"$page" 2>/dev/null)" -gt 0 ] 2>/dev/null || return 0 # mutant-ok delete: past the last page each page is empty, so the loop only takes longer
     jq -r '.[] | "\(.head.ref) \(if .merged then "MERGED" elif .state == "open" then "OPEN" else "CLOSED" end) \(.head.sha)"' <<<"$page" 2>/dev/null
   done
 }
