@@ -36,7 +36,7 @@ A waiting ticket can't go on until the thing its `Waits on:` line names is done.
 - **List waiting tickets**: `backlog task list -s Waiting --plain`, then read each one whole for its `Waits on:` line.
 - **List tickets waiting on you**: the waiting tickets whose `Waits on:` line names you: your decision, answer or merge.
 - **Move a ticket to <state>**: `backlog task edit <id> -s <state>`, with `Open` for not-started, `Claimed` for started, `Waiting` when parked or `Done`.
-- **List items created or changed since <time>**: `backlog task list --json`, keeping each task whose `updatedAt` is at or after `<time>`. One whose `createdAt` is too is new, any other is edited. Show at most five, then a count of the rest.
+- **List items created or changed since <time>**: `backlog task list --json`, keeping each task whose `createdAt` or `updatedAt` is at or after `<time>`. A task never edited since it was filed has `updatedAt: null`, so its `createdAt` decides. One whose `createdAt` is at or after `<time>` is new, any other is edited. Show at most five, then a count of the rest.
 - **List items closed since <time>**: `backlog task list -s Done --json`, keeping each task whose `updatedAt` is at or after `<time>`. Give the count.
 - **Park a ticket**: `backlog task edit <id> -s Waiting --append-notes "Waits on: <who or what>"`.
 - **Claim a waiting ticket**: `backlog task edit <id> -s Claimed --notes "<the notes without the Waits on: line>"`, before any other work.
