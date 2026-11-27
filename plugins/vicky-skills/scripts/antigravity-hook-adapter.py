@@ -34,6 +34,7 @@ BASH_PRE_RULES = (
     (("plane", "tea", "gh"), ("ticket-filing-guard.sh", "plane-block-guard.sh")),
     (("head", "tail", "grep", "cut", "awk", "sed"), ("whole-read-guard.sh",)),
     (("pkill",), ("pkill-guard.sh",)),
+    (("claude",), ("eval-tmpdir-guard.sh",)),
     (("gh", "tea", "pulls/", "PullRequest", "merge", "ready"), ("opponent-wait-guard.sh",)),
 )
 

@@ -129,6 +129,7 @@ TESTS = {
     "skill-ledger.sh": ["skill_ledger_approved_examples", "skill-ledger-antigravity"],
     "tea-stdin.awk": ["tea-stdin"],
     "tea-stdin.sh": ["tea-stdin", "refusal-note"],
+    "eval-tmpdir-guard.sh": ["eval-tmpdir-guard"],
     "pkill-guard.sh": ["pkill_guard_approved_examples", "pkill-guard", "refusal-note"],
     "review-brief-guard.sh": ["review-brief-guard", "deathmatch_approved_examples"],
     "opponent-wait-guard.sh": ["opponent-wait-guard"],

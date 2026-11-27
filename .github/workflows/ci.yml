@@ -467,6 +467,8 @@ jobs:
         run: tests/hint_once_approved_examples.test.sh
       - name: pkill guard decisions
         run: tests/pkill-guard.test.sh
+      - name: eval-tmpdir guard decisions
+        run: tests/eval-tmpdir-guard.test.sh
       - name: review-brief guard decisions
         run: tests/review-brief-guard.test.sh
       - name: opponent-wait guard decisions
