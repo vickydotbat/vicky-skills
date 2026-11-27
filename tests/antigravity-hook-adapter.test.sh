@@ -47,6 +47,7 @@ cp "$tmp/stub/scripts/log-hook.sh" "$tmp/stub/scripts/approved-test-lock.sh"
 cp "$tmp/stub/scripts/log-hook.sh" "$tmp/stub/scripts/review-brief-guard.sh"
 cp "$tmp/stub/scripts/log-hook.sh" "$tmp/stub/scripts/springboard.sh"
 cp "$tmp/stub/scripts/log-hook.sh" "$tmp/stub/scripts/pkill-guard.sh"
+cp "$tmp/stub/scripts/log-hook.sh" "$tmp/stub/scripts/eval-tmpdir-guard.sh"
 cp "$tmp/stub/scripts/log-hook.sh" "$tmp/stub/scripts/opponent-wait-guard.sh"
 cp "$tmp/stub/scripts/log-hook.sh" "$tmp/stub/scripts/whole-read-guard.sh"
 cp "$tmp/stub/scripts/log-hook.sh" "$tmp/stub/scripts/outside-text-guard.sh"
@@ -103,7 +104,8 @@ for pair in \
   "publish-guard.sh:glab repo create o/r --public" \
   "advisory-guard.sh:advisory.sh cve GHSA-1" \
   "whole-read-guard.sh:read-item.sh 1 | head" \
-  "opponent-wait-guard.sh:\$GH pr merge 1"; do
+  "opponent-wait-guard.sh:\$GH pr merge 1" \
+  "eval-tmpdir-guard.sh:claude plugin eval p"; do
   s="${pair%%:*}"; cmd="${pair#*:}"
   printf '#!/usr/bin/env bash\necho "hit-%s"; exit 2\n' "$s" > "$tmp/stub/scripts/$s"
   chmod +x "$tmp/stub/scripts/$s"

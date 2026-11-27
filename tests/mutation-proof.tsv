@@ -2,7 +2,7 @@ adr-scope-hint.sh	dd0f4f2d0f53e71a	146f9786b4544b3c	7/7
 advisory-deadline.sh	e8c29246ec59a753	fd0311fd272eb61c	14/14
 advisory-guard.sh	daff7e96fa68bbfd	d0864c99d3e045e7	56/56
 ai-credit.sh	ce9c03ae1de6bb7b	54a54a7b1bf4c1d7	1/1
-antigravity-hook-adapter.py	9adf09b5dce86c75	a6e8d8f08bb5d03b	140/140
+antigravity-hook-adapter.py	e67b58117dd53f7c	914b8bb5adec4e30	140/140
 approved-spec.sh	1631dde4942ed5b6	d5a1068815cf4493	5/5
 approved-test-lock.sh	30402fcb88e5195f	aeb7120cb3461bc3	114/114
 assign-expand.sh	a2d6f7ea568cb59e	78556a7a7d220be6	5/5
@@ -11,7 +11,7 @@ cerebro-ask-guard.sh	3d06494f2356b096	8ec4b2dfa0afd7eb	23/23
 done-check.sh	7ef4ac769cc241a5	f119be1bdab65605	63/63
 draft-guard.sh	d8080cb94b59072d	aed48bc253d64e20	61/61
 drop-worktree.sh	5642f9beebc9dad3	f91af64a1a2783b6	1/1
-eval-tmpdir-guard.sh	723b809666fe3549	48bfcf54d9a8f478	23/23
+eval-tmpdir-guard.sh	dbd6e28942d778f1	72c3f0e648a46b93	41/41
 familiar-voice.sh	3128a205d08ce300	332924cc4ac536f4	18/18
 fetch-place-hint.sh	3573b2f17e94944d	4d9507bd1e4e8a08	12/12
 foreign-post-hint.sh	e4595240e7a8d340	0bd998170b80a6db	25/25
