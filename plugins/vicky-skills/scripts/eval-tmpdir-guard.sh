@@ -6,6 +6,7 @@
 # Always on, with no setting: a refused run costs nothing, a run that goes ahead
 # spends credits on cases that cannot pass. It fails closed: any TMPDIR= in an
 # eval command must be a literal absolute path, or $XDG_RUNTIME_DIR under one.
+# An eval inside a quoted string (bash -c "...", env -S "...") reads as text.
 command -v jq >/dev/null || exit 0 # mutant-ok delete: without the tool the read below comes back empty, and no eval matches
 cmd=$(jq -r '.tool_input.command // ""' 2>/dev/null)
 cmd=$(awk -v code=1 -f "$(dirname "$0")/heredoc-strip.awk" <<<"$cmd")
@@ -40,16 +41,25 @@ while IFS= read -r val; do
   hit=$(under "$val")
   [ -z "$hit" ] || refuse "claude plugin eval would put its run folder in $hit, $denied"
 done < <(grep -oE "(^|[^[:alnum:]_])TMPDIR=(\"[^\"]*\"|'[^']*'|[^[:space:];&|)\"']*)" <<<"$cmd")
-# The session's TMPDIR reaches each eval that neither its own command nor an
-# earlier export or assignment statement gives a TMPDIR.
-hit=$(under "${TMPDIR:-/tmp}")
-[ -n "$hit" ] || exit 0
-set_before=0
+# Each eval its own command gives no TMPDIR takes the one the command left:
+# the session's, one an earlier statement set (a bare assignment reaches it
+# only when TMPDIR is already exported), or none after unset, which is /tmp.
+if [ -n "${TMPDIR+set}" ]; then state=session; else state=unset; fi
 while IFS= read -r seg; do
-  if grep -Eq '^[[:space:]]*(export[[:space:]]+)?TMPDIR=[^[:space:]]*[[:space:]]*$' <<<"$seg"; then
-    set_before=1
-  elif grep -Eq "$eval_re" <<<"$seg" && [ "$set_before" = 0 ] && ! grep -q 'TMPDIR=' <<<"${seg%%claude*}"; then
-    refuse "claude plugin eval would put its run folder in $hit, $denied"
+  if grep -Eq '^[[:space:]]*export[[:space:]]+TMPDIR=[^[:space:]]*[[:space:]]*$' <<<"$seg"; then
+    state=set
+  elif grep -Eq '^[[:space:]]*TMPDIR=[^[:space:]]*[[:space:]]*$' <<<"$seg"; then
+    [ "$state" = unset ] || state=set
+  elif grep -Eq '^[[:space:]]*unset([[:space:]]+-v)?[[:space:]]+TMPDIR[[:space:]]*$' <<<"$seg"; then
+    state=unset
+  elif grep -Eq "$eval_re" <<<"$seg"; then
+    pre=${seg%%claude*}
+    grep -q 'TMPDIR=' <<<"$pre" && continue
+    tmp=${TMPDIR:-/tmp}
+    [ "$state" = set ] && continue
+    { [ "$state" = unset ] || grep -Eq '(-u[[:space:]]*|--unset=)TMPDIR' <<<"$pre"; } && tmp=/tmp
+    hit=$(under "$tmp")
+    [ -z "$hit" ] || refuse "claude plugin eval would put its run folder in $hit, $denied"
   fi
 done < <(tr ';&|(\n' '\n\n\n\n\n' <<<"$masked")
 exit 0 # mutant-ok delete: the loop above ends with status 0 when it does not refuse

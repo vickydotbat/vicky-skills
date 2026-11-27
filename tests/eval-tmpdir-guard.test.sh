@@ -56,6 +56,11 @@ check "eval named in a heredoc body is text" 0 "$(code /tmp "$(printf 'cat <<EOF
 mkdir -p "$scratch/nojq"
 for t in bash awk gawk grep tr realpath dirname; do ln -s "$(command -v "$t")" "$scratch/nojq/$t"; done
 check "a missing jq passes" 0 "$(printf '{"tool_input":{"command":"%s"}}' "$ev" | env -u TMPDIR PATH="$scratch/nojq" "$scratch/nojq/bash" "$guard" >/dev/null 2>&1; echo $?)"
+check "unset TMPDIR before the eval is refused" 2 "$(code "$scratch/good" "unset TMPDIR; $ev")"
+check "env -u TMPDIR on the eval is refused" 2 "$(code "$scratch/good" "env -u TMPDIR $ev")"
+check "a bare good TMPDIR does not reach the eval when none is exported" 2 "$(code unset "TMPDIR=$scratch/good; $ev")"
+check "a bare good TMPDIR reaches the eval when one is exported" 0 "$(code /tmp "TMPDIR=$scratch/good; $ev")"
+check "an export after unset covers the eval" 0 "$(code "$scratch/good" "unset TMPDIR; export TMPDIR=$scratch/good; $ev")"
 check "another command with TMPDIR=/tmp runs" 0 "$(code "$scratch/good" 'TMPDIR=/tmp make check')"
 check "an unclosed quote reads the command unmasked" 2 "$(code /tmp "echo \"a; $ev")"
 m=$(msg /tmp "$ev")
