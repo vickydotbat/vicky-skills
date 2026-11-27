@@ -13,7 +13,7 @@ cmd=$(awk -v code=1 -f "$(dirname "$0")/heredoc-strip.awk" <<<"$cmd")
 # Quoted text is data: a commit message that names the eval never matches it.
 masked=$(awk -f "$(dirname "$0")/quote-mask.awk" <<<"$cmd") && [ -n "$masked" ] || masked=$cmd # an unclosed quote reads the command unmasked
 q="[\"']?"
-eval_re="(^|[[:space:]/\"'])claude$q([[:space:]]+[^[:space:]]+)*[[:space:]]+${q}plugin$q[[:space:]]+${q}eval([\"'[:space:]]|$)"
+eval_re="(^|[[:space:]/\"'])claude${q}([[:space:]]+[^[:space:]]+)*[[:space:]]+${q}plugin${q}[[:space:]]+${q}eval([\"'[:space:]]|$)"
 grep -Eq "$eval_re" <<<"$masked" || exit 0
 refuse() {
   echo "eval-tmpdir-guard: $1 Run it as TMPDIR=\"\$XDG_RUNTIME_DIR\" claude plugin eval ..., or through the repo's own eval runner when it has one. Nothing in this command ran." >&2
@@ -33,10 +33,12 @@ unknown="is not a literal absolute path, so the guard cannot tell where claude p
 while IFS= read -r val; do
   val=${val#*TMPDIR=}
   val=${val#[\"\']}; val=${val%[\"\']}
+  # shellcheck disable=SC2016 # the literal text the command holds
   val=${val//'${XDG_RUNTIME_DIR}'/${XDG_RUNTIME_DIR:-}}
+  # shellcheck disable=SC2016 # the literal text the command holds
   val=${val//'$XDG_RUNTIME_DIR'/${XDG_RUNTIME_DIR:-}}
   case "$val" in
-    ""|[!/]*|*['$~`\\']*) refuse "TMPDIR=$val $unknown" ;;
+    ""|[!/]*|*[\$~\`\\]*) refuse "TMPDIR=$val $unknown" ;;
   esac
   hit=$(under "$val")
   [ -z "$hit" ] || refuse "claude plugin eval would put its run folder in $hit, $denied"
@@ -44,14 +46,15 @@ done < <(grep -oE "(^|[^[:alnum:]_])TMPDIR=(\"[^\"]*\"|'[^']*'|[^[:space:];&|)\"
 # Each eval its own command gives no TMPDIR takes the one the command left:
 # the session's, one an earlier statement set (a bare assignment reaches it
 # only when TMPDIR is already exported), or none after unset, which is /tmp.
-if [ -n "${TMPDIR+set}" ]; then state=session; else state=unset; fi
+if [ -n "${TMPDIR+set}" ]; then state="session"; else state="unset"; fi
+# shellcheck disable=SC2020 # tr turns each of the five characters into a newline
 while IFS= read -r seg; do
   if grep -Eq '^[[:space:]]*export[[:space:]]+TMPDIR=[^[:space:]]*[[:space:]]*$' <<<"$seg"; then
-    state=set
+    state="set"
   elif grep -Eq '^[[:space:]]*TMPDIR=[^[:space:]]*[[:space:]]*$' <<<"$seg"; then
-    [ "$state" = unset ] || state=set
+    [ "$state" = unset ] || state="set"
   elif grep -Eq '^[[:space:]]*unset([[:space:]]+-v)?[[:space:]]+TMPDIR[[:space:]]*$' <<<"$seg"; then
-    state=unset
+    state="unset"
   elif grep -Eq "$eval_re" <<<"$seg"; then
     pre=${seg%%claude*}
     grep -q 'TMPDIR=' <<<"$pre" && continue

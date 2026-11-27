@@ -44,6 +44,7 @@ check "an absolute claude path is still the eval" 2 "$(code /tmp '/usr/bin/claud
 check "a quoted claude is still the eval" 2 "$(code /tmp '"claude" plugin eval x')"
 check "a second eval with a bad TMPDIR is refused" 2 "$(code /tmp "TMPDIR=$scratch/good $ev; TMPDIR=/tmp $ev")"
 check "a commit message naming the eval is text" 0 "$(code /tmp 'git commit -m "docs: claude plugin eval needs TMPDIR"')"
+# shellcheck disable=SC2016 # the command holds the unexpanded text
 check "a TMPDIR the guard cannot expand is refused" 2 "$(code "$scratch/good" 'TMPDIR=${HOME:-/tmp} claude plugin eval x')"
 check "a TMPDIR under the home folder sign is refused" 2 "$(code "$scratch/good" 'TMPDIR=~/../../tmp claude plugin eval x')"
 check "a relative TMPDIR is refused" 2 "$(code "$scratch/good" 'cd /tmp && TMPDIR=. claude plugin eval x')"
@@ -64,6 +65,7 @@ check "an export after unset covers the eval" 0 "$(code "$scratch/good" "unset T
 check "another command with TMPDIR=/tmp runs" 0 "$(code "$scratch/good" 'TMPDIR=/tmp make check')"
 check "an unclosed quote reads the command unmasked" 2 "$(code /tmp "echo \"a; $ev")"
 m=$(msg /tmp "$ev")
+# shellcheck disable=SC2016 # the steer names the variable, unexpanded
 check "a denied TMPDIR names the read-only failure and the steer" yes "$([[ $m == *"read-only file system"* && $m == *'TMPDIR="$XDG_RUNTIME_DIR"'* ]] && echo yes)"
 m=$(msg "$scratch/good" "TMPDIR=~/x $ev")
 check "an unexpandable TMPDIR says the guard cannot tell" yes "$([[ $m == *"not a literal absolute path"* ]] && echo yes)"
