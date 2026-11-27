@@ -47,7 +47,6 @@ done < <(grep -oE "(^|[^[:alnum:]_])TMPDIR=(\"[^\"]*\"|'[^']*'|[^[:space:];&|)\"
 # the session's, one an earlier statement set (a bare assignment reaches it
 # only when TMPDIR is already exported), or none after unset, which is /tmp.
 if [ -n "${TMPDIR+set}" ]; then state="session"; else state="unset"; fi
-# shellcheck disable=SC2020 # tr turns each of the five characters into a newline
 while IFS= read -r seg; do
   if grep -Eq '^[[:space:]]*export[[:space:]]+TMPDIR=[^[:space:]]*[[:space:]]*$' <<<"$seg"; then
     state="set"
@@ -64,5 +63,5 @@ while IFS= read -r seg; do
     hit=$(under "$tmp")
     [ -z "$hit" ] || refuse "claude plugin eval would put its run folder in $hit, $denied"
   fi
-done < <(tr ';&|(\n' '\n\n\n\n\n' <<<"$masked")
+done < <(tr ';&|(' '\n' <<<"$masked")
 exit 0 # mutant-ok delete: the loop above ends with status 0 when it does not refuse

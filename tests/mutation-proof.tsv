@@ -11,7 +11,7 @@ cerebro-ask-guard.sh	3d06494f2356b096	8ec4b2dfa0afd7eb	23/23
 done-check.sh	7ef4ac769cc241a5	f119be1bdab65605	63/63
 draft-guard.sh	d8080cb94b59072d	aed48bc253d64e20	61/61
 drop-worktree.sh	5642f9beebc9dad3	f91af64a1a2783b6	1/1
-eval-tmpdir-guard.sh	c2f8cb4505bc2d03	e3b7dcec4eefe0f3	48/48
+eval-tmpdir-guard.sh	05a90fd3b06454e1	e3b7dcec4eefe0f3	48/48
 familiar-voice.sh	3128a205d08ce300	332924cc4ac536f4	18/18
 fetch-place-hint.sh	3573b2f17e94944d	4d9507bd1e4e8a08	12/12
 foreign-post-hint.sh	e4595240e7a8d340	0bd998170b80a6db	25/25
