@@ -3,9 +3,11 @@
 # never reads as one, and a quoted `;`, `&`, `|` or newline never splits it.
 # Inside quotes a blank becomes \001, `;` \002, `&` \003, `|` \004 and a
 # newline \005; everything else stays. What the shell runs inside double
-# quotes, `$(...)` or backticks, stays unmasked. A comment is printed as it
-# stands. It exits 1 when a quote never closes, and the caller then reads the
-# command unmasked. Needs gawk for its whole-input record. Used by pr-guard.sh.
+# quotes, `$(...)` or backticks, stays unmasked. An unquoted backslash before
+# a newline joins the two lines with a space, as bash does; an escaped
+# backslash and a comment line never join. A comment is printed as it stands.
+# It exits 1 when a quote never closes, and the caller then reads the command
+# unmasked. Needs gawk for its whole-input record. Used by pr-guard.sh.
 BEGIN { RS = "^$"; ORS = "" }
 function mask(c) {
   if (c == " " || c == "\t") return "\001"
@@ -32,7 +34,8 @@ function mask(c) {
       else if (c == "`") { saved[++depth] = "\"`"; q = ""; print c }
       else print mask(c)
     } else {
-      if (c == "\\") { print c next_c; i++ }
+      if (c == "\\" && next_c == "\n") { print " "; i++ }
+      else if (c == "\\") { print c next_c; i++ }
       else if (c == "#" && (i == 1 || substr($0, i - 1, 1) ~ /[[:space:];&|(]/)) {
         while (i <= n && substr($0, i, 1) != "\n") print substr($0, i++, 1)
         i--

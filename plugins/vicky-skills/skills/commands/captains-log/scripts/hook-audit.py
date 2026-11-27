@@ -139,7 +139,9 @@ def main():
                 counts[h]["refusals"] += 1
                 if e[1] in calls:
                     counts[h][outcome(calls[e[1]], seq, k)] += 1
-    places = [os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "..", "scripts"),
+    here = os.path.dirname(os.path.abspath(__file__))
+    places = [os.path.join(here, "..", "..", "..", "scripts"),
+              os.path.join(here, "..", "..", "..", "..", "scripts"),
               os.path.join(os.getcwd(), ".claude", "hooks")]
     if not counts:
         print(f"no hook refusals in {days} days")

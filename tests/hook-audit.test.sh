@@ -45,6 +45,11 @@ lines=$(cd "$dir/w" && python3 -I "$audit" 30 "$dir/u")
 check "a hook with no script in the plugin or the repo is marked gone" 1 "$(grep -c '^demo-guard .* gone$' <<<"$lines")"
 check "a plugin hook that still ships is not marked gone" 0 "$(grep -c '^git-guard .*gone' <<<"$lines")"
 check "a repo's own hook is not marked gone" 0 "$(grep -c '^repo-guard .*gone' <<<"$lines")"
+mkdir -p "$dir/flat/scripts" "$dir/flat/skills/captains-log/scripts"
+cp "$audit" "$dir/flat/skills/captains-log/scripts/hook-audit.py"
+: > "$dir/flat/scripts/demo-guard.sh"
+flat_lines=$(cd "$dir/w" && python3 -I "$dir/flat/skills/captains-log/scripts/hook-audit.py" 30 "$dir/u")
+check "a hook in a flat installed layout (3 .. segments) is not marked gone" 0 "$(grep -c '^demo-guard .*gone' <<<"$flat_lines")"
 mkdir -p "$dir/v"
 { use a "make a"; res a "$refused"; jq -nc '{type:"user",isMeta:true,message:{content:"Base directory for this skill"}}'
   use b "make b"; res b "$refused"; jq -nc '{type:"user",message:{content:"<task-notification> <status>completed</status>"}}'

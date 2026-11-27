@@ -46,6 +46,13 @@ expect "a lower-case wip: title goes through" 0 "tea pr create -t 'wip: fix' </d
 expect "tea pr create --draft goes through" 0 'tea pr create --draft --title "Fix it" </dev/null'
 expect "an ANSI-quoted WIP: title goes through" 0 "tea pr create -t \$'WIP: fix' </dev/null"
 expect "tea pr create with --title=WIP: goes through" 0 'tea pr create --title=WIP:Fix </dev/null'
+expect "tea pr create with backslash continuation and WIP: goes through" 0 $'tea pr create --base main \\\n  --title "WIP: Fix it" </dev/null'
+expect "a comment line ending in a backslash does not join gh pr create to it" 2 $'# --draft \\\ngh pr create --title x'
+expect "a comment line ending in a backslash does not join gh pr ready to it" 2 $'# see -h \\\ngh pr ready 5'
+expect "a comment after a command does not join the next line" 2 $'gh pr create --title x # c \\\n--draft'
+expect "an escaped backslash before a newline ends the command" 2 $'tea pr create --title x \\\\\n--draft </dev/null'
+expect "gh pr ready ending in an escaped backslash is refused" 2 $'gh pr ready \\\\\n--undo'
+expect "a backslash continuation joins its lines with a space" 0 $'tea pr create --title\\\n"WIP: Real" </dev/null'
 
 # Marking ready: only after make-it-so started.
 expect "gh pr ready is refused with no make-it-so" 2 'gh pr ready 5'
