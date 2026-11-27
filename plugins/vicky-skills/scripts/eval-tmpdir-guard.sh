@@ -21,7 +21,7 @@ refuse() {
 # under <path>: prints the denied root the path resolves under, if any.
 under() {
   local real root # mutant-ok delete: the hook runs no other use of these names
-  real=$(realpath -m -- "$1" 2>/dev/null) || real=$1
+  real=$(realpath -m -- "$1")
   for root in /tmp /var/tmp /dev/shm /run/shm; do
     case "$real/" in "$root"/*) echo "$real, under $root"; return ;; esac
   done
@@ -35,11 +35,7 @@ while IFS= read -r val; do
   val=${val//'${XDG_RUNTIME_DIR}'/${XDG_RUNTIME_DIR:-}}
   val=${val//'$XDG_RUNTIME_DIR'/${XDG_RUNTIME_DIR:-}}
   case "$val" in
-    /*) ;;
-    *) refuse "TMPDIR=$val $unknown" ;;
-  esac
-  case "$val" in
-    *['$~`\\']*) refuse "TMPDIR=$val $unknown" ;;
+    ""|[!/]*|*['$~`\\']*) refuse "TMPDIR=$val $unknown" ;;
   esac
   hit=$(under "$val")
   [ -z "$hit" ] || refuse "claude plugin eval would put its run folder in $hit, $denied"
