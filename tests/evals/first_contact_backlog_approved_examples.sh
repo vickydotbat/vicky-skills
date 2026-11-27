@@ -9,6 +9,9 @@ set -u
 # shellcheck source=lib.sh
 . "$(dirname "$0")/lib.sh"
 command -v backlog >/dev/null || { echo "first-contact-backlog: these cases run the backlog CLI; put it on PATH first"; exit 2; }
+# The eval sandbox hides the home profile, so name the binary's own folder.
+PATH="$(dirname "$(readlink -f "$(command -v backlog)")"):$PATH"
+export PATH
 fail=0
 
 # BK1-E1 Backlog.md is on the menu

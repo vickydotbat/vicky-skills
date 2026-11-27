@@ -1,5 +1,6 @@
 ---
-type: regex
-target: trace
-pattern: 'backlog task edit[^\n]*--comment'
+type: tool_used
+tool: Bash
+input_match: 'backlog task edit[^\n]*--comment'
+min: 1
 ---

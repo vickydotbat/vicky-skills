@@ -1,5 +1,6 @@
 ---
-type: regex
-target: trace
-pattern: 'backlog task list[^\n]*--parent'
+type: tool_used
+tool: Bash
+input_match: 'backlog task list[^\n]*--parent'
+min: 1
 ---
